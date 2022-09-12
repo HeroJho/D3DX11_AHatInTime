@@ -1,0 +1,33 @@
+★IMGUI 초기화 및 사용법★
+1. 우선 헤더와 cpp를 포함해준다.
+imconfig.h
+imgui.cpp
+imgui.h
+imgui_demo.cpp
+imgui_draw.cpp
+imgui_impl_dx9.cpp
+imgui_impl_dx9.h
+imgui_impl_win32.cpp
+imgui_impl_win32.h
+imgui_internal.h
+imgui_tables.cpp
+imgui_widgets.cpp
+imstb_rectpack.h
+imstb_textedit.h
+imstb_truetype.h
+
+
+2. Client 속성 -> C/C++ / 미리컴파일된 헤더 사용안함으로 설정해주기
+
+3. 추가 포함 디렉터리에서 ../Default/를 포함해주기
+
+4. stdafx.h에 
+#include "imgui.h"
+#include "imgui_impl_dx9.h"
+#include "imgui_impl_win32.h"  포함해주기
+
+5. IMGUI초기화 및 매니저를 작성
+
+6. MainApp에서 매니저 Init 호출
+
+7. Client.cpp 에서 매니저 Tick, Render 호출해주기
