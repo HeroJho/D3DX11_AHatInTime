@@ -94,6 +94,12 @@
     <Filter Include="04.Utility\PipeLine">
       <UniqueIdentifier>{e9a82eb9-9573-4182-bf73-ea131dbcf8c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Utility\Lights">
+      <UniqueIdentifier>{f0fda152-07c3-44b8-8382-748ecd769a55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\Lights\Light_Manager">
+      <UniqueIdentifier>{4e0dca03-b592-4624-a4ea-c7cd7bbe946f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -192,6 +198,12 @@
     <ClInclude Include="..\public\PipeLine.h">
       <Filter>04.Utility\PipeLine</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Light_Manager.h">
+      <Filter>04.Utility\Lights\Light_Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Light.h">
+      <Filter>04.Utility\Lights</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -274,6 +286,12 @@
     </ClCompile>
     <ClCompile Include="..\private\PipeLine.cpp">
       <Filter>04.Utility\PipeLine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Light_Manager.cpp">
+      <Filter>04.Utility\Lights\Light_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Light.cpp">
+      <Filter>04.Utility\Lights</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

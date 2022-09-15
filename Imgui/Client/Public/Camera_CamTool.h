@@ -23,6 +23,7 @@ private:
 public:
 	_vector Get_Pos();
 	void Set_Pos(_float3 vPos);
+	_bool Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance = 0.1f);
 
 public:
 	virtual HRESULT Initialize_Prototype() override;

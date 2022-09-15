@@ -13,7 +13,7 @@ private:
 
 public:
 	// virtual HRESULT Initialize_Prototype(_uint iNumVerticesX, _uint iNumVerticesZ);
-	virtual HRESULT Initialize_Prototype(const _tchar* pHeightMap);
+	virtual HRESULT Initialize_Prototype(const _tchar* pHeighitMapFilePath);
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:

@@ -85,6 +85,9 @@ HRESULT CVIBuffer_Rect::Initialize_Prototype()
 
 #pragma endregion
 
+	Safe_Delete_Array(pVertices);
+	Safe_Delete_Array(pIndices);
+
 
 	return S_OK;
 }

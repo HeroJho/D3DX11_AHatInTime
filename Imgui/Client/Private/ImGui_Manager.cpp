@@ -295,24 +295,47 @@ void CImGui_Manager::UI_MarkCubes()
 			if (ImGui::Selectable(pMarkCube->Get_Tag().c_str(), isSelected, 0, vSize))
 				CCamManager::Get_Instance()->Set_SelectedMarkCubeTag(pMarkCube->Get_Tag());
 
+
 			ImGui::SameLine();
 			
-			string sButtonTag = "LinkIndex_" + pMarkCube->Get_Tag();
 
+			string sButtonTag = "Index: " + pMarkCube->Get_Tag();
+			
 			ImGui::PushItemWidth(100.f);
 			_int iTemp = pMarkCube->Get_LinkIndex();
+
+
 			if (ImGui::InputInt(sButtonTag.c_str(), &iTemp))
 			{
 				pMarkCube->Set_LinkIndex(iTemp);
-				CCamManager::Get_Instance()->MakePos();
+				CCamManager::Get_Instance()->MakeRenderPos();
 			}
-			ImGui::PopItemWidth();
 
-			if (0 > pMarkCube->Get_LinkIndex() || 3 < pMarkCube->Get_LinkIndex())
+
+
+
+			// ImGui::SameLine();
+			string sTimeTag = "Time: " + pMarkCube->Get_Tag();
+
+			_float fTemp = pMarkCube->Get_SpeedTime();
+			if (ImGui::InputFloat(sTimeTag.c_str(), &fTemp))
 			{
-				pMarkCube->Set_LinkIndex(0);
-				Set_WarningBox("Index range must be 0-3 !!");
+				pMarkCube->Set_SpeedTime(fTemp);
+
+				CCamManager::Get_Instance()->MakeRenderPos();
 			}
+
+
+
+
+			ImGui::PopItemWidth();
+			
+
+			//if (0 > pMarkCube->Get_LinkIndex() || 3 < pMarkCube->Get_LinkIndex())
+			//{
+			//	pMarkCube->Set_LinkIndex(0);
+			//	Set_WarningBox("Index range must be 0-3 !!");
+			//}
 
 
 			if (isSelected)

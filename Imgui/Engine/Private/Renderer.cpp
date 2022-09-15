@@ -33,6 +33,16 @@ HRESULT CRenderer::Draw()
 {
 	for (_uint i = 0; i < RENDER_END; ++i)
 	{
+		if (i == RENDER_ALPHABLEND)
+		{
+			m_RenderObjects[i].sort([](CGameObject* pSour, CGameObject* pDest)
+			{
+				return pSour->Get_CamDistance() > pDest->Get_CamDistance();
+			});
+
+			// sort(m_RenderObjects[i].begin(), m_RenderObjects[i].end(), 
+		}
+
 		for (auto& pRenderObject : m_RenderObjects[i])
 		{
 			if (nullptr != pRenderObject)

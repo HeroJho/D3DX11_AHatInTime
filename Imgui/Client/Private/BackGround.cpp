@@ -48,19 +48,19 @@ void CBackGround::LateTick(_float fTimeDelta)
 
 HRESULT CBackGround::Render()
 {
-	_float4x4	Matrix;
-	D3DXMatrixIdentity(&Matrix);
+	//_float4x4	Matrix;
+	//D3DXMatrixIdentity(&Matrix);
 
-	// m_pGraphic_Device->SetTexture(0, m_pTextureCom->Get_Texture);
+	//// m_pGraphic_Device->SetTexture(0, m_pTextureCom->Get_Texture);
 
-	if (FAILED(m_pTextureCom->Bind_Texture(0)))
-		return E_FAIL;
+	//if (FAILED(m_pTextureCom->Bind_Texture(0)))
+	//	return E_FAIL;
 
-	m_pGraphic_Device->SetTransform(D3DTS_WORLD, &Matrix);
-	m_pGraphic_Device->SetTransform(D3DTS_VIEW, &Matrix);
-	m_pGraphic_Device->SetTransform(D3DTS_PROJECTION, &Matrix);
+	//m_pGraphic_Device->SetTransform(D3DTS_WORLD, &Matrix);
+	//m_pGraphic_Device->SetTransform(D3DTS_VIEW, &Matrix);
+	//m_pGraphic_Device->SetTransform(D3DTS_PROJECTION, &Matrix);
 
-	m_pVIBufferCom->Render();
+	//m_pVIBufferCom->Render();
 
 	return S_OK;
 }

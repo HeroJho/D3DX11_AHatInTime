@@ -91,6 +91,9 @@
     <Filter Include="96.ShaderFiles">
       <UniqueIdentifier>{cf16a622-d53e-466b-a580-7bea4b29f06a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\01. CamTool\03. RenderCube">
+      <UniqueIdentifier>{9e2bdc0d-7420-4887-90ed-188088235ae0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -191,6 +194,9 @@
     <ClInclude Include="..\Private\imgui_impl_dx11.h">
       <Filter>98.IMGUI\Default</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\RenderCube.h">
+      <Filter>02.GameObject\01. CamTool\03. RenderCube</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -286,6 +292,9 @@
     <ClCompile Include="..\Private\imgui_impl_dx11.cpp">
       <Filter>98.IMGUI\Default</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\RenderCube.cpp">
+      <Filter>02.GameObject\01. CamTool\03. RenderCube</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -301,10 +310,13 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl">
+      <Filter>96.ShaderFiles</Filter>
+    </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
       <Filter>96.ShaderFiles</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtx.hlsl">
       <Filter>96.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

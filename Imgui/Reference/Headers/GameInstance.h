@@ -7,6 +7,7 @@
 #include "Object_Manager.h"
 #include "Component_Manager.h"
 #include "PipeLine.h"
+#include "Light_Manager.h"
 #include "Picking.h"
 
 /* 클라이언트로 보여주기위한 가장 대표적인 클래스이다. */
@@ -52,7 +53,11 @@ public: /*For.Component_Manager*/
 public: /* for.Timer_Manager */
 	_float Get_TimeDelta(const _tchar* pTimerTag);
 	HRESULT Add_Timer(const _tchar* pTimerTag);
-	HRESULT Update_Timer(const _tchar* pTimerTag);	
+	HRESULT Update_Timer(const _tchar* pTimerTag);
+
+public: /* For.Light_Manager */
+	const LIGHTDESC* Get_LightDesc(_uint iIndex);
+	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);
 
 public: /* For.Input_Device */
 	_char Get_DIKState(_uchar eKeyID);
@@ -81,6 +86,8 @@ private:
 	CTimer_Manager*					m_pTimer_Manager = nullptr;
 	CPicking*						m_pPicking = nullptr;
 	CPipeLine*						m_pPipeLine = nullptr;
+	CLight_Manager*					m_pLight_Manager = nullptr;
+
 
 
 public:

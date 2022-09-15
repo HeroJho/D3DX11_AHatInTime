@@ -1,26 +1,26 @@
 #include "stdafx.h"
-#include "..\Public\CamSelectingCube.h"
+#include "..\Public\RenderCube.h"
 
 #include "GameInstance.h"
 #include "CamManager.h"
 
-CCamSelectingCube::CCamSelectingCube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CRenderCube::CRenderCube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CCamSelectingCube::CCamSelectingCube(const CCamSelectingCube & rhs)
+CRenderCube::CRenderCube(const CRenderCube & rhs)
 	: CGameObject(rhs)
 {
 }
 
 
-HRESULT CCamSelectingCube::Initialize_Prototype()
+HRESULT CRenderCube::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CCamSelectingCube::Initialize(void * pArg)
+HRESULT CRenderCube::Initialize(void * pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
@@ -32,47 +32,29 @@ HRESULT CCamSelectingCube::Initialize(void * pArg)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vector{ 0.f, 0.f, 0.f, 1.f });
 
-	m_vRGB = pDesc->vColor;
+	_vector vTempPos = XMLoadFloat3(&(pDesc->vPos));
+	vTempPos = XMVectorSetW(vTempPos, 1.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vTempPos);
+	m_pTransformCom->Set_Scale(XMLoadFloat3(&(pDesc->vScale)));
 
+	m_vRGB = pDesc->vColor;
 
 	return S_OK;
 }
 
-void CCamSelectingCube::Tick(_float fTimeDelta)
+void CRenderCube::Tick(_float fTimeDelta)
 {
-	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
 
-
-
-
-
-	if (pGameInstance->Key_Pressing(DIK_UP))
-		m_pTransformCom->Go_Dir(_vector{ 0.f, 0.f, 1.f, 0.f}, 10.f, fTimeDelta);
-	else if (pGameInstance->Key_Pressing(DIK_DOWN))
-		m_pTransformCom->Go_Dir(_vector{ 0.f, 0.f, -1.f, 0.f }, 10.f, fTimeDelta);
-	else if (pGameInstance->Key_Pressing(DIK_LEFT))
-		m_pTransformCom->Go_Dir(_vector{ -1.f, 0.f, 0.f, 0.f }, 10.f, fTimeDelta);
-	else if (pGameInstance->Key_Pressing(DIK_RIGHT))
-		m_pTransformCom->Go_Dir(_vector{ 1.f, 0.f, 0.f, 0.f }, 10.f, fTimeDelta);
-	else if (pGameInstance->Key_Pressing(DIK_U))
-		m_pTransformCom->Go_Dir(_vector{ 0.f, 1.f, 0.f, 0.f }, 10.f, fTimeDelta);
-	else if (pGameInstance->Key_Pressing(DIK_J))
-		m_pTransformCom->Go_Dir(_vector{ 0.f, -1.f, 0.f, 0.f }, 10.f, fTimeDelta);
-	
-
-
-
-
-	Safe_Release(pGameInstance);
 }
 
-void CCamSelectingCube::LateTick(_float fTimeDelta)
+void CRenderCube::LateTick(_float fTimeDelta)
 {
+
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+
 }
 
-HRESULT CCamSelectingCube::Render()
+HRESULT CRenderCube::Render()
 {
 	if (nullptr == m_pVIBufferCom ||
 		nullptr == m_pShaderCom)
@@ -90,23 +72,47 @@ HRESULT CCamSelectingCube::Render()
 	return S_OK;
 }
 
-
-
-
-_float3 CCamSelectingCube::Get_Pos()
-{
-	_float3 vTempPos;
-	XMStoreFloat3(&vTempPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-	return vTempPos;
-}
-void CCamSelectingCube::Set_Pos(_float3 vPos)
+void CRenderCube::Set_Pos(_float3 vPos)
 {
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat3(&vPos));
 }
 
+_float3 CRenderCube::Get_Pos()
+{
+	_float3 vTempPos;
+	ZeroMemory(&vTempPos, sizeof(_float3));
+	XMStoreFloat3(&vTempPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
+	return vTempPos;
+}
 
 
-HRESULT CCamSelectingCube::SetUp_Components()
+HRESULT CRenderCube::Set_RenderState()
+{
+	if (nullptr == m_pDevice || nullptr == m_pDeviceContext)
+		return E_FAIL;
+
+	//m_pGraphic_Device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	//m_pGraphic_Device->SetRenderState(D3DRS_ZENABLE, TRUE);
+
+	//m_pGraphic_Device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+
+	return S_OK;
+}
+
+HRESULT CRenderCube::Reset_RenderState()
+{
+	//m_pGraphic_Device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	//m_pGraphic_Device->SetRenderState(D3DRS_ZENABLE, TRUE);
+
+	//m_pGraphic_Device->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+
+	return S_OK;
+}
+
+HRESULT CRenderCube::SetUp_Components()
 {
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -134,7 +140,7 @@ HRESULT CCamSelectingCube::SetUp_Components()
 	return S_OK;
 }
 
-HRESULT CCamSelectingCube::SetUp_ShaderResources()
+HRESULT CRenderCube::SetUp_ShaderResources()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -148,41 +154,39 @@ HRESULT CCamSelectingCube::SetUp_ShaderResources()
 	RELEASE_INSTANCE(CGameInstance);
 
 
-
 	if (FAILED(m_pShaderCom->Set_RawValue("g_vColor", &m_vRGB, sizeof(_float4))))
 		return E_FAIL;
-
 
 	return S_OK;
 }
 
-CCamSelectingCube * CCamSelectingCube::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CRenderCube * CRenderCube::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CCamSelectingCube*		pInstance = new CCamSelectingCube(pDevice, pContext);
+	CRenderCube*		pInstance = new CRenderCube(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CCamSelectingCube"));
+		MSG_BOX(TEXT("Failed To Created : CColorCube"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CCamSelectingCube::Clone(void* pArg)
+CGameObject * CRenderCube::Clone(void* pArg)
 {
-	CCamSelectingCube*		pInstance = new CCamSelectingCube(*this);
+	CRenderCube*		pInstance = new CRenderCube(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CCamSelectingCube"));
+		MSG_BOX(TEXT("Failed To Cloned : CColorCube"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CCamSelectingCube::Free()
+void CRenderCube::Free()
 {
 	__super::Free();
 

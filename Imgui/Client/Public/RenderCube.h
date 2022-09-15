@@ -13,7 +13,7 @@ END
 
 BEGIN(Client)
 
-class CColorCube final : public CGameObject
+class CRenderCube final : public CGameObject
 {
 public:
 	typedef struct tagColorCubeDesc
@@ -24,9 +24,9 @@ public:
 	}COLORCUBEDESC;
 
 private:
-	CColorCube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CColorCube(const CColorCube& rhs);
-	virtual ~CColorCube() = default;
+	CRenderCube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CRenderCube(const CRenderCube& rhs);
+	virtual ~CRenderCube() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -42,14 +42,6 @@ public:
 	void Set_LinkIndex(_int iIndex) { m_iLinkIndex = iIndex; }
 	_int Get_LinkIndex() { return m_iLinkIndex; }
 
-	void Set_SpeedTime(_float fSpeedTime) { 
-		if (0.001f > fSpeedTime)
-			m_fSpeedTime = 0.001f;
-		else
-			m_fSpeedTime = fSpeedTime; 
-	}
-	_float Get_SpeedTime() { return m_fSpeedTime; }
-
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
@@ -59,7 +51,6 @@ private:
 private:
 	_float4			m_vRGB;
 	_int m_iLinkIndex = 0;
-	_float m_fSpeedTime = 0.001f;
 
 private:
 	HRESULT Set_RenderState();
@@ -70,7 +61,7 @@ private:
 
 
 public:
-	static CColorCube* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CRenderCube* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

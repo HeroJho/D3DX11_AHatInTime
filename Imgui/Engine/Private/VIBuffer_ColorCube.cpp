@@ -18,7 +18,7 @@ HRESULT CVIBuffer_ColorCube::Initialize_Prototype()
 #pragma region VERTEXBUFFER
 	m_iNumVertexBuffers = 1;
 	m_iNumVertices = 8;
-	m_iStride = sizeof(VTXCOL);
+	m_iStride = sizeof(VTX);
 
 
 	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
@@ -29,26 +29,18 @@ HRESULT CVIBuffer_ColorCube::Initialize_Prototype()
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = m_iStride;
 
-	VTXCOL*		pVertices = new VTXCOL[4];
-	ZeroMemory(pVertices, sizeof(VTXCOL) * 4);
+	VTX*		pVertices = new VTX[m_iNumVertices];
+	ZeroMemory(pVertices, sizeof(VTX) * m_iNumVertices);
 
 	pVertices[0].vPosition = _float3(-0.5f, 0.5f, -0.5f);
-	pVertices[0].vColor = _float4{ 255.f, 0.f, 0.f, 0.f };
 	pVertices[1].vPosition = _float3(0.5f, 0.5f, -0.5f);
-	pVertices[1].vColor = _float4{ 255.f, 0.f, 0.f, 0.f };
 	pVertices[2].vPosition = _float3(0.5f, -0.5f, -0.5f);
-	pVertices[2].vColor = _float4{ 255.f, 0.f, 0.f, 0.f };
 	pVertices[3].vPosition = _float3(-0.5f, -0.5f, -0.5f);
-	pVertices[3].vColor = _float4{ 255.f, 0.f, 0.f, 0.f };
 
 	pVertices[4].vPosition = _float3(-0.5f, 0.5f, 0.5f);
-	pVertices[4].vColor = _float4{ 255.f, 0.f, 0.f, 0.f };
 	pVertices[5].vPosition = _float3(0.5f, 0.5f, 0.5f);
-	pVertices[5].vColor = _float4{ 255.f, 0.f, 0.f, 0.f };
 	pVertices[6].vPosition = _float3(0.5f, -0.5f, 0.5f);
-	pVertices[6].vColor = _float4{ 255.f, 0.f, 0.f, 0.f };
 	pVertices[7].vPosition = _float3(-0.5f, -0.5, 0.5f);
-	pVertices[7].vColor = _float4{ 255.f, 0.f, 0.f, 0.f };
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pVertices;
@@ -109,6 +101,9 @@ HRESULT CVIBuffer_ColorCube::Initialize_Prototype()
 
 #pragma endregion
 
+	Safe_Delete_Array(pVertices);
+	Safe_Delete_Array(pIndices);
+
 	return S_OK;
 }
 
@@ -118,33 +113,6 @@ HRESULT CVIBuffer_ColorCube::Initialize(void * pArg)
 }
 
 
-
-
-
-
-void CVIBuffer_ColorCube::SetColor(_int r, _int g, _int b)
-{
-
-	// TODO: 셰이더로 컬러 바꾸기
-
-	//VTXCOL*		pVertices = nullptr;
-
-	//m_pVB->Lock(0, /*m_iStride * m_iNumVertices*/0, (void**)&pVertices, 0);
-
-
-	//pVertices[0].vColor = _float4{ r, g, b, 0.f };
-	//pVertices[1].vColor = _float4{ r, g, b, 0.f };
-	//pVertices[2].vColor = _float4{ r, g, b, 0.f };
-	//pVertices[3].vColor = _float4{ r, g, b, 0.f };
-	//pVertices[4].vColor = _float4{ r, g, b, 0.f };
-	//pVertices[5].vColor = _float4{ r, g, b, 0.f };
-	//pVertices[6].vColor = _float4{ r, g, b, 0.f };
-	//pVertices[7].vColor = _float4{ r, g, b, 0.f };
-
-
-	//m_pVB->Unlock();
-
-}
 
 
 

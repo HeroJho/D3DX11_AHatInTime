@@ -19,7 +19,8 @@ CVIBuffer::CVIBuffer(const CVIBuffer & rhs)
 	, m_eIndexFormat(rhs.m_eIndexFormat)
 	, m_eTopology(rhs.m_eTopology)
 {
-
+	Safe_AddRef(m_pVB);
+	Safe_AddRef(m_pIB);
 }
 
 HRESULT CVIBuffer::Initialize_Prototype()
@@ -87,5 +88,8 @@ HRESULT CVIBuffer::Create_IndexBuffer()
 void CVIBuffer::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pVB);
+	Safe_Release(m_pIB);
 
 }

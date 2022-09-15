@@ -30,16 +30,14 @@ HRESULT CColorCube::Initialize(void * pArg)
 
 	COLORCUBEDESC* pDesc = (COLORCUBEDESC*)pArg;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat3(&(pDesc->vPos)));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, _vector{ 0.f, 0.f, 0.f, 1.f });
+
+	_vector vTempPos = XMLoadFloat3(&(pDesc->vPos));
+	vTempPos = XMVectorSetW(vTempPos, 1.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vTempPos);
 	m_pTransformCom->Set_Scale(XMLoadFloat3(&(pDesc->vScale)));
 
-	m_vRGB.x = pDesc->iR;
-	m_vRGB.y = pDesc->iG;
-	m_vRGB.z = pDesc->iB;
-
-	m_pVIBufferCom->SetColor(m_vRGB.x, m_vRGB.y, m_vRGB.z);
-
-	
+	m_vRGB = pDesc->vColor;
 
 	return S_OK;
 }
@@ -51,31 +49,24 @@ void CColorCube::Tick(_float fTimeDelta)
 
 void CColorCube::LateTick(_float fTimeDelta)
 {
+
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-
-
 
 }
 
 HRESULT CColorCube::Render()
 {
-	if (CCamManager::Get_Instance()->Get_SelectedMarkCubeTag() == m_sTag)
-		m_pVIBufferCom->SetColor(255, 212, 0);
-	else
-		m_pVIBufferCom->SetColor(m_vRGB.x, m_vRGB.y, m_vRGB.z);
-
-
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix()))
+	if (nullptr == m_pVIBufferCom ||
+		nullptr == m_pShaderCom)
 		return E_FAIL;
 
-	m_pGraphic_Device->SetTexture(0, nullptr);
-
-	if (FAILED(Set_RenderState()))
+	if (FAILED(SetUp_ShaderResources()))
 		return E_FAIL;
 
-	m_pVIBufferCom->Render();
+	if (FAILED(m_pShaderCom->Begin(0)))
+		return E_FAIL;
 
-	if (FAILED(Reset_RenderState()))
+	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
 	return S_OK;
@@ -83,12 +74,16 @@ HRESULT CColorCube::Render()
 
 void CColorCube::Set_Pos(_float3 vPos)
 {
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat3(&vPos));
 }
 
 _float3 CColorCube::Get_Pos()
 {
-	return m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float3 vTempPos;
+	ZeroMemory(&vTempPos, sizeof(_float3));
+	XMStoreFloat3(&vTempPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
+	return vTempPos;
 }
 
 
@@ -127,6 +122,10 @@ HRESULT CColorCube::SetUp_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_ColorCube"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 		return E_FAIL;
 
+	/* For. Com_Shader*/
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_ColorCube"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+		return E_FAIL;
+
 
 	/* For.Com_Transform */
 	CTransform::TRANSFORMDESC		TransformDesc;
@@ -138,6 +137,42 @@ HRESULT CColorCube::SetUp_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;
 
+	return S_OK;
+}
+
+HRESULT CColorCube::SetUp_ShaderResources()
+{
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+
+
+	_float4 vTempColor;
+	ZeroMemory(&vTempColor, sizeof(_float4));
+	if (CCamManager::Get_Instance()->Get_SelectedMarkCubeTag() == m_sTag)
+	{
+		vTempColor.x = 1.f;
+		vTempColor.y = 1.f;
+		vTempColor.z = 0.f;
+		vTempColor.w = 1.f;
+	}		
+	else
+	{
+		vTempColor = m_vRGB;
+	}
+	if (FAILED(m_pShaderCom->Set_RawValue("g_vColor", &vTempColor, sizeof(_float4))))
+		return E_FAIL;
+
+	
 	return S_OK;
 }
 
@@ -171,6 +206,7 @@ void CColorCube::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pRendererCom);

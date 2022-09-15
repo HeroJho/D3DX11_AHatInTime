@@ -12,6 +12,7 @@
 #include "VIBuffer_ColorCube.h"
 #include "ColorCube.h"
 #include "CamSelectingCube.h"
+#include "RenderCube.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -88,30 +89,30 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTerrain::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_Player*/
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
-		CPlayer::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* For.Prototype_GameObject_Player*/
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
+	//	CPlayer::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
-	/* For.Prototype_GameObject_Monster */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster"),
-		CMonster::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* For.Prototype_GameObject_Monster */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster"),
+	//	CMonster::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
-	/* For.Prototype_GameObject_Camera_Free */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Free"),
-		CCamera_Free::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* For.Prototype_GameObject_Camera_Free */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Free"),
+	//	CCamera_Free::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	/* For.Prototype_GameObject_Camera_CamTool */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_CamTool"),
 		CCamera_CamTool::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_Sky */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
-		CSky::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* For.Prototype_GameObject_Sky */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
+	//	CSky::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	/* For.Prototype_GameObject_ColorCube */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ColorCube"),
@@ -123,6 +124,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CCamSelectingCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_ColorCube */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_RenderCube"),
+		CRenderCube::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
@@ -131,18 +136,19 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* 텍스쳐를 로드한다. */
 	/* For.Prototype_Component_Texture_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Grass_%d.tga"), 2))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Grass_%d.dds"), 2))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Player */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Player"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Player/Player.png")))))
-		return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Sky */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Sky"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Player */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Player"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Player/Player.png")))))
+	//	return E_FAIL;
+
+	///* For.Prototype_Component_Texture_Sky */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Sky"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
+	//	return E_FAIL;
 
 
 
@@ -159,16 +165,26 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_VIBuffer_Cube */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"),
-		CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+	///* For.Prototype_Component_VIBuffer_Cube */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"),
+	//	CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_ColorCube */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_ColorCube"),
 		CVIBuffer_ColorCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	
+
+	/* For.Prototype_Component_Shader_Terrain */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Terrain"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX_DECLARATION::Elements, VTXNORTEX_DECLARATION::iNumElements))))
+		return E_FAIL;
+	/* For.Prototype_Component_Shader_ColorCube*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_ColorCube"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Vtx.hlsl"), VTX_DECLARATION::Elements, VTX_DECLARATION::iNumElements))))
+		return E_FAIL;
+
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니ㅏㄷ.  "));
 

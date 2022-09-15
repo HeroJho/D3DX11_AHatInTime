@@ -92,10 +92,10 @@ CVIBuffer_Terrain::CVIBuffer_Terrain(const CVIBuffer_Terrain & rhs)
 //	return S_OK;
 //}
 
-HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeightMap)
+HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeighitMapFilePath)
 {
 	_ulong			dwByte = 0;
-	HANDLE			hFile = CreateFile(pHeightMap, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	HANDLE			hFile = CreateFile(pHeighitMapFilePath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (0 == hFile)
 		return E_FAIL;
 
@@ -110,6 +110,8 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeightMap)
 
 	CloseHandle(hFile);
 
+
+	// 버텍스 단계에서는 폴리곤을 공유하는 점들을 찾아 외적하여 노말 벡터를 구할 수 없다.
 #pragma region VERTEXBUFFER
 	m_iNumVertexBuffers = 1;
 	m_iNumVerticesX = ih.biWidth;
@@ -117,14 +119,6 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeightMap)
 
 	m_iNumVertices = m_iNumVerticesX * m_iNumVerticesZ;
 	m_iStride = sizeof(VTXNORTEX);
-
-	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
-	m_BufferDesc.ByteWidth = m_iNumVertices * m_iStride;
-	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	m_BufferDesc.CPUAccessFlags = 0;
-	m_BufferDesc.MiscFlags = 0;
-	m_BufferDesc.StructureByteStride = m_iStride;
 
 	VTXNORTEX*		pVertices = new VTXNORTEX[m_iNumVertices];
 	ZeroMemory(pVertices, sizeof(VTXNORTEX) * m_iNumVertices);
@@ -135,36 +129,28 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeightMap)
 		{
 			_uint		iIndex = i * m_iNumVerticesX + j;
 
-			pVertices[iIndex].vPosition = _float3(j, (pPixel[iIndex] & 0x000000ff) / 20.0f, i);
+			pVertices[iIndex].vPosition = _float3(j, (pPixel[iIndex] & 0x000000ff) / 10.0f, i);
 			pVertices[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
 			pVertices[iIndex].vTexture = _float2(j / _float(m_iNumVerticesX - 1), i / _float(m_iNumVerticesZ - 1));
 		}
 	}
-	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
-	m_SubResourceData.pSysMem = pVertices;
 
-	if (FAILED(__super::Create_VertexBuffer()))
-		return E_FAIL;
+
 
 	Safe_Delete_Array(pPixel);
 
 #pragma endregion
 
+
+
+
+	// 모든 정점들의 위치가 구해졌고, 폴리곤을 공유한 점들을 쉽게 찾을 수 있기 때문에 인덱스에서 정점 노말 벡터를 구해준다.
 #pragma region INDEXBUFFER
 	m_iNumPrimitives = (m_iNumVerticesX - 1) * (m_iNumVerticesZ - 1) * 2;
 	m_iIndexSizeofPrimitive = sizeof(FACEINDICES32);
 	m_iNumIndicesofPrimitive = 3;
 	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
 	m_eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-
-	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
-	m_BufferDesc.ByteWidth = m_iNumPrimitives * m_iIndexSizeofPrimitive;
-	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	m_BufferDesc.CPUAccessFlags = 0;
-	m_BufferDesc.MiscFlags = 0;
-	m_BufferDesc.StructureByteStride = 0;
-
 
 	FACEINDICES32*		pIndices = new FACEINDICES32[m_iNumPrimitives];
 	ZeroMemory(pIndices, sizeof(FACEINDICES32) * m_iNumPrimitives);
@@ -184,17 +170,83 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeightMap)
 				iIndex
 			};
 
+			_vector		vSourDir, vDestDir, vNormal;
+
 			pIndices[iNumFaces]._0 = iIndices[0];
 			pIndices[iNumFaces]._1 = iIndices[1];
 			pIndices[iNumFaces]._2 = iIndices[2];
+
+			// 두 점에 대한 벡터 2개를 구한다.
+			vSourDir = XMLoadFloat3(&pVertices[pIndices[iNumFaces]._1].vPosition) - XMLoadFloat3(&pVertices[pIndices[iNumFaces]._0].vPosition);
+			vDestDir = XMLoadFloat3(&pVertices[pIndices[iNumFaces]._2].vPosition) - XMLoadFloat3(&pVertices[pIndices[iNumFaces]._1].vPosition);
+
+			// 외적한다.
+			vNormal = XMVector3Normalize(XMVector3Cross(vSourDir, vDestDir));
+
+			// 외적 결과를 기존 법선 벡터에 더한다.
+			XMStoreFloat3(&pVertices[pIndices[iNumFaces]._0].vNormal,
+				XMLoadFloat3(&pVertices[pIndices[iNumFaces]._0].vNormal) + vNormal);
+			XMStoreFloat3(&pVertices[pIndices[iNumFaces]._1].vNormal,
+				XMLoadFloat3(&pVertices[pIndices[iNumFaces]._1].vNormal) + vNormal);
+			XMStoreFloat3(&pVertices[pIndices[iNumFaces]._2].vNormal,
+				XMLoadFloat3(&pVertices[pIndices[iNumFaces]._2].vNormal) + vNormal);
+
 			++iNumFaces;
 
 			pIndices[iNumFaces]._0 = iIndices[0];
 			pIndices[iNumFaces]._1 = iIndices[2];
 			pIndices[iNumFaces]._2 = iIndices[3];
+
+			// 두 점에 대한 벡터 2개를 구한다.
+			vSourDir = XMLoadFloat3(&pVertices[pIndices[iNumFaces]._1].vPosition) - XMLoadFloat3(&pVertices[pIndices[iNumFaces]._0].vPosition);
+			vDestDir = XMLoadFloat3(&pVertices[pIndices[iNumFaces]._2].vPosition) - XMLoadFloat3(&pVertices[pIndices[iNumFaces]._1].vPosition);
+
+			// 외적한다.
+			vNormal = XMVector3Normalize(XMVector3Cross(vSourDir, vDestDir));
+
+			// 외적 결과를 기존 법선 벡터에 더한다.
+			XMStoreFloat3(&pVertices[pIndices[iNumFaces]._0].vNormal,
+				XMLoadFloat3(&pVertices[pIndices[iNumFaces]._0].vNormal) + vNormal);
+			XMStoreFloat3(&pVertices[pIndices[iNumFaces]._1].vNormal,
+				XMLoadFloat3(&pVertices[pIndices[iNumFaces]._1].vNormal) + vNormal);
+			XMStoreFloat3(&pVertices[pIndices[iNumFaces]._2].vNormal,
+				XMLoadFloat3(&pVertices[pIndices[iNumFaces]._2].vNormal) + vNormal);
+
 			++iNumFaces;
 		}
 	}
+
+	// 법선 벡터의 합들을 노말라이즈 한다.
+	for (_uint i = 0; i < m_iNumVertices; ++i)
+		XMStoreFloat3(&pVertices[i].vNormal, XMVector3Normalize(XMLoadFloat3(&pVertices[i].vNormal)));
+
+
+#pragma endregion
+
+
+
+	// 버텍스 ,인덱스 버퍼를 생성한다.
+	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
+	m_BufferDesc.ByteWidth = m_iNumVertices * m_iStride;
+	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	m_BufferDesc.CPUAccessFlags = 0;
+	m_BufferDesc.MiscFlags = 0;
+	m_BufferDesc.StructureByteStride = m_iStride;
+
+	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+	m_SubResourceData.pSysMem = pVertices;
+
+	if (FAILED(__super::Create_VertexBuffer()))
+		return E_FAIL;
+
+	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
+	m_BufferDesc.ByteWidth = m_iNumPrimitives * m_iIndexSizeofPrimitive;
+	m_BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	m_BufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	m_BufferDesc.CPUAccessFlags = 0;
+	m_BufferDesc.MiscFlags = 0;
+	m_BufferDesc.StructureByteStride = 0;
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pIndices;
@@ -202,7 +254,11 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeightMap)
 	if (FAILED(__super::Create_IndexBuffer()))
 		return E_FAIL;
 
-#pragma endregion
+
+	Safe_Delete_Array(pVertices);
+	Safe_Delete_Array(pIndices);
+
+
 
 
 	return S_OK;

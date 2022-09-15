@@ -5,6 +5,7 @@
 #include "ToolManager.h"
 
 #include "ColorCube.h"
+#include "RenderCube.h"
 #include "CamSelectingCube.h"
 #include "Camera_CamTool.h"
 
@@ -12,7 +13,7 @@ IMPLEMENT_SINGLETON(CCamManager)
 
 CCamManager::CCamManager()
 {
-	m_fMoveSens = 0.01f;
+	m_fMoveSens = 0.03f;
 }
 
 
@@ -34,16 +35,6 @@ void CCamManager::Set_SelectingCube(_float3 vPos)
 
 
 
-
-
-void CCamManager::Set_Start(_bool bStart)
-{
-	m_bStart = bStart; 
-	m_fTimeAcc = 0.f; 
-	m_fZeroToOneAcc = 0.f;
-	m_bDest = true;
-	
-}
 
 void CCamManager::Create_CamTool()
 {
@@ -80,9 +71,7 @@ void CCamManager::Create_SelectingCube()
 
 	CCamSelectingCube::COLORCUBEDESC ColorCubeDesc;
 	ZeroMemory(&ColorCubeDesc, sizeof(CCamSelectingCube::COLORCUBEDESC));
-	ColorCubeDesc.iR = 255;
-	ColorCubeDesc.iG = 0;
-	ColorCubeDesc.iB = 0;
+	ColorCubeDesc.vColor = _float4(1.f, 0.f, 0.f, 1.f);
 
 	CGameObject* pTempObj = nullptr;
 
@@ -102,12 +91,8 @@ void CCamManager::Create_MarkCube()
 
 	CColorCube::COLORCUBEDESC ColorCubeDesc;
 	ZeroMemory(&ColorCubeDesc, sizeof(CColorCube::COLORCUBEDESC));
-
-
-	ColorCubeDesc.iR = 0;
-	ColorCubeDesc.iG = 0;
-	ColorCubeDesc.iB = 255;
-
+	ColorCubeDesc.vColor = _float4(0.f, 1.f, 0.f, 1.f);
+	// ColorCubeDesc.vPos = _float3(1.f, 1.f, 1.f);
 	ColorCubeDesc.vPos = Get_SelectingCubePos();
 	ColorCubeDesc.vScale = _float3(1.f, 1.f, 1.f);
 
@@ -127,8 +112,32 @@ void CCamManager::Create_MarkCube()
 	Safe_Release(pGameInstance);
 
 	// 포스 계산
-	MakePos();
+	MakeRenderPos();
 }
+
+void CCamManager::Create_RenderPosCube(_float3 vPos)
+{
+	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+	CColorCube::COLORCUBEDESC ColorCubeDesc;
+	ZeroMemory(&ColorCubeDesc, sizeof(CColorCube::COLORCUBEDESC));
+
+	ColorCubeDesc.vColor = _float4(1.f, 1.f, 0.f, 1.f);
+
+	ColorCubeDesc.vPos = vPos;
+	ColorCubeDesc.vScale = _float3(.5f, .5f, .5f);
+
+	CGameObject* pTempObj = nullptr;
+
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RenderCube"), LEVEL_CAMTOOL, TEXT("Layer_CamTool"), &pTempObj, &ColorCubeDesc)))
+		return;
+
+	m_RenderCubes.push_back((CRenderCube*)pTempObj);
+
+	Safe_Release(pGameInstance);
+}
+
 
 void CCamManager::Delete_MarkCube()
 {
@@ -145,6 +154,8 @@ void CCamManager::Delete_MarkCube()
 			++iter;
 
 	}
+
+	MakeRenderPos();
 }
 
 
@@ -163,6 +174,9 @@ void CCamManager::Tick(_float fTimeDelta)
 
 void CCamManager::Input(_float fTimeDelta)
 {
+	if (m_bStart)
+		return;
+
 	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
@@ -177,20 +191,168 @@ void CCamManager::Input(_float fTimeDelta)
 	Safe_Release(pGameInstance);
 }
 
+
+
+void CCamManager::Set_Start(_bool bStart)
+{
+	m_bStart = bStart;
+	m_fSpeed = 0.f;
+	m_fTimeAcc = 0.f;
+	m_fT = 0.f;
+
+	m_TempMarkCubes.clear();
+	m_pTempBasiMarkCubes.clear();
+
+	if (bStart)
+	{
+		m_TempMarkCubes = m_MarkCubes;
+		MakePos();
+		m_vTempPos = CalculBasi();
+		m_pCamTool->Set_Pos(m_vTempPos);
+	}
+
+}
 void CCamManager::PlayCutScene(_float fTimeDelta)
 {
 	if (!m_bStart)
 		return;
 
-	m_fTimeAcc += fTimeDelta;
+
+	// 도착 했냐
+	if (1.f < m_fT)
+	{
+		if (1 > m_TempMarkCubes.size())
+		{
+			m_bStart = false;
+			return;
+		}
+
+
+		// 고른다. 
+		m_pTempBasiMarkCubes.clear();
+		MakePos();
+
+		m_fT = 0.f;
+		m_fTimeAcc = 0.f;
+
+		m_vTempPos = CalculBasi();
+		m_pCamTool->Set_Pos(m_vTempPos);
+		
+
+		return;
+	}
+		
+	_vector vTempPos = XMLoadFloat3(&m_vTempPos);
+	vTempPos = XMVectorSetW(vTempPos, 1.f);
+	if (m_pCamTool->Move(vTempPos, m_fSpeed, fTimeDelta, 0.3f))
+	{
+		m_fT += m_fMoveSens;
+		m_vTempPos = CalculBasi();
+	}
+
+
+
+
 
 }
 
+
+
 void CCamManager::MakePos()
 {
+	if (1 > m_TempMarkCubes.size())
+		return;
+
+
+	list<CColorCube*>::iterator Cur_iter = m_TempMarkCubes.begin();
+	list<CColorCube*>::iterator Fro_iter = ++(m_TempMarkCubes.begin());
+
+	for (; Cur_iter != m_TempMarkCubes.end(); ++Cur_iter)
+	{
+
+		if (1 == m_TempMarkCubes.size())
+		{
+			m_pTempBasiMarkCubes.push_back(*Cur_iter);
+			break;
+		}
+
+
+		_int CurI = (*Cur_iter)->Get_LinkIndex();
+		_int FroI = -1;
+		if (Fro_iter != m_TempMarkCubes.end())
+		{
+			FroI = (*Fro_iter)->Get_LinkIndex();
+			Fro_iter++;
+		}
+
+
+
+		if (CurI == FroI)
+		{	// 연결 됐다.
+			m_pTempBasiMarkCubes.push_back(*Cur_iter);
+		}
+		else
+		{
+			m_pTempBasiMarkCubes.push_back(*Cur_iter);
+			break;
+		}
+	}
+
+
+	for (_int i = 0; i < m_pTempBasiMarkCubes.size(); ++i)
+		m_TempMarkCubes.pop_front();
+
+	// 스피드를 설정한다.
+	if (0 < m_pTempBasiMarkCubes.size())
+	{
+		CColorCube* pTempCube = m_pTempBasiMarkCubes.front();
+		m_fSpeed = pTempCube->Get_SpeedTime();
+	}
+}
+_float3 CCamManager::CalculBasi()
+{
+	_int iSize = m_pTempBasiMarkCubes.size();
+
+	_float3 vPos1, vPos2, vPos3, vPos4;
+
+	list<CColorCube*>::iterator iter = m_pTempBasiMarkCubes.begin();
+
+	switch (iSize)
+	{
+	case 1:
+		vPos1 = (*iter)->Get_Pos();
+		// CToolManager::Get_Instance()->GetBesierPos(vPos1);
+		break;
+	case 2:
+		vPos1 = (*iter)->Get_Pos();
+		vPos2 = (*(++iter))->Get_Pos();
+		return CToolManager::Get_Instance()->GetBesierPos(vPos1, vPos2, m_fT);
+	case 3:
+		vPos1 = (*iter)->Get_Pos();
+		vPos2 = (*(++iter))->Get_Pos();
+		vPos3 = (*(++iter))->Get_Pos();
+		return CToolManager::Get_Instance()->GetBesierPos(vPos1, vPos2, vPos3, m_fT);
+	case 4:
+		vPos1 = (*iter)->Get_Pos();
+		vPos2 = (*(++iter))->Get_Pos();
+		vPos3 = (*(++iter))->Get_Pos();
+		vPos4 = (*(++iter))->Get_Pos();
+		return CToolManager::Get_Instance()->GetBesierPos(vPos1, vPos2, vPos3, vPos4, m_fT);
+	}
+
+}
+
+
+
+
+void CCamManager::MakeRenderPos()
+{
+	if (1 > m_MarkCubes.size())
+		return;
+
 	m_PlayPosTemp.clear();
 
-	list<_float3> TempPoss;
+	list<CAMDATA> TempPoss;
 
 	list<CColorCube*>::iterator Cur_iter = m_MarkCubes.begin();
 	list<CColorCube*>::iterator Fro_iter = ++(m_MarkCubes.begin());
@@ -199,8 +361,16 @@ void CCamManager::MakePos()
 	{
 		if (1 == m_MarkCubes.size())
 		{
-			TempPoss.push_back((*Cur_iter)->Get_Pos());
-			CalculBasi(TempPoss);
+			CAMDATA CamData;
+			ZeroMemory(&CamData, sizeof(CAMDATA));
+			CamData.vPos = (*Cur_iter)->Get_Pos();
+			CamData.fSpeedAndStopTime = (*Cur_iter)->Get_SpeedTime();
+
+			TempPoss.push_back(CamData);
+
+			// 포스 계산
+
+			CalculRenderBasi(TempPoss);
 			break;
 		}
 
@@ -217,14 +387,24 @@ void CCamManager::MakePos()
 
 		if (CurI == FroI)
 		{	// 연결 됐다.
-			TempPoss.push_back((*Cur_iter)->Get_Pos());
+			CAMDATA CamData;
+			ZeroMemory(&CamData, sizeof(CAMDATA));
+			CamData.vPos = (*Cur_iter)->Get_Pos();
+			CamData.fSpeedAndStopTime = (*Cur_iter)->Get_SpeedTime();
+
+			TempPoss.push_back(CamData);
 		}
 		else
 		{	
-			TempPoss.push_back((*Cur_iter)->Get_Pos());
+			CAMDATA CamData;
+			ZeroMemory(&CamData, sizeof(CAMDATA));
+			CamData.vPos = (*Cur_iter)->Get_Pos();
+			CamData.fSpeedAndStopTime = (*Cur_iter)->Get_SpeedTime();
+
+			TempPoss.push_back(CamData);
 
 			// 포스 계산
-			CalculBasi(TempPoss);
+			CalculRenderBasi(TempPoss);
 
 			TempPoss.clear();
 		}
@@ -233,7 +413,6 @@ void CCamManager::MakePos()
 	
 	RenderPos(5);
 }
-
 void CCamManager::RenderPos(_int iSens)
 {
 	for (auto& pCube : m_RenderCubes)
@@ -242,106 +421,117 @@ void CCamManager::RenderPos(_int iSens)
 
 
 	_int iCount = 0;
-	for (auto& vPos : m_PlayPosTemp)
+	_float fCutDis = 0.f;
+	_float3 vPrePos;
+	ZeroMemory(&vPrePos, sizeof(_float3));
+	for (auto& Data : m_PlayPosTemp)
 	{ 
 		if (iCount % iSens == 0)
 		{
-			MakeRenderPosCube(vPos);
+			_vector DisVec = XMLoadFloat3(&vPrePos) - XMLoadFloat3(&Data.vPos);
+			fCutDis = XMVectorGetX(XMVector3Length(DisVec));
+
+			if (0.1f < fCutDis)
+			{
+				Create_RenderPosCube(Data.vPos);
+				vPrePos = Data.vPos;
+			}
+
 		}
 
 		++iCount;
 	}
 
 }
-void CCamManager::MakeRenderPosCube(_float3 vPos)
-{
-	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
 
-	CColorCube::COLORCUBEDESC ColorCubeDesc;
-	ZeroMemory(&ColorCubeDesc, sizeof(CColorCube::COLORCUBEDESC));
-
-	ColorCubeDesc.iR = 0;
-	ColorCubeDesc.iG = 255;
-	ColorCubeDesc.iB = 0;
-
-	ColorCubeDesc.vPos = vPos;
-	ColorCubeDesc.vScale = _float3(.5f, .5f, .5f);
-
-	CGameObject* pTempObj = nullptr;
-
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_ColorCube"), LEVEL_CAMTOOL, TEXT("Layer_CamTool"), &pTempObj, &ColorCubeDesc)))
-		return;
-
-	m_RenderCubes.push_back((CColorCube*)pTempObj);
-
-	Safe_Release(pGameInstance);
-}
-
-void CCamManager::CalculBasi(list<_float3> Poss)
+void CCamManager::CalculRenderBasi(list<CAMDATA> Poss)
 {
 	_int iSize = Poss.size();
 
-	_float3 vPos1, vPos2, vPos3, vPos4;
+	CAMDATA vPos1, vPos2, vPos3, vPos4;
 
 	switch (iSize)
 	{
 	case 1:
 		vPos1 = Poss.front(); Poss.pop_front();
-		GetBesierPos(vPos1);
+		GetBesierRenderPos(vPos1);
 		break;
 	case 2:
 		vPos1 = Poss.front(); Poss.pop_front();
 		vPos2 = Poss.front(); Poss.pop_front();
-		GetBesierPos(vPos1, vPos2);
+		GetBesierRenderPos(vPos1, vPos2);
 		break;
 	case 3:
 		vPos1 = Poss.front(); Poss.pop_front();
 		vPos2 = Poss.front(); Poss.pop_front();
 		vPos3 = Poss.front(); Poss.pop_front();
-		GetBesierPos(vPos1, vPos2, vPos3);
+		GetBesierRenderPos(vPos1, vPos2, vPos3);
 		break;
 	case 4:
 		vPos1 = Poss.front(); Poss.pop_front();
 		vPos2 = Poss.front(); Poss.pop_front();
 		vPos3 = Poss.front(); Poss.pop_front();
 		vPos4 = Poss.front(); Poss.pop_front();
-		GetBesierPos(vPos1, vPos2, vPos3, vPos4);
+		GetBesierRenderPos(vPos1, vPos2, vPos3, vPos4);
 		break;
 	default:
 		break;
 	}
 
 }
-
-void CCamManager::GetBesierPos(_float3 vPos1)
+void CCamManager::GetBesierRenderPos(CAMDATA vPos1)
 {
+	CAMDATA CamData;
+	ZeroMemory(&CamData, sizeof(CAMDATA));
 
-}
-void CCamManager::GetBesierPos(_float3 vPos1, _float3 vPos2)
-{
 	_float fT = 0.f;
-	while (1.f >= fT)
+	while (10.f >= fT)
 	{
-		m_PlayPosTemp.push_back(CToolManager::Get_Instance()->GetBesierPos(vPos1, vPos2, fT));
+		CamData.vPos = vPos1.vPos;
+
+		m_PlayPosTemp.push_back(CamData);
 		fT += m_fMoveSens;
 	}
 }
-void CCamManager::GetBesierPos(_float3 vPos1, _float3 vPos2, _float3 vPos3)
+void CCamManager::GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2)
 {
+	CAMDATA CamData;
+	ZeroMemory(&CamData, sizeof(CAMDATA));
+
 	_float fT = 0.f;
 	while (1.f >= fT)
 	{
-		m_PlayPosTemp.push_back(CToolManager::Get_Instance()->GetBesierPos(vPos1, vPos2, vPos3, fT));
+		CamData.vPos = CToolManager::Get_Instance()->GetBesierPos(vPos1.vPos, vPos2.vPos, fT);
+
+		m_PlayPosTemp.push_back(CamData);
 		fT += m_fMoveSens;
 	}
 }
-void CCamManager::GetBesierPos(_float3 vPos1, _float3 vPos2, _float3 vPos3, _float3 vPos4)
+void CCamManager::GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2, CAMDATA vPos3)
 {
+	CAMDATA CamData;
+	ZeroMemory(&CamData, sizeof(CAMDATA));
+
 	_float fT = 0.f;
 	while (1.f >= fT)
 	{
-		m_PlayPosTemp.push_back(CToolManager::Get_Instance()->GetBesierPos(vPos1, vPos2, vPos3, vPos4, fT));
+		CamData.vPos = CToolManager::Get_Instance()->GetBesierPos(vPos1.vPos, vPos2.vPos, vPos3.vPos, fT);
+
+		m_PlayPosTemp.push_back(CamData);
+		fT += m_fMoveSens;
+	}
+}
+void CCamManager::GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2, CAMDATA vPos3, CAMDATA vPos4)
+{
+	CAMDATA CamData;
+	ZeroMemory(&CamData, sizeof(CAMDATA));
+
+	_float fT = 0.f;
+	while (1.f >= fT)
+	{
+		CamData.vPos = CToolManager::Get_Instance()->GetBesierPos(vPos1.vPos, vPos2.vPos, vPos3.vPos, vPos4.vPos, fT);
+
+		m_PlayPosTemp.push_back(CamData);
 		fT += m_fMoveSens;
 	}
 }
@@ -362,4 +552,8 @@ void CCamManager::Free()
 	m_PlayPosTemp.clear();
 
 	m_iTagIndex = 0;
+}
+
+void Create_LookCube()
+{
 }

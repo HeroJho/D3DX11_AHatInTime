@@ -2,6 +2,20 @@
 
 namespace Engine
 {
+	/* 빛의 정보를 담아놓기 위한 구조체. */
+	typedef struct tagLightDesc
+	{
+		enum TYPE { TYPE_POINT, TYPE_DIRECTIONAL, TYPE_END };
+
+		TYPE			eType; // 빛 타입
+
+		XMFLOAT4		vDirection; // Direct Light
+
+		XMFLOAT4		vDiffuse; // 방향광 색(Direct Light 색)
+		XMFLOAT4		vAmbient; // 환경광 색
+
+	}LIGHTDESC;
+
 	typedef struct tagLineIndices16
 	{
 		unsigned short		_0, _1;
@@ -28,6 +42,16 @@ namespace Engine
 
 
 	// D3DDECLUSAGE
+	typedef struct tagVertex
+	{
+		XMFLOAT3		vPosition;
+	}VTX;
+	typedef struct ENGINE_DLL tagVertex_Declaration
+	{
+		static const unsigned int iNumElements = 1;
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	}VTX_DECLARATION;
+
 	typedef struct tagVertexTexture
 	{
 		XMFLOAT3		vPosition;

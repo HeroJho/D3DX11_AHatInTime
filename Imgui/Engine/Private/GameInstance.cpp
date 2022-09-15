@@ -11,7 +11,10 @@ CGameInstance::CGameInstance()
 	, m_pTimer_Manager(CTimer_Manager::Get_Instance())
 	, m_pPicking(CPicking::Get_Instance())
 	, m_pPipeLine(CPipeLine::Get_Instance())
+	, m_pLight_Manager(CLight_Manager::Get_Instance())
+
 {
+	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
 	Safe_AddRef(m_pPicking);
 	Safe_AddRef(m_pTimer_Manager);
@@ -186,6 +189,26 @@ HRESULT CGameInstance::Update_Timer(const _tchar * pTimerTag)
 
 
 
+const LIGHTDESC * CGameInstance::Get_LightDesc(_uint iIndex)
+{
+	if (nullptr == m_pLight_Manager)
+		return nullptr;
+
+	return m_pLight_Manager->Get_LightDesc(iIndex);
+}
+
+HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	return m_pLight_Manager->Add_Light(pDevice, pContext, LightDesc);
+}
+
+
+
+
+
 
 _char CGameInstance::Get_DIKState(_uchar eKeyID)
 {
@@ -309,6 +332,10 @@ void CGameInstance::Release_Engine()
 
 	CPicking::Get_Instance()->Destroy_Instance();
 
+	CPipeLine::Get_Instance()->Destroy_Instance();
+	
+	CLight_Manager::Get_Instance()->Destroy_Instance();
+
 	CInput_Device::Get_Instance()->Destroy_Instance();	
 	
 	CGraphic_Device::Get_Instance()->Destroy_Instance();
@@ -316,6 +343,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);

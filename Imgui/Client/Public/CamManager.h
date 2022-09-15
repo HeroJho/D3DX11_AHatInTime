@@ -9,6 +9,14 @@ class CCamManager final : public CBase
 	DECLARE_SINGLETON(CCamManager)
 
 public:
+	typedef struct CamData{
+
+		_float3 vPos;
+		_float fSpeedAndStopTime;
+
+	}CAMDATA;
+
+public:
 	CCamManager();
 	virtual ~CCamManager() = default;
 
@@ -27,9 +35,15 @@ public:
 public:
 	void Create_CamTool();
 	void Create_SelectingCube();
-	void Create_MarkCube();
 
+	void Create_MarkCube();
 	void Delete_MarkCube();
+
+	void Create_RenderPosCube(_float3 vPos);
+	
+	void Create_LookCube();
+	void Delete_LookCube();
+	
 
 
 public:
@@ -41,36 +55,40 @@ public:
 public: // .For CutScene
 	void PlayCutScene(_float fTimeDelta);
 	void MakePos();
-	void RenderPos(_int iSens);
-	void MakeRenderPosCube(_float3 vPos);
+	_float3 CalculBasi();
 
-	void CalculBasi(list<_float3> Poss);
-	void GetBesierPos(_float3 vPos1);
-	void GetBesierPos(_float3 vPos1, _float3 vPos2);
-	void GetBesierPos(_float3 vPos1, _float3 vPos2, _float3 vPos3);
-	void GetBesierPos(_float3 vPos1, _float3 vPos2, _float3 vPos3, _float3 vPos4);
+
+
+
+	void MakeRenderPos();
+	void RenderPos(_int iSens);
+
+	void CalculRenderBasi(list<CAMDATA> Poss);
+	void GetBesierRenderPos(CAMDATA vPos1);
+	void GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2);
+	void GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2, CAMDATA vPos3);
+	void GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2, CAMDATA vPos3, CAMDATA vPos4);
 
 private:
 	class CCamera_CamTool* m_pCamTool = nullptr;
 	class CCamSelectingCube* m_pSelectingCube = nullptr;
 	list<class CColorCube*> m_MarkCubes;
+	list<class CColorCube*> m_TempMarkCubes;
+	list<class CColorCube*> m_pTempBasiMarkCubes;
 
 	string m_sSelectedMarkCubeTag;
 
 	_uint m_iTagIndex = 0;
 	
-
-
-	list<_float3> m_PlayPosTemp;
-	list<class CColorCube*> m_RenderCubes;
-
 	_bool m_bStart = false;
-	_bool m_bDest = false;
+	_float m_fSpeed = 0.f;
 	_float m_fTimeAcc = 0.f;
-	_float m_fZeroToOneAcc = 0.f;
-
 	_float m_fMoveSens = 0.f;
+	_float m_fT = 0.f;
 
+	list<CAMDATA> m_PlayPosTemp;
+	list<class CRenderCube*> m_RenderCubes;
+	_float3 m_vTempPos;
 
 
 public:

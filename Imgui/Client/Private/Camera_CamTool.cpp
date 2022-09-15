@@ -29,7 +29,14 @@ _vector CCamera_CamTool::Get_Pos()
 
 void CCamera_CamTool::Set_Pos(_float3 vPos)
 {
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat3(&vPos));
+	_vector vTempPos = XMLoadFloat3(&vPos);
+	vTempPos = XMVectorSetW(vTempPos, 1.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vTempPos);
+}
+
+_bool CCamera_CamTool::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance)
+{
+	return m_pTransformCom->Move(vTargetPos, fSpeed, fTimeDelta, fLimitDistance);
 }
 
 

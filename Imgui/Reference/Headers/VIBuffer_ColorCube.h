@@ -17,9 +17,6 @@ public:
 
 
 public:
-	void SetColor(_int r, _int g, _int b);
-
-public:
 	static CVIBuffer_ColorCube* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;

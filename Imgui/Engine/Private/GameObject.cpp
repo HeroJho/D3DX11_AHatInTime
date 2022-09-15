@@ -26,7 +26,7 @@ CComponent * CGameObject::Get_ComponentPtr(const _tchar * pComponentTag)
 	if (nullptr == pComponent)
 		return nullptr;
 
-	return pComponent;	
+	return pComponent;
 }
 
 HRESULT CGameObject::Initialize_Prototype()

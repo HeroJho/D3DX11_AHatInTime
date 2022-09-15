@@ -56,6 +56,8 @@ public:
 	void Go_Left(_float fTimeDelta);
 	void Go_Right(_float fTimeDelta);
 
+	void Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta);
+
 	void Set_Scale(_fvector vScaleInfo);
 	_float3 Get_Scale();
 
@@ -64,7 +66,7 @@ public:
 
 	void LookAt(_fvector vAt);
 	void LookAt_ForLandObject(_fvector vAt);
-	void Move(_fvector vTargetPos, _float fTimeDelta, _float fLimitDistance = 0.1f);
+	_bool Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance = 0.1f);
 
 private:
 	_float4x4				m_WorldMatrix;

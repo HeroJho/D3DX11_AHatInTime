@@ -84,51 +84,14 @@ void CPlayer::LateTick(_float fTimeDelta)
 HRESULT CPlayer::Render()
 {
 
-	if (FAILED(m_pTransformCom->Bind_WorldMatrix()))
-		return E_FAIL;	
-
-	if (FAILED(m_pTextureCom->Bind_Texture(0)))
-		return E_FAIL;
-
-	if (FAILED(Set_RenderState()))
-		return E_FAIL;
 
 	m_pVIBufferCom->Render();
 
-	if (FAILED(Reset_RenderState()))
-		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CPlayer::Set_RenderState()
-{
-	if (nullptr == m_pDevice || nullptr == m_pDeviceContext)
-		return E_FAIL;
 
-//	m_pGraphic_Device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);	
-	m_pGraphic_Device->SetRenderState(D3DRS_ALPHAREF, 254);
-	m_pGraphic_Device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-
-	m_pGraphic_Device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-
-//	m_pGraphic_Device->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-
-
-
-	return S_OK;
-}
-
-HRESULT CPlayer::Reset_RenderState()
-{
-	m_pGraphic_Device->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-
-	m_pGraphic_Device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-
-	m_pGraphic_Device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-
-	return S_OK;
-}
 
 HRESULT CPlayer::SetUp_Components()
 {

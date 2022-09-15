@@ -80,6 +80,16 @@ void CTransform::Go_Right(_float fTimeDelta)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
+void CTransform::Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta)
+{
+	_vector vPosition = Get_State(CTransform::STATE_POSITION);
+	_vector vDirN = XMVector3Normalize(vDir);
+
+	vPosition += vDir * fSpeed * fTimeDelta;
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+}
+
 void CTransform::Set_Scale(_fvector vScaleInfo)
 {
 	Set_State(CTransform::STATE_RIGHT,
@@ -152,7 +162,7 @@ void CTransform::LookAt_ForLandObject(_fvector vAt)
 
 }
 
-void CTransform::Move(_fvector vTargetPos, _float fTimeDelta, _float fLimitDistance)
+_bool  CTransform::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance)
 {
 	_vector		vPosition = Get_State(CTransform::STATE_POSITION);
 	_vector		vDirection = vTargetPos - vPosition;
@@ -160,9 +170,12 @@ void CTransform::Move(_fvector vTargetPos, _float fTimeDelta, _float fLimitDista
 	_float		fDistance = XMVectorGetX(XMVector3Length(vDirection));
 
 	if (fDistance > fLimitDistance)
-		vPosition += XMVector3Normalize(vDirection) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+		vPosition += XMVector3Normalize(vDirection) * fSpeed * fTimeDelta;
+	else
+		return true;
 
 	Set_State(CTransform::STATE_POSITION, vPosition);
+	return false;
 }
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)

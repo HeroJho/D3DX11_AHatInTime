@@ -7,6 +7,7 @@
 #include "VIBuffer_Cube.h"
 #include "VIBuffer_ColorCube.h"
 #include "VIBuffer_Terrain.h"
+#include "Shader.h"
 
 BEGIN(Engine)
 

@@ -16,6 +16,9 @@ HRESULT CLevel_CamTool::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Lights()))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
@@ -25,8 +28,8 @@ HRESULT CLevel_CamTool::Initialize()
 	//if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 	//	return E_FAIL;
 
-	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+	//	return E_FAIL;
 
 
 
@@ -57,6 +60,26 @@ void CLevel_CamTool::Get_Input(_float fTimeDelta)
 
 	CCamManager::Get_Instance()->Tick(fTimeDelta);
 
+}
+
+HRESULT CLevel_CamTool::Ready_Lights()
+{
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+
+	LIGHTDESC			LightDesc;
+	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+
+	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
+	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
 }
 
 HRESULT CLevel_CamTool::Ready_Layer_Camera(const _tchar * pLayerTag)
@@ -91,8 +114,8 @@ HRESULT CLevel_CamTool::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_CAMTOOL, pLayerTag)))
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_CAMTOOL, pLayerTag)))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_CAMTOOL, pLayerTag)))
+	//	return E_FAIL;
 
 	Safe_Release(pGameInstance);
 
