@@ -5,6 +5,8 @@
 #include "ToolManager.h"
 #include "CamManager.h"
 #include "ColorCube.h"
+#include "MarkCube.h"
+#include "LookCube.h"
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
@@ -216,6 +218,19 @@ void CImGui_Manager::Render_CamTool()
 			CCamManager::Get_Instance()->Set_Start(true);
 	}
 
+	ImGui::SameLine();
+
+	if (ImGui::Button("SetPos"))
+		CCamManager::Get_Instance()->Set_SelectingCubePosToSelectedCube();
+
+	ImGui::SameLine();
+
+	_bool bShowCube = CCamManager::Get_Instance()->Get_ShowCube();
+	if (ImGui::Checkbox("ShowCube", &bShowCube))
+		CCamManager::Get_Instance()->Set_ShowCube(bShowCube);
+
+
+
 
 	ImGui::End();
 }
@@ -282,10 +297,11 @@ void CImGui_Manager::Clear_TestLevel()
 
 void CImGui_Manager::UI_MarkCubes()
 {
-	const list<CColorCube*>* pMarkCubes = CCamManager::Get_Instance()->Get_MarkCubes();
+	const list<CMarkCube*>* pMarkCubes = CCamManager::Get_Instance()->Get_MarkCubes();
+	const list<CLookCube*>* pLookCubes = CCamManager::Get_Instance()->Get_LookCubes();
 
 
-	if (ImGui::BeginListBox("PosCubeList"))
+	if (ImGui::BeginListBox("MarkCubeList"))
 	{
 
 		for (auto& pMarkCube : *pMarkCubes)
@@ -344,8 +360,79 @@ void CImGui_Manager::UI_MarkCubes()
 		ImGui::EndListBox();
 	}
 
-	if (ImGui::Button("Delete"))
+	ImGui::SameLine();
+
+	if (ImGui::Button("Delete_MarkCube"))
 		CCamManager::Get_Instance()->Delete_MarkCube();
+
+
+
+
+	if (ImGui::BeginListBox("LookCubeList"))
+	{
+
+		for (auto& pLookCube : *pLookCubes)
+		{
+			bool isSelected = CCamManager::Get_Instance()->Get_SelectedMarkCubeTag() == pLookCube->Get_Tag();
+			ImVec2 vSize{ 80.f, 10.f };
+			if (ImGui::Selectable(pLookCube->Get_Tag().c_str(), isSelected, 0, vSize))
+				CCamManager::Get_Instance()->Set_SelectedMarkCubeTag(pLookCube->Get_Tag());
+
+
+			ImGui::SameLine();
+
+
+			string sButtonTag = "Index: " + pLookCube->Get_Tag();
+
+			ImGui::PushItemWidth(100.f);
+			_int iTemp = pLookCube->Get_LinkIndex();
+
+
+			if (ImGui::InputInt(sButtonTag.c_str(), &iTemp))
+			{
+				pLookCube->Set_LinkIndex(iTemp);
+				CCamManager::Get_Instance()->MakeRenderPos();
+			}
+
+
+
+
+			// ImGui::SameLine();
+			string sTimeTag = "Time: " + pLookCube->Get_Tag();
+
+			_float fTemp = pLookCube->Get_SpeedTime();
+			if (ImGui::InputFloat(sTimeTag.c_str(), &fTemp))
+			{
+				pLookCube->Set_SpeedTime(fTemp);
+
+				CCamManager::Get_Instance()->MakeRenderPos();
+			}
+
+
+
+
+			ImGui::PopItemWidth();
+
+
+			//if (0 > pMarkCube->Get_LinkIndex() || 3 < pMarkCube->Get_LinkIndex())
+			//{
+			//	pMarkCube->Set_LinkIndex(0);
+			//	Set_WarningBox("Index range must be 0-3 !!");
+			//}
+
+
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndListBox();
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Delete_LookCube"))
+		CCamManager::Get_Instance()->Delete_LookCube();
+
+
 }
 
 void CImGui_Manager::Set_WarningBox(const char * cContent)

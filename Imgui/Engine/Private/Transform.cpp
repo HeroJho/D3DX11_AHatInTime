@@ -13,14 +13,6 @@ CTransform::CTransform(const CTransform & rhs)
 
 }
 
-void CTransform::Set_State(STATE eState, _fvector vState)
-{
-	_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-
-	WorldMatrix.r[eState] = vState;
-
-	XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
-}
 
 HRESULT CTransform::Initialize_Prototype()
 {
@@ -39,6 +31,51 @@ HRESULT CTransform::Initialize(void * pArg)
 
 	return S_OK;
 }
+
+
+// D3DXQUATERNION  사원수 구조체
+// D3DXQuaternionIdentity 단위 사원수
+// D3DXQuaternionSlerp 선형보간
+
+// D3DXQuaternionRotationMatrix 회전 행렬 -> 사원수
+// D3DXMatrixRotationQuaternion 사원수 -> 회전 행렬
+
+
+
+void CTransform::Set_State(STATE eState, _fvector vState)
+{
+	_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
+
+	WorldMatrix.r[eState] = vState;
+
+	XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
+}
+
+void CTransform::Set_Scale(_fvector vScaleInfo)
+{
+	Set_State(CTransform::STATE_RIGHT,
+		XMVector3Normalize(Get_State(CTransform::STATE_RIGHT)) * XMVectorGetX(vScaleInfo));
+	Set_State(CTransform::STATE_UP,
+		XMVector3Normalize(Get_State(CTransform::STATE_UP)) * XMVectorGetY(vScaleInfo));
+	Set_State(CTransform::STATE_LOOK,
+		XMVector3Normalize(Get_State(CTransform::STATE_LOOK)) * XMVectorGetZ(vScaleInfo));
+}
+
+_float3 CTransform::Get_Scale()
+{
+	return _float3(
+		XMVectorGetX(XMVector3Length(Get_State(CTransform::STATE_RIGHT))),
+		XMVectorGetX(XMVector3Length(Get_State(CTransform::STATE_UP))),
+		XMVectorGetX(XMVector3Length(Get_State(CTransform::STATE_LOOK))));
+}
+
+
+
+
+
+
+
+
 
 void CTransform::Go_Straight(_float fTimeDelta)
 {
@@ -90,23 +127,13 @@ void CTransform::Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
-void CTransform::Set_Scale(_fvector vScaleInfo)
-{
-	Set_State(CTransform::STATE_RIGHT,
-		XMVector3Normalize(Get_State(CTransform::STATE_RIGHT)) * XMVectorGetX(vScaleInfo));
-	Set_State(CTransform::STATE_UP,
-		XMVector3Normalize(Get_State(CTransform::STATE_UP)) * XMVectorGetY(vScaleInfo));
-	Set_State(CTransform::STATE_LOOK,
-		XMVector3Normalize(Get_State(CTransform::STATE_LOOK)) * XMVectorGetZ(vScaleInfo));
-}
 
-_float3 CTransform::Get_Scale()
-{
-	return _float3(
-		XMVectorGetX(XMVector3Length(Get_State(CTransform::STATE_RIGHT))),
-		XMVectorGetX(XMVector3Length(Get_State(CTransform::STATE_UP))),
-		XMVectorGetX(XMVector3Length(Get_State(CTransform::STATE_LOOK))));
-}
+
+
+
+
+
+
 
 void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 {
@@ -169,14 +196,23 @@ _bool  CTransform::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _
 
 	_float		fDistance = XMVectorGetX(XMVector3Length(vDirection));
 
-	if (fDistance > fLimitDistance)
-		vPosition += XMVector3Normalize(vDirection) * fSpeed * fTimeDelta;
-	else
+	if (fDistance < fLimitDistance)
 		return true;
+
+	vPosition += XMVector3Normalize(vDirection) * fSpeed * fTimeDelta;
 
 	Set_State(CTransform::STATE_POSITION, vPosition);
 	return false;
 }
+
+
+
+
+
+
+
+
+
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {

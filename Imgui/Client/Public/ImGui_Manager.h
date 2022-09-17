@@ -26,7 +26,7 @@ public:
 
 public:
 	void Change_Level(LEVEL eCurLevel);
-
+	void Set_WarningBox(const char* cContent);
 
 
 
@@ -67,9 +67,7 @@ private:
 
 private:
 	// FOR. Static
-	void Set_WarningBox(const char* cContent);
 	void UI_WarningBox();
-
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
@@ -77,7 +75,6 @@ private:
 	bool m_bShow_Demo_Window;
 	bool m_bWarning = false;
 	const char* m_cContent = nullptr;
-
 
 
 	LEVEL m_eCurLevel;

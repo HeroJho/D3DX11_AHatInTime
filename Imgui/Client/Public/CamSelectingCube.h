@@ -35,7 +35,7 @@ public:
 
 public:
 	_float3 Get_Pos();
-	void Set_Pos(_float3 vPos);
+	void Set_Pos(_vector vPos);
 
 private:
 	CShader*				m_pShaderCom = nullptr;

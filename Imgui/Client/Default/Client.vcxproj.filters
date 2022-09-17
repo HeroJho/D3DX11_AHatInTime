@@ -91,8 +91,14 @@
     <Filter Include="96.ShaderFiles">
       <UniqueIdentifier>{cf16a622-d53e-466b-a580-7bea4b29f06a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObject\01. CamTool\03. RenderCube">
+    <Filter Include="02.GameObject\01. CamTool\03. MarkCube">
+      <UniqueIdentifier>{de3d7b58-71bb-41ec-b5cb-ff8ca0e651d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\01. CamTool\04. RenderCube">
       <UniqueIdentifier>{9e2bdc0d-7420-4887-90ed-188088235ae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\01. CamTool\05. LookCube">
+      <UniqueIdentifier>{41215851-7af9-42f0-b951-8a84931b7078}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -195,7 +201,13 @@
       <Filter>98.IMGUI\Default</Filter>
     </ClInclude>
     <ClInclude Include="..\public\RenderCube.h">
-      <Filter>02.GameObject\01. CamTool\03. RenderCube</Filter>
+      <Filter>02.GameObject\01. CamTool\04. RenderCube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MarkCube.h">
+      <Filter>02.GameObject\01. CamTool\03. MarkCube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\LookCube.h">
+      <Filter>02.GameObject\01. CamTool\05. LookCube</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -293,7 +305,13 @@
       <Filter>98.IMGUI\Default</Filter>
     </ClCompile>
     <ClCompile Include="..\private\RenderCube.cpp">
-      <Filter>02.GameObject\01. CamTool\03. RenderCube</Filter>
+      <Filter>02.GameObject\01. CamTool\04. RenderCube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MarkCube.cpp">
+      <Filter>02.GameObject\01. CamTool\03. MarkCube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\LookCube.cpp">
+      <Filter>02.GameObject\01. CamTool\05. LookCube</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

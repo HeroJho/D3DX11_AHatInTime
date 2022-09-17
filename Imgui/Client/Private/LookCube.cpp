@@ -1,26 +1,26 @@
 #include "stdafx.h"
-#include "..\Public\RenderCube.h"
+#include "..\Public\LookCube.h"
 
 #include "GameInstance.h"
 #include "CamManager.h"
 
-CRenderCube::CRenderCube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLookCube::CLookCube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CRenderCube::CRenderCube(const CRenderCube & rhs)
+CLookCube::CLookCube(const CLookCube & rhs)
 	: CGameObject(rhs)
 {
 }
 
 
-HRESULT CRenderCube::Initialize_Prototype()
+HRESULT CLookCube::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CRenderCube::Initialize(void * pArg)
+HRESULT CLookCube::Initialize(void * pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
@@ -42,19 +42,19 @@ HRESULT CRenderCube::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CRenderCube::Tick(_float fTimeDelta)
+void CLookCube::Tick(_float fTimeDelta)
 {
 
 }
 
-void CRenderCube::LateTick(_float fTimeDelta)
+void CLookCube::LateTick(_float fTimeDelta)
 {
 
 	if (CCamManager::Get_Instance()->Get_ShowCube())
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
-HRESULT CRenderCube::Render()
+HRESULT CLookCube::Render()
 {
 	if (nullptr == m_pVIBufferCom ||
 		nullptr == m_pShaderCom)
@@ -72,12 +72,12 @@ HRESULT CRenderCube::Render()
 	return S_OK;
 }
 
-void CRenderCube::Set_Pos(_float3 vPos)
+void CLookCube::Set_Pos(_float3 vPos)
 {
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat3(&vPos));
 }
 
-_float3 CRenderCube::Get_Pos()
+_float3 CLookCube::Get_Pos()
 {
 	_float3 vTempPos;
 	ZeroMemory(&vTempPos, sizeof(_float3));
@@ -87,7 +87,7 @@ _float3 CRenderCube::Get_Pos()
 }
 
 
-HRESULT CRenderCube::Set_RenderState()
+HRESULT CLookCube::Set_RenderState()
 {
 	if (nullptr == m_pDevice || nullptr == m_pDeviceContext)
 		return E_FAIL;
@@ -101,7 +101,7 @@ HRESULT CRenderCube::Set_RenderState()
 	return S_OK;
 }
 
-HRESULT CRenderCube::Reset_RenderState()
+HRESULT CLookCube::Reset_RenderState()
 {
 	//m_pGraphic_Device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
@@ -112,7 +112,7 @@ HRESULT CRenderCube::Reset_RenderState()
 	return S_OK;
 }
 
-HRESULT CRenderCube::SetUp_Components()
+HRESULT CLookCube::SetUp_Components()
 {
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -140,7 +140,7 @@ HRESULT CRenderCube::SetUp_Components()
 	return S_OK;
 }
 
-HRESULT CRenderCube::SetUp_ShaderResources()
+HRESULT CLookCube::SetUp_ShaderResources()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -154,39 +154,55 @@ HRESULT CRenderCube::SetUp_ShaderResources()
 	RELEASE_INSTANCE(CGameInstance);
 
 
-	if (FAILED(m_pShaderCom->Set_RawValue("g_vColor", &m_vRGB, sizeof(_float4))))
+
+
+	_float4 vTempColor;
+	ZeroMemory(&vTempColor, sizeof(_float4));
+	if (CCamManager::Get_Instance()->Get_SelectedMarkCubeTag() == m_sTag)
+	{
+		vTempColor.x = 1.f;
+		vTempColor.y = 1.f;
+		vTempColor.z = 0.f;
+		vTempColor.w = 1.f;
+	}
+	else
+	{
+		vTempColor = m_vRGB;
+	}
+	if (FAILED(m_pShaderCom->Set_RawValue("g_vColor", &vTempColor, sizeof(_float4))))
 		return E_FAIL;
+
 
 	return S_OK;
 }
 
-CRenderCube * CRenderCube::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLookCube * CLookCube::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CRenderCube*		pInstance = new CRenderCube(pDevice, pContext);
+	CLookCube*		pInstance = new CLookCube(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CColorCube"));
+		MSG_BOX(TEXT("Failed To Created : CLookCube"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CRenderCube::Clone(void* pArg)
+CGameObject * CLookCube::Clone(void* pArg)
 {
-	CRenderCube*		pInstance = new CRenderCube(*this);
+	CLookCube*		pInstance = new CLookCube(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CColorCube"));
+		MSG_BOX(TEXT("Failed To Cloned : CLookCube"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CRenderCube::Free()
+void CLookCube::Free()
 {
 	__super::Free();
 

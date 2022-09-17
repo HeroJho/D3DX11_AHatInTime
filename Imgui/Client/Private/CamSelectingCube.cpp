@@ -48,17 +48,17 @@ void CCamSelectingCube::Tick(_float fTimeDelta)
 
 
 	if (pGameInstance->Key_Pressing(DIK_UP))
-		m_pTransformCom->Go_Dir(_vector{ 0.f, 0.f, 1.f, 0.f}, 10.f, fTimeDelta);
+		m_pTransformCom->Go_Dir(_vector{ 0.f, 0.f, 1.f, 0.f}, 20.f, fTimeDelta);
 	else if (pGameInstance->Key_Pressing(DIK_DOWN))
-		m_pTransformCom->Go_Dir(_vector{ 0.f, 0.f, -1.f, 0.f }, 10.f, fTimeDelta);
+		m_pTransformCom->Go_Dir(_vector{ 0.f, 0.f, -1.f, 0.f }, 20.f, fTimeDelta);
 	else if (pGameInstance->Key_Pressing(DIK_LEFT))
-		m_pTransformCom->Go_Dir(_vector{ -1.f, 0.f, 0.f, 0.f }, 10.f, fTimeDelta);
+		m_pTransformCom->Go_Dir(_vector{ -1.f, 0.f, 0.f, 0.f }, 20.f, fTimeDelta);
 	else if (pGameInstance->Key_Pressing(DIK_RIGHT))
-		m_pTransformCom->Go_Dir(_vector{ 1.f, 0.f, 0.f, 0.f }, 10.f, fTimeDelta);
+		m_pTransformCom->Go_Dir(_vector{ 1.f, 0.f, 0.f, 0.f }, 20.f, fTimeDelta);
 	else if (pGameInstance->Key_Pressing(DIK_U))
-		m_pTransformCom->Go_Dir(_vector{ 0.f, 1.f, 0.f, 0.f }, 10.f, fTimeDelta);
+		m_pTransformCom->Go_Dir(_vector{ 0.f, 1.f, 0.f, 0.f }, 20.f, fTimeDelta);
 	else if (pGameInstance->Key_Pressing(DIK_J))
-		m_pTransformCom->Go_Dir(_vector{ 0.f, -1.f, 0.f, 0.f }, 10.f, fTimeDelta);
+		m_pTransformCom->Go_Dir(_vector{ 0.f, -1.f, 0.f, 0.f }, 20.f, fTimeDelta);
 	
 
 
@@ -69,7 +69,9 @@ void CCamSelectingCube::Tick(_float fTimeDelta)
 
 void CCamSelectingCube::LateTick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+
+	if (CCamManager::Get_Instance()->Get_ShowCube())
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
 HRESULT CCamSelectingCube::Render()
@@ -99,9 +101,9 @@ _float3 CCamSelectingCube::Get_Pos()
 	XMStoreFloat3(&vTempPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	return vTempPos;
 }
-void CCamSelectingCube::Set_Pos(_float3 vPos)
+void CCamSelectingCube::Set_Pos(_vector vPos)
 {
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat3(&vPos));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 }
 
 
@@ -125,7 +127,7 @@ HRESULT CCamSelectingCube::SetUp_Components()
 	CTransform::TRANSFORMDESC		TransformDesc;
 	ZeroMemory(&TransformDesc, sizeof(TransformDesc));
 
-	TransformDesc.fSpeedPerSec = 5.f;
+	TransformDesc.fSpeedPerSec = 25.f;
 	TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))

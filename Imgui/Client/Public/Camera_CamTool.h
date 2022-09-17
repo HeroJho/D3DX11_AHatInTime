@@ -24,6 +24,7 @@ public:
 	_vector Get_Pos();
 	void Set_Pos(_float3 vPos);
 	_bool Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance = 0.1f);
+	void LookAt(_fvector vTargetPos);
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -35,8 +36,6 @@ public:
 public:
 	void Input(_float fTimeDelta);
 	
-	//void Record(_float fTimeDelta);
-
 public:
 	static CCamera_CamTool* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

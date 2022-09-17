@@ -2,6 +2,12 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+BEGIN(Engine)
+
+class CGameObject;
+
+END
+
 BEGIN(Client)
 
 class CCamManager final : public CBase
@@ -13,6 +19,7 @@ public:
 
 		_float3 vPos;
 		_float fSpeedAndStopTime;
+		_bool bMark;
 
 	}CAMDATA;
 
@@ -30,20 +37,36 @@ public:
 	_bool Get_Start() { return m_bStart; }
 	void Set_Start(_bool bStart);
 
-	const list<class CColorCube*>* Get_MarkCubes() { return &m_MarkCubes; }
+	const list<class CMarkCube*>* Get_MarkCubes() { return &m_MarkCubes; }
+	const list<class CLookCube*>* Get_LookCubes() { return &m_LookCubes; }
+
+	_bool Get_ShowCube() { return m_bShowCube; }
+	void Set_ShowCube(_bool bShowCube) { m_bShowCube = bShowCube; }
 
 public:
+	// For. Common
 	void Create_CamTool();
 	void Create_SelectingCube();
+	void Set_SelectingCubePosToSelectedCube();
+	CGameObject* Get_SelectedCube();
 
+	_bool Check_Exception();
+
+	// For. MarkCube
 	void Create_MarkCube();
 	void Delete_MarkCube();
-
-	void Create_RenderPosCube(_float3 vPos);
+	// For. RenderCube
+	void Create_RenderPosCube(_float3 vPos, _bool vMark);
 	
+public:
+	// For. LookCube
+	void Create_ChaseLookCube();
+
 	void Create_LookCube();
 	void Delete_LookCube();
-	
+
+
+
 
 
 public:
@@ -54,41 +77,69 @@ public:
 
 public: // .For CutScene
 	void PlayCutScene(_float fTimeDelta);
-	void MakePos();
-	_float3 CalculBasi();
+
+	void PlayMark(_float fTimeDelta);
+	void PlayLook(_float fTimeDelta);
+
+	void MakeMarkPos();
+	void MakeLookPos();
+
+	_float3 CalculMarkBasi();
+	_float3 CalculLookBasi();
 
 
-
-
+	// For. RenderCutScene
 	void MakeRenderPos();
+	void MakeMarkRenderPos();
+	void MakeLookRenderPos();
 	void RenderPos(_int iSens);
 
 	void CalculRenderBasi(list<CAMDATA> Poss);
+
 	void GetBesierRenderPos(CAMDATA vPos1);
 	void GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2);
 	void GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2, CAMDATA vPos3);
 	void GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2, CAMDATA vPos3, CAMDATA vPos4);
 
+
+
 private:
+	// For. Common
 	class CCamera_CamTool* m_pCamTool = nullptr;
 	class CCamSelectingCube* m_pSelectingCube = nullptr;
-	list<class CColorCube*> m_MarkCubes;
-	list<class CColorCube*> m_TempMarkCubes;
-	list<class CColorCube*> m_pTempBasiMarkCubes;
-
+	class CColorCube* m_pChaseLookCube = nullptr;
 	string m_sSelectedMarkCubeTag;
-
 	_uint m_iTagIndex = 0;
-	
-	_bool m_bStart = false;
-	_float m_fSpeed = 0.f;
-	_float m_fTimeAcc = 0.f;
-	_float m_fMoveSens = 0.f;
-	_float m_fT = 0.f;
+	_bool m_bShowCube = false;
 
+
+
+	// For. Play
+	list<class CMarkCube*> m_MarkCubes;
+	list<class CMarkCube*> m_TempMarkCubes;
+	list<class CMarkCube*> m_pTempBasiMarkCubes;
+
+	list<class CLookCube*> m_LookCubes;
+	list<class CLookCube*> m_TempLookCubes;
+	list<class CLookCube*> m_pTempBasiLookCubes;
+
+	_bool m_bStart = false;
+	_float m_fMarkSpeed = 0.f;
+	_float m_fMarkTimeAcc = 0.f;
+	_float m_fMarkMoveSens = 0.f;
+	_float m_fMarkT = 0.f;
+	_float3 m_vMarkTempPos;
+
+	_float m_fLookSpeed = 0.f;
+	_float m_fLookTimeAcc = 0.f;
+	_float m_fLookMoveSens = 0.f;
+	_float m_fLookT = 0.f;
+	_float3 m_vLookTempPos;
+
+	// For. Render
 	list<CAMDATA> m_PlayPosTemp;
 	list<class CRenderCube*> m_RenderCubes;
-	_float3 m_vTempPos;
+
 
 
 public:

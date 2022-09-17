@@ -186,7 +186,9 @@
     <ClInclude Include="..\public\Level_SelectTool.h" />
     <ClInclude Include="..\public\Level_TestLevel.h" />
     <ClInclude Include="..\public\Loader.h" />
+    <ClInclude Include="..\public\LookCube.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\public\MarkCube.h" />
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\RenderCube.h" />
@@ -223,7 +225,9 @@
     <ClCompile Include="..\private\Level_SelectTool.cpp" />
     <ClCompile Include="..\private\Level_TestLevel.cpp" />
     <ClCompile Include="..\private\Loader.cpp" />
+    <ClCompile Include="..\private\LookCube.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\private\MarkCube.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\RenderCube.cpp" />

@@ -13,7 +13,7 @@ END
 
 BEGIN(Client)
 
-class CColorCube final : public CGameObject
+class CMarkCube final : public CGameObject
 {
 public:
 	typedef struct tagColorCubeDesc
@@ -24,9 +24,9 @@ public:
 	}COLORCUBEDESC;
 
 private:
-	CColorCube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CColorCube(const CColorCube& rhs);
-	virtual ~CColorCube() = default;
+	CMarkCube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CMarkCube(const CMarkCube& rhs);
+	virtual ~CMarkCube() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -42,13 +42,11 @@ public:
 	void Set_LinkIndex(_int iIndex) { m_iLinkIndex = iIndex; }
 	_int Get_LinkIndex() { return m_iLinkIndex; }
 
-	void Set_SpeedTime(_float fSpeedTime) { 
+	void Set_SpeedTime(_float fSpeedTime) {
 		if (0.001f > fSpeedTime) m_fSpeedTime = 1.0f;
-		else m_fSpeedTime = fSpeedTime; 
+		else m_fSpeedTime = fSpeedTime;
 	}
 	_float Get_SpeedTime() { return m_fSpeedTime; }
-
-	_bool Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance);
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -70,7 +68,7 @@ private:
 
 
 public:
-	static CColorCube* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CMarkCube* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

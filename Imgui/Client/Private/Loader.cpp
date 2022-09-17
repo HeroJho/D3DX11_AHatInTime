@@ -11,6 +11,8 @@
 #include "Sky.h"
 #include "VIBuffer_ColorCube.h"
 #include "ColorCube.h"
+#include "MarkCube.h"
+#include "LookCube.h"
 #include "CamSelectingCube.h"
 #include "RenderCube.h"
 
@@ -118,6 +120,15 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ColorCube"),
 		CColorCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_MarkCube */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MarkCube"),
+		CColorCube::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_LookCube */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_LookCube"),
+		CColorCube::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 	/* For.Prototype_GameObject_CamSelectingCube */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_CamSelectingCube"),

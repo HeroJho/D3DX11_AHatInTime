@@ -50,8 +50,8 @@ void CColorCube::Tick(_float fTimeDelta)
 void CColorCube::LateTick(_float fTimeDelta)
 {
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-
+	if (CCamManager::Get_Instance()->Get_ShowCube())
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
 HRESULT CColorCube::Render()
@@ -74,7 +74,9 @@ HRESULT CColorCube::Render()
 
 void CColorCube::Set_Pos(_float3 vPos)
 {
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat3(&vPos));
+	_vector vTempPos = XMLoadFloat3(&vPos);
+	vTempPos = XMVectorSetW(vTempPos, 1.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vTempPos);
 }
 
 _float3 CColorCube::Get_Pos()
@@ -84,6 +86,12 @@ _float3 CColorCube::Get_Pos()
 	XMStoreFloat3(&vTempPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 
 	return vTempPos;
+}
+
+
+_bool CColorCube::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance)
+{
+	return m_pTransformCom->Move(vTargetPos, fSpeed, fTimeDelta, fLimitDistance);
 }
 
 

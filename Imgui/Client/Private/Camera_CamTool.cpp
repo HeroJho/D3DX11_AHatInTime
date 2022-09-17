@@ -38,7 +38,10 @@ _bool CCamera_CamTool::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelt
 {
 	return m_pTransformCom->Move(vTargetPos, fSpeed, fTimeDelta, fLimitDistance);
 }
-
+void CCamera_CamTool::LookAt(_fvector vTargetPos)
+{
+	m_pTransformCom->LookAt(vTargetPos);
+}
 
 
 
