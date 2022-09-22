@@ -70,9 +70,6 @@
     <Filter Include="03.Components\01.Renderer">
       <UniqueIdentifier>{f2807f27-e1b8-4930-8742-a03cec67ff18}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03.Components\03.Transform">
-      <UniqueIdentifier>{64bea433-89dd-45ef-8cdc-2afcd20d4115}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03.Components\02.VIBuffer">
       <UniqueIdentifier>{3c6aed8b-6455-4225-97ec-4de3f644ca5c}</UniqueIdentifier>
     </Filter>
@@ -99,6 +96,18 @@
     </Filter>
     <Filter Include="04.Utility\Lights\Light_Manager">
       <UniqueIdentifier>{4e0dca03-b592-4624-a4ea-c7cd7bbe946f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\05.Transform">
+      <UniqueIdentifier>{64bea433-89dd-45ef-8cdc-2afcd20d4115}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\06.Model">
+      <UniqueIdentifier>{155541a3-fb70-44d5-a0d7-9aefc2ad0460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\06.Model\MeshContainer">
+      <UniqueIdentifier>{4f812a48-5efe-4dfa-b031-070d15287069}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Map_Terrain">
+      <UniqueIdentifier>{3297bd68-07bc-4e7b-a194-744fbdb4c2ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -160,7 +169,7 @@
       <Filter>03.Components\04.Texture</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Transform.h">
-      <Filter>03.Components\03.Transform</Filter>
+      <Filter>03.Components\05.Transform</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Camera.h">
       <Filter>02.GameObjects\Camera</Filter>
@@ -203,6 +212,15 @@
     </ClInclude>
     <ClInclude Include="..\public\Light.h">
       <Filter>04.Utility\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Model.h">
+      <Filter>03.Components\06.Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MeshContainer.h">
+      <Filter>03.Components\06.Model\MeshContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Map_Terrain.h">
+      <Filter>03.Components\02.VIBuffer\Map_Terrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -249,7 +267,7 @@
       <Filter>03.Components\04.Texture</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Transform.cpp">
-      <Filter>03.Components\03.Transform</Filter>
+      <Filter>03.Components\05.Transform</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Camera.cpp">
       <Filter>02.GameObjects\Camera</Filter>
@@ -292,6 +310,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Light.cpp">
       <Filter>04.Utility\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Model.cpp">
+      <Filter>03.Components\06.Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MeshContainer.cpp">
+      <Filter>03.Components\06.Model\MeshContainer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Map_Terrain.cpp">
+      <Filter>03.Components\02.VIBuffer\Map_Terrain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

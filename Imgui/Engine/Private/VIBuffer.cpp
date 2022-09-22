@@ -17,6 +17,7 @@ CVIBuffer::CVIBuffer(const CVIBuffer & rhs)
 	, m_iNumIndicesofPrimitive(rhs.m_iNumIndicesofPrimitive)
 	, m_iNumVertexBuffers(rhs.m_iNumVertexBuffers)
 	, m_eIndexFormat(rhs.m_eIndexFormat)
+	, m_pVerticesPos(rhs.m_pVerticesPos)
 	, m_eTopology(rhs.m_eTopology)
 {
 	Safe_AddRef(m_pVB);
@@ -50,13 +51,13 @@ HRESULT CVIBuffer::Render()
 		0,
 	};
 
+	
+
 	m_pContext->IASetVertexBuffers(0, m_iNumVertexBuffers, pVertexBuffers, iStrides, iOffsets);
 
 	m_pContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
 
 	m_pContext->IASetPrimitiveTopology(m_eTopology);
-
-	// m_pContext->IASetInputLayout()
 
 	m_pContext->DrawIndexed(m_iNumPrimitives * m_iNumIndicesofPrimitive, 0, 0);
 
@@ -89,7 +90,14 @@ void CVIBuffer::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pVB);
-	Safe_Release(m_pIB);
+	if (false == m_isCloned)
+		Safe_Delete_Array(m_pVerticesPos);
+
+	Safe_Delete_Array(m_pVerticesPosMxM);
+
+	if(nullptr != m_pVB)
+		Safe_Release(m_pVB);
+	if(nullptr != m_pIB)
+		Safe_Release(m_pIB);
 
 }

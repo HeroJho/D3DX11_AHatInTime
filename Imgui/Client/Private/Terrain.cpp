@@ -35,6 +35,20 @@ void CTerrain::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_float3	vPickPos;
+
+	if (pGameInstance->Mouse_Down(DIMK::DIMK_LBUTTON))
+	{
+		if (m_pVIBufferCom->Picking(m_pTransformCom, &vPickPos))
+		{
+			int a = 10;
+		}
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
@@ -74,13 +88,14 @@ HRESULT CTerrain::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Terrain"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
+	/* For.Com_Texture */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
+
 	/* For.Com_VIBuffer */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 		return E_FAIL;
 
-	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-		return E_FAIL;
 
 	return S_OK;
 }

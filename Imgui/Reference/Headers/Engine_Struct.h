@@ -7,14 +7,23 @@ namespace Engine
 	{
 		enum TYPE { TYPE_POINT, TYPE_DIRECTIONAL, TYPE_END };
 
-		TYPE			eType; // ºû Å¸ÀÔ
+		TYPE			eType;
 
-		XMFLOAT4		vDirection; // Direct Light
+		XMFLOAT4		vDirection;
 
-		XMFLOAT4		vDiffuse; // ¹æÇâ±¤ »ö(Direct Light »ö)
-		XMFLOAT4		vAmbient; // È¯°æ±¤ »ö
+		XMFLOAT4		vPosition;
+		float			fRange;
+
+		XMFLOAT4		vDiffuse;
+		XMFLOAT4		vAmbient;
+		XMFLOAT4		vSpecular;
 
 	}LIGHTDESC;
+
+		typedef struct tagMaterialDesc
+	{
+		class CTexture*		pTexture[AI_TEXTURE_TYPE_MAX];
+	}MATERIALDESC;
 
 	typedef struct tagLineIndices16
 	{
@@ -101,6 +110,20 @@ namespace Engine
 		static const unsigned int iNumElements = 2;
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	}VTXCUBECOLTEX_DECLARATION;
+
+
+	typedef struct tagVertexModel
+	{
+		XMFLOAT3		vPosition;
+		XMFLOAT3		vNormal;
+		XMFLOAT2		vTexture;
+		XMFLOAT3		vTangent;
+	}VTXMODEL;
+	typedef struct ENGINE_DLL tagVertexModel_Declaration
+	{
+		static const unsigned int iNumElements = 4;
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	}VTXMODEL_DECLARATION;
 
 
 	typedef struct tagGraphicDesc

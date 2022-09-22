@@ -73,6 +73,8 @@ HRESULT CGraphic_Device::Clear_DepthStencil_View()
 	if (nullptr == m_pDeviceContext)
 		return E_FAIL;
 
+	m_pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferRTV, m_pDepthStencilView);
+
 	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 
 	return S_OK;
@@ -209,7 +211,7 @@ void CGraphic_Device::Free()
 	//	}
 	//	if (d3dDebug != nullptr)            d3dDebug->Release();
 	//#endif
-	//
+	
 
 	Safe_Release(m_pDevice);
 }

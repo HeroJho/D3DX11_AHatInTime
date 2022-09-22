@@ -12,7 +12,7 @@
 
 //#include "UI.h"
 #include "UI_Edit.h"
-#include "UI_Button.h"
+#include "UI_Edit_Button.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -145,9 +145,9 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Edit"),
 		CUI_Edit::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-	/* For.Prototype_GameObject_UI_Edit */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Button"),
-		CUI_Button::Create(m_pDevice, m_pContext))))
+	/* For.Prototype_GameObject_UI_Edit_Button */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Edit_Button"),
+		CUI_Edit_Button::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 

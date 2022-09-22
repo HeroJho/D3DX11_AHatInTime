@@ -78,7 +78,7 @@ private:
 
 
 	LEVEL m_eCurLevel;
-
+	ImGuiConfigFlags m_temp;
 
 
 public:

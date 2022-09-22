@@ -4,6 +4,8 @@
 
 #include "ToolManager.h"
 #include "CamManager.h"
+#include "MapManager.h"
+
 #include "ColorCube.h"
 #include "MarkCube.h"
 #include "LookCube.h"
@@ -27,6 +29,17 @@ HRESULT CImGui_Manager::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	m_temp = io.ConfigFlags;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
 
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -90,6 +103,12 @@ void CImGui_Manager::Render()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
+
 }
 
 
@@ -191,8 +210,15 @@ void CImGui_Manager::Render_MapTool()
 	ImGui::Begin("MapTool Box");
 	
 
-
-
+	_float fTemp = CMapManager::Get_Instance()->Get_Height();
+	if (ImGui::InputFloat("Height", &fTemp))
+		CMapManager::Get_Instance()->Set_Height(fTemp);
+	fTemp = CMapManager::Get_Instance()->Get_Rad();
+	if (ImGui::InputFloat("Rad", &fTemp))
+		CMapManager::Get_Instance()->Set_Rad(fTemp);
+	fTemp = CMapManager::Get_Instance()->Get_Sharp();
+	if (ImGui::InputFloat("Sharp", &fTemp))
+		CMapManager::Get_Instance()->Set_Sharp(fTemp);
 
 	ImGui::End();
 }
@@ -274,6 +300,8 @@ void CImGui_Manager::Clear_SelectTool()
 }
 void CImGui_Manager::Clear_MapTool()
 {
+
+	CMapManager::Get_Instance()->Free();
 
 }
 void CImGui_Manager::Clear_CamTool()

@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "..\Public\MainApp.h"
-#include "ImGui_Manager.h"
 #include "GameInstance.h"
-#include "Level_Loading.h"
+
+#include "ImGui_Manager.h"
 #include "ToolManager.h"
 #include "CamManager.h"
+#include "MapManager.h"
+
+#include "Level_Loading.h"
 
 using namespace Client;
 
@@ -163,6 +166,7 @@ void CMainApp::Free()
 {
 	CToolManager::Destroy_Instance();
 	CCamManager::Destroy_Instance();
+	CMapManager::Destroy_Instance();
 	CImGui_Manager::Destroy_Instance();
 
 	Safe_Release(m_pDevice);

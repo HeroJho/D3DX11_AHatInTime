@@ -3,12 +3,12 @@
 #include "GameInstance.h"
 
 CUI_Edit::CUI_Edit(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
-	: CUI_Panel(pDevice, pContext)
+	: CUI(pDevice, pContext)
 {
 }
 
 CUI_Edit::CUI_Edit(const CUI_Edit & rhs)
-	: CUI_Panel(rhs)
+	: CUI(rhs)
 {
 }
 
@@ -29,26 +29,9 @@ HRESULT CUI_Edit::Initialize(void * pArg)
 		return E_FAIL;
 
 
-	m_UiInfo.fSizeX = 197;
-	m_UiInfo.fSizeY = 380;
 
-	m_UiInfo.fX = g_iWinSizeX * 0.5f;
-	m_UiInfo.fY = g_iWinSizeY * 0.5f;
+	Make_ChildUI(100.f, 100.f, 32.f, 19.f, TEXT("Prototype_GameObject_UI_Edit_Button"));
 
-
-	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
-	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(g_iWinSizeX, g_iWinSizeY, 0.f, 1.f)));
-
-
-	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
-
-	CGameObject* pObj = nullptr;
-	if (FAILED(pGameInstance->Add_GameObjectToMe(TEXT("Prototype_GameObject_UI_Button"), LEVEL_GAMEPLAY, &pObj)))
-		return E_FAIL;
-	m_pChildUIs.push_back((CUI*)pObj);
-
-	Safe_Release(pGameInstance);
 
 	return S_OK;
 }
@@ -71,6 +54,9 @@ void CUI_Edit::LateTick(_float fTimeDelta)
 
 HRESULT CUI_Edit::Render()
 {
+	// 자식들의 Render 호출
+	__super::Render();
+
 	if (nullptr == m_pVIBufferCom ||
 		nullptr == m_pShaderCom)
 		return E_FAIL;
@@ -88,11 +74,6 @@ HRESULT CUI_Edit::Render()
 
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
-
-
-
-	// 자식들의 Render 호출
-	__super::Render();
 
 	return S_OK;
 }

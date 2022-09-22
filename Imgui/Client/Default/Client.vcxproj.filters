@@ -100,6 +100,15 @@
     <Filter Include="02.GameObject\01. CamTool\05. LookCube">
       <UniqueIdentifier>{41215851-7af9-42f0-b951-8a84931b7078}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\02. MapTool">
+      <UniqueIdentifier>{e7499930-48ed-48a8-ba95-f83671cbe1e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\02. MapTool\01. Terrain_Map">
+      <UniqueIdentifier>{2ca39d59-7e8c-40e9-9fd0-5fb70701f8a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Manager\03. MapManager">
+      <UniqueIdentifier>{476793ba-ff24-4eb3-9e5a-66f80439a661}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -145,21 +154,6 @@
     <ClInclude Include="..\Public\Sky.h">
       <Filter>02.GameObject\99. Static\Sky</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\imconfig.h">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\imgui.h">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\imgui_impl_dx9.h">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\imgui_impl_win32.h">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\imgui_internal.h">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\ImGui_Manager.h">
       <Filter>98.IMGUI\Manager</Filter>
     </ClInclude>
@@ -197,9 +191,6 @@
     <ClInclude Include="..\public\Camera_Free.h">
       <Filter>02.GameObject\99. Static\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\Private\imgui_impl_dx11.h">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\RenderCube.h">
       <Filter>02.GameObject\01. CamTool\04. RenderCube</Filter>
     </ClInclude>
@@ -208,6 +199,36 @@
     </ClInclude>
     <ClInclude Include="..\public\LookCube.h">
       <Filter>02.GameObject\01. CamTool\05. LookCube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\imgui_internal.h">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\imstb_rectpack.h">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\imstb_textedit.h">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\imstb_truetype.h">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\imconfig.h">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\imgui.h">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\imgui_impl_dx11.h">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\imgui_impl_win32.h">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Terrain_Map.h">
+      <Filter>02.GameObject\02. MapTool\01. Terrain_Map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MapManager.h">
+      <Filter>97.Manager\03. MapManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -243,27 +264,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sky.cpp">
       <Filter>02.GameObject\99. Static\Sky</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\imgui.cpp">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\imgui_demo.cpp">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\imgui_draw.cpp">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\imgui_impl_dx9.cpp">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\imgui_impl_win32.cpp">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\imgui_tables.cpp">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\imgui_widgets.cpp">
-      <Filter>98.IMGUI\Default</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ImGui_Manager.cpp">
       <Filter>98.IMGUI\Manager</Filter>
@@ -301,9 +301,6 @@
     <ClCompile Include="..\private\Camera_Free.cpp">
       <Filter>02.GameObject\99. Static\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\imgui_impl_dx11.cpp">
-      <Filter>98.IMGUI\Default</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\RenderCube.cpp">
       <Filter>02.GameObject\01. CamTool\04. RenderCube</Filter>
     </ClCompile>
@@ -312,6 +309,33 @@
     </ClCompile>
     <ClCompile Include="..\private\LookCube.cpp">
       <Filter>02.GameObject\01. CamTool\05. LookCube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui.cpp">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_demo.cpp">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_draw.cpp">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_impl_dx11.cpp">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_impl_win32.cpp">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_tables.cpp">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_widgets.cpp">
+      <Filter>98.IMGUI\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Terrain_Map.cpp">
+      <Filter>02.GameObject\02. MapTool\01. Terrain_Map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MapManager.cpp">
+      <Filter>97.Manager\03. MapManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -335,6 +359,9 @@
       <Filter>96.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtx.hlsl">
+      <Filter>96.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl">
       <Filter>96.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

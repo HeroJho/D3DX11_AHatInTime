@@ -16,10 +16,14 @@ BEGIN(Client)
 class CUI : public CGameObject
 {
 public:
+	enum UI_STATE { UI_HOVER, UI_DOWN, UI_PRESS, UI_CLICK, UI_END };
+
+public:
 	typedef struct tagUIInfoDesc
 	{
 		_float					fX, fY, fSizeX, fSizeY;
 	}UIINFODESC;
+
 
 protected:
 	CUI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -33,10 +37,11 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+	virtual void OnCollision(CGameObject* pOther) override;
 
 public:
 	UIINFODESC	Get_Info() { return m_UiInfo; };
-	
+	HRESULT Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _tchar* pTag);
 
 
 protected:
@@ -50,8 +55,16 @@ protected:
 	UIINFODESC				m_UiInfo;
 	_float4x4				m_ViewMatrix, m_ProjMatrix;
 
-protected:
+	UI_STATE				m_eState = UI_END;
+
+private:
 	HRESULT Ready_Components();
+	void Handle_Collision();
+
+	virtual void Handle_Hover() {};
+	virtual void Handle_Down() {};
+	virtual void Handle_Press() {};
+	virtual void Handle_Click() {};
 
 public:
 	static CUI* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -24,6 +24,14 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+	virtual void OnCollision(CGameObject* pOther) {};
+
+protected:
+	HRESULT Add_Component(_uint iLevelIndex, const _tchar* pPrototypeTag, const _tchar* pComponentTag, class CComponent** ppOut, void* pArg = nullptr);
+
+private:
+	class CComponent* Find_Component(const _tchar* pComponentTag);
+
 
 
 protected:
@@ -36,13 +44,6 @@ protected: /* 객체에게 추가된 컴포넌트들을 키로 분류하여 보관한다. */
 
 protected:
 	_float				m_fCamDistance = 0.f;
-
-protected:
-	HRESULT Add_Component(_uint iLevelIndex, const _tchar* pPrototypeTag, const _tchar* pComponentTag, class CComponent** ppOut, void* pArg = nullptr);
-	
-
-private:
-	class CComponent* Find_Component(const _tchar* pComponentTag);
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

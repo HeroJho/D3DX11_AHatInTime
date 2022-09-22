@@ -165,7 +165,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Private\imgui_impl_dx11.h" />
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\public\Camera_CamTool.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
@@ -175,10 +174,13 @@
     <ClInclude Include="..\public\ColorCube.h" />
     <ClInclude Include="..\Public\imconfig.h" />
     <ClInclude Include="..\Public\imgui.h" />
-    <ClInclude Include="..\Public\imgui_impl_dx9.h" />
+    <ClInclude Include="..\Public\imgui_impl_dx11.h" />
     <ClInclude Include="..\Public\imgui_impl_win32.h" />
     <ClInclude Include="..\Public\imgui_internal.h" />
     <ClInclude Include="..\Public\ImGui_Manager.h" />
+    <ClInclude Include="..\Public\imstb_rectpack.h" />
+    <ClInclude Include="..\Public\imstb_textedit.h" />
+    <ClInclude Include="..\Public\imstb_truetype.h" />
     <ClInclude Include="..\public\Level_CamTool.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
@@ -188,12 +190,14 @@
     <ClInclude Include="..\public\Loader.h" />
     <ClInclude Include="..\public\LookCube.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\public\MapManager.h" />
     <ClInclude Include="..\public\MarkCube.h" />
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\RenderCube.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\public\Terrain_Map.h" />
     <ClInclude Include="..\Public\TestManager.h" />
     <ClInclude Include="..\public\ToolManager.h" />
     <ClInclude Include="Client.h" />
@@ -213,7 +217,6 @@
     <ClCompile Include="..\Private\imgui_demo.cpp" />
     <ClCompile Include="..\Private\imgui_draw.cpp" />
     <ClCompile Include="..\Private\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\Private\imgui_impl_dx9.cpp" />
     <ClCompile Include="..\Private\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Private\ImGui_Manager.cpp" />
     <ClCompile Include="..\Private\imgui_tables.cpp" />
@@ -227,12 +230,14 @@
     <ClCompile Include="..\private\Loader.cpp" />
     <ClCompile Include="..\private\LookCube.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\private\MapManager.cpp" />
     <ClCompile Include="..\private\MarkCube.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\RenderCube.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\private\Terrain_Map.cpp" />
     <ClCompile Include="..\Private\TestManager.cpp" />
     <ClCompile Include="..\private\ToolManager.cpp" />
     <ClCompile Include="Client.cpp" />
@@ -252,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtx.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />
   </ItemGroup>

@@ -88,19 +88,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_float		fTimeAcc = 0.f;
 
     // 기본 메시지 루프입니다.
-	while (true)
+	bool done = false;
+	while (!done)
 	{
-		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		// Poll and handle messages (inputs, window resize, etc.)
+		// See the WndProc() function below for our to dispatch events to the Win32 backend.
+		while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
 		{
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
 			if (msg.message == WM_QUIT)
-				break;
-
-			if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
+				done = true;
 		}
+		if (done)
+			break;
 
 		pGameInstance->Update_Timer(TEXT("Timer_Default"));
 
@@ -244,6 +245,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
+	case WM_DPICHANGED:
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DpiEnableScaleViewports)
+		{
+			//const int dpi = HIWORD(wParam);
+			//printf("WM_DPICHANGED to %d (%.0f%%)\n", dpi, (float)dpi / 96.0f * 100.0f);
+			const RECT* suggested_rect = (RECT*)lParam;
+			::SetWindowPos(hWnd, NULL, suggested_rect->left, suggested_rect->top, suggested_rect->right - suggested_rect->left, suggested_rect->bottom - suggested_rect->top, SWP_NOZORDER | SWP_NOACTIVATE);
+		}
+		break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

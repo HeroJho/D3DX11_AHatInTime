@@ -17,81 +17,6 @@ CVIBuffer_Terrain::CVIBuffer_Terrain(const CVIBuffer_Terrain & rhs)
 }
 
 
-//HRESULT CVIBuffer_Terrain::Initialize_Prototype(_uint iNumVerticesX, _uint iNumVerticesZ)
-//{
-//	m_iNumVerticesX = iNumVerticesX;
-//	m_iNumVerticesZ = iNumVerticesZ;
-//
-//	m_iStride = sizeof(VTXTEX);
-//	m_iNumVertices = m_iNumVerticesX * m_iNumVerticesZ;
-//	m_dwFVF = D3DFVF_XYZ | D3DFVF_TEX1 /*| D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE3(1)*/;
-//	m_ePrimitiveType = D3DPT_TRIANGLELIST;
-//	m_iNumPrimitive = (m_iNumVerticesX - 1) * (m_iNumVerticesZ - 1) * 2;
-//
-//	if (FAILED(__super::Create_VertexBuffer()))
-//		return E_FAIL;
-//
-//	VTXTEX*		pVertices = nullptr;
-//	
-//	m_pVB->Lock(0, 0, (void**)&pVertices, 0);
-//
-//	for (_uint i = 0; i < m_iNumVerticesZ; ++i)
-//	{
-//		for (_uint j = 0; j < m_iNumVerticesX; ++j)
-//		{
-//			/* 루프가 하나씩 진행될때마다 1씩증가하는 인덱스를 얻어오기위한.  */
-//			_uint		iIndex = i * m_iNumVerticesX + j;
-//
-//			pVertices[iIndex].vPosition = _float3(j, 0.0f, i);
-//			pVertices[iIndex].vTexture = _float2(j / _float(m_iNumVerticesX - 1) * 30.f, i / _float(m_iNumVerticesZ - 1) * 30.f);
-//		}
-//	}
-//	
-//	m_pVB->Unlock();
-//
-//	m_iIndexSizeofPrimitive = sizeof(FACEINDICES32);
-//	m_eIndexFormat = D3DFMT_INDEX32;
-//
-//	if (FAILED(__super::Create_IndexBuffer()))
-//		return E_FAIL;
-//
-//	FACEINDICES32*		pIndices = nullptr;
-//
-//	m_pIB->Lock(0, 0, (void**)&pIndices, 0);
-//
-//	_uint			iNumFaces = 0;
-//
-//	for (_uint i = 0; i < m_iNumVerticesZ - 1; ++i)
-//	{
-//		for (_uint j = 0; j < m_iNumVerticesX - 1; ++j)
-//		{
-//			/* 루프가 하나씩 진행될때마다 1씩증가하는 인덱스를 얻어오기위한.  */
-//			_uint		iIndex = i * m_iNumVerticesX + j;
-//
-//			_uint		iIndices[4] = {
-//				iIndex + m_iNumVerticesX,
-//				iIndex + m_iNumVerticesX + 1,
-//				iIndex + 1,
-//				iIndex
-//			};
-//
-//			pIndices[iNumFaces]._0 = iIndices[0];
-//			pIndices[iNumFaces]._1 = iIndices[1];
-//			pIndices[iNumFaces]._2 = iIndices[2];
-//			++iNumFaces;
-//
-//			pIndices[iNumFaces]._0 = iIndices[0];
-//			pIndices[iNumFaces]._1 = iIndices[2];
-//			pIndices[iNumFaces]._2 = iIndices[3];
-//			++iNumFaces;
-//		}
-//	}
-//
-//	m_pIB->Unlock();
-//	
-//	return S_OK;
-//}
-
 HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeighitMapFilePath)
 {
 	_ulong			dwByte = 0;
@@ -123,13 +48,15 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeighitMapFilePa
 	VTXNORTEX*		pVertices = new VTXNORTEX[m_iNumVertices];
 	ZeroMemory(pVertices, sizeof(VTXNORTEX) * m_iNumVertices);
 
+	m_pVerticesPos = new _float3[m_iNumVertices];
+
 	for (_uint i = 0; i < m_iNumVerticesZ; ++i)
 	{
 		for (_uint j = 0; j < m_iNumVerticesX; ++j)
 		{
 			_uint		iIndex = i * m_iNumVerticesX + j;
 
-			pVertices[iIndex].vPosition = _float3(j, (pPixel[iIndex] & 0x000000ff) / 10.0f, i);
+			pVertices[iIndex].vPosition = m_pVerticesPos[iIndex] = _float3(j, (pPixel[iIndex] & 0x000000ff) / 10.0f, i);
 			pVertices[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
 			pVertices[iIndex].vTexture = _float2(j / _float(m_iNumVerticesX - 1), i / _float(m_iNumVerticesZ - 1));
 		}
@@ -264,10 +191,8 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar * pHeighitMapFilePa
 	return S_OK;
 }
 
-HRESULT CVIBuffer_Terrain::Initialize(void * pArg)
-{
-	return S_OK;
-}
+
+
 
 _bool CVIBuffer_Terrain::Picking(CTransform* pTransform, _float3* pOut)
 {
@@ -304,28 +229,41 @@ _bool CVIBuffer_Terrain::Picking(CTransform* pTransform, _float3* pOut)
 			_float		fU, fV, fDist;
 			_matrix	WorldMatrix = pTransform->Get_WorldMatrix();
 
-			// TODO: 피킹
-			///* 오른쪽 상단. */
-			//if (true == D3DXIntersectTri(&m_pVerticesPos[iIndices[0]], &m_pVerticesPos[iIndices[1]], &m_pVerticesPos[iIndices[2]], &vRayPos, &vRayDir, &fU, &fV, &fDist))
-			//{
-			//	_float3	vPickPos = vRayPos + vRayDir * fDist;
 
-			//	D3DXVec3TransformCoord(pOut, &vPickPos, &WorldMatrix);
+			/* 오른쪽 상단. */
+			_vector vTemp_1 = XMLoadFloat3(&m_pVerticesPos[iIndices[0]]);
+			vTemp_1 = XMVectorSetW(vTemp_1, 1.f);
+			_vector vTemp_2 = XMLoadFloat3(&m_pVerticesPos[iIndices[1]]);
+			vTemp_2 = XMVectorSetW(vTemp_2, 1.f);
+			_vector vTemp_3 = XMLoadFloat3(&m_pVerticesPos[iIndices[2]]);
+			vTemp_3 = XMVectorSetW(vTemp_3, 1.f);
+			if (true == TriangleTests::Intersects(vRayPos, vRayDir, vTemp_1, vTemp_2, vTemp_3, fDist))
+			{
+				_vector	vPickPos = vRayPos + vRayDir * fDist;
 
-			//	Safe_Release(pPicking);
-			//	return true;
-			//}
+				XMStoreFloat3(pOut, XMVector3TransformCoord(vPickPos, WorldMatrix));
+				
+				Safe_Release(pPicking);
+				return true;
+			}
 
-			///* 왼쪽 하단. */
-			//if (true == D3DXIntersectTri(&m_pVerticesPos[iIndices[0]], &m_pVerticesPos[iIndices[2]], &m_pVerticesPos[iIndices[3]], &vRayPos, &vRayDir, &fU, &fV, &fDist))
-			//{
-			//	_float3	vPickPos = vRayPos + vRayDir * fDist;
+			/* 왼쪽 하단. */
+			vTemp_1 = XMLoadFloat3(&m_pVerticesPos[iIndices[0]]);
+			vTemp_1 = XMVectorSetW(vTemp_1, 1.f);
+			vTemp_2 = XMLoadFloat3(&m_pVerticesPos[iIndices[2]]);
+			vTemp_2 = XMVectorSetW(vTemp_2, 1.f);
+			vTemp_3 = XMLoadFloat3(&m_pVerticesPos[iIndices[3]]);
+			vTemp_3 = XMVectorSetW(vTemp_3, 1.f);
+			if (true == TriangleTests::Intersects(vRayPos, vRayDir, vTemp_1, vTemp_2, vTemp_3, fDist))
+			{
+				_vector	vPickPos = vRayPos + vRayDir * fDist;
 
-			//	D3DXVec3TransformCoord(pOut, &vPickPos, &WorldMatrix);
+				XMStoreFloat3(pOut, XMVector3TransformCoord(vPickPos, WorldMatrix));
 
-			//	Safe_Release(pPicking);
-			//	return true;
-			//}
+				Safe_Release(pPicking);
+				return true;
+			}
+
 		}
 	}
 
@@ -372,18 +310,7 @@ _float CVIBuffer_Terrain::Compute_Height(_float3 vTargetPos)
 	return 0;
 }
 
-//CVIBuffer_Terrain * CVIBuffer_Terrain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iNumVerticesX, _uint iNumVerticesZ)
-//{
-//	CVIBuffer_Terrain*			pInstance = new CVIBuffer_Terrain(pDevice, pContext);
-//
-//	if (FAILED(pInstance->Initialize_Prototype(iNumVerticesX, iNumVerticesZ)))
-//	{
-//		MSG_BOX(TEXT("Failed To Created : CVIBuffer_Terrain"));
-//		Safe_Release(pInstance);
-//	}
-//
-//	return pInstance;
-//}
+
 
 CVIBuffer_Terrain * CVIBuffer_Terrain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar * pHeightMap)
 {

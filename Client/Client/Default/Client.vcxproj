@@ -178,9 +178,9 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\UI.h" />
-    <ClInclude Include="..\public\UI_Button.h" />
+    <ClInclude Include="..\public\UIManager.h" />
     <ClInclude Include="..\public\UI_Edit.h" />
-    <ClInclude Include="..\public\UI_Panel.h" />
+    <ClInclude Include="..\public\UI_Edit_Button.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -197,9 +197,9 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\UI.cpp" />
-    <ClCompile Include="..\private\UI_Button.cpp" />
+    <ClCompile Include="..\private\UIManager.cpp" />
     <ClCompile Include="..\private\UI_Edit.cpp" />
-    <ClCompile Include="..\private\UI_Panel.cpp" />
+    <ClCompile Include="..\private\UI_Edit_Button.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

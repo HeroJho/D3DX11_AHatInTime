@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "UI_Panel.h"
+#include "UI.h"
 
 BEGIN(Engine)
 class CShader;
@@ -10,7 +10,7 @@ END
 
 BEGIN(Client)
 
-class CUI_Edit final : public CUI_Panel
+class CUI_Edit final : public CUI
 {
 protected:
 	CUI_Edit(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
