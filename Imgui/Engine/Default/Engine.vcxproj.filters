@@ -109,6 +109,15 @@
     <Filter Include="03.Components\02.VIBuffer\Map_Terrain">
       <UniqueIdentifier>{3297bd68-07bc-4e7b-a194-744fbdb4c2ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Components\06.Model\Animation">
+      <UniqueIdentifier>{cc7fec37-8395-46a3-a0cd-d4c4b33099cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\06.Model\HierarchyNode">
+      <UniqueIdentifier>{cb2f1f98-564c-47d9-995a-5b409672ade9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\06.Model\Animation\Channel">
+      <UniqueIdentifier>{386eea69-6938-46d6-80b8-786fd2e4d4c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -222,6 +231,15 @@
     <ClInclude Include="..\Public\VIBuffer_Map_Terrain.h">
       <Filter>03.Components\02.VIBuffer\Map_Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Animation.h">
+      <Filter>03.Components\06.Model\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\HierarchyNode.h">
+      <Filter>03.Components\06.Model\HierarchyNode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Channel.h">
+      <Filter>03.Components\06.Model\Animation\Channel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -319,6 +337,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Map_Terrain.cpp">
       <Filter>03.Components\02.VIBuffer\Map_Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Animation.cpp">
+      <Filter>03.Components\06.Model\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HierarchyNode.cpp">
+      <Filter>03.Components\06.Model\HierarchyNode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Channel.cpp">
+      <Filter>03.Components\06.Model\Animation\Channel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

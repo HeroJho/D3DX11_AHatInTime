@@ -39,20 +39,24 @@ void CTerrain_Map::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	_float3	vPickPos;
 
-	if (pGameInstance->Mouse_Pressing(DIMK::DIMK_LBUTTON))
+
+	if (m_pVIBufferCom->Picking(m_pTransformCom, &m_vMousePickPos))
 	{
-		if (m_pVIBufferCom->Picking(m_pTransformCom, &vPickPos))
+		if (pGameInstance->Mouse_Pressing(DIMK::DIMK_LBUTTON))
 		{
+
 			_float fHegith = CMapManager::Get_Instance()->Get_Height();
 			_float fRad = CMapManager::Get_Instance()->Get_Rad();
 			_float fSharp = CMapManager::Get_Instance()->Get_Sharp();
 
-			m_pVIBufferCom->Make_Tick_Up(fHegith, fRad, fSharp, vPickPos, fTimeDelta);
+			m_pVIBufferCom->Make_Tick_Up(fHegith, fRad, fSharp, m_vMousePickPos, fTimeDelta);
 
 		}
 	}
+	else
+		ZeroMemory(&m_vMousePickPos, sizeof(_float3));
+
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -67,20 +71,20 @@ HRESULT CTerrain_Map::Render()
 		return E_FAIL;
 
 
-	ID3D11RasterizerState* m_WireFrame;
-	D3D11_RASTERIZER_DESC temp;
-	ZeroMemory(&temp, sizeof(D3D11_RASTERIZER_DESC));
-	temp.FillMode = D3D11_FILL_WIREFRAME;
-	temp.CullMode = D3D11_CULL_NONE;
-	temp.DepthClipEnable = true;
-	m_pDevice->CreateRasterizerState(&temp, &m_WireFrame);
+	//ID3D11RasterizerState* m_WireFrame;
+	//D3D11_RASTERIZER_DESC temp;
+	//ZeroMemory(&temp, sizeof(D3D11_RASTERIZER_DESC));
+	//temp.FillMode = D3D11_FILL_WIREFRAME;
+	//temp.CullMode = D3D11_CULL_NONE;
+	//temp.DepthClipEnable = true;
+	//m_pDevice->CreateRasterizerState(&temp, &m_WireFrame);
 
 
 	if (FAILED(SetUp_ShaderResources()))
 		return E_FAIL;
 
-	 m_pDeviceContext->RSSetState(m_WireFrame);
-	 Safe_Release(m_WireFrame);
+	 //m_pDeviceContext->RSSetState(m_WireFrame);
+	 //Safe_Release(m_WireFrame);
 
 	if (FAILED(m_pShaderCom->Begin(0)))
 		return E_FAIL;
@@ -91,6 +95,7 @@ HRESULT CTerrain_Map::Render()
 
 	return S_OK;
 }
+
 
 HRESULT CTerrain_Map::Ready_Components()
 {
@@ -137,6 +142,14 @@ HRESULT CTerrain_Map::SetUp_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
+
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_vMousePosition", &m_vMousePickPos, sizeof(_float3))))
+		return E_FAIL;
+	_float fRad = CMapManager::Get_Instance()->Get_Rad();
+	if (FAILED(m_pShaderCom->Set_RawValue("g_fRad", &fRad, sizeof(_float))))
+		return E_FAIL;
+	
 
 	const LIGHTDESC* pLightDesc = pGameInstance->Get_LightDesc(0);
 	if (nullptr == pLightDesc)

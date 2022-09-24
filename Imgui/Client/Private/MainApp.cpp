@@ -6,6 +6,7 @@
 #include "ToolManager.h"
 #include "CamManager.h"
 #include "MapManager.h"
+#include "DataManager.h"
 
 #include "Level_Loading.h"
 
@@ -34,6 +35,9 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_Prototype_Component()))
 		return E_FAIL;
 
+
+	if (FAILED(CDataManager::Get_Instance()->Init()))
+		return E_FAIL;
 
 
 	if (FAILED(CToolManager::Get_Instance()->Init(m_pDevice, m_pContext)))
@@ -164,6 +168,7 @@ CMainApp * CMainApp::Create()
 
 void CMainApp::Free()
 {
+	CDataManager::Destroy_Instance();
 	CToolManager::Destroy_Instance();
 	CCamManager::Destroy_Instance();
 	CMapManager::Destroy_Instance();

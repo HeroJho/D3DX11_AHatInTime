@@ -216,10 +216,53 @@ _bool CVIBuffer_Map_Terrain::Picking(CTransform* pTransform, _float3* pOut)
 
 	vRayDir = XMVector3Normalize(vRayDir);
 
-	for (_uint i = 0; i < m_iNumVerticesZ - 1; ++i)
+
+
+	XMVECTOR vTempCulPos = vRayPos;
+	// ZeroMemory(&vTempCulPos, sizeof(XMVECTOR));
+
+	while (!(0.01f > XMVectorGetY(vTempCulPos) && -0.01f < XMVectorGetY(vTempCulPos)))
 	{
-		for (_uint j = 0; j < m_iNumVerticesX - 1; ++j)
+		vTempCulPos += vRayDir * 0.005f;
+
+		// 0 보다 위에 있고						이동한 값이 나보다 클 때
+		if (0.f < XMVectorGetY(vRayPos) && XMVectorGetY(vRayPos) < XMVectorGetY(vTempCulPos))
 		{
+			Safe_Release(pPicking);
+			return false;
+		}
+		// 0 보다 밑에 있고 이동한 값이 나보다 작을 때
+		if (0.f > XMVectorGetY(vRayPos) && XMVectorGetY(vRayPos) > XMVectorGetY(vTempCulPos))
+		{
+			Safe_Release(pPicking);
+			return false;
+		}
+		// 너무 멀면 끝
+		if (150.f < XMVectorGetX(XMVector3Length(vRayPos - vTempCulPos)))
+		{
+			Safe_Release(pPicking);
+			return false;
+		}
+	}
+
+	_float3 vCulPos;
+	XMStoreFloat3(&vCulPos, vTempCulPos);
+	m_iStartZ = vCulPos.z - m_iRange;
+	m_iStartX = vCulPos.x - m_iRange;
+	m_iEndZ = vCulPos.z + m_iRange;
+	m_iEndX = vCulPos.x + m_iRange;
+
+	for (_int i = m_iStartZ; i < m_iEndZ; ++i)
+	{
+		if (i < 0 || i > m_iNumVerticesZ - 1 )
+			continue;
+
+		for (_int j = m_iStartX; j < m_iEndX; ++j)
+		{
+			if (j < 0 || j > m_iNumVerticesX - 1)
+				continue;
+
+
 			_uint		iIndex = i * m_iNumVerticesX + j;
 
 			_uint		iIndices[] = {
@@ -324,13 +367,21 @@ void CVIBuffer_Map_Terrain::Make_Tick_Up(_float fHeight, _float fRad, _float fSh
 
 	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
 
+
+
 	//SubResource.pData
 	VTXNORTEX* pVertices = (VTXNORTEX*)SubResource.pData;
 
-	for (_uint i = 0; i < m_iNumVerticesZ; ++i)
+	for (_int i = m_iStartZ; i < m_iEndZ; ++i)
 	{
-		for (_uint j = 0; j < m_iNumVerticesX; ++j)
+		if (i < 0 || i > m_iNumVerticesZ - 1)
+			continue;
+
+		for (_int j = m_iStartX; j < m_iEndX; ++j)
 		{
+			if (j < 0 || j > m_iNumVerticesX - 1)
+				continue;
+
 			/* 루프가 하나씩 진행될때마다 1씩증가하는 인덱스를 얻어오기위한.  */
 			_uint		iIndex = i * m_iNumVerticesX + j;
 
@@ -378,6 +429,8 @@ void CVIBuffer_Map_Terrain::Make_Tick_Up(_float fHeight, _float fRad, _float fSh
 
 void CVIBuffer_Map_Terrain::Make_Tick_Down(_float fHeight, _float fRad, _float fSharp, _float3 vPoint)
 {
+
+
 	D3D11_MAPPED_SUBRESOURCE		SubResource;
 
 	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
@@ -430,7 +483,7 @@ void CVIBuffer_Map_Terrain::Make_Tick_Down(_float fHeight, _float fRad, _float f
 
 _int CVIBuffer_Map_Terrain::Get_Index(_float3 vPos)
 {
-	return _int(vPos.x) + _int(vPos.z) / m_iNumVerticesX;
+	return _int(vPos.x) + _int(vPos.z) * m_iNumVerticesX;
 }
 
 

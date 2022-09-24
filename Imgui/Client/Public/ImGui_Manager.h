@@ -64,6 +64,11 @@ private:
 	// FOR. CamTool
 	void UI_MarkCubes();
 
+	// FOR. MapTool
+	void Window_Terrain();
+	void Window_Model();
+	void Window_CreatedModel();
+	void Window_Transform();
 
 private:
 	// FOR. Static

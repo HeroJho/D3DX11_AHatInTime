@@ -37,7 +37,12 @@ private:
 
 private:
 	_uint			m_iNumVerticesX, m_iNumVerticesZ;
+	_int			m_iRange = 25;
 
+	_int m_iStartZ = 0;
+	_int m_iStartX = 0;
+	_int m_iEndZ = 0;
+	_int m_iEndX = 0;
 
 public:
 	static CVIBuffer_Map_Terrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

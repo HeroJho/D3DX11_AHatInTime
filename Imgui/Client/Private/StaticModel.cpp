@@ -1,24 +1,42 @@
 #include "stdafx.h"
-#include "..\Public\Player.h"
+#include "..\Public\StaticModel.h"
 #include "GameInstance.h"
 
-CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CStaticModel::CStaticModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
+	ZeroMemory(m_cModelTag, sizeof(TCHAR) * MAX_PATH);
+	ZeroMemory(&m_vAxis, sizeof(_float3));
+
 }
 
-CPlayer::CPlayer(const CPlayer & rhs)
+CStaticModel::CStaticModel(const CStaticModel & rhs)
 	: CGameObject(rhs)
 {
+	ZeroMemory(m_cModelTag, sizeof(TCHAR) * MAX_PATH);
+	ZeroMemory(&m_vAxis, sizeof(_float3));
+
 }
 
-HRESULT CPlayer::Initialize_Prototype()
+void CStaticModel::Set_Axis(_float3 vAxis)
+{
+	m_vAxis = vAxis;
+	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_vAxis.x, XMVectorSet(0.f, 1.f, 0.f, 0.f), m_vAxis.y, XMVectorSet(0.f, 0.f, 1.f, 0.f), m_vAxis.z);
+}
+
+HRESULT CStaticModel::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CPlayer::Initialize(void * pArg)
+HRESULT CStaticModel::Initialize(void * pArg)
 {
+	if (nullptr == pArg)
+		return E_FAIL;
+	STATICMODELDESC* Desc = (STATICMODELDESC*)pArg;
+
+	wcscpy(m_cModelTag, Desc->cModelTag);
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -26,12 +44,12 @@ HRESULT CPlayer::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CPlayer::Tick(_float fTimeDelta)
+void CStaticModel::Tick(_float fTimeDelta)
 {
 
 }
 
-void CPlayer::LateTick(_float fTimeDelta)
+void CStaticModel::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
@@ -41,7 +59,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
-HRESULT CPlayer::Render()
+HRESULT CStaticModel::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -77,7 +95,7 @@ HRESULT CPlayer::Render()
 	return S_OK;
 }
 
-HRESULT CPlayer::Ready_Components()
+HRESULT CStaticModel::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -92,39 +110,39 @@ HRESULT CPlayer::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("ForkLift"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-CPlayer * CPlayer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CStaticModel * CStaticModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CPlayer*		pInstance = new CPlayer(pDevice, pContext);
+	CStaticModel*		pInstance = new CStaticModel(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CPlayer"));
+		MSG_BOX(TEXT("Failed To Created : CStaticModel"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CPlayer::Clone(void * pArg)
+CGameObject * CStaticModel::Clone(void * pArg)
 {
-	CPlayer*		pInstance = new CPlayer(*this);
+	CStaticModel*		pInstance = new CStaticModel(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CPlayer"));
+		MSG_BOX(TEXT("Failed To Cloned : CStaticModel"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CPlayer::Free()
+void CStaticModel::Free()
 {
 	__super::Free();
 

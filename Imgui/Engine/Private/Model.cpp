@@ -1,6 +1,10 @@
 #include "..\Public\Model.h"
 #include "MeshContainer.h"
 #include "Texture.h"
+#include "HierarchyNode.h"
+#include "Animation.h"
+#include "Shader.h"
+
 
 CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CComponent(pDevice, pContext)
@@ -13,6 +17,12 @@ CModel::CModel(const CModel & rhs)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Meshes(rhs.m_Meshes)
 	, m_Materials(rhs.m_Materials)
+	, m_eModelType(rhs.m_eModelType)
+	, m_HierarchyNodes(rhs.m_HierarchyNodes)
+	, m_Animations(rhs.m_Animations)
+	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
+	, m_PivotMatrix(rhs.m_PivotMatrix)
+	, m_iNumAnimations(rhs.m_iNumAnimations)
 {
 	for (auto& pMeshContainer : m_Meshes)
 		Safe_AddRef(pMeshContainer);
@@ -23,6 +33,24 @@ CModel::CModel(const CModel & rhs)
 		for (_uint i = 0; i < AI_TEXTURE_TYPE_MAX; ++i)
 			Safe_AddRef(Material.pTexture[i]);
 	}
+}
+
+CHierarchyNode * CModel::Get_HierarchyNode(char * pNodeName)
+{
+	auto	iter = find_if(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [&](CHierarchyNode* pNode)
+	{
+		return !strcmp(pNodeName, pNode->Get_Name());
+	});
+
+	if (iter == m_HierarchyNodes.end())
+		return nullptr;
+
+	return *iter;
+}
+
+_uint CModel::Get_MaterialIndex(_uint iMeshIndex)
+{
+	return m_Meshes[iMeshIndex]->Get_MaterialIndex();
 }
 
 HRESULT CModel::Initialize_Prototype(TYPE eType, const char * pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
@@ -36,6 +64,8 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const char * pModelFilePath, co
 
 	_uint		iFlag = 0;
 
+	m_eModelType = eType;
+
 	if (TYPE_NONANIM == eType)
 		iFlag |= aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
 	else
@@ -46,11 +76,22 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const char * pModelFilePath, co
 	if (nullptr == m_pAIScene)
 		return E_FAIL;
 
+	Ready_HierarchyNodes(m_pAIScene->mRootNode, nullptr, 0);
+
+	sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
+	{
+		return pSour->Get_Depth() < pDest->Get_Depth();
+	});
+
 	/* 모델을 구성하는 메시들을 만든다. */
 	if (FAILED(Ready_MeshContainers(PivotMatrix)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Materials(pModelFilePath)))
+		return E_FAIL;
+
+
+	if (FAILED(Ready_Animations()))
 		return E_FAIL;
 
 	return S_OK;
@@ -69,15 +110,38 @@ HRESULT CModel::SetUp_OnShader(CShader * pShader, _uint iMaterialIndex, aiTextur
 	return m_Materials[iMaterialIndex].pTexture[eTextureType]->Set_SRV(pShader, pConstantName);
 }
 
-HRESULT CModel::Render(_uint iMeshIndex)
+HRESULT CModel::Play_Animation(_float fTimeDelta)
 {
+	if (m_iCurrentAnimIndex >= m_iNumAnimations)
+		return E_FAIL;
 
-	//_uint		iMaterialIndex = pMeshContainer->Get_MaterialIndex();
+	/* 현재 재생하고자하는 애니메이션이 제어해야할 뼈들의 지역행렬을 갱신해낸다. */
+	m_Animations[m_iCurrentAnimIndex]->Play_Animation(fTimeDelta);
 
-	//m_Materials[iMaterialIndex].pTexture[aiTextureType_DIFFUSE]->Set_SRV()
+	/* 지역행렬을 순차적으로(부모에서 자식으로) 누적하여 m_CombinedTransformation를 만든다.  */
+	for (auto& pHierarchyNode : m_HierarchyNodes)
+	{
+		pHierarchyNode->Set_CombinedTransformation();
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex)
+{
+	_float4x4		BoneMatrices[256];
+
+	if (TYPE_ANIM == m_eModelType)
+	{
+		m_Meshes[iMeshIndex]->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
+
+		if (FAILED(pShader->Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * 256)))
+			return E_FAIL;
+	}
+
+	pShader->Begin(0);
 
 	m_Meshes[iMeshIndex]->Render();
-
 
 	return S_OK;
 }
@@ -88,7 +152,7 @@ HRESULT CModel::Ready_MeshContainers(_fmatrix PivotMatrix)
 
 	for (_uint i = 0; i < m_iNumMeshes; ++i)
 	{
-		CMeshContainer*		pMeshContainer = CMeshContainer::Create(m_pDevice, m_pContext, m_pAIScene->mMeshes[i], PivotMatrix);
+		CMeshContainer*		pMeshContainer = CMeshContainer::Create(m_pDevice, m_pContext, m_eModelType, m_pAIScene->mMeshes[i], this, PivotMatrix);
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
@@ -105,22 +169,17 @@ HRESULT CModel::Ready_Materials(const char* pModelFilePath)
 
 	m_iNumMaterials = m_pAIScene->mNumMaterials;
 
-	// 모델 i번째 Material을 가져온다.
 	for (_uint i = 0; i < m_iNumMaterials; ++i)
 	{
 		MATERIALDESC		MaterialDesc;
 		ZeroMemory(&MaterialDesc, sizeof(MATERIALDESC));
 
-		// i 번째 Material
 		aiMaterial*			pAIMaterial = m_pAIScene->mMaterials[i];
 
-		// i 번째 Material의 18개 Texture를 만든다.
 		for (_uint j = 0; j < AI_TEXTURE_TYPE_MAX; ++j)
 		{
 			aiString		strPath;
 
-			// Material의 j 번째 텍스처 정보를 읽어들인다.
-			// 3번째 Output 인자로 j 번재 텍스처 경로를 받는다.
 			if (FAILED(pAIMaterial->GetTexture(aiTextureType(j), 0, &strPath)))
 				continue;
 
@@ -128,27 +187,58 @@ HRESULT CModel::Ready_Materials(const char* pModelFilePath)
 			char			szFileName[MAX_PATH] = "";
 			char			szExt[MAX_PATH] = "";
 
-			// 얻은 텍스처 경로가 추출 했을때의 전체 경로를 포함하고 있을 수도 있어, 파일 이름만 따는 과정을 거지친다.
 			_splitpath_s(strPath.data, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
 			strcpy_s(szFullPath, pModelFilePath);
 			strcat_s(szFullPath, szFileName);
 			strcat_s(szFullPath, szExt);
 
-			// char에서 tchar로 
 			_tchar			szWideFullPath[MAX_PATH] = TEXT("");
 			MultiByteToWideChar(CP_ACP, 0, szFullPath, strlen(szFullPath), szWideFullPath, MAX_PATH);
 
-			// 해당 텍스처로 텍스처 컴포넌트를 만들고 구조체에 보관한다.
+
 			MaterialDesc.pTexture[j] = CTexture::Create(m_pDevice, m_pContext, szWideFullPath);
 			if (nullptr == MaterialDesc.pTexture[j])
 				return E_FAIL;
 		}
 
-		// Material 벡터에 저장
 		m_Materials.push_back(MaterialDesc);
 	}
 
+	return S_OK;
+}
+
+HRESULT CModel::Ready_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent, _uint iDepth)
+{
+	CHierarchyNode*		pHierarchyNode = CHierarchyNode::Create(pNode, pParent, iDepth++);
+
+	if (nullptr == pHierarchyNode)
+		return E_FAIL;
+
+	m_HierarchyNodes.push_back(pHierarchyNode);
+
+	for (_uint i = 0; i < pNode->mNumChildren; ++i)
+	{
+		Ready_HierarchyNodes(pNode->mChildren[i], pHierarchyNode, iDepth);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Ready_Animations()
+{
+	m_iNumAnimations = m_pAIScene->mNumAnimations;
+
+	for (_uint i = 0; i < m_pAIScene->mNumAnimations; ++i)
+	{
+		aiAnimation*		pAIAnimation = m_pAIScene->mAnimations[i];
+
+		CAnimation*			pAnimation = CAnimation::Create(pAIAnimation, this);
+		if (nullptr == pAnimation)
+			return E_FAIL;
+
+		m_Animations.push_back(pAnimation);
+	}
 	return S_OK;
 }
 

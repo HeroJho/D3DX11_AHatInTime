@@ -63,8 +63,37 @@ _float3 CToolManager::GetBesierPos(_float3 vPos1, _float3 vPos2, _float3 vPos3, 
 	return temp;
 }
 
+_tchar* CToolManager::Get_ManagedTChar()
+{
+	_tchar* pTemp = new _tchar[MAX_PATH];
+	ZeroMemory(pTemp, sizeof(_tchar) * MAX_PATH);
+	m_ManagedTChar.push_back(pTemp);
+
+	return pTemp;
+}
+
+char* CToolManager::Get_ManagedChar()
+{
+	char* pTemp = new char[MAX_PATH];
+	ZeroMemory(pTemp, sizeof(char) * MAX_PATH);
+	m_ManagedChar.push_back(pTemp);
+
+	return pTemp;
+}
+
+void CToolManager::ClearManagedChar()
+{
+	for (auto& pTChar : m_ManagedTChar)
+		Safe_Delete(pTChar);
+	for (auto& pChar : m_ManagedChar)
+		Safe_Delete(pChar);
+}
+
 void CToolManager::Free()
 {
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+
+	ClearManagedChar();
 }
+

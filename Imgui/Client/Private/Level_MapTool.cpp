@@ -58,6 +58,12 @@ HRESULT CLevel_MapTool::Ready_Lights()
 void CLevel_MapTool::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
 }
 
 HRESULT CLevel_MapTool::Render()

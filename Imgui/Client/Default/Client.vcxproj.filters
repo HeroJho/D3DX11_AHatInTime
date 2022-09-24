@@ -109,6 +109,12 @@
     <Filter Include="97.Manager\03. MapManager">
       <UniqueIdentifier>{476793ba-ff24-4eb3-9e5a-66f80439a661}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\02. MapTool\02. StaticModel">
+      <UniqueIdentifier>{5b970a11-6a1c-4c02-9fb0-3631e5085234}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Manager\98. DataManager">
+      <UniqueIdentifier>{3d493cc6-57a0-46f8-9b72-be9c528e932b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -230,6 +236,12 @@
     <ClInclude Include="..\public\MapManager.h">
       <Filter>97.Manager\03. MapManager</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\StaticModel.h">
+      <Filter>02.GameObject\02. MapTool\02. StaticModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\DataManager.h">
+      <Filter>97.Manager\98. DataManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -337,6 +349,12 @@
     <ClCompile Include="..\private\MapManager.cpp">
       <Filter>97.Manager\03. MapManager</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\StaticModel.cpp">
+      <Filter>02.GameObject\02. MapTool\02. StaticModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\DataManager.cpp">
+      <Filter>97.Manager\98. DataManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -362,6 +380,9 @@
       <Filter>96.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl">
+      <Filter>96.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimModel.hlsl">
       <Filter>96.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

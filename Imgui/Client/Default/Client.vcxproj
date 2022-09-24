@@ -172,6 +172,7 @@
     <ClInclude Include="..\public\CamSelectingCube.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\ColorCube.h" />
+    <ClInclude Include="..\public\DataManager.h" />
     <ClInclude Include="..\Public\imconfig.h" />
     <ClInclude Include="..\Public\imgui.h" />
     <ClInclude Include="..\Public\imgui_impl_dx11.h" />
@@ -196,6 +197,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\RenderCube.h" />
     <ClInclude Include="..\Public\Sky.h" />
+    <ClInclude Include="..\public\StaticModel.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\Terrain_Map.h" />
     <ClInclude Include="..\Public\TestManager.h" />
@@ -213,6 +215,7 @@
     <ClCompile Include="..\private\CamManager.cpp" />
     <ClCompile Include="..\private\CamSelectingCube.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
+    <ClCompile Include="..\private\DataManager.cpp" />
     <ClCompile Include="..\Private\imgui.cpp" />
     <ClCompile Include="..\Private\imgui_demo.cpp" />
     <ClCompile Include="..\Private\imgui_draw.cpp" />
@@ -236,6 +239,7 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\RenderCube.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
+    <ClCompile Include="..\private\StaticModel.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\Terrain_Map.cpp" />
     <ClCompile Include="..\Private\TestManager.cpp" />
@@ -257,6 +261,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Vtx.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimModel.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />

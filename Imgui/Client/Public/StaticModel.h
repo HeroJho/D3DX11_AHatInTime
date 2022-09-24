@@ -8,17 +8,28 @@ class CShader;
 class CTexture;
 class CRenderer;
 class CTransform;
-class CVIBuffer_Map_Terrain;
+class CModel;
 END
 
 BEGIN(Client)
 
-class CTerrain_Map : public CGameObject
+class CStaticModel final : public CGameObject
 {
-protected:
-	CTerrain_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CTerrain_Map(const CTerrain_Map& rhs);
-	virtual ~CTerrain_Map() = default;
+public:
+	typedef struct tagStaticModelDesc
+	{
+		TCHAR		cModelTag[MAX_PATH];
+	}STATICMODELDESC;
+
+private:
+	CStaticModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CStaticModel(const CStaticModel& rhs);
+	virtual ~CStaticModel() = default;
+
+public:
+	_float3 Get_Axis() { return m_vAxis; }
+	void Set_Axis(_float3 vAxis);
+
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -27,23 +38,22 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-
 private:
 	CShader*				m_pShaderCom = nullptr;
-	CTexture*				m_pTextureCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
-	CVIBuffer_Map_Terrain*	m_pVIBufferCom = nullptr;
+	CModel*					m_pModelCom = nullptr;
+
 
 private:
-	_float3					m_vMousePickPos;
+	TCHAR					m_cModelTag[MAX_PATH];
+	_float3					m_vAxis;
 
 private:
 	HRESULT Ready_Components();
-	HRESULT SetUp_ShaderResources(); /* 셰이더 전역변수에 값 던진다. */
 
 public:
-	static CTerrain_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CStaticModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

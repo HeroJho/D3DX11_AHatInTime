@@ -5,10 +5,14 @@
 #include "ToolManager.h"
 #include "CamManager.h"
 #include "MapManager.h"
+#include "DataManager.h"
 
 #include "ColorCube.h"
 #include "MarkCube.h"
 #include "LookCube.h"
+#include "StaticModel.h"
+
+#include "Transform.h"
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
@@ -207,20 +211,14 @@ void CImGui_Manager::Render_MapTool()
 {
 	Render_StaticTool();
 
-	ImGui::Begin("MapTool Box");
+	Window_Terrain();
 	
+	Window_Model();
 
-	_float fTemp = CMapManager::Get_Instance()->Get_Height();
-	if (ImGui::InputFloat("Height", &fTemp))
-		CMapManager::Get_Instance()->Set_Height(fTemp);
-	fTemp = CMapManager::Get_Instance()->Get_Rad();
-	if (ImGui::InputFloat("Rad", &fTemp))
-		CMapManager::Get_Instance()->Set_Rad(fTemp);
-	fTemp = CMapManager::Get_Instance()->Get_Sharp();
-	if (ImGui::InputFloat("Sharp", &fTemp))
-		CMapManager::Get_Instance()->Set_Sharp(fTemp);
+	Window_CreatedModel();
 
-	ImGui::End();
+	Window_Transform();
+
 }
 void CImGui_Manager::Render_CamTool()
 {
@@ -462,6 +460,128 @@ void CImGui_Manager::UI_MarkCubes()
 
 
 }
+
+
+
+
+void CImGui_Manager::Window_Terrain()
+{
+	ImGui::Begin("Terrain Box");
+
+
+	_float fTemp = CMapManager::Get_Instance()->Get_Height();
+	if (ImGui::InputFloat("Height", &fTemp))
+		CMapManager::Get_Instance()->Set_Height(fTemp);
+	fTemp = CMapManager::Get_Instance()->Get_Rad();
+	if (ImGui::InputFloat("Rad", &fTemp))
+		CMapManager::Get_Instance()->Set_Rad(fTemp);
+	fTemp = CMapManager::Get_Instance()->Get_Sharp();
+	if (ImGui::InputFloat("Sharp", &fTemp))
+		CMapManager::Get_Instance()->Set_Sharp(fTemp);
+
+	ImGui::End();
+}
+
+void CImGui_Manager::Window_Model()
+{
+	ImGui::Begin("Model Box");
+
+	const list<string>* FileNames = CDataManager::Get_Instance()->Get_FileNames();
+	
+	ImVec2 vSize{ 150.f, 300.f };
+	if (ImGui::BeginListBox("Models", vSize))
+	{
+		for (auto& sModelName : *FileNames)
+		{
+			bool isSelected = CMapManager::Get_Instance()->Get_PickedString() == sModelName;
+			vSize= { 100.f, 10.f };
+			if (ImGui::Selectable(sModelName.data(), isSelected, 0, vSize))
+				CMapManager::Get_Instance()->Set_PickedString(sModelName);
+			 
+
+
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+
+		ImGui::EndListBox();
+	}
+
+	if(ImGui::Button("Create"))
+		CMapManager::Get_Instance()->Make_Model();
+
+
+
+	ImGui::End();
+}
+
+void CImGui_Manager::Window_CreatedModel()
+{
+	ImGui::Begin("CreatedModel Box");
+
+
+	
+
+	
+
+
+
+
+	const map<string, CStaticModel*>* tempModels = CMapManager::Get_Instance()->Get_StaticModels();
+	if (ImGui::BeginListBox("CreatedModels"))
+	{
+		for (auto& sModel : *tempModels)
+		{
+			bool isSelected = CMapManager::Get_Instance()->Get_PickedCreatedString() == sModel.first;
+			ImVec2 vSize{ 100.f, 10.f };
+			if (ImGui::Selectable(sModel.first.data(), isSelected, 0, vSize))
+				CMapManager::Get_Instance()->Set_PickedCreatedString(sModel.first);
+
+
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndListBox();
+	}
+
+	ImGui::End();
+}
+
+void CImGui_Manager::Window_Transform()
+{
+	ImGui::Begin("Transform");
+
+	CStaticModel* pPickedModel = CMapManager::Get_Instance()->Get_PickedCreatedModel();
+	if (pPickedModel)
+	{
+		CTransform* pTransform = (CTransform*)pPickedModel->Get_ComponentPtr(TEXT("Com_Transform"));
+
+		_float3 vPos; XMStoreFloat3(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
+		_float3 vScale = pTransform->Get_Scale();
+		_float3 vAxis = pPickedModel->Get_Axis();
+
+	
+		if (ImGui::DragFloat3("Pos", (_float*)&vPos, 0.1f))
+			pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
+		if (ImGui::DragFloat3("Scale", (_float*)&vScale, 0.01f, 0.001f))
+			pTransform->Set_Scale(XMLoadFloat3(&vScale));
+		if (ImGui::DragFloat3("Rotation", (_float*)&vAxis, 0.1f))
+			pPickedModel->Set_Axis(vAxis);
+
+	}
+	else
+	{
+		ImGui::Text("Please clik Model!");
+	}
+
+
+	ImGui::End();
+}
+
+
+
+
+
 
 void CImGui_Manager::Set_WarningBox(const char * cContent)
 {
