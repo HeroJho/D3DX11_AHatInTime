@@ -41,6 +41,7 @@ public:
 
 public:
 	void Make_Model();
+	void Delete_Model();
 	void Add_Model(class CStaticModel* pStaticModel);
 	
 	class CStaticModel* Get_PickedCreatedModel();

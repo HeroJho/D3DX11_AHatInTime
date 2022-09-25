@@ -2,6 +2,9 @@
 #include "..\Public\StaticModel.h"
 #include "GameInstance.h"
 
+#include "MapManager.h"
+
+
 CStaticModel::CStaticModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -73,6 +76,15 @@ HRESULT CStaticModel::Render()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
+
+
+
+	string sTemp2 = CMapManager::Get_Instance()->Get_PickedCreatedString();
+	_bool bIsPicked = m_sModelNum == sTemp2;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_IsPicked", &bIsPicked, sizeof(_bool))))
+		return E_FAIL;
+
+
 
 	RELEASE_INSTANCE(CGameInstance);
 

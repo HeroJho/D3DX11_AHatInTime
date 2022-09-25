@@ -30,6 +30,7 @@ public:
 	_float3 Get_Axis() { return m_vAxis; }
 	void Set_Axis(_float3 vAxis);
 
+	void Set_ModelNum(string sModelNum) { m_sModelNum = sModelNum; }
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -47,6 +48,7 @@ private:
 
 private:
 	TCHAR					m_cModelTag[MAX_PATH];
+	string					m_sModelNum;
 	_float3					m_vAxis;
 
 private:

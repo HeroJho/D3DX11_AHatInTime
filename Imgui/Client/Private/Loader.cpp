@@ -232,7 +232,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 
-	//_matrix		PivotMatrix = XMMatrixIdentity();
+	_matrix		PivotMatrix = XMMatrixIdentity();
 
 	///* For.Prototype_Component_Model_Fiona */
 	//PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
@@ -240,7 +240,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Meshes/Anim/Fiona/", "Fiona.fbx", PivotMatrix))))
 	//	return E_FAIL;
 
-
+	/* For.Prototype_Component_Model_Fiona */
+	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Meshes/Anim/Player/", "Player.fbx", PivotMatrix))))
+		return E_FAIL;
 
 
 

@@ -488,7 +488,7 @@ void CImGui_Manager::Window_Model()
 
 	const list<string>* FileNames = CDataManager::Get_Instance()->Get_FileNames();
 	
-	ImVec2 vSize{ 150.f, 300.f };
+	ImVec2 vSize{ 150.f, 200.f };
 	if (ImGui::BeginListBox("Models", vSize))
 	{
 		for (auto& sModelName : *FileNames)
@@ -519,16 +519,9 @@ void CImGui_Manager::Window_CreatedModel()
 {
 	ImGui::Begin("CreatedModel Box");
 
-
-	
-
-	
-
-
-
-
+	ImVec2 vSize{ 150.f, 200.f };
 	const map<string, CStaticModel*>* tempModels = CMapManager::Get_Instance()->Get_StaticModels();
-	if (ImGui::BeginListBox("CreatedModels"))
+	if (ImGui::BeginListBox("CreatedModels", vSize))
 	{
 		for (auto& sModel : *tempModels)
 		{
@@ -543,6 +536,9 @@ void CImGui_Manager::Window_CreatedModel()
 		}
 		ImGui::EndListBox();
 	}
+
+	if (ImGui::Button("Delete"))
+		CMapManager::Get_Instance()->Delete_Model();
 
 	ImGui::End();
 }

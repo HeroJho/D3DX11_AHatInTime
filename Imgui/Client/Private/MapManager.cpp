@@ -41,6 +41,16 @@ void CMapManager::Make_Model()
 	RELEASE_INSTANCE(CGameInstance);
 }
 
+void CMapManager::Delete_Model()
+{
+	CStaticModel* pTemp = Find_Model(m_sPickedCreatedString);
+	if (nullptr == pTemp)
+		return;
+
+	pTemp->Set_Dead();
+	m_StaticModels.erase(m_sPickedCreatedString);
+}
+
 void CMapManager::Add_Model(CStaticModel * pStaticModel)
 {
 	string sTag;
@@ -49,6 +59,7 @@ void CMapManager::Add_Model(CStaticModel * pStaticModel)
 		// 제대로 Gen이 안됐음 카운트 모자람
 	}
 
+	pStaticModel->Set_ModelNum(sTag);
 	m_StaticModels.emplace(sTag, pStaticModel);
 }
 
