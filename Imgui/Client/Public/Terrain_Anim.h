@@ -8,29 +8,17 @@ class CShader;
 class CTexture;
 class CRenderer;
 class CTransform;
-class CModel;
+class CVIBuffer_Map_Terrain;
 END
 
 BEGIN(Client)
 
-class CStaticModel final : public CGameObject
+class CTerrain_Anim : public CGameObject
 {
-public:
-	typedef struct tagStaticModelDesc
-	{
-		TCHAR		cModelTag[MAX_PATH];
-	}STATICMODELDESC;
-
-private:
-	CStaticModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CStaticModel(const CStaticModel& rhs);
-	virtual ~CStaticModel() = default;
-
-public:
-	_float3* Get_Axis() { return &m_vAxis; }
-
-
-	void Set_ModelNum(string sModelNum) { m_sModelNum = sModelNum; }
+protected:
+	CTerrain_Anim(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CTerrain_Anim(const CTerrain_Anim& rhs);
+	virtual ~CTerrain_Anim() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -39,23 +27,23 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+
 private:
 	CShader*				m_pShaderCom = nullptr;
+	CTexture*				m_pTextureCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
-	CModel*					m_pModelCom = nullptr;
-
+	CVIBuffer_Map_Terrain*	m_pVIBufferCom = nullptr;
 
 private:
-	TCHAR					m_cModelTag[MAX_PATH];
-	string					m_sModelNum;
-	_float3					m_vAxis;
+	_float3					m_vMousePickPos;
 
 private:
 	HRESULT Ready_Components();
+	HRESULT SetUp_ShaderResources(); /* 셰이더 전역변수에 값 던진다. */
 
 public:
-	static CStaticModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CTerrain_Anim* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

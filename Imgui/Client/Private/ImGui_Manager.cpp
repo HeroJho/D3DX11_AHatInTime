@@ -6,11 +6,13 @@
 #include "CamManager.h"
 #include "MapManager.h"
 #include "DataManager.h"
+#include "AnimManager.h"
 
 #include "ColorCube.h"
 #include "MarkCube.h"
 #include "LookCube.h"
 #include "StaticModel.h"
+#include "AnimModel.h"
 
 #include "Transform.h"
 
@@ -93,6 +95,9 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	case Client::LEVEL_CAMTOOL:
 		Render_CamTool();
 		break;
+	case Client::LEVEL_ANIMTOOL:
+		Render_AnimTool();
+		break;
 	case Client::LEVEL_TESTLEVEL:
 		Render_TestLevel();
 		break;
@@ -117,30 +122,8 @@ void CImGui_Manager::Render()
 
 
 
-void CImGui_Manager::Change_Level(LEVEL eCurLevel)
+void CImGui_Manager::Init_Level(LEVEL eCurLevel)
 {
-	if (eCurLevel == m_eCurLevel)
-		return;
-
-	switch (m_eCurLevel)
-	{
-	case Client::LEVEL_GAMEPLAY:
-		Clear_GamePlay();
-		break;
-	case Client::LEVEL_SELECTTOOL:
-		Clear_SelectTool();
-		break;
-	case Client::LEVEL_MAPTOOL:
-		Clear_MapTool();
-		break;
-	case Client::LEVEL_CAMTOOL:
-		Clear_CamTool();
-		break;
-	case Client::LEVEL_TESTLEVEL:
-		Clear_TestLevel();
-		break;
-	}
-
 	m_eCurLevel = eCurLevel;
 
 	switch (m_eCurLevel)
@@ -157,14 +140,39 @@ void CImGui_Manager::Change_Level(LEVEL eCurLevel)
 	case Client::LEVEL_CAMTOOL:
 		Init_CamTool();
 		break;
+	case Client::LEVEL_ANIMTOOL:
+		Init_AnimTool();
+		break;
 	case Client::LEVEL_TESTLEVEL:
 		Init_TestLevel();
 		break;
 	}
 
 }
-
-
+void CImGui_Manager::Clear_Level()
+{
+	switch (m_eCurLevel)
+	{
+	case Client::LEVEL_GAMEPLAY:
+		Clear_GamePlay();
+		break;
+	case Client::LEVEL_SELECTTOOL:
+		Clear_SelectTool();
+		break;
+	case Client::LEVEL_MAPTOOL:
+		Clear_MapTool();
+		break;
+	case Client::LEVEL_CAMTOOL:
+		Clear_CamTool();
+		break;
+	case Client::LEVEL_ANIMTOOL:
+		Clear_AnimTool();
+		break;
+	case Client::LEVEL_TESTLEVEL:
+		Clear_TestLevel();
+		break;
+	}
+}
 
 
 void CImGui_Manager::Init_GamePlay()
@@ -177,6 +185,9 @@ void CImGui_Manager::Init_MapTool()
 {
 }
 void CImGui_Manager::Init_CamTool()
+{
+}
+void CImGui_Manager::Init_AnimTool()
 {
 }
 void CImGui_Manager::Init_TestLevel()
@@ -200,7 +211,8 @@ void CImGui_Manager::Render_SelectTool()
 		CToolManager::Get_Instance()->Change_Level(LEVEL_MAPTOOL);
 	else if (ImGui::Button("CamTool"))
 		CToolManager::Get_Instance()->Change_Level(LEVEL_CAMTOOL);
-	
+	else if (ImGui::Button("AnimTool"))
+		CToolManager::Get_Instance()->Change_Level(LEVEL_ANIMTOOL);
 	else if (ImGui::Button("TestTool"))
 		CToolManager::Get_Instance()->Change_Level(LEVEL_TESTLEVEL);
 
@@ -210,6 +222,7 @@ void CImGui_Manager::Render_SelectTool()
 void CImGui_Manager::Render_MapTool()
 {
 	Render_StaticTool();
+
 
 	Window_Terrain();
 	
@@ -258,6 +271,33 @@ void CImGui_Manager::Render_CamTool()
 
 	ImGui::End();
 }
+void CImGui_Manager::Render_AnimTool()
+{
+	Render_StaticTool();
+
+
+	Window_AnimModleList();
+
+
+	// Transform & Editor
+	CAnimModel* pObj = CAnimManager::Get_Instance()->Get_AnimModel();
+	if (nullptr != pObj)
+	{
+		CTransform* pTransform = (CTransform*)pObj->Get_ComponentPtr(TEXT("Com_Transform"));
+		_float3* pAixs = pObj->Get_Axis();
+		Window_Transform(pTransform, pAixs);
+
+		Window_AnimEditor();
+	}
+
+
+	if (CAnimManager::Get_Instance()->Get_IsDelete())
+		Window_IsDelete();
+
+
+	
+
+}
 void CImGui_Manager::Render_TestLevel()
 {
 	Render_StaticTool();
@@ -280,7 +320,11 @@ void CImGui_Manager::Render_StaticTool()
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
 	if (ImGui::Button("SelectTool"))
+	{
 		CToolManager::Get_Instance()->Change_Level(LEVEL_SELECTTOOL);
+		CImGui_Manager::Get_Instance()->Clear_Level();
+	}
+
 
 
 	ImGui::End();
@@ -306,6 +350,12 @@ void CImGui_Manager::Clear_CamTool()
 {
 
 	CCamManager::Get_Instance()->Free();
+
+}
+void CImGui_Manager::Clear_AnimTool()
+{
+
+	CAnimManager::Get_Instance()->Free();
 
 }
 void CImGui_Manager::Clear_TestLevel()
@@ -486,7 +536,7 @@ void CImGui_Manager::Window_Model()
 {
 	ImGui::Begin("Model Box");
 
-	const list<string>* FileNames = CDataManager::Get_Instance()->Get_FileNames();
+	const list<string>* FileNames = CDataManager::Get_Instance()->Get_NonAnimFileNames();
 	
 	ImVec2 vSize{ 150.f, 200.f };
 	if (ImGui::BeginListBox("Models", vSize))
@@ -545,34 +595,103 @@ void CImGui_Manager::Window_CreatedModel()
 
 void CImGui_Manager::Window_Transform()
 {
-	ImGui::Begin("Transform");
 
 	CStaticModel* pPickedModel = CMapManager::Get_Instance()->Get_PickedCreatedModel();
-	if (pPickedModel)
+
+	if (nullptr == pPickedModel)
+		return;
+
+	CTransform* pTransform = (CTransform*)pPickedModel->Get_ComponentPtr(TEXT("Com_Transform"));
+	_float3* vAixs = pPickedModel->Get_Axis();
+	Window_Transform(pTransform, vAixs);
+
+
+}
+
+void CImGui_Manager::Window_AnimModleList()
+{
+
+	ImGui::Begin("Anim Box");
+
+	const list<string>* FileNames = CDataManager::Get_Instance()->Get_AnimFileNames();
+
+	ImVec2 vSize{ 150.f, 200.f };
+	if (ImGui::BeginListBox("Models", vSize))
 	{
-		CTransform* pTransform = (CTransform*)pPickedModel->Get_ComponentPtr(TEXT("Com_Transform"));
+		for (auto& sModelName : *FileNames)
+		{
+			bool isSelected = CAnimManager::Get_Instance()->Get_PickedString() == sModelName;
+			vSize = { 100.f, 10.f };
+			if (ImGui::Selectable(sModelName.data(), isSelected, 0, vSize))
+				CAnimManager::Get_Instance()->Set_PickedString(sModelName);
 
-		_float3 vPos; XMStoreFloat3(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
-		_float3 vScale = pTransform->Get_Scale();
-		_float3 vAxis = pPickedModel->Get_Axis();
 
-	
-		if (ImGui::DragFloat3("Pos", (_float*)&vPos, 0.1f))
-			pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
-		if (ImGui::DragFloat3("Scale", (_float*)&vScale, 0.01f, 0.001f))
-			pTransform->Set_Scale(XMLoadFloat3(&vScale));
-		if (ImGui::DragFloat3("Rotation", (_float*)&vAxis, 0.1f))
-			pPickedModel->Set_Axis(vAxis);
 
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+
+		ImGui::EndListBox();
 	}
-	else
+
+
+	if (ImGui::Button("Load") && !CAnimManager::Get_Instance()->Get_IsLoading())
+		CAnimManager::Get_Instance()->Make_Model();
+	else if (CAnimManager::Get_Instance()->Get_IsLoading())
+		CAnimManager::Get_Instance()->Load_Model();
+
+
+	ImGui::End();
+
+}
+
+void CImGui_Manager::Window_IsDelete()
+{
+	ImGui::Begin("******************Warning******************");
+
+	ImGui::Text("There is a model created.");
+	ImGui::Text("Are you sure you want to delete it?");
+
+	if (ImGui::Button("Go! Delete!!!"))
 	{
-		ImGui::Text("Please clik Model!");
+		CAnimManager::Get_Instance()->Delete_Model();
+		CAnimManager::Get_Instance()->Create_Model();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Sorry... It's a mistake"))
+	{
+		CAnimManager::Get_Instance()->Set_IsDelete(false);
 	}
 
 
 	ImGui::End();
+
 }
+
+void CImGui_Manager::Window_AnimEditor()
+{
+	ImGui::Begin("AnimEditor");
+
+
+	_int iAnimCount = CAnimManager::Get_Instance()->Get_AnimCount();
+	_int iCurIndex = CAnimManager::Get_Instance()->Get_CurAimIndex();
+	
+	ImGui::Text("AnimCount: %d", iAnimCount);
+	ImGui::Text("CurIndex: %d", iCurIndex);
+
+	if (ImGui::InputInt("Input Index", &iCurIndex))
+		CAnimManager::Get_Instance()->Change_Anim(iCurIndex);
+	if (ImGui::Button("Delete_Anim"))
+		CAnimManager::Get_Instance()->Delete_Anim(iCurIndex);
+
+
+	if (ImGui::Button("Save_AnimModel"))
+		CAnimManager::Get_Instance()->Save_Anim();
+
+	ImGui::End();
+}
+
+
 
 
 
@@ -594,6 +713,46 @@ void CImGui_Manager::UI_WarningBox()
 
 	if (ImGui::Button("OK"))
 		m_bWarning = false;
+
+	ImGui::End();
+}
+
+void CImGui_Manager::Window_Transform(CTransform* pTransform, _float3* vAxis)
+{
+	ImGui::Begin("Transform");
+
+	if (pTransform)
+	{
+
+		_float3 vPos; XMStoreFloat3(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
+		_float3 vScale = pTransform->Get_Scale();
+
+		if (ImGui::DragFloat3("Pos", (_float*)&vPos, 0.1f))
+			pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
+		if (ImGui::DragFloat3("Scale", (_float*)&vScale, 0.01f, 0.001f))
+			pTransform->Set_Scale(XMLoadFloat3(&vScale));
+		if (ImGui::DragFloat3("Rotation", (_float*)vAxis, 0.1f))
+			pTransform->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), vAxis->x, XMVectorSet(0.f, 1.f, 0.f, 0.f), vAxis->y, XMVectorSet(0.f, 0.f, 1.f, 0.f), vAxis->z);
+
+	}
+	else
+	{
+		ImGui::Text("Please clik Model!");
+	}
+
+
+	ImGui::End();
+}
+
+void CImGui_Manager::UI_LoadingBox()
+{
+	ImVec2 vPos(400.f, 400.f);
+	ImGui::SetNextWindowPos(vPos);
+	ImGui::Begin("Loading...");
+
+
+	ImGui::Text("Model is Loaded... Wait for me!");
+
 
 	ImGui::End();
 }

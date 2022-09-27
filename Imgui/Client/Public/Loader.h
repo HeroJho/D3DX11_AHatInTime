@@ -37,6 +37,7 @@ public:
 	HRESULT Loading_ForSelectToolLevel();
 	HRESULT Loading_ForMapToolLevel();
 	HRESULT Loading_ForCamToolLevel();
+	HRESULT Loading_ForAnimToolLevel();
 	HRESULT Loading_ForTestLevel();
 
 private:

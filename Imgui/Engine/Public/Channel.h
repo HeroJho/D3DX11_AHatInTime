@@ -11,12 +11,14 @@ public:
 	virtual ~CChannel() = default;
 
 public:
-	HRESULT Initialize(aiNodeAnim*	pAIChannel, class CModel* pModel);
-	void Update_Transformation(_float fPlayTime);
-
-	void Reset_KeyFrameIndex() {
-		m_iCurrentKeyFrame = 0;
+	const char* Get_Name() const {
+		return m_szName;
 	}
+
+public:
+	HRESULT Initialize(aiNodeAnim*	pAIChannel);
+	_uint Update_Transformation(_float fPlayTime, _uint iCurrentKeyFrame, class CHierarchyNode* pNode);
+
 
 private:
 	char							m_szName[MAX_PATH] = "";
@@ -24,13 +26,9 @@ private:
 	_uint							m_iNumKeyFrames = 0;
 	vector<KEYFRAME>				m_KeyFrames;
 
-	class CHierarchyNode*			m_pHierarchyNode = nullptr;
-
-	/* 현재 재생되고 있던 키프레임. */
-	_uint							m_iCurrentKeyFrame = 0;
 
 public:
-	static CChannel* Create(aiNodeAnim*	pAIChannel, CModel* pModel);
+	static CChannel* Create(aiNodeAnim*	pAIChannel);
 	virtual void Free() override;
 };
 

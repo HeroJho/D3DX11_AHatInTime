@@ -4,7 +4,7 @@
 
 BEGIN(Engine)
 
-class ENGINE_DLL CVIBuffer_Map_Terrain final : public CVIBuffer
+class ENGINE_DLL CVIBuffer_Flx_Terrain final : public CVIBuffer
 {
 public:
 	typedef struct tagTerrainDesc
@@ -14,9 +14,9 @@ public:
 	}TERRAINDESC;
 
 private:
-	CVIBuffer_Map_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CVIBuffer_Map_Terrain(const CVIBuffer_Map_Terrain& rhs);
-	virtual ~CVIBuffer_Map_Terrain() = default;
+	CVIBuffer_Flx_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CVIBuffer_Flx_Terrain(const CVIBuffer_Flx_Terrain& rhs);
+	virtual ~CVIBuffer_Flx_Terrain() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -28,8 +28,7 @@ public:
 	virtual _bool Picking(class CTransform* pTransform, _float3* pOut);
 	virtual _float Compute_Height(_float3 vTargetPos);
 
-public:
-	void Make_Tick_Up(_float fHeight, _float fRad, _float fSharp, _float3 vPoint, _float fTimeDelta);
+
 
 private:
 	_int Get_Index(_float3 vPos);
@@ -45,7 +44,7 @@ private:
 	_int m_iEndX = 0;
 
 public:
-	static CVIBuffer_Map_Terrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CVIBuffer_Flx_Terrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };

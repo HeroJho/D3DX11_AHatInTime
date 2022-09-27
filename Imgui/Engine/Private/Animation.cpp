@@ -1,12 +1,24 @@
 #include "..\Public\Animation.h"
 #include "Channel.h"
 #include "Model.h"
+#include "HierarchyNode.h"
 
 CAnimation::CAnimation()
 {
 }
 
-HRESULT CAnimation::Initialize(aiAnimation * pAIAnimation, CModel* pModel)
+CAnimation::CAnimation(const CAnimation & rhs)
+	: m_fDuration(rhs.m_fDuration)
+	, m_Channels(rhs.m_Channels)
+	, m_iNumChannels(rhs.m_iNumChannels)
+	, m_fTickPerSecond(rhs.m_fTickPerSecond)
+	, m_fPlayTime(rhs.m_fPlayTime)
+{
+	for (auto& pChannel : m_Channels)
+		Safe_AddRef(pChannel);
+}
+
+HRESULT CAnimation::Initialize_Prototype(aiAnimation * pAIAnimation)
 {
 	m_fDuration = pAIAnimation->mDuration;
 	m_fTickPerSecond = pAIAnimation->mTicksPerSecond;
@@ -18,7 +30,7 @@ HRESULT CAnimation::Initialize(aiAnimation * pAIAnimation, CModel* pModel)
 	/* 현재 애니메이션에서 제어해야할 뼈정보들을 생성하여 보관한다. */
 	for (_uint i = 0; i < m_iNumChannels; ++i)
 	{
-		CChannel*		pChannel = CChannel::Create(pAIAnimation->mChannels[i], pModel);
+		CChannel*		pChannel = CChannel::Create(pAIAnimation->mChannels[i]);
 		if (nullptr == pChannel)
 			return E_FAIL;
 
@@ -27,6 +39,26 @@ HRESULT CAnimation::Initialize(aiAnimation * pAIAnimation, CModel* pModel)
 
 	return S_OK;
 }
+
+HRESULT CAnimation::Initialize(CModel* pModel)
+{
+	for (_uint i = 0; i < m_iNumChannels; ++i)
+	{
+		m_ChannelKeyFrames.push_back(0);
+
+		CHierarchyNode*		pNode = pModel->Get_HierarchyNode(m_Channels[i]->Get_Name());
+
+		if (nullptr == pNode)
+			return E_FAIL;
+
+		m_HierarchyNodes.push_back(pNode);
+
+		Safe_AddRef(pNode);
+	}
+
+	return S_OK;
+}
+
 
 HRESULT CAnimation::Play_Animation(_float fTimeDelta)
 {
@@ -38,24 +70,41 @@ HRESULT CAnimation::Play_Animation(_float fTimeDelta)
 
 		for (auto& pChannel : m_Channels)
 		{
-			pChannel->Reset_KeyFrameIndex();
+			for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
+				iCurrentKeyFrame = 0;
 		}
-
 	}
+
+	_uint		iChannelIndex = 0;
 
 	for (auto& pChannel : m_Channels)
 	{
-		pChannel->Update_Transformation(m_fPlayTime);
+		m_ChannelKeyFrames[iChannelIndex] = pChannel->Update_Transformation(m_fPlayTime, m_ChannelKeyFrames[iChannelIndex], m_HierarchyNodes[iChannelIndex]);
+
+		++iChannelIndex;
 	}
 
 	return S_OK;
 }
 
-CAnimation * CAnimation::Create(aiAnimation * pAIAnimation, CModel* pModel)
+CAnimation * CAnimation::Create(aiAnimation * pAIAnimation)
 {
 	CAnimation*			pInstance = new CAnimation();
 
-	if (FAILED(pInstance->Initialize(pAIAnimation, pModel)))
+	if (FAILED(pInstance->Initialize_Prototype(pAIAnimation)))
+	{
+		MSG_BOX(TEXT("Failed To Created : CAnimation"));
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CAnimation * CAnimation::Clone(CModel* pModel)
+{
+	CAnimation*			pInstance = new CAnimation(*this);
+
+	if (FAILED(pInstance->Initialize(pModel)))
 	{
 		MSG_BOX(TEXT("Failed To Created : CAnimation"));
 		Safe_Release(pInstance);
@@ -66,4 +115,14 @@ CAnimation * CAnimation::Create(aiAnimation * pAIAnimation, CModel* pModel)
 
 void CAnimation::Free()
 {
+	for (auto& pChannel : m_Channels)
+		Safe_Release(pChannel);
+
+	m_Channels.clear();
+
+
+	for (auto& pHierarchyNode : m_HierarchyNodes)
+		Safe_Release(pHierarchyNode);
+
+	m_HierarchyNodes.clear();
 }

@@ -107,5 +107,5 @@ bool CMapManager::GenTag(string* pOut)
 
 void CMapManager::Free()
 {
-
+	m_StaticModels.clear();
 }

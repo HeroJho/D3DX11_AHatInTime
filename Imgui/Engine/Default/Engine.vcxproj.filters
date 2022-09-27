@@ -106,9 +106,6 @@
     <Filter Include="03.Components\06.Model\MeshContainer">
       <UniqueIdentifier>{4f812a48-5efe-4dfa-b031-070d15287069}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03.Components\02.VIBuffer\Map_Terrain">
-      <UniqueIdentifier>{3297bd68-07bc-4e7b-a194-744fbdb4c2ce}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03.Components\06.Model\Animation">
       <UniqueIdentifier>{cc7fec37-8395-46a3-a0cd-d4c4b33099cf}</UniqueIdentifier>
     </Filter>
@@ -117,6 +114,12 @@
     </Filter>
     <Filter Include="03.Components\06.Model\Animation\Channel">
       <UniqueIdentifier>{386eea69-6938-46d6-80b8-786fd2e4d4c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Terrain\VIBuffer_Terrain">
+      <UniqueIdentifier>{d84a3ee3-bee6-42e6-add9-f22298575a98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Terrain\Map_Terrain">
+      <UniqueIdentifier>{3297bd68-07bc-4e7b-a194-744fbdb4c2ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +173,6 @@
     </ClInclude>
     <ClInclude Include="..\public\VIBuffer_Rect.h">
       <Filter>03.Components\02.VIBuffer\Rect</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\VIBuffer_Terrain.h">
-      <Filter>03.Components\02.VIBuffer\Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Texture.h">
       <Filter>03.Components\04.Texture</Filter>
@@ -229,7 +229,7 @@
       <Filter>03.Components\06.Model\MeshContainer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Map_Terrain.h">
-      <Filter>03.Components\02.VIBuffer\Map_Terrain</Filter>
+      <Filter>03.Components\02.VIBuffer\Terrain\Map_Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Animation.h">
       <Filter>03.Components\06.Model\Animation</Filter>
@@ -239,6 +239,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Channel.h">
       <Filter>03.Components\06.Model\Animation\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Terrain.h">
+      <Filter>03.Components\02.VIBuffer\Terrain\VIBuffer_Terrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -277,9 +280,6 @@
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Rect.cpp">
       <Filter>03.Components\02.VIBuffer\Rect</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
-      <Filter>03.Components\02.VIBuffer\Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Texture.cpp">
       <Filter>03.Components\04.Texture</Filter>
@@ -336,7 +336,7 @@
       <Filter>03.Components\06.Model\MeshContainer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Map_Terrain.cpp">
-      <Filter>03.Components\02.VIBuffer\Map_Terrain</Filter>
+      <Filter>03.Components\02.VIBuffer\Terrain\Map_Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Animation.cpp">
       <Filter>03.Components\06.Model\Animation</Filter>
@@ -346,6 +346,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Channel.cpp">
       <Filter>03.Components\06.Model\Animation\Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
+      <Filter>03.Components\02.VIBuffer\Terrain\VIBuffer_Terrain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

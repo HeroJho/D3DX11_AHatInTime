@@ -30,10 +30,10 @@ public:
 
 public:
 	void Make_Tick_Up(_float fHeight, _float fRad, _float fSharp, _float3 vPoint, _float fTimeDelta);
-	void Make_Tick_Down(_float fHeight, _float fRad, _float fSharp, _float3 vPoint);
 
 private:
 	_int Get_Index(_float3 vPos);
+	HRESULT Cul_OptiIndex(_fvector vPos, _fvector vDir);
 
 private:
 	_uint			m_iNumVerticesX, m_iNumVerticesZ;

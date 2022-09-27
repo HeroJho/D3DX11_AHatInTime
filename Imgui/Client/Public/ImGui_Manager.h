@@ -2,6 +2,13 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+BEGIN(Engine)
+
+class CTransform;
+
+END
+
+
 BEGIN(Client)
 
 class CImGui_Manager final : public CBase
@@ -25,7 +32,9 @@ public:
 
 
 public:
-	void Change_Level(LEVEL eCurLevel);
+	void Init_Level(LEVEL eCurLevel);
+	void Clear_Level();
+
 	void Set_WarningBox(const char* cContent);
 
 
@@ -38,7 +47,9 @@ private:
 	void Init_SelectTool();
 	void Init_MapTool();
 	void Init_CamTool();
+	void Init_AnimTool();
 	void Init_TestLevel();
+	
 
 
 
@@ -46,6 +57,7 @@ private:
 	void Render_SelectTool();
 	void Render_MapTool();
 	void Render_CamTool();
+	void Render_AnimTool();
 	void Render_TestLevel();
 
 	void Render_StaticTool();
@@ -56,6 +68,7 @@ private:
 	void Clear_SelectTool();
 	void Clear_MapTool();
 	void Clear_CamTool();
+	void Clear_AnimTool();
 	void Clear_TestLevel();
 
 
@@ -70,9 +83,19 @@ private:
 	void Window_CreatedModel();
 	void Window_Transform();
 
+	// FOR. AnimTool
+	void Window_AnimModleList();
+	void Window_IsDelete();
+	void Window_AnimEditor();
+
 private:
 	// FOR. Static
 	void UI_WarningBox();
+	void Window_Transform(CTransform* pTransform, _float3* vAxis);
+
+public:
+	void UI_LoadingBox();
+
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

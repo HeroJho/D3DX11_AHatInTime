@@ -8,10 +8,12 @@ class CAnimation final : public CBase
 {
 private:
 	CAnimation();
+	CAnimation(const CAnimation& rhs);
 	virtual ~CAnimation() = default;
 
 public:
-	HRESULT Initialize(aiAnimation* pAIAnimation, class CModel* pModel);
+	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation);
+	HRESULT Initialize(class CModel* pModel);
 	HRESULT Play_Animation(_float fTimeDelta);
 
 private:
@@ -27,8 +29,13 @@ private:
 
 	_float						m_fPlayTime = 0.f;
 
+private: /* 복제된 애니메이션 마다 따로 가진다. */
+	vector<class CHierarchyNode*>	m_HierarchyNodes;
+	vector<_uint>					m_ChannelKeyFrames;
+
 public:
-	static CAnimation* Create(aiAnimation* pAIAnimation, class CModel* pModel);
+	static CAnimation* Create(aiAnimation* pAIAnimation);
+	CAnimation* Clone(class CModel* pModel);
 	virtual void Free() override;
 };
 

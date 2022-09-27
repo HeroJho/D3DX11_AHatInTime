@@ -8,6 +8,7 @@
 #include "Level_SelectTool.h"
 #include "Level_MapTool.h"
 #include "Level_CamTool.h"
+#include "Level_AnimTool.h"
 #include "Level_TestLevel.h"
 
 #include "Loader.h"
@@ -60,6 +61,9 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 			case LEVEL_CAMTOOL:
 				pNewLevel = CLevel_CamTool::Create(m_pDevice, m_pDeviceContext);
 				break;
+			case LEVEL_ANIMTOOL:
+				pNewLevel = CLevel_AnimTool::Create(m_pDevice, m_pDeviceContext);
+				break;
 			case LEVEL_TESTLEVEL:
 				pNewLevel = CLevel_TestLevel::Create(m_pDevice, m_pDeviceContext);
 				break;
@@ -70,7 +74,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 			if (nullptr == pNewLevel)
 				goto except;
 
-			CImGui_Manager::Get_Instance()->Change_Level(m_eNextLevel);
+			CImGui_Manager::Get_Instance()->Init_Level(m_eNextLevel);
 			if (FAILED(pGameInstance->Open_Level(m_eNextLevel, pNewLevel)))
 				goto except;
 

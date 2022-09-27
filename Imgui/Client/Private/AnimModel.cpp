@@ -1,40 +1,47 @@
 #include "stdafx.h"
-#include "..\Public\Player.h"
+#include "..\Public\AnimModel.h"
 #include "GameInstance.h"
 
-CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CAnimModel::CAnimModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
+	ZeroMemory(&m_vAxis, sizeof(_float3));
 }
 
-CPlayer::CPlayer(const CPlayer & rhs)
+CAnimModel::CAnimModel(const CAnimModel & rhs)
 	: CGameObject(rhs)
 {
+	ZeroMemory(&m_vAxis, sizeof(_float3));
 }
 
-HRESULT CPlayer::Initialize_Prototype()
+HRESULT CAnimModel::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CPlayer::Initialize(void * pArg)
+HRESULT CAnimModel::Initialize(void * pArg)
 {
+	if (nullptr == pArg)
+		return E_FAIL;
+
+	ANIMMODELDESC* Desc = (ANIMMODELDESC*)pArg;
+
+	wcscpy(m_cModelTag, Desc->cModelTag);
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pModelCom->Set_AnimIndex(rand() %  30);
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 10, 0.f, rand() % 10, 1.f));
-	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 0.f));
-	
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+
 	return S_OK;
 }
 
-void CPlayer::Tick(_float fTimeDelta)
+void CAnimModel::Tick(_float fTimeDelta)
 {
 
 }
 
-void CPlayer::LateTick(_float fTimeDelta)
+void CAnimModel::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
@@ -44,7 +51,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
-HRESULT CPlayer::Render()
+HRESULT CAnimModel::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -80,7 +87,37 @@ HRESULT CPlayer::Render()
 	return S_OK;
 }
 
-HRESULT CPlayer::Ready_Components()
+
+
+
+
+
+_int CAnimModel::Get_AnimCount()
+{
+	return m_pModelCom->Get_AnimIndex();
+}
+
+_int CAnimModel::Get_CurAnimIndex()
+{
+	return m_pModelCom->Get_CurAnimIndex();
+}
+
+void CAnimModel::Set_AnimIndex(_int iIndex)
+{
+	m_pModelCom->Set_AnimIndex(iIndex);
+}
+
+void CAnimModel::Delete_Anim(_int iIndex)
+{
+	m_pModelCom->Delete_Anim(iIndex);
+}
+
+
+
+
+
+
+HRESULT CAnimModel::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -95,39 +132,39 @@ HRESULT CPlayer::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_ANIMTOOL, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-CPlayer * CPlayer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CAnimModel * CAnimModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CPlayer*		pInstance = new CPlayer(pDevice, pContext);
+	CAnimModel*		pInstance = new CAnimModel(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CPlayer"));
+		MSG_BOX(TEXT("Failed To Created : CAnimModel"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CPlayer::Clone(void * pArg)
+CGameObject * CAnimModel::Clone(void * pArg)
 {
-	CPlayer*		pInstance = new CPlayer(*this);
+	CAnimModel*		pInstance = new CAnimModel(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CPlayer"));
+		MSG_BOX(TEXT("Failed To Cloned : CAnimModel"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CPlayer::Free()
+void CAnimModel::Free()
 {
 	__super::Free();
 

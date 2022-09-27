@@ -7,6 +7,7 @@
 #include "CamManager.h"
 #include "MapManager.h"
 #include "DataManager.h"
+#include "AnimManager.h"
 
 #include "Level_Loading.h"
 
@@ -44,6 +45,8 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 	if (FAILED(CImGui_Manager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
+	if (FAILED(CAnimManager::Get_Instance()->Init(m_pDevice, m_pContext)))
+		return E_FAIL;
 
 
 	if (FAILED(CToolManager::Get_Instance()->Change_Level(LEVEL_GAMEPLAY)))
@@ -70,7 +73,7 @@ HRESULT CMainApp::Render()
 	if (nullptr == m_pGameInstance)
 		return E_FAIL;
 
-	m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 0.f, 1.f, 1.f));
+	m_pGameInstance->Clear_BackBuffer_View(_float4(0.1f, 0.1f, 0.1f, 1.f));
 	m_pGameInstance->Clear_DepthStencil_View();
 
 	m_pRenderer->Draw();
@@ -168,6 +171,7 @@ CMainApp * CMainApp::Create()
 
 void CMainApp::Free()
 {
+	CAnimManager::Destroy_Instance();
 	CDataManager::Destroy_Instance();
 	CToolManager::Destroy_Instance();
 	CCamManager::Destroy_Instance();

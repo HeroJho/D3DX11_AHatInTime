@@ -6,13 +6,14 @@ CHierarchyNode::CHierarchyNode()
 }
 
 HRESULT CHierarchyNode::Initialize(aiNode * pAINode, CHierarchyNode* pParent, _uint iDepth)
-{
+{ 
 	strcpy_s(m_szName, pAINode->mName.data);
 
 	XMStoreFloat4x4(&m_OffsetMatrix, XMMatrixIdentity());
 
 	memcpy(&m_Transformation, &pAINode->mTransformation, sizeof(_float4x4));
 	XMStoreFloat4x4(&m_Transformation, XMMatrixTranspose(XMLoadFloat4x4(&m_Transformation)));
+	m_OriTransformation = m_Transformation;
 
 	m_iDepth = iDepth;
 	m_pParent = pParent;

@@ -4,13 +4,20 @@
 
 CMeshContainer::CMeshContainer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CVIBuffer(pDevice, pContext)
+	, m_bIsProto(true)
 {
 }
 
 CMeshContainer::CMeshContainer(const CMeshContainer & rhs)
 	: CVIBuffer(rhs)
 	, m_iMaterialIndex(rhs.m_iMaterialIndex)
+	, m_pAnimVertices(rhs.m_pAnimVertices)
+	, m_pNonAnimVertices(rhs.m_pNonAnimVertices)
+	, m_pIndices(rhs.m_pIndices)
+	, m_bIsProto(false)
 {
+
+	strcpy_s(m_szName, rhs.m_szName);
 }
 
 HRESULT CMeshContainer::Initialize_Prototype(CModel::TYPE eModelType, const aiMesh * pAIMesh, CModel* pModel, _fmatrix PivotMatrix)
@@ -65,7 +72,7 @@ HRESULT CMeshContainer::Initialize_Prototype(CModel::TYPE eModelType, const aiMe
 	if (FAILED(__super::Create_IndexBuffer()))
 		return E_FAIL;
 
-	Safe_Delete_Array(pIndices);
+	m_pIndices = pIndices;
 
 #pragma endregion
 
@@ -77,20 +84,56 @@ HRESULT CMeshContainer::Initialize(void * pArg)
 	return S_OK;
 }
 
+HRESULT CMeshContainer::SetUp_HierarchyNodes(CModel * pModel, aiMesh* pAIMesh)
+{
+	m_iNumBones = pAIMesh->mNumBones;
+
+
+
+	/* 현재 메시에 영향ㅇ르 ㅈ2ㅜ는 뼈들을 순회한다ㅏ. */
+	for (_uint i = 0; i < m_iNumBones; ++i)
+	{
+		aiBone*		pAIBone = pAIMesh->mBones[i];
+
+		CHierarchyNode*		pHierarchyNode = pModel->Get_HierarchyNode(pAIBone->mName.data);
+
+		_float4x4			OffsetMatrix;
+
+		memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
+
+		pHierarchyNode->Set_OffsetMatrix(XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
+
+		m_Bones.push_back(pHierarchyNode);
+
+		Safe_AddRef(pHierarchyNode);
+	}
+
+	if (0 == m_iNumBones)
+	{
+
+		CHierarchyNode*		pNode = pModel->Get_HierarchyNode(m_szName);
+
+		if (nullptr == pNode)
+			return S_OK;
+
+		m_iNumBones = 1;
+
+		m_Bones.push_back(pNode);
+
+	}
+}
+
 /* 메시의 정점을 그리기위해 셰이더에 넘기기위한 뼈행렬의 배열을 구성한다. */
 void CMeshContainer::SetUp_BoneMatrices(_float4x4 * pBoneMatrices, _fmatrix PivotMatrix)
 {
-	// 뼈가 없다면
 	if (0 == m_iNumBones)
 	{
-		// 항등을 넘겨준다
 		XMStoreFloat4x4(&pBoneMatrices[0], XMMatrixIdentity());
 		return;
 	}
-	// 뼈가 있다면
+
 	for (_uint i = 0; i < m_iNumBones; ++i)
 	{
-		// 메쉬를 뼈 로컬로
 		XMStoreFloat4x4(&pBoneMatrices[i], XMMatrixTranspose(m_Bones[i]->Get_OffSetMatrix() * m_Bones[i]->Get_CombinedTransformation() * PivotMatrix));
 	}
 
@@ -131,7 +174,7 @@ HRESULT CMeshContainer::Ready_Vertices(const aiMesh* pAIMesh, _fmatrix PivotMatr
 	if (FAILED(__super::Create_VertexBuffer()))
 		return E_FAIL;
 
-	Safe_Delete_Array(pVertices);
+	m_pNonAnimVertices = pVertices;
 
 	return S_OK;
 }
@@ -161,28 +204,10 @@ HRESULT CMeshContainer::Ready_AnimVertices(const aiMesh* pAIMesh, CModel* pModel
 		memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
 	}
 
-	m_iNumBones = pAIMesh->mNumBones;
-
-
-
 	/* 현재 메시에 영향ㅇ르 ㅈ2ㅜ는 뼈들을 순회한다ㅏ. */
-	for (_uint i = 0; i < m_iNumBones; ++i)
+	for (_uint i = 0; i < pAIMesh->mNumBones; ++i)
 	{
 		aiBone*		pAIBone = pAIMesh->mBones[i];
-
-
-
-		CHierarchyNode*		pHierarchyNode = pModel->Get_HierarchyNode(pAIBone->mName.data);
-
-		_float4x4			OffsetMatrix;
-
-		memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
-
-		pHierarchyNode->Set_OffsetMatrix(XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
-
-		m_Bones.push_back(pHierarchyNode);
-
-		Safe_AddRef(pHierarchyNode);
 
 		/* i번째 뼈가 어떤 정점들에게 영향ㅇ르 주는지 순회한다. */
 		for (_uint j = 0; j < pAIBone->mNumWeights; ++j)
@@ -215,29 +240,13 @@ HRESULT CMeshContainer::Ready_AnimVertices(const aiMesh* pAIMesh, CModel* pModel
 		}
 	}
 
-
-
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pVertices;
 
 	if (FAILED(__super::Create_VertexBuffer()))
 		return E_FAIL;
 
-	Safe_Delete_Array(pVertices);
-
-	if (0 == m_iNumBones)
-	{
-
-		CHierarchyNode*		pNode = pModel->Get_HierarchyNode(m_szName);
-
-		if (nullptr == pNode)
-			return S_OK;
-
-		m_iNumBones = 1;
-
-		m_Bones.push_back(pNode);
-
-	}
+	m_pAnimVertices = pVertices;
 
 	return S_OK;
 }
@@ -275,6 +284,22 @@ void CMeshContainer::Free()
 	for (auto& pHierarchyNode : m_Bones)
 		Safe_Release(pHierarchyNode);
 
-	m_Bones.clear();
+	if (m_bIsProto)
+	{
+		Safe_Delete_Array(m_pIndices);
+		Safe_Delete_Array(m_pAnimVertices);
+		Safe_Delete_Array(m_pNonAnimVertices);
+	}
 
+	m_Bones.clear();
+}
+
+void CMeshContainer::Get_MeshData(DATA_HEROMETH * pMesh)
+{
+	memcpy(&pMesh->cName, &m_szName, sizeof(char) * MAX_PATH);
+	pMesh->iMaterialIndex = m_iMaterialIndex;
+	pMesh->pNonAnimVertices = m_pNonAnimVertices;
+	pMesh->pAnimVertices = m_pAnimVertices;
+	pMesh->iNumPrimitives = m_iNumPrimitives;
+	pMesh->pIndices = m_pIndices;
 }

@@ -8,17 +8,17 @@ CChannel::CChannel()
 {
 }
 
-HRESULT CChannel::Initialize(aiNodeAnim * pAIChannel, CModel* pModel)
+HRESULT CChannel::Initialize(aiNodeAnim * pAIChannel)
 {
 	/* 특정 애니메이션에서 사용되는 뼈의 정보이다. */
 	/* 이 이름은 모델이 가지고 있는 HierarchyNodes의 뼈대 중 한놈과 이름이 같을 것이다. */
 	strcpy_s(m_szName, pAIChannel->mNodeName.data);
 
-	m_pHierarchyNode = pModel->Get_HierarchyNode(m_szName);
-	if (nullptr == m_pHierarchyNode)
-		return E_FAIL;
+	//m_pHierarchyNode = pModel->Get_HierarchyNode(m_szName);
+	//if (nullptr == m_pHierarchyNode)
+	//	return E_FAIL;
 
-	Safe_AddRef(m_pHierarchyNode);
+	// Safe_AddRef(m_pHierarchyNode);
 
 
 	/* 키프레임 정보들를 로드한다. */
@@ -65,7 +65,7 @@ HRESULT CChannel::Initialize(aiNodeAnim * pAIChannel, CModel* pModel)
 	return S_OK;
 }
 
-void CChannel::Update_Transformation(_float fPlayTime)
+_uint CChannel::Update_Transformation(_float fPlayTime, _uint iCurrentKeyFrame, CHierarchyNode* pNode)
 {
 	_float3			vScale;
 	_float4			vRotation;
@@ -80,24 +80,24 @@ void CChannel::Update_Transformation(_float fPlayTime)
 
 	else
 	{
-		while (fPlayTime >= m_KeyFrames[m_iCurrentKeyFrame + 1].fTime)
-			++m_iCurrentKeyFrame;
+		while (fPlayTime >= m_KeyFrames[iCurrentKeyFrame + 1].fTime)
+			++iCurrentKeyFrame;
 
-		_float		fRatio = (fPlayTime - m_KeyFrames[m_iCurrentKeyFrame].fTime) /
-			(m_KeyFrames[m_iCurrentKeyFrame + 1].fTime - m_KeyFrames[m_iCurrentKeyFrame].fTime);
+		_float		fRatio = (fPlayTime - m_KeyFrames[iCurrentKeyFrame].fTime) /
+			(m_KeyFrames[iCurrentKeyFrame + 1].fTime - m_KeyFrames[iCurrentKeyFrame].fTime);
 
 		_float3		vSourScale, vDestScale;
 		_float4		vSourRotation, vDestRotation;
 		_float3		vSourPosition, vDestPosition;
 
-		vSourScale = m_KeyFrames[m_iCurrentKeyFrame].vScale;
-		vDestScale = m_KeyFrames[m_iCurrentKeyFrame + 1].vScale;
+		vSourScale = m_KeyFrames[iCurrentKeyFrame].vScale;
+		vDestScale = m_KeyFrames[iCurrentKeyFrame + 1].vScale;
 
-		vSourRotation = m_KeyFrames[m_iCurrentKeyFrame].vRotation;
-		vDestRotation = m_KeyFrames[m_iCurrentKeyFrame + 1].vRotation;
+		vSourRotation = m_KeyFrames[iCurrentKeyFrame].vRotation;
+		vDestRotation = m_KeyFrames[iCurrentKeyFrame + 1].vRotation;
 
-		vSourPosition = m_KeyFrames[m_iCurrentKeyFrame].vPosition;
-		vDestPosition = m_KeyFrames[m_iCurrentKeyFrame + 1].vPosition;
+		vSourPosition = m_KeyFrames[iCurrentKeyFrame].vPosition;
+		vDestPosition = m_KeyFrames[iCurrentKeyFrame + 1].vPosition;
 
 		XMStoreFloat3(&vScale, XMVectorLerp(XMLoadFloat3(&vSourScale), XMLoadFloat3(&vDestScale), fRatio));
 		XMStoreFloat4(&vRotation, XMQuaternionSlerp(XMLoadFloat4(&vSourRotation), XMLoadFloat4(&vDestRotation), fRatio));
@@ -106,15 +106,17 @@ void CChannel::Update_Transformation(_float fPlayTime)
 
 	_matrix		TransformationMatrix = XMMatrixAffineTransformation(XMLoadFloat3(&vScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&vRotation), XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
 
-	if (nullptr != m_pHierarchyNode)
-		m_pHierarchyNode->Set_Transformation(TransformationMatrix);
+	if (nullptr != pNode)
+		pNode->Set_Transformation(TransformationMatrix);
+
+	return iCurrentKeyFrame;
 }
 
-CChannel * CChannel::Create(aiNodeAnim * pAIChannel, CModel* pModel)
+CChannel * CChannel::Create(aiNodeAnim * pAIChannel)
 {
 	CChannel*			pInstance = new CChannel();
 
-	if (FAILED(pInstance->Initialize(pAIChannel, pModel)))
+	if (FAILED(pInstance->Initialize(pAIChannel)))
 	{
 		MSG_BOX(TEXT("Failed To Created : CChannel"));
 		Safe_Release(pInstance);
@@ -125,6 +127,6 @@ CChannel * CChannel::Create(aiNodeAnim * pAIChannel, CModel* pModel)
 
 void CChannel::Free()
 {
-	Safe_Release(m_pHierarchyNode);
+
 }
 

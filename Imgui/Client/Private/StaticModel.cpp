@@ -21,11 +21,6 @@ CStaticModel::CStaticModel(const CStaticModel & rhs)
 
 }
 
-void CStaticModel::Set_Axis(_float3 vAxis)
-{
-	m_vAxis = vAxis;
-	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_vAxis.x, XMVectorSet(0.f, 1.f, 0.f, 0.f), m_vAxis.y, XMVectorSet(0.f, 0.f, 1.f, 0.f), m_vAxis.z);
-}
 
 HRESULT CStaticModel::Initialize_Prototype()
 {

@@ -10,6 +10,7 @@
 #include "BackGround.h"
 #include "Terrain.h"
 #include "Terrain_Map.h"
+#include "Terrain_Anim.h"
 #include "Monster.h"
 #include "Player.h"
 #include "Sky.h"
@@ -20,6 +21,7 @@
 #include "CamSelectingCube.h"
 #include "RenderCube.h"
 #include "StaticModel.h"
+#include "AnimModel.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -51,6 +53,9 @@ _uint APIENTRY LoadingMain(void* pArg)
 		break;
 	case LEVEL_CAMTOOL:
 		pLoader->Loading_ForCamToolLevel();
+		break;
+	case LEVEL_ANIMTOOL :
+		pLoader->Loading_ForAnimToolLevel();
 		break;
 	case LEVEL_TESTLEVEL:
 		pLoader->Loading_ForTestLevel();
@@ -98,6 +103,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_Terrain_Map*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain_Map"),
 		CTerrain_Map::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_Terrain_Anim*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain_Anim"),
+		CTerrain_Anim::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	/* For.Prototype_GameObject_Player*/
@@ -148,6 +157,26 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_RenderCube"),
 		CRenderCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	/* For.Prototype_GameObject_Terrain_StaticModel*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_StaticModel"),
+		CStaticModel::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Terrain_AnimModel*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_AnimModel"),
+		CAnimModel::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -218,10 +247,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 
-	/* For.Prototype_GameObject_Terrain_StaticModel*/
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_StaticModel"),
-		CStaticModel::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
 
 
 
@@ -241,10 +266,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	//	return E_FAIL;
 
 	/* For.Prototype_Component_Model_Fiona */
-	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Meshes/Anim/Player/", "Player.fbx", PivotMatrix))))
-		return E_FAIL;
+	//PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
+	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Meshes/Anim/Player/", "Player.fbx", PivotMatrix))))
+	//	return E_FAIL;
 
 
 
@@ -388,6 +413,50 @@ HRESULT CLoader::Loading_ForCamToolLevel()
 	return S_OK;
 }
 
+HRESULT CLoader::Loading_ForAnimToolLevel()
+{
+
+	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("객체원형을 로딩중입니다. "));
+	/* 객체원형 로드한다. */
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다. "));
+	/* 텍스쳐를 로드한다. */
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다. "));
+	/* 모델를 로드한다. */
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니ㅏㄷ.  "));
+
+	Safe_Release(pGameInstance);
+
+	m_isFinished = true;
+
+	return S_OK;
+}
+
 HRESULT CLoader::Loading_ForTestLevel()
 {
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
@@ -441,7 +510,7 @@ HRESULT CLoader::Loading_Model_NoneAnim()
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 
-	const list<string>* FileNames = CDataManager::Get_Instance()->Get_FileNames();
+	const list<string>* FileNames = CDataManager::Get_Instance()->Get_NonAnimFileNames();
 	
 	_matrix		PivotMatrix = XMMatrixIdentity();
 	for (auto& sFileName : *FileNames)

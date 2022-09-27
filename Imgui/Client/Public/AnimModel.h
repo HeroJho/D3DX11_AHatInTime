@@ -13,24 +13,18 @@ END
 
 BEGIN(Client)
 
-class CStaticModel final : public CGameObject
+class CAnimModel final : public CGameObject
 {
 public:
-	typedef struct tagStaticModelDesc
+	typedef struct tagAnimModelDesc
 	{
 		TCHAR		cModelTag[MAX_PATH];
-	}STATICMODELDESC;
+	}ANIMMODELDESC;
 
 private:
-	CStaticModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CStaticModel(const CStaticModel& rhs);
-	virtual ~CStaticModel() = default;
-
-public:
-	_float3* Get_Axis() { return &m_vAxis; }
-
-
-	void Set_ModelNum(string sModelNum) { m_sModelNum = sModelNum; }
+	CAnimModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CAnimModel(const CAnimModel& rhs);
+	virtual ~CAnimModel() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -39,23 +33,34 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+
+public:
+	_int Get_AnimCount();
+	_int Get_CurAnimIndex();
+	void Set_AnimIndex(_int iIndex);
+	void Delete_Anim(_int iIndex);
+
+
+	_float3* Get_Axis() { return &m_vAxis; }
+
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
 	CModel*					m_pModelCom = nullptr;
 
-
 private:
 	TCHAR					m_cModelTag[MAX_PATH];
 	string					m_sModelNum;
 	_float3					m_vAxis;
 
+
 private:
 	HRESULT Ready_Components();
 
 public:
-	static CStaticModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CAnimModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

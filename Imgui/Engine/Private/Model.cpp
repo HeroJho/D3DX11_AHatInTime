@@ -13,16 +13,19 @@ CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 
 CModel::CModel(const CModel & rhs)
 	: CComponent(rhs)
+	, m_pAIScene(rhs.m_pAIScene)
 	, m_iNumMeshes(rhs.m_iNumMeshes)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Meshes(rhs.m_Meshes)
 	, m_Materials(rhs.m_Materials)
 	, m_eModelType(rhs.m_eModelType)
-	, m_HierarchyNodes(rhs.m_HierarchyNodes)
+	/*, m_HierarchyNodes(rhs.m_HierarchyNodes)*/
 	, m_Animations(rhs.m_Animations)
 	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
+	, m_DataMaterials(rhs.m_DataMaterials)
+
 {
 	for (auto& pMeshContainer : m_Meshes)
 		Safe_AddRef(pMeshContainer);
@@ -33,9 +36,13 @@ CModel::CModel(const CModel & rhs)
 		for (_uint i = 0; i < AI_TEXTURE_TYPE_MAX; ++i)
 			Safe_AddRef(Material.pTexture[i]);
 	}
+
+	for (auto& pAnimation : m_Animations)
+		Safe_AddRef(pAnimation);
+
 }
 
-CHierarchyNode * CModel::Get_HierarchyNode(char * pNodeName)
+CHierarchyNode * CModel::Get_HierarchyNode(const char * pNodeName)
 {
 	auto	iter = find_if(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [&](CHierarchyNode* pNode)
 	{
@@ -76,12 +83,12 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const char * pModelFilePath, co
 	if (nullptr == m_pAIScene)
 		return E_FAIL;
 
-	Ready_HierarchyNodes(m_pAIScene->mRootNode, nullptr, 0);
+	/*Ready_HierarchyNodes(m_pAIScene->mRootNode, nullptr, 0);
 
 	sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
 	{
-		return pSour->Get_Depth() < pDest->Get_Depth();
-	});
+	return pSour->Get_Depth() < pDest->Get_Depth();
+	});*/
 
 	/* 모델을 구성하는 메시들을 만든다. */
 	if (FAILED(Ready_MeshContainers(PivotMatrix)))
@@ -99,6 +106,59 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const char * pModelFilePath, co
 
 HRESULT CModel::Initialize(void * pArg)
 {
+	Ready_HierarchyNodes(m_pAIScene->mRootNode, nullptr, 0);
+
+	sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
+	{
+		return pSour->Get_Depth() < pDest->Get_Depth();
+	});
+
+
+	if (TYPE_ANIM == m_eModelType)
+	{
+		_uint		iNumMeshes = 0;
+
+		vector<CMeshContainer*>		MeshContainers;
+
+		for (auto& pPrototype : m_Meshes)
+		{
+			CMeshContainer*		pMeshContainer = (CMeshContainer*)pPrototype->Clone();
+			if (nullptr == pMeshContainer)
+				return E_FAIL;
+
+			MeshContainers.push_back(pMeshContainer);
+
+			Safe_Release(pPrototype);
+		}
+
+		m_Meshes.clear();
+
+		m_Meshes = MeshContainers;
+
+		for (auto& pMeshContainer : m_Meshes)
+		{
+			if (nullptr != pMeshContainer)
+				pMeshContainer->SetUp_HierarchyNodes(this, m_pAIScene->mMeshes[iNumMeshes++]);
+		}
+	}
+
+	vector<CAnimation*>		Animations;
+
+	for (auto& pPrototype : m_Animations)
+	{
+		CAnimation*		pAnimation = pPrototype->Clone(this);
+		if (nullptr == pAnimation)
+			return E_FAIL;
+
+		Animations.push_back(pAnimation);
+
+		Safe_Release(pPrototype);
+	}
+
+	m_Animations.clear();
+
+	m_Animations = Animations;
+
 	return S_OK;
 }
 
@@ -146,6 +206,24 @@ HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex)
 	return S_OK;
 }
 
+HRESULT CModel::Delete_Anim(_uint iIndex)
+{
+	if (TYPE_ANIM  != m_eModelType)
+		return E_FAIL;
+	if (0 > iIndex && m_iNumAnimations <= iIndex)
+		return E_FAIL;
+
+	vector<CAnimation*>::iterator iter = m_Animations.begin();
+	iter += iIndex;
+	Safe_Release(*iter);
+
+	m_Animations.erase(iter);
+
+	--m_iNumAnimations;
+
+}
+
+
 HRESULT CModel::Ready_MeshContainers(_fmatrix PivotMatrix)
 {
 	m_iNumMeshes = m_pAIScene->mNumMeshes;
@@ -174,6 +252,11 @@ HRESULT CModel::Ready_Materials(const char* pModelFilePath)
 		MATERIALDESC		MaterialDesc;
 		ZeroMemory(&MaterialDesc, sizeof(MATERIALDESC));
 
+		// *
+		DATA_HEROMATERIAL		DataMaterialDesc;
+		ZeroMemory(&DataMaterialDesc, sizeof(DATA_HEROMATERIAL));
+
+
 		aiMaterial*			pAIMaterial = m_pAIScene->mMaterials[i];
 
 		for (_uint j = 0; j < AI_TEXTURE_TYPE_MAX; ++j)
@@ -189,11 +272,15 @@ HRESULT CModel::Ready_Materials(const char* pModelFilePath)
 
 			_splitpath_s(strPath.data, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
+			// *
+			memcpy(&DataMaterialDesc.cNames[j], &szFileName, sizeof(char) * MAX_PATH);
+
 			strcpy_s(szFullPath, pModelFilePath);
 			strcat_s(szFullPath, szFileName);
 			strcat_s(szFullPath, szExt);
 
 			_tchar			szWideFullPath[MAX_PATH] = TEXT("");
+
 			MultiByteToWideChar(CP_ACP, 0, szFullPath, strlen(szFullPath), szWideFullPath, MAX_PATH);
 
 
@@ -203,6 +290,9 @@ HRESULT CModel::Ready_Materials(const char* pModelFilePath)
 		}
 
 		m_Materials.push_back(MaterialDesc);
+
+		// *
+		m_DataMaterials.push_back(DataMaterialDesc);
 	}
 
 	return S_OK;
@@ -233,7 +323,7 @@ HRESULT CModel::Ready_Animations()
 	{
 		aiAnimation*		pAIAnimation = m_pAIScene->mAnimations[i];
 
-		CAnimation*			pAnimation = CAnimation::Create(pAIAnimation, this);
+		CAnimation*			pAnimation = CAnimation::Create(pAIAnimation);
 		if (nullptr == pAnimation)
 			return E_FAIL;
 
@@ -241,6 +331,71 @@ HRESULT CModel::Ready_Animations()
 	}
 	return S_OK;
 }
+
+
+
+HRESULT CModel::Get_HierarchyNodeData(DATA_HEROSCENE * pHeroScene)
+{
+
+	pHeroScene->pHeroNodes = new DATA_HERONODE[m_HierarchyNodes.size()];
+	pHeroScene->iNodeCount = m_HierarchyNodes.size();
+
+	for (_int i = 0; i < m_HierarchyNodes.size(); ++i)
+	{
+		DATA_HERONODE Hero_Node;
+		ZeroMemory(&Hero_Node, sizeof(DATA_HERONODE));
+
+		const char* pMyName = m_HierarchyNodes[i]->Get_Name();
+		const char* pParentName = m_HierarchyNodes[i]->Get_ParentName();
+		memcpy(&Hero_Node.cName, pMyName, sizeof(char) * MAX_PATH);
+		memcpy(&Hero_Node.cParent, pParentName, sizeof(char) * MAX_PATH);
+
+		Hero_Node.mTransform = m_HierarchyNodes[i]->Get_OriTransformation();
+
+		pHeroScene->pHeroNodes[i] = Hero_Node;
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Get_MaterialData(DATA_HEROSCENE * pHeroScene)
+{
+	pHeroScene->iMaterialCount = m_iNumMaterials;
+	pHeroScene->pHeroMaterial = new DATA_HEROMATERIAL[m_iNumMaterials];
+
+	for (_int i = 0; i < m_DataMaterials.size(); ++i)
+	{
+		memcpy(&pHeroScene->pHeroMaterial[i], &m_DataMaterials[i], sizeof(DATA_HEROMATERIAL));
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Get_MeshData(DATA_HEROSCENE * pNodeData)
+{
+	pNodeData->iMeshCount = m_iNumMeshes;
+	pNodeData->pHeroMesh = new DATA_HEROMETH[m_iNumMeshes];
+	for (_int i = 0; i < m_iNumMeshes; ++i)
+	{
+		DATA_HEROMETH HeroMesh;
+		m_Meshes[i]->Get_MeshData(&HeroMesh);
+		memcpy(&pNodeData->pHeroMesh[i], &HeroMesh, sizeof(DATA_HEROMETH));
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Get_AnimData(DATA_HEROSCENE * pAnimData)
+{
+
+
+
+
+	return S_OK;
+}
+
+
+
 
 CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, TYPE eType, const char * pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
 {
@@ -272,6 +427,11 @@ void CModel::Free()
 {
 	__super::Free();
 
+	for (auto& pHierarchyNode : m_HierarchyNodes)
+		Safe_Release(pHierarchyNode);
+
+	m_HierarchyNodes.clear();
+
 	for (auto& Material : m_Materials)
 	{
 		for (_uint i = 0; i < AI_TEXTURE_TYPE_MAX; ++i)
@@ -283,6 +443,11 @@ void CModel::Free()
 		Safe_Release(pMeshContainer);
 
 	m_Meshes.clear();
+
+	for (auto& pAnimation : m_Animations)
+		Safe_Release(pAnimation);
+
+	m_Animations.clear();
 
 	m_Importer.FreeScene();
 }

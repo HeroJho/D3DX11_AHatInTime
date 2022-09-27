@@ -14,7 +14,7 @@ private:
 	virtual ~CModel() = default;
 
 public:
-	class CHierarchyNode* Get_HierarchyNode(char* pNodeName);
+	class CHierarchyNode* Get_HierarchyNode(const char* pNodeName);
 
 	_uint Get_NumMeshes() const {
 		return m_iNumMeshes;
@@ -23,9 +23,11 @@ public:
 	_uint Get_MaterialIndex(_uint iMeshIndex);
 
 	void Set_AnimIndex(_uint iAnimIndex) {
-		m_iCurrentAnimIndex = iAnimIndex;
+		if (0 <= iAnimIndex && m_iNumAnimations > iAnimIndex)
+			m_iCurrentAnimIndex = iAnimIndex;
 	}
-
+	_int Get_AnimIndex() { return m_iNumAnimations; }
+	_int Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
 
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
@@ -36,6 +38,9 @@ public:
 	HRESULT SetUp_OnShader(class CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName);
 	HRESULT Play_Animation(_float fTimeDelta);
 	HRESULT Render(class CShader* pShader, _uint iMeshIndex);
+	
+	HRESULT Delete_Anim(_uint iIndex);
+
 
 private:
 	const aiScene*				m_pAIScene = nullptr;
@@ -68,14 +73,24 @@ private:
 	HRESULT Ready_HierarchyNodes(aiNode* pNode, class CHierarchyNode* pParent, _uint iDepth);
 	HRESULT Ready_Animations();
 
-private:
-
-
 
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix = XMMatrixIdentity());
 	virtual CComponent* Clone(void* pArg = nullptr);
 	virtual void Free() override;
+
+
+
+public: // For. Data
+	HRESULT Get_HierarchyNodeData(DATA_HEROSCENE* pNodeData);
+	HRESULT Get_MaterialData(DATA_HEROSCENE* pNodeData);
+	HRESULT Get_MeshData(DATA_HEROSCENE* pNodeData);
+	HRESULT Get_AnimData(DATA_HEROSCENE* pAnimData);
+
+private:
+	vector<DATA_HEROMATERIAL>				m_DataMaterials;
+
+
 };
 
 END

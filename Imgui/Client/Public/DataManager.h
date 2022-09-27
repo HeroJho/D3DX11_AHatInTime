@@ -2,6 +2,12 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+BEGIN(Engine)
+
+class CModel;
+
+END
+
 BEGIN(Client)
 
 class CDataManager final : public CBase
@@ -12,22 +18,24 @@ public:
 	virtual ~CDataManager() = default;
 
 
-
+	// For. Static
 public:
 	HRESULT Init();
 
+	HRESULT SaveAnimData(CModel* pModel);
 
 
 
 public: // For. Map
-	const list<string>* Get_FileNames() { return &m_FilePaths; }
+	const list<string>* Get_NonAnimFileNames() { return &m_NonAnimFilePaths; }
+	const list<string>* Get_AnimFileNames() { return &m_AnimFilePaths; }
 
 private:
 	HRESULT  LoadModelPass();
 
 private:
-	list<string>	m_FilePaths;
-
+	list<string>	m_NonAnimFilePaths;
+	list<string>	m_AnimFilePaths;
 
 
 

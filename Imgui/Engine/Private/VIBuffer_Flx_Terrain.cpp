@@ -1,13 +1,13 @@
-#include "..\Public\VIBuffer_Map_Terrain.h"
+#include "..\Public\VIBuffer_Flx_Terrain.h"
 #include "Picking.h"
 #include "Transform.h"
 
-CVIBuffer_Map_Terrain::CVIBuffer_Map_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CVIBuffer_Flx_Terrain::CVIBuffer_Flx_Terrain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CVIBuffer(pDevice, pContext)
 {
 }
 
-CVIBuffer_Map_Terrain::CVIBuffer_Map_Terrain(const CVIBuffer_Map_Terrain & rhs)
+CVIBuffer_Flx_Terrain::CVIBuffer_Flx_Terrain(const CVIBuffer_Flx_Terrain & rhs)
 	: CVIBuffer(rhs)
 	, m_iNumVerticesX(rhs.m_iNumVerticesX)
 	, m_iNumVerticesZ(rhs.m_iNumVerticesZ)
@@ -18,14 +18,14 @@ CVIBuffer_Map_Terrain::CVIBuffer_Map_Terrain(const CVIBuffer_Map_Terrain & rhs)
 
 
 
-HRESULT CVIBuffer_Map_Terrain::Initialize_Prototype()
+HRESULT CVIBuffer_Flx_Terrain::Initialize_Prototype()
 {
 
 
 	return S_OK;
 }
 
-HRESULT CVIBuffer_Map_Terrain::Initialize(void * pArg)
+HRESULT CVIBuffer_Flx_Terrain::Initialize(void * pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
@@ -42,7 +42,7 @@ HRESULT CVIBuffer_Map_Terrain::Initialize(void * pArg)
 
 
 
-HRESULT CVIBuffer_Map_Terrain::Create_TerrainMxM(_uint iNumVerticesX, _uint iNumVerticesZ)
+HRESULT CVIBuffer_Flx_Terrain::Create_TerrainMxM(_uint iNumVerticesX, _uint iNumVerticesZ)
 {
 
 #pragma region VERTEXBUFFER
@@ -197,7 +197,7 @@ HRESULT CVIBuffer_Map_Terrain::Create_TerrainMxM(_uint iNumVerticesX, _uint iNum
 	return S_OK;
 }
 
-_bool CVIBuffer_Map_Terrain::Picking(CTransform* pTransform, _float3* pOut)
+_bool CVIBuffer_Flx_Terrain::Picking(CTransform* pTransform, _float3* pOut)
 {
 	CPicking*		pPicking = CPicking::Get_Instance();
 	Safe_AddRef(pPicking);
@@ -224,7 +224,7 @@ _bool CVIBuffer_Map_Terrain::Picking(CTransform* pTransform, _float3* pOut)
 
 	for (_int i = m_iStartZ; i < m_iEndZ; ++i)
 	{
-		if (i < 0 || i > m_iNumVerticesZ - 1 )
+		if (i < 0 || i > m_iNumVerticesZ - 1)
 			continue;
 
 		for (_int j = m_iStartX; j < m_iEndX; ++j)
@@ -288,7 +288,7 @@ _bool CVIBuffer_Map_Terrain::Picking(CTransform* pTransform, _float3* pOut)
 	return false;
 }
 
-_float CVIBuffer_Map_Terrain::Compute_Height(_float3 vTargetPos)
+_float CVIBuffer_Flx_Terrain::Compute_Height(_float3 vTargetPos)
 {
 	/* int(vPosition.y / tilesizey) * tilecntx + int(vPsotiion.x / tilesizex) */
 
@@ -331,117 +331,13 @@ _float CVIBuffer_Map_Terrain::Compute_Height(_float3 vTargetPos)
 
 
 
-void CVIBuffer_Map_Terrain::Make_Tick_Up(_float fHeight, _float fRad, _float fSharp, _float3 vPoint, _float fTimeDelta)
+CVIBuffer_Flx_Terrain * CVIBuffer_Flx_Terrain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	D3D11_MAPPED_SUBRESOURCE		SubResource;
-
-	m_pContext->Map(m_pVB, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
-
-
-	VTXNORTEX* pVertices = (VTXNORTEX*)SubResource.pData;
-
-	for (_int i = m_iStartZ; i < m_iEndZ; ++i)
-	{
-		if (i < 0 || i > m_iNumVerticesZ - 1)
-			continue;
-
-		for (_int j = m_iStartX; j < m_iEndX; ++j)
-		{
-			if (j < 0 || j > m_iNumVerticesX - 1)
-				continue;
-
-			/* 루프가 하나씩 진행될때마다 1씩증가하는 인덱스를 얻어오기위한.  */
-			_uint		iIndex = i * m_iNumVerticesX + j;
-
-			_float3 vPos = pVertices[iIndex].vPosition;
-
-			_float fH = fHeight;
-			_float fRange = fRad;
-
-			_float3 vTemp1 = vPoint;
-			_float3 vTemp2 = pVertices[iIndex].vPosition;
-			vTemp1.y = vTemp2.y = 0.f;
-
-			_vector fDis = XMLoadFloat3(&vTemp1) - XMLoadFloat3(&vTemp2);
-			_float fLen = XMVectorGetX(XMVector3Length(fDis));
-
-			if (fRange > fLen)
-			{
-
-				_float fAcc = (fRange - fLen) / fRange;
-
-				fAcc = pow(fAcc, (1.f / fSharp));
-
-				_float fTempY = fH * fAcc;
-				if (fH > 0.01f)
-				{
-					if (fTempY > vPos.y)
-						vPos.y = fTempY;
-				}
-				else if (fH < -0.01f)
-					vPos.y += fTempY * fTimeDelta;
-				else
-					vPos.y = 0.f;
-
-			}
-
-			pVertices[iIndex].vPosition = vPos;
-		}
-
-	}
-	m_pContext->Unmap(m_pVB, 0);
-}
-
-
-
-_int CVIBuffer_Map_Terrain::Get_Index(_float3 vPos)
-{
-	return _int(vPos.x) + _int(vPos.z) * m_iNumVerticesX;
-}
-
-HRESULT CVIBuffer_Map_Terrain::Cul_OptiIndex(_fvector vPos, _fvector vDir)
-{
-	XMVECTOR vTempCulPos = vPos;
-
-	while (!(0.01f > XMVectorGetY(vTempCulPos) && -0.01f < XMVectorGetY(vTempCulPos)))
-	{
-		vTempCulPos += vDir * 0.005f;
-
-		// 0 보다 위에 있고						이동한 값이 나보다 클 때
-		if (0.f < XMVectorGetY(vPos) && XMVectorGetY(vPos) < XMVectorGetY(vTempCulPos))
-			return E_FAIL;
-		// 0 보다 밑에 있고 이동한 값이 나보다 작을 때
-		if (0.f > XMVectorGetY(vPos) && XMVectorGetY(vPos) > XMVectorGetY(vTempCulPos))
-			return E_FAIL;		// 너무 멀면 끝
-		if (150.f < XMVectorGetX(XMVector3Length(vPos - vTempCulPos)))
-			return E_FAIL;
-
-	}
-
-	_float3 vCulPos;
-	XMStoreFloat3(&vCulPos, vTempCulPos);
-	m_iStartZ = vCulPos.z - m_iRange;
-	m_iStartX = vCulPos.x - m_iRange;
-	m_iEndZ = vCulPos.z + m_iRange;
-	m_iEndX = vCulPos.x + m_iRange;
-
-	return S_OK;
-}
-
-
-
-
-
-
-
-
-CVIBuffer_Map_Terrain * CVIBuffer_Map_Terrain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-{
-	CVIBuffer_Map_Terrain*			pInstance = new CVIBuffer_Map_Terrain(pDevice, pContext);
+	CVIBuffer_Flx_Terrain*			pInstance = new CVIBuffer_Flx_Terrain(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CVIBuffer_Map_Terrain"));
+		MSG_BOX(TEXT("Failed To Created : CVIBuffer_Flx_Terrain"));
 		Safe_Release(pInstance);
 	}
 
@@ -449,20 +345,20 @@ CVIBuffer_Map_Terrain * CVIBuffer_Map_Terrain::Create(ID3D11Device* pDevice, ID3
 }
 
 
-CComponent * CVIBuffer_Map_Terrain::Clone(void * pArg)
+CComponent * CVIBuffer_Flx_Terrain::Clone(void * pArg)
 {
-	CVIBuffer_Map_Terrain*			pInstance = new CVIBuffer_Map_Terrain(*this);
+	CVIBuffer_Flx_Terrain*			pInstance = new CVIBuffer_Flx_Terrain(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CVIBuffer_Map_Terrain"));
+		MSG_BOX(TEXT("Failed To Cloned : CVIBuffer_Flx_Terrain"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CVIBuffer_Map_Terrain::Free()
+void CVIBuffer_Flx_Terrain::Free()
 {
 	__super::Free();
 

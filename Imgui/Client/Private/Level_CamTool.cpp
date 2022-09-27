@@ -96,8 +96,10 @@ HRESULT CLevel_CamTool::Ready_Layer_Player(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_CAMTOOL, pLayerTag)))
-		return E_FAIL;
+
+
+
+
 
 	Safe_Release(pGameInstance);
 
@@ -127,12 +129,6 @@ HRESULT CLevel_CamTool::Ready_Layer_Monster(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-
-	for (_uint i = 0; i < 3; ++i)
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_CAMTOOL, pLayerTag)))
-			return E_FAIL;
-	}
 
 
 

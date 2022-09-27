@@ -16,6 +16,12 @@ public:
 	const char* Get_Name() const {
 		return m_szName;
 	}
+	const char* Get_ParentName() const {
+		if (nullptr == m_pParent)
+			return "";
+		return m_pParent->Get_Name();
+	}
+
 	_uint Get_Depth() const {
 		return m_iDepth;
 	}
@@ -28,6 +34,7 @@ public:
 		return XMLoadFloat4x4(&m_CombinedTransformation);
 	}
 
+	_float4x4 Get_OriTransformation() { return m_OriTransformation; }
 
 public:
 	void Set_Transformation(_fmatrix Transformation) {
@@ -41,6 +48,7 @@ public:
 private:
 	char				m_szName[MAX_PATH] = "";
 	_float4x4			m_OffsetMatrix;
+	_float4x4			m_OriTransformation;
 	_float4x4			m_Transformation;
 	_float4x4			m_CombinedTransformation;
 	CHierarchyNode*		m_pParent = nullptr;

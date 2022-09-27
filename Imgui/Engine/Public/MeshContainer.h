@@ -27,12 +27,14 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 
 public:
+	HRESULT SetUp_HierarchyNodes(class CModel* pModel, aiMesh* pAIMesh);
 	void SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix PivotMatrix);
 
 
 private:
 	char				m_szName[MAX_PATH] = "";
 	_uint				m_iMaterialIndex = 0;
+
 private:
 	/* 이 메시에 영향ㅇ르 주는 뼈의 갯수. */
 	_uint							m_iNumBones = 0;
@@ -49,6 +51,19 @@ public:
 	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, const aiMesh* pAIMesh, class CModel* pModel, _fmatrix PivotMatrix);
 	virtual CComponent* Clone(void* pArg = nullptr) override;
 	virtual void Free() override;
+
+
+
+	// For. Data
+public:
+	void Get_MeshData(DATA_HEROMETH* pMesh);
+
+private:
+	VTXMODEL*			m_pNonAnimVertices = nullptr;
+	VTXANIMMODEL*		m_pAnimVertices = nullptr;
+	FACEINDICES32*		m_pIndices = nullptr;
+	_bool				m_bIsProto = false;
+
 };
 
 END
