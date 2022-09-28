@@ -385,11 +385,16 @@ HRESULT CModel::Get_MeshData(DATA_HEROSCENE * pNodeData)
 	return S_OK;
 }
 
-HRESULT CModel::Get_AnimData(DATA_HEROSCENE * pAnimData)
+HRESULT CModel::Get_AnimData(DATA_HEROSCENE * pSceneData)
 {
+	pSceneData->iNumAnimations = m_iNumAnimations;
 
+	pSceneData->pHeroAnim = new DATA_HEROANIM[m_iNumAnimations];
 
-
+	for (_int i = 0; i < m_iNumAnimations; ++i)
+	{
+		m_Animations[i]->Get_AnimData(&pSceneData->pHeroAnim[i]);
+	}
 
 	return S_OK;
 }

@@ -165,6 +165,7 @@ namespace Engine
 
 
 
+	// For. Data
 
 	typedef struct tagHeroHierarchyNode
 	{
@@ -196,6 +197,26 @@ namespace Engine
 
 	}DATA_HEROMETH;
 
+
+	typedef struct tagHeroChannel
+	{
+
+		char				szName[MAX_PATH];
+		int					iNumKeyFrames;
+		KEYFRAME*			pKeyFrames;
+
+	}DATA_HEROCHANNEL;
+	typedef struct tagHeroAnim
+	{
+
+		int					iNumChannels;
+		float				fDuration;
+		float				fTickPerSecond;
+		DATA_HEROCHANNEL*	pHeroChannel;
+
+
+	}DATA_HEROANIM;
+
 	typedef struct tagHeroScene
 	{
 
@@ -207,6 +228,9 @@ namespace Engine
 
 		int iMeshCount;
 		DATA_HEROMETH* pHeroMesh;
+
+		int iNumAnimations;
+		DATA_HEROANIM* pHeroAnim;
 
 	}DATA_HEROSCENE;
 

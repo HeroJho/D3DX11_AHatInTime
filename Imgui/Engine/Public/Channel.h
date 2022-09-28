@@ -30,6 +30,12 @@ private:
 public:
 	static CChannel* Create(aiNodeAnim*	pAIChannel);
 	virtual void Free() override;
+
+
+
+public: // For. Data
+	void Get_ChannelData(DATA_HEROCHANNEL* pData);
+
 };
 
 END

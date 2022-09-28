@@ -41,11 +41,6 @@ public:
 	
 	HRESULT Delete_Anim(_uint iIndex);
 
-public:
-	HRESULT Get_HierarchyNodeData(DATA_HEROSCENE* pNodeData);
-	HRESULT Get_MaterialData(DATA_HEROSCENE* pNodeData);
-	HRESULT Get_MeshData(DATA_HEROSCENE* pNodeData);
-
 
 private:
 	const aiScene*				m_pAIScene = nullptr;
@@ -62,7 +57,6 @@ private:
 private:
 	_uint									m_iNumMaterials = 0;
 	vector<MATERIALDESC>					m_Materials;
-	vector<DATA_HEROMATERIAL>				m_DataMaterials;
 
 private:
 	vector<class CHierarchyNode*>			m_HierarchyNodes;
@@ -79,14 +73,24 @@ private:
 	HRESULT Ready_HierarchyNodes(aiNode* pNode, class CHierarchyNode* pParent, _uint iDepth);
 	HRESULT Ready_Animations();
 
-private:
-
-
 
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix = XMMatrixIdentity());
 	virtual CComponent* Clone(void* pArg = nullptr);
 	virtual void Free() override;
+
+
+
+public: // For. Data
+	HRESULT Get_HierarchyNodeData(DATA_HEROSCENE* pNodeData);
+	HRESULT Get_MaterialData(DATA_HEROSCENE* pNodeData);
+	HRESULT Get_MeshData(DATA_HEROSCENE* pNodeData);
+	HRESULT Get_AnimData(DATA_HEROSCENE* pAnimData);
+
+private:
+	vector<DATA_HEROMATERIAL>				m_DataMaterials;
+
+
 };
 
 END

@@ -22,8 +22,8 @@ public:
 public:
 	HRESULT Init();
 
-	HRESULT SaveAnimData(CModel* pModel);
-
+	HRESULT SampleSceneData(CModel* pModel);
+	HRESULT SaveSceneData(DATA_HEROSCENE* pScene);
 
 
 public: // For. Map

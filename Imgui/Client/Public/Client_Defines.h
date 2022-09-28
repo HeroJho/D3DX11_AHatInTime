@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Client_Struct.h"
+#include <fstream>
+#include <iostream>
 
 namespace Client
 {

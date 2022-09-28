@@ -126,3 +126,21 @@ void CAnimation::Free()
 
 	m_HierarchyNodes.clear();
 }
+
+
+
+void CAnimation::Get_AnimData(DATA_HEROANIM * pData)
+{
+
+	pData->fDuration = m_fDuration;
+	pData->iNumChannels = m_iNumChannels;
+	pData->fTickPerSecond = m_fTickPerSecond;
+
+	pData->pHeroChannel = new DATA_HEROCHANNEL[m_iNumChannels];
+
+	for (_int i = 0; i < m_iNumChannels; ++i)
+	{
+		m_Channels[i]->Get_ChannelData(&pData->pHeroChannel[i]);
+	}
+
+}

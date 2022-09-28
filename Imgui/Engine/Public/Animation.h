@@ -37,6 +37,13 @@ public:
 	static CAnimation* Create(aiAnimation* pAIAnimation);
 	CAnimation* Clone(class CModel* pModel);
 	virtual void Free() override;
+
+
+
+public: // For. Data
+	void Get_AnimData(DATA_HEROANIM* pData);
+
+
 };
 
 END

@@ -130,3 +130,16 @@ void CChannel::Free()
 
 }
 
+void CChannel::Get_ChannelData(DATA_HEROCHANNEL * pData)
+{
+	memcpy(&pData->szName, m_szName, sizeof(char)*MAX_PATH);
+	pData->iNumKeyFrames = m_iNumKeyFrames;
+
+	pData->pKeyFrames = new KEYFRAME[m_iNumKeyFrames];
+
+	for (_int i = 0; i < m_iNumKeyFrames; ++i)
+	{
+		memcpy(&pData->pKeyFrames[i], &m_KeyFrames[i], sizeof(KEYFRAME));
+	}
+}
+

@@ -190,7 +190,7 @@ void CAnimManager::Save_Anim()
 	if (nullptr == m_pAnimModel)
 		return;
 
-	CDataManager::Get_Instance()->SaveAnimData((CModel*)m_pAnimModel->Get_ComponentPtr(TEXT("Com_Model")));
+	CDataManager::Get_Instance()->SampleSceneData((CModel*)m_pAnimModel->Get_ComponentPtr(TEXT("Com_Model")));
 }
 
 
