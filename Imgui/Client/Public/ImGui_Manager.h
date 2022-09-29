@@ -87,6 +87,7 @@ private:
 	void Window_AnimModleList();
 	void Window_IsDelete();
 	void Window_AnimEditor();
+	void Window_PlayMode();
 
 private:
 	// FOR. Static

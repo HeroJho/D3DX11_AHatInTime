@@ -82,8 +82,12 @@ HRESULT CDataManager::SampleSceneData(CModel * pModel)
 
 	Safe_Delete_Array(Scene.pHeroNodes);
 	Safe_Delete_Array(Scene.pHeroMaterial);
-	Safe_Delete_Array(Scene.pHeroMesh);
 
+	for (_int i = 0; i < Scene.iMeshCount; ++i)
+	{
+		Safe_Delete_Array(Scene.pHeroMesh[i].pBones);
+	}
+	Safe_Delete_Array(Scene.pHeroMesh);
 
 
 	for (_int i = 0; i < Scene.iNumAnimations; ++i)
@@ -102,7 +106,7 @@ HRESULT CDataManager::SampleSceneData(CModel * pModel)
 
 HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene)
 {
-	std::fstream ofs("Test.txt", ios::out | ios::binary);
+	std::ofstream ofs("Test.txt", ios::out | ios::binary);
 
 	if (!ofs)
 		return E_FAIL;
@@ -123,6 +127,7 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene)
 	}
 
 	// MashNode
+
 	ofs.write((char*)&pScene->iMeshCount, sizeof(int));
 	for (int i = 0; i < pScene->iMeshCount; ++i)
 	{
@@ -133,8 +138,12 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene)
 		
 
 		ofs.write((char*)&pMash.NumVertices, sizeof(int));
+		int iIsAnim = 0;
 		if (nullptr != pMash.pAnimVertices)
 		{
+			iIsAnim = 1;
+			ofs.write((char*)&iIsAnim, sizeof(int));
+
 			for (int j = 0; j < pMash.NumVertices; ++j)
 			{
 				VTXANIMMODEL VtxAniModel = pMash.pAnimVertices[j];
@@ -143,6 +152,9 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene)
 		}
 		else if(nullptr != pMash.pNonAnimVertices)
 		{
+			iIsAnim = 0;
+			ofs.write((char*)&iIsAnim, sizeof(int));
+
 			for (int j = 0; j < pMash.NumVertices; ++j)
 			{
 				VTXMODEL VtxNoneAniModel = pMash.pNonAnimVertices[j];
@@ -152,66 +164,53 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene)
 		
 
 		ofs.write((char*)&pMash.iNumPrimitives, sizeof(int));
-		for (int i = 0; i < pMash.iNumPrimitives; ++i)
+		for (int j = 0; j < pMash.iNumPrimitives; ++j)
 		{
-			FACEINDICES32 Indices32 = pMash.pIndices[i];
+			FACEINDICES32 Indices32 = pMash.pIndices[j];
 			ofs.write((char*)&Indices32, sizeof(FACEINDICES32));
+		}
+
+		ofs.write((char*)&pMash.iNumBones, sizeof(int));
+		for (int j = 0; j < pMash.iNumBones; ++j)
+		{
+			DATA_HEROBONE bon = pMash.pBones[j];
+			ofs.write((char*)&bon, sizeof(DATA_HEROBONE));
+		}
+	}
+	  
+
+	// Animation
+	ofs.write((char*)&pScene->iNumAnimations, sizeof(int));
+	for (int i = 0; i < pScene->iNumAnimations; ++i)
+	{
+		DATA_HEROANIM Anim = pScene->pHeroAnim[i];
+		ofs.write((char*)&Anim.iNumChannels, sizeof(int));
+		ofs.write((char*)&Anim.fDuration, sizeof(float));
+		ofs.write((char*)&Anim.fTickPerSecond, sizeof(float));
+
+		for (int j = 0; j < Anim.iNumChannels; ++j)
+		{
+			ofs.write((char*)&Anim.pHeroChannel[j].szName, sizeof(char)*MAX_PATH);
+			ofs.write((char*)&Anim.pHeroChannel[j].iNumKeyFrames, sizeof(int));
+
+			for (int k = 0; k < Anim.pHeroChannel[j].iNumKeyFrames; ++k)
+			{
+				ofs.write((char*)&Anim.pHeroChannel[j].pKeyFrames[k], sizeof(KEYFRAME));
+			}
 		}
 	}
 
 
 
-#pragma region Read Code
 
-	DATA_HEROSCENE ReadScene;
-	ZeroMemory(&ReadScene, sizeof(DATA_HEROSCENE));
-	std::fstream ifs("Test.txt", ios::in | ios::binary);
+	ofs.close();
 
-	if (!ifs)
-		return E_FAIL;
 
-	// Node
-	int iNodeCount = 0;
-	ifs.read((char*)&iNodeCount, sizeof(int));
-	ReadScene.iNodeCount = iNodeCount;
-	ReadScene.pHeroNodes = new DATA_HERONODE[iNodeCount];
-	for (int i = 0; i < iNodeCount; ++i)
-	{
-		DATA_HERONODE* pHeroNode = &ReadScene.pHeroNodes[i];
-		ifs.read((char*)pHeroNode, sizeof(DATA_HERONODE));
-	}
 
-	// Material
-	int iMaterialCount = 0;
-	ifs.read((char*)&iMaterialCount, sizeof(int));
-	ReadScene.iMaterialCount = iMaterialCount;
-	ReadScene.pHeroMaterial = new DATA_HEROMATERIAL[iMaterialCount];
-	for (int i = 0; i < iMaterialCount; ++i)
-	{
-		DATA_HEROMATERIAL* pHeroMarterial = &ReadScene.pHeroMaterial[i];
-		ifs.read((char*)pHeroMarterial, sizeof(DATA_HEROMATERIAL));
-	}
 
-	// MashNode
-	int iMashCount = 0;
-	ifs.read((char*)&iMashCount, sizeof(int));
-	ReadScene.iMeshCount = iMashCount;
-	ReadScene.pHeroMesh = new DATA_HEROMETH[iMashCount];
-	for (int i = 0; i < iMashCount; ++i)
-	{
-		DATA_HEROMETH* pHeroMash = &ReadScene.pHeroMesh[i];
 
-		ifs.read((char*)&pHeroMash->cName, sizeof(char)*MAX_PATH);
-		ifs.read((char*)&pHeroMash->iMaterialIndex, sizeof(int));
-		
-		ifs.read((char*)&pHeroMash->NumVertices, sizeof(int));
 
-		if()
 
-	}
-
-	
-#pragma endregion 
 
 
 
@@ -220,45 +219,164 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene)
 
 #pragma region Test Code
 
-	vector<DATA_HERONODE> temp;
-	for (_int i = 0; i < ReadScene.iNodeCount; ++i)
-	{
-		DATA_HERONODE Hero_Node;
-		ZeroMemory(&Hero_Node, sizeof(DATA_HERONODE));
+	//vector<DATA_HERONODE> temp;
+	//for (_int i = 0; i < ReadScene.iNodeCount; ++i)
+	//{
+	//	DATA_HERONODE Hero_Node;
+	//	ZeroMemory(&Hero_Node, sizeof(DATA_HERONODE));
 
-		const char* pMyName = ReadScene.pHeroNodes[i].cName;
-		const char* pParent = ReadScene.pHeroNodes[i].cParent;
-		XMFLOAT4X4 mMatrix = ReadScene.pHeroNodes[i].mTransform;
+	//	const char* pMyName = ReadScene.pHeroNodes[i].cName;
+	//	const char* pParent = ReadScene.pHeroNodes[i].cParent;
+	//	XMFLOAT4X4 mMatrix = ReadScene.pHeroNodes[i].mTransform;
+	//	int iDepth = ReadScene.pHeroNodes[i].iDepth;
 
-		memcpy(&Hero_Node.cName, pMyName, sizeof(char) * MAX_PATH);
-		memcpy(&Hero_Node.cParent, pParent, sizeof(char) * MAX_PATH);
-		Hero_Node.mTransform = mMatrix;
+	//	memcpy(&Hero_Node.cName, pMyName, sizeof(char) * MAX_PATH);
+	//	memcpy(&Hero_Node.cParent, pParent, sizeof(char) * MAX_PATH);
+	//	Hero_Node.mTransform = mMatrix;
+	//	Hero_Node.iDepth = iDepth;
 
-		temp.push_back(Hero_Node);
-	}
-
-
-	vector<DATA_HEROMATERIAL> temp2;
-	for (_int i = 0; i < ReadScene.iMaterialCount; ++i)
-	{
-		DATA_HEROMATERIAL Hero_Material;
-		ZeroMemory(&Hero_Material, sizeof(DATA_HEROMATERIAL));
-
-		memcpy(&Hero_Material, &ReadScene.pHeroMaterial[i], sizeof(DATA_HEROMATERIAL));
+	//	temp.push_back(Hero_Node);
+	//}
 
 
-		temp2.push_back(Hero_Material);
-	}
+	//vector<DATA_HEROMATERIAL> temp2;
+	//for (_int i = 0; i < ReadScene.iMaterialCount; ++i)
+	//{
+	//	DATA_HEROMATERIAL Hero_Material;
+	//	ZeroMemory(&Hero_Material, sizeof(DATA_HEROMATERIAL));
+
+	//	memcpy(&Hero_Material, &ReadScene.pHeroMaterial[i], sizeof(DATA_HEROMATERIAL));
+
+
+	//	temp2.push_back(Hero_Material);
+	//}
 
 #pragma endregion
 
 
 
 
-
-	int i = 0;
-
 	return S_OK;
+}
+
+HRESULT CDataManager::ReadSceneData(const char * pFileName, DATA_HEROSCENE* ReadScene)
+{
+
+	ZeroMemory(&ReadScene, sizeof(DATA_HEROSCENE));
+	std::ifstream ifs("Test.txt", ios::in | ios::binary);
+
+	if (!ifs)
+		return E_FAIL;
+
+	// Node
+	int iNodeCount = 0;
+	ifs.read((char*)&iNodeCount, sizeof(int));
+	ReadScene->iNodeCount = iNodeCount;
+	ReadScene->pHeroNodes = new DATA_HERONODE[iNodeCount];
+	for (int i = 0; i < iNodeCount; ++i)
+	{
+		DATA_HERONODE* pHeroNode = &ReadScene->pHeroNodes[i];
+		ifs.read((char*)pHeroNode, sizeof(DATA_HERONODE));
+	}
+
+	// Material
+	int iMaterialCount = 0;
+	ifs.read((char*)&iMaterialCount, sizeof(int));
+	ReadScene->iMaterialCount = iMaterialCount;
+	ReadScene->pHeroMaterial = new DATA_HEROMATERIAL[iMaterialCount];
+	for (int i = 0; i < iMaterialCount; ++i)
+	{
+		DATA_HEROMATERIAL* pHeroMarterial = &ReadScene->pHeroMaterial[i];
+		ifs.read((char*)pHeroMarterial, sizeof(DATA_HEROMATERIAL));
+	}
+
+	// MashNode
+	int iMashCount = 0;
+	ifs.read((char*)&iMashCount, sizeof(int));
+	ReadScene->iMeshCount = iMashCount;
+	ReadScene->pHeroMesh = new DATA_HEROMETH[iMashCount];
+	for (int i = 0; i < iMashCount; ++i)
+	{
+		DATA_HEROMETH* pHeroMash = &ReadScene->pHeroMesh[i];
+
+		ifs.read((char*)&pHeroMash->cName, sizeof(char)*MAX_PATH);
+		ifs.read((char*)&pHeroMash->iMaterialIndex, sizeof(int));
+
+		ifs.read((char*)&pHeroMash->NumVertices, sizeof(int));
+
+		int iIsAnim = 0;
+		ifs.read((char*)&iIsAnim, sizeof(int));
+		if (iIsAnim)
+		{
+			pHeroMash->pAnimVertices = new VTXANIMMODEL[pHeroMash->NumVertices];
+			for (int j = 0; j < pHeroMash->NumVertices; ++j)
+			{
+				VTXANIMMODEL* VtxAniModel = &pHeroMash->pAnimVertices[j];
+				ifs.read((char*)VtxAniModel, sizeof(VTXANIMMODEL));
+			}
+		}
+		else
+		{
+			pHeroMash->pNonAnimVertices = new VTXMODEL[pHeroMash->NumVertices];
+			for (int j = 0; j < pHeroMash->NumVertices; ++j)
+			{
+				VTXMODEL* VtxNonAniModel = &pHeroMash->pNonAnimVertices[j];
+				ifs.read((char*)VtxNonAniModel, sizeof(VTXMODEL));
+			}
+		}
+
+		pHeroMash->iNumPrimitives = 0;
+		ifs.read((char*)&pHeroMash->iNumPrimitives, sizeof(int));
+		pHeroMash->pIndices = new FACEINDICES32[pHeroMash->iNumPrimitives];
+		for (int j = 0; j < pHeroMash->iNumPrimitives; ++j)
+		{
+			FACEINDICES32* Indices32 = &pHeroMash->pIndices[j];
+			ifs.read((char*)Indices32, sizeof(FACEINDICES32));
+		}
+
+
+		pHeroMash->iNumBones = 0;
+		ifs.read((char*)&pHeroMash->iNumBones, sizeof(int));
+		pHeroMash->pBones = new DATA_HEROBONE[pHeroMash->iNumBones];
+		for (int j = 0; j < pHeroMash->iNumBones; ++j)
+		{
+			DATA_HEROBONE* bon = &pHeroMash->pBones[j];
+			ifs.read((char*)bon, sizeof(DATA_HEROBONE));
+		}
+	}
+
+
+	// Animation
+	int iNumAnimations = 0;
+	ifs.read((char*)&iNumAnimations, sizeof(int));
+	ReadScene->iNumAnimations = iNumAnimations;
+	ReadScene->pHeroAnim = new DATA_HEROANIM[iNumAnimations];
+
+	for (int i = 0; i < iNumAnimations; ++i)
+	{
+		ifs.read((char*)&ReadScene->pHeroAnim[i].iNumChannels, sizeof(int));
+		ifs.read((char*)&ReadScene->pHeroAnim[i].fDuration, sizeof(float));
+		ifs.read((char*)&ReadScene->pHeroAnim[i].fTickPerSecond, sizeof(float));
+
+		ReadScene->pHeroAnim[i].pHeroChannel = new DATA_HEROCHANNEL[ReadScene->pHeroAnim[i].iNumChannels];
+		for (int j = 0; j < ReadScene->pHeroAnim[i].iNumChannels; ++j)
+		{
+			DATA_HEROCHANNEL* pChannel = &ReadScene->pHeroAnim[i].pHeroChannel[j];
+			ifs.read((char*)&pChannel->szName, sizeof(char)*MAX_PATH);
+			ifs.read((char*)&pChannel->iNumKeyFrames, sizeof(int));
+
+			pChannel->pKeyFrames = new KEYFRAME[pChannel->iNumKeyFrames];
+			for (int k = 0; k < pChannel->iNumKeyFrames; ++k)
+			{
+				KEYFRAME* pKeyFrame = &pChannel->pKeyFrames[k];
+				ifs.read((char*)pKeyFrame, sizeof(KEYFRAME));
+			}
+		}
+	}
+
+
+	ifs.close();
+
 }
 
 

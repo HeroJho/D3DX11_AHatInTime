@@ -298,8 +298,20 @@ void CMeshContainer::Get_MeshData(DATA_HEROMETH * pMesh)
 {
 	memcpy(&pMesh->cName, &m_szName, sizeof(char) * MAX_PATH);
 	pMesh->iMaterialIndex = m_iMaterialIndex;
+	pMesh->NumVertices = m_iNumVertices;
 	pMesh->pNonAnimVertices = m_pNonAnimVertices;
 	pMesh->pAnimVertices = m_pAnimVertices;
 	pMesh->iNumPrimitives = m_iNumPrimitives;
 	pMesh->pIndices = m_pIndices;
+
+	pMesh->iNumBones = m_iNumBones;
+	pMesh->pBones = new DATA_HEROBONE[m_iNumBones];
+	for (int i = 0; i < m_iNumBones; ++i)
+	{
+		memcpy(&pMesh->pBones[i].cNames, m_Bones[i]->Get_Name(), sizeof(char) * MAX_PATH);
+		pMesh->pBones[i].mOffsetTransform = m_Bones[i]->Get_OffSetMatrixXM();
+		int a = 0;
+	}
+
+
 }

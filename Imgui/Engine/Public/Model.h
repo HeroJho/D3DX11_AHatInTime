@@ -22,10 +22,7 @@ public:
 
 	_uint Get_MaterialIndex(_uint iMeshIndex);
 
-	void Set_AnimIndex(_uint iAnimIndex) {
-		if (0 <= iAnimIndex && m_iNumAnimations > iAnimIndex)
-			m_iCurrentAnimIndex = iAnimIndex;
-	}
+	void Set_AnimIndex(_uint iAnimIndex);
 	_int Get_AnimIndex() { return m_iNumAnimations; }
 	_int Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
 
@@ -40,7 +37,8 @@ public:
 	HRESULT Render(class CShader* pShader, _uint iMeshIndex);
 	
 	HRESULT Delete_Anim(_uint iIndex);
-
+	HRESULT Push_AnimLinearData(ANIM_LINEAR_DATA Data);
+	ANIM_LINEAR_DATA* Get_AnimLinearData(int iIndex);
 
 private:
 	const aiScene*				m_pAIScene = nullptr;
@@ -66,6 +64,8 @@ private:
 	_uint								m_iNumAnimations = 0;
 	vector<class CAnimation*>			m_Animations;
 
+	vector<vector<ANIM_LINEAR_DATA>>	m_AnimLinearDatas;
+	ANIM_LINEAR_DATA*					m_pCurLinearData = nullptr;
 
 private:
 	HRESULT Ready_MeshContainers(_fmatrix PivotMatrix);

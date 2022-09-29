@@ -52,6 +52,7 @@ public:
 
 public:
 	void Go_Straight(_float fTimeDelta);
+	void Go_Straight(_float fSpeedPerSec, _float fTimeDelta);
 	void Go_Backward(_float fTimeDelta);
 	void Go_Left(_float fTimeDelta);
 	void Go_Right(_float fTimeDelta);
@@ -62,6 +63,7 @@ public:
 	_float3 Get_Scale();
 
 	void Turn(_fvector vAxis, _float fTimeDelta);
+	void Turn(_fvector vAxis, _float fRotationPerSce, _float fTimeDelta);
 	void Rotation(_fvector vAxis, _float fAngle);
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2);
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2, _fvector vAxis3, _float fAngle3);

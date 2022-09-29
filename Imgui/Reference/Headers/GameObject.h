@@ -23,6 +23,8 @@ public:
 	void Set_Dead() { m_bDead = true; }
 	_bool Get_Dead() { return m_bDead; }
 
+	virtual _float3* Get_Axis() { return nullptr; }
+
 public:
 
 

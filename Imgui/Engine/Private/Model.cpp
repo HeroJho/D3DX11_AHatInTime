@@ -60,6 +60,33 @@ _uint CModel::Get_MaterialIndex(_uint iMeshIndex)
 	return m_Meshes[iMeshIndex]->Get_MaterialIndex();
 }
 
+void CModel::Set_AnimIndex(_uint iAnimIndex)
+{
+
+	if (0 <= iAnimIndex && m_iNumAnimations > iAnimIndex)
+	{
+		// 다르다!
+		if (m_iCurrentAnimIndex != iAnimIndex)
+		{
+			// 보간할 애가 있는지 체크
+			ANIM_LINEAR_DATA* pLinearData = Get_AnimLinearData(iAnimIndex);
+			if (nullptr == pLinearData)
+			{
+				// 없으면 애니메이션 초기화하고 변화
+				m_Animations[m_iCurrentAnimIndex]->Init_PlayInfo();
+				m_iCurrentAnimIndex = iAnimIndex;
+			}
+			else
+			{
+				// 보간 데이터가 존재한다.
+				m_pCurLinearData = pLinearData;
+			}
+
+		}
+	}
+
+}
+
 HRESULT CModel::Initialize_Prototype(TYPE eType, const char * pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
 {
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
@@ -159,6 +186,8 @@ HRESULT CModel::Initialize(void * pArg)
 
 	m_Animations = Animations;
 
+	m_AnimLinearDatas.resize(500);
+
 	return S_OK;
 }
 
@@ -176,7 +205,18 @@ HRESULT CModel::Play_Animation(_float fTimeDelta)
 		return E_FAIL;
 
 	/* 현재 재생하고자하는 애니메이션이 제어해야할 뼈들의 지역행렬을 갱신해낸다. */
-	m_Animations[m_iCurrentAnimIndex]->Play_Animation(fTimeDelta);
+	if(!m_pCurLinearData)
+		m_Animations[m_iCurrentAnimIndex]->Play_Animation(fTimeDelta);
+	else
+	{
+		list<KEYFRAME> NextFirstKeyFrams;
+		m_Animations[m_pCurLinearData->iTargetIndex]->Get_FirstKeys(&NextFirstKeyFrams);
+		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(m_pCurLinearData, &NextFirstKeyFrams, fTimeDelta))
+		{
+			m_iCurrentAnimIndex = m_pCurLinearData->iTargetIndex;
+			m_pCurLinearData = nullptr;
+		}
+	}
 
 	/* 지역행렬을 순차적으로(부모에서 자식으로) 누적하여 m_CombinedTransformation를 만든다.  */
 	for (auto& pHierarchyNode : m_HierarchyNodes)
@@ -222,6 +262,31 @@ HRESULT CModel::Delete_Anim(_uint iIndex)
 	--m_iNumAnimations;
 
 }
+
+HRESULT CModel::Push_AnimLinearData(ANIM_LINEAR_DATA Data)
+{
+	m_AnimLinearDatas[Data.iMyIndex].push_back(Data);
+
+	return S_OK;
+}
+
+ANIM_LINEAR_DATA* CModel::Get_AnimLinearData(int iTargetIndex)
+{
+	if (m_AnimLinearDatas[m_iCurrentAnimIndex].empty())
+		return nullptr;
+
+	for (auto& data : m_AnimLinearDatas[m_iCurrentAnimIndex])
+	{
+		if (data.iTargetIndex = iTargetIndex)
+		{
+			return &data;
+		}
+	}
+
+	return nullptr;
+}
+
+
 
 
 HRESULT CModel::Ready_MeshContainers(_fmatrix PivotMatrix)
@@ -349,6 +414,8 @@ HRESULT CModel::Get_HierarchyNodeData(DATA_HEROSCENE * pHeroScene)
 		const char* pParentName = m_HierarchyNodes[i]->Get_ParentName();
 		memcpy(&Hero_Node.cName, pMyName, sizeof(char) * MAX_PATH);
 		memcpy(&Hero_Node.cParent, pParentName, sizeof(char) * MAX_PATH);
+
+		Hero_Node.iDepth = m_HierarchyNodes[i]->Get_Depth();
 
 		Hero_Node.mTransform = m_HierarchyNodes[i]->Get_OriTransformation();
 

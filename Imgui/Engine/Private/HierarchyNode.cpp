@@ -34,8 +34,9 @@ void CHierarchyNode::Set_CombinedTransformation()
 }
 
 void CHierarchyNode::Set_OffsetMatrix(_fmatrix OffsetMatrix)
-{
+{ 
 	XMStoreFloat4x4(&m_OffsetMatrix, OffsetMatrix);
+	int i = 0;
 }
 
 CHierarchyNode * CHierarchyNode::Create(aiNode * pAINode, CHierarchyNode* pParent, _uint iDepth)

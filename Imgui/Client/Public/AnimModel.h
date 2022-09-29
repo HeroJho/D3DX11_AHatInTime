@@ -41,7 +41,7 @@ public:
 	void Delete_Anim(_int iIndex);
 
 
-	_float3* Get_Axis() { return &m_vAxis; }
+	virtual _float3* Get_Axis() override { return &m_vAxis; };
 
 
 private:

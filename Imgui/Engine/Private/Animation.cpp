@@ -66,13 +66,7 @@ HRESULT CAnimation::Play_Animation(_float fTimeDelta)
 
 	if (m_fPlayTime >= m_fDuration)
 	{
-		m_fPlayTime = 0.f;
-
-		for (auto& pChannel : m_Channels)
-		{
-			for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
-				iCurrentKeyFrame = 0;
-		}
+		Init_PlayInfo();
 	}
 
 	_uint		iChannelIndex = 0;
@@ -85,6 +79,85 @@ HRESULT CAnimation::Play_Animation(_float fTimeDelta)
 	}
 
 	return S_OK;
+}
+
+_bool CAnimation::Play_Animation(ANIM_LINEAR_DATA * pData, list<KEYFRAME>* pFirstKeyFrames, _float fTimeDelta)
+{
+	
+	_float fRatio = m_fPlayTime / m_fDuration;
+
+
+	if (!m_bStartLinear)
+	{
+		if (pData->fLimitRatio < fRatio)
+		{
+			// 마지막 행렬을 가져온다.
+			_uint		iChannelIndex = 0;
+			for (auto& pChannel : m_Channels)
+			{
+				pChannel->Set_StartLinearKeyFrames(m_fPlayTime, m_ChannelKeyFrames[iChannelIndex]);
+				++iChannelIndex;
+			}
+
+			m_bStartLinear = true;
+			m_fPlayTime = 0;
+
+		}
+		else
+		{
+			m_fPlayTime += m_fTickPerSecond * fTimeDelta;
+
+			_uint		iChannelIndex = 0;
+
+			for (auto& pChannel : m_Channels)
+			{
+				m_ChannelKeyFrames[iChannelIndex] = pChannel->Update_Transformation(m_fPlayTime, m_ChannelKeyFrames[iChannelIndex], m_HierarchyNodes[iChannelIndex]);
+
+				++iChannelIndex;
+			}
+		}
+	}
+	else
+	{
+		m_fPlayTime += pData->fTickPerSeconed * fTimeDelta;
+
+		_uint		iChannelIndex = 0;
+
+		list<KEYFRAME>::iterator iter = pFirstKeyFrames->begin();
+
+		for (auto& pChannel : m_Channels)
+		{
+			if (pChannel->Update_LinearTransformation(m_fPlayTime, m_HierarchyNodes[iChannelIndex], *iter, pData))
+			{
+				m_bStartLinear = false;
+				Init_PlayInfo();
+				return true;
+			}
+			++iChannelIndex;
+			++iter;
+		}
+	}
+
+	return false;
+}
+
+void CAnimation::Get_FirstKeys(list<KEYFRAME>* pFirstKeys)
+{
+	for (auto& pChannel : m_Channels)
+	{
+		pFirstKeys->push_back(pChannel->Get_FirstKeyFrame());
+	}
+}
+
+void CAnimation::Init_PlayInfo()
+{
+	m_fPlayTime = 0.f;
+
+	for (auto& pChannel : m_Channels)
+	{
+		for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
+			iCurrentKeyFrame = 0;
+	}
 }
 
 CAnimation * CAnimation::Create(aiAnimation * pAIAnimation)

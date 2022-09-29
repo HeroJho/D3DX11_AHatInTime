@@ -8,6 +8,7 @@
 #include "DataManager.h"
 
 #include "AnimModel.h"
+#include "Player.h"
 
 IMPLEMENT_SINGLETON(CAnimManager)
 
@@ -33,8 +34,25 @@ HRESULT CAnimManager::Init(ID3D11Device * pDevice, ID3D11DeviceContext * pContex
 
 void CAnimManager::Tick(_float fTimeDelta)
 {
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	
 
 
+	if (pGameInstance->Key_Pressing(DIK_A))
+	{
+		Change_Anim(m_iA);
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		Change_Anim(m_iD);
+	}
+	else
+	{
+		Change_Anim(m_iNone);
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 
@@ -128,7 +146,7 @@ void CAnimManager::Load_Model()
 
 	_matrix PivotMatrix;
 	PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-	// 없다 -> 원본 생성
+
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_ANIMTOOL, m_cLoadingChar,
 		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, tPath, tFileName, PivotMatrix))))
 	{
@@ -151,6 +169,57 @@ void CAnimManager::Delete_Model()
 	m_pAnimModel = nullptr;
 }
 
+void CAnimManager::Create_Player()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CAnimModel::ANIMMODELDESC Desc;
+	ZeroMemory(&Desc, sizeof(CAnimModel::ANIMMODELDESC));
+	_tchar czTemp[MAX_PATH] = TEXT("HatGirl");
+	memcpy(Desc.cModelTag, czTemp, sizeof(_tchar)*MAX_PATH);
+
+	// 있는 원본인지 확인한다.
+	if (!FAILED(pGameInstance->Check_Prototype(LEVEL_ANIMTOOL, Desc.cModelTag)))
+	{
+		char* tPath = CToolManager::Get_Instance()->Get_ManagedChar();
+		strcpy(tPath, "../Bin/Resources/Meshes/Anim/");
+		strcat(tPath, "HatGirl");
+		strcat(tPath, "/");
+
+		char* tFileName = CToolManager::Get_Instance()->Get_ManagedChar();
+		strcpy(tFileName, "HatGirl");
+		strcat(tFileName, ".fbx");
+
+
+
+		_matrix PivotMatrix;
+		PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_ANIMTOOL, TEXT("HatGirl"),
+			CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, tPath, tFileName, PivotMatrix))))
+		{
+			// 뭔가 파일 경로가 잘 못 됨.
+			RELEASE_INSTANCE(CGameInstance);
+			return;
+		}
+	}
+
+
+	if (m_pPlayer != nullptr)
+	{
+		m_pPlayer->Set_Dead();
+		m_pPlayer = nullptr;
+	}
+
+	CGameObject* pObj = nullptr;
+	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_ANIMTOOL, TEXT("Layer_Player"), &pObj, &Desc);
+
+	m_pPlayer = (CPlayer*)pObj;
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
 
 
 _int CAnimManager::Get_AnimCount()
@@ -169,6 +238,20 @@ _int CAnimManager::Get_CurAimIndex()
 	return m_pAnimModel->Get_CurAnimIndex();
 }
 
+_int CAnimManager::Get_PlayerAnimCount()
+{
+	if (nullptr == m_pPlayer)
+		return -1;
+	return ((CModel*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Model")))->Get_AnimIndex();
+}
+
+_int CAnimManager::Get_CurPlayerAnimIndex()
+{
+	if (nullptr == m_pPlayer)
+		return -1;
+	return ((CModel*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Model")))->Get_CurAnimIndex();
+}
+
 void CAnimManager::Change_Anim(_int iIndex)
 {
 	if (nullptr == m_pAnimModel)
@@ -183,6 +266,13 @@ void CAnimManager::Delete_Anim(_int iIndex)
 		return;
 
 	m_pAnimModel->Delete_Anim(iIndex);
+}
+
+void CAnimManager::Change_PlayerAnim(_int iIndex)
+{
+	if (nullptr == m_pPlayer)
+		return;
+	((CModel*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Model")))->Set_AnimIndex(iIndex);
 }
 
 void CAnimManager::Save_Anim()

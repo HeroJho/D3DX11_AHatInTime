@@ -13,6 +13,7 @@
 #include "LookCube.h"
 #include "StaticModel.h"
 #include "AnimModel.h"
+#include "Player.h"
 
 #include "Transform.h"
 
@@ -276,26 +277,33 @@ void CImGui_Manager::Render_AnimTool()
 	Render_StaticTool();
 
 
-	Window_AnimModleList();
+	CGameObject* pObj = nullptr;
+	if (*CAnimManager::Get_Instance()->Get_PlayMode())
+	{
+		pObj = CAnimManager::Get_Instance()->Get_PlayerModel();
+		Window_PlayMode();
+	}
+	else
+	{
+		pObj = CAnimManager::Get_Instance()->Get_AnimModel();
+		Window_AnimModleList();
+		if (nullptr != pObj)
+			Window_AnimEditor();
+	}
 
 
-	// Transform & Editor
-	CAnimModel* pObj = CAnimManager::Get_Instance()->Get_AnimModel();
+	// Transform
 	if (nullptr != pObj)
 	{
 		CTransform* pTransform = (CTransform*)pObj->Get_ComponentPtr(TEXT("Com_Transform"));
 		_float3* pAixs = pObj->Get_Axis();
 		Window_Transform(pTransform, pAixs);
-
-		Window_AnimEditor();
 	}
 
 
 	if (CAnimManager::Get_Instance()->Get_IsDelete())
 		Window_IsDelete();
 
-
-	
 
 }
 void CImGui_Manager::Render_TestLevel()
@@ -613,6 +621,8 @@ void CImGui_Manager::Window_AnimModleList()
 
 	ImGui::Begin("Anim Box");
 
+
+
 	const list<string>* FileNames = CDataManager::Get_Instance()->Get_AnimFileNames();
 
 	ImVec2 vSize{ 150.f, 200.f };
@@ -639,6 +649,16 @@ void CImGui_Manager::Window_AnimModleList()
 		CAnimManager::Get_Instance()->Make_Model();
 	else if (CAnimManager::Get_Instance()->Get_IsLoading())
 		CAnimManager::Get_Instance()->Load_Model();
+
+
+
+	if (ImGui::Checkbox("Play Mode", CAnimManager::Get_Instance()->Get_PlayMode()))
+	{
+		_bool bPlayMode = *CAnimManager::Get_Instance()->Get_PlayMode();
+		if (bPlayMode)
+			CAnimManager::Get_Instance()->Create_Player();
+	}
+
 
 
 	ImGui::End();
@@ -688,7 +708,58 @@ void CImGui_Manager::Window_AnimEditor()
 	if (ImGui::Button("Save_AnimModel"))
 		CAnimManager::Get_Instance()->Save_Anim();
 
+
+	ImGui::PushItemWidth(25.f);
+
+
+	ImGui::Checkbox("KeyTest", CAnimManager::Get_Instance()->Get_KeyTest());
+	if (*CAnimManager::Get_Instance()->Get_KeyTest())
+	{
+		ImGui::InputInt("A", CAnimManager::Get_Instance()->Get_KeyA(), 0); ImGui::SameLine();
+		ImGui::InputInt("D", CAnimManager::Get_Instance()->Get_KeyD(), 0); ImGui::SameLine();
+		ImGui::InputInt("Idle", CAnimManager::Get_Instance()->Get_KeyNone(), 0);
+	}
+
+	ImGui::PopItemWidth();
+
+
+
+
 	ImGui::End();
+}
+
+void CImGui_Manager::Window_PlayMode()
+{
+	ImGui::Begin("Player Tool");
+	
+
+	_int iAnimCount = CAnimManager::Get_Instance()->Get_PlayerAnimCount();
+	_int iCurIndex = CAnimManager::Get_Instance()->Get_CurPlayerAnimIndex();
+
+	ImGui::Text("AnimCount: %d", iAnimCount);
+	ImGui::Text("CurIndex: %d", iCurIndex);
+
+	//if (ImGui::InputInt("Input Index", &iCurIndex))
+	//	CAnimManager::Get_Instance()->Change_PlayerAnim(iCurIndex);
+
+	CPlayer* pPlayer = CAnimManager::Get_Instance()->Get_PlayerModel();
+	ImGui::InputFloat("WalkSpeed", pPlayer->Get_WalkSpeed());
+	ImGui::InputFloat("RunSpeed", pPlayer->Get_RunSpeed());
+	ImGui::InputFloat("TurnSpeed", pPlayer->Get_TurnSpeed());
+	ImGui::InputFloat("RotationSpeed", pPlayer->Get_RotationSpeed());
+
+
+
+	if (ImGui::Checkbox("Play Mode", CAnimManager::Get_Instance()->Get_PlayMode()))
+	{
+		_bool bPlayMode = *CAnimManager::Get_Instance()->Get_PlayMode();
+		if (bPlayMode)
+			CAnimManager::Get_Instance()->Create_Player();
+	}
+
+
+	ImGui::End();
+
 }
 
 
@@ -746,7 +817,7 @@ void CImGui_Manager::Window_Transform(CTransform* pTransform, _float3* vAxis)
 
 void CImGui_Manager::UI_LoadingBox()
 {
-	ImVec2 vPos(400.f, 400.f);
+	ImVec2 vPos(500.f, 400.f);
 	ImGui::SetNextWindowPos(vPos);
 	ImGui::Begin("Loading...");
 

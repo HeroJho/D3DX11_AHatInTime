@@ -10,6 +10,7 @@ CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 CPlayer::CPlayer(const CPlayer & rhs)
 	: CGameObject(rhs)
 {
+	ZeroMemory(&m_vAxis, sizeof(_float3));
 }
 
 HRESULT CPlayer::Initialize_Prototype()
@@ -22,17 +23,111 @@ HRESULT CPlayer::Initialize(void * pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pModelCom->Set_AnimIndex(rand() %  30);
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 10, 0.f, rand() % 10, 1.f));
-	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 0.f));
+
+	m_eState = STATE_IDLE;
+
+	m_fWalkSpeed = 1.5f;
+	m_fRunSpeed = 2.5f;
+	m_fTurnSpeed = 0.6f;
+	m_fRotationSpeed = 3.5f;
+
+	ANIM_LINEAR_DATA LinearData;
+	ZeroMemory(&LinearData, sizeof(ANIM_LINEAR_DATA));
+	LinearData.fLimitRatio = 0.05f;
+	LinearData.fTickPerSeconed = 0.4f;
+	LinearData.iMyIndex = 111;
+	LinearData.iTargetIndex = 197;
+
+	m_pModelCom->Push_AnimLinearData(LinearData);
 	
 	return S_OK;
 }
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+	m_TickStates.push_back(STATE_IDLE);
+
+	Input(fTimeDelta);
 
 }
+void CPlayer::Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	if (pGameInstance->Key_Pressing(DIK_W))
+	{
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta);
+			m_TickStates.push_back(STATE_RUN);
+		}
+		else
+		{
+			m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta);
+			m_TickStates.push_back(STATE_WALK);
+		}
+	}
+	else if (pGameInstance->Key_Pressing(DIK_S))
+	{
+
+	}
+
+	if (pGameInstance->Key_Pressing(DIK_A))
+	{
+		if (!pGameInstance->Key_Pressing(DIK_W))
+			m_pTransformCom->Go_Straight(m_fTurnSpeed, fTimeDelta);
+
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), -m_fRotationSpeed, fTimeDelta);
+		m_TickStates.push_back(STATE_WALK);
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		if (!pGameInstance->Key_Pressing(DIK_W))
+			m_pTransformCom->Go_Straight(m_fTurnSpeed, fTimeDelta);
+
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fRotationSpeed, fTimeDelta);
+		m_TickStates.push_back(STATE_WALK);
+	}
+
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+
+void CPlayer::Set_State()
+{
+
+	list<STATE>::iterator iter = max_element(m_TickStates.begin(), m_TickStates.end());
+
+	m_eState = (*iter);
+
+	Set_Anim();
+	m_TickStates.clear();
+}
+
+void CPlayer::Set_Anim()
+{
+	switch (m_eState)
+	{
+	case Client::CPlayer::STATE_IDLE:
+		m_pModelCom->Set_AnimIndex(111);
+		break;
+	case Client::CPlayer::STATE_WALK:
+		m_pModelCom->Set_AnimIndex(197);
+		break;
+	case Client::CPlayer::STATE_RUN:
+		m_pModelCom->Set_AnimIndex(198);
+		break;
+	}
+}
+
+
+
+
 
 void CPlayer::LateTick(_float fTimeDelta)
 {
@@ -42,6 +137,8 @@ void CPlayer::LateTick(_float fTimeDelta)
 	m_pModelCom->Play_Animation(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+
+	Set_State();
 }
 
 HRESULT CPlayer::Render()
@@ -80,6 +177,7 @@ HRESULT CPlayer::Render()
 	return S_OK;
 }
 
+
 HRESULT CPlayer::Ready_Components()
 {
 	/* For.Com_Transform */
@@ -95,7 +193,7 @@ HRESULT CPlayer::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_ANIMTOOL, TEXT("HatGirl"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	return S_OK;

@@ -165,6 +165,10 @@ namespace Engine
 
 
 
+
+
+
+
 	// For. Data
 
 	typedef struct tagHeroHierarchyNode
@@ -172,6 +176,7 @@ namespace Engine
 
 		char cName[MAX_PATH];
 		char cParent[MAX_PATH];
+		int  iDepth;
 		XMFLOAT4X4 mTransform;
 
 	}DATA_HERONODE;
@@ -182,6 +187,13 @@ namespace Engine
 		char cNames[AI_TEXTURE_TYPE_MAX][MAX_PATH];
 
 	}DATA_HEROMATERIAL;
+
+
+	typedef struct tagHeroBone
+	{
+		char		cNames[MAX_PATH];
+		XMFLOAT4X4	mOffsetTransform;
+	}DATA_HEROBONE;
 
 	typedef struct tagHeroMesh
 	{
@@ -194,6 +206,9 @@ namespace Engine
 
 		int					iNumPrimitives;
 		FACEINDICES32*		pIndices;
+
+		int					iNumBones;
+		DATA_HEROBONE*		pBones;
 
 	}DATA_HEROMETH;
 
@@ -234,5 +249,16 @@ namespace Engine
 
 	}DATA_HEROSCENE;
 
+
+
+	// For. 애니 선형보간 데이터
+	typedef struct tagAnimLinearData
+	{
+		int iMyIndex;
+		int iTargetIndex;
+		float fTickPerSeconed;
+		float fLimitRatio;
+
+	}ANIM_LINEAR_DATA;
 
 }

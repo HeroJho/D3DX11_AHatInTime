@@ -68,25 +68,31 @@ void CCamera_Free::Input(_float fTimeDelta)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	if (pGameInstance->Get_DIKState(DIK_W) & 0x80)
+	if (pGameInstance->Mouse_Pressing(DIMK_RBUTTON))
 	{
-		m_pTransformCom->Go_Straight(fTimeDelta);
+
+		if (pGameInstance->Get_DIKState(DIK_W) & 0x80)
+		{
+			m_pTransformCom->Go_Straight(fTimeDelta);
+		}
+
+		if (pGameInstance->Get_DIKState(DIK_S) & 0x80)
+		{
+			m_pTransformCom->Go_Backward(fTimeDelta);
+		}
+
+		if (pGameInstance->Get_DIKState(DIK_A) & 0x80)
+		{
+			m_pTransformCom->Go_Left(fTimeDelta);
+		}
+
+		if (pGameInstance->Get_DIKState(DIK_D) & 0x80)
+		{
+			m_pTransformCom->Go_Right(fTimeDelta);
+		}
+
 	}
 
-	if (pGameInstance->Get_DIKState(DIK_S) & 0x80)
-	{
-		m_pTransformCom->Go_Backward(fTimeDelta);
-	}
-
-	if (pGameInstance->Get_DIKState(DIK_A) & 0x80)
-	{
-		m_pTransformCom->Go_Left(fTimeDelta);
-	}
-
-	if (pGameInstance->Get_DIKState(DIK_D) & 0x80)
-	{
-		m_pTransformCom->Go_Right(fTimeDelta);
-	}
 
 	_long	MouseMove = 0;
 

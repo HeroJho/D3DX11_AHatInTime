@@ -24,7 +24,7 @@ public:
 
 	HRESULT SampleSceneData(CModel* pModel);
 	HRESULT SaveSceneData(DATA_HEROSCENE* pScene);
-
+	HRESULT ReadSceneData(const char* pFileName, DATA_HEROSCENE* pScene);
 
 public: // For. Map
 	const list<string>* Get_NonAnimFileNames() { return &m_NonAnimFilePaths; }

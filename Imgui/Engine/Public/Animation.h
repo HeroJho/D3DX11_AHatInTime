@@ -15,6 +15,10 @@ public:
 	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation);
 	HRESULT Initialize(class CModel* pModel);
 	HRESULT Play_Animation(_float fTimeDelta);
+	_bool Play_Animation(ANIM_LINEAR_DATA* pData, list<KEYFRAME>* pFirstKeyFrames, _float fTimeDelta);
+	void	Get_FirstKeys(list<KEYFRAME>* pFirstKeys);
+
+	void Init_PlayInfo();
 
 private:
 	/* 이 애니메이션을 구동하기위해 사용되는 뼈의 갯수. */
@@ -28,6 +32,8 @@ private:
 	_float						m_fTickPerSecond = 0.f;
 
 	_float						m_fPlayTime = 0.f;
+
+	_bool						m_bStartLinear = false;
 
 private: /* 복제된 애니메이션 마다 따로 가진다. */
 	vector<class CHierarchyNode*>	m_HierarchyNodes;
