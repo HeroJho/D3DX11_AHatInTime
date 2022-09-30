@@ -37,10 +37,16 @@ public:
 	_float*		Get_TurnSpeed() { return &m_fTurnSpeed; }
 	_float*		Get_RotationSpeed() { return &m_fRotationSpeed; }
 
+	_float		Get_AnimSpeed(STATE eState);
+	void		Set_AnimSpeed(STATE eState, _float fSpeed);
+
+	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
+
 private:
 	void Input(_float fTimeDelta);
 	void Set_State();
 	void Set_Anim();
+
 
 private:
 	CShader*				m_pShaderCom = nullptr;

@@ -65,6 +65,38 @@ HRESULT CChannel::Initialize(aiNodeAnim * pAIChannel)
 	return S_OK;
 }
 
+HRESULT CChannel::Bin_Initialize(DATA_HEROCHANNEL* pAIChannel)
+{
+	/* 특정 애니메이션에서 사용되는 뼈의 정보이다. */
+	/* 이 이름은 모델이 가지고 있는 HierarchyNodes의 뼈대 중 한놈과 이름이 같을 것이다. */
+	strcpy_s(m_szName, pAIChannel->szName);
+
+	//m_pHierarchyNode = pModel->Get_HierarchyNode(m_szName);
+	//if (nullptr == m_pHierarchyNode)
+	//	return E_FAIL;
+
+	// Safe_AddRef(m_pHierarchyNode);
+
+
+	/* 키프레임 정보들를 로드한다. */
+	/* 키프레임 : 전체애니메이션 동작 중, 특정 시간대에 이뼈가 표현해야할 동작의 상태 행렬정보이다. */
+
+	m_iNumKeyFrames = pAIChannel->iNumKeyFrames;
+
+	for (_uint i = 0; i < m_iNumKeyFrames; ++i)
+	{
+		KEYFRAME			KeyFrame;
+		ZeroMemory(&KeyFrame, sizeof(KEYFRAME));
+
+		KeyFrame = pAIChannel->pKeyFrames[i];
+
+		m_KeyFrames.push_back(KeyFrame);
+	}
+
+	return S_OK;
+}
+
+
 _uint CChannel::Update_Transformation(_float fPlayTime, _uint iCurrentKeyFrame, CHierarchyNode* pNode)
 {
 	_float3			vScale;
@@ -214,6 +246,20 @@ CChannel * CChannel::Create(aiNodeAnim * pAIChannel)
 
 	return pInstance;
 }
+
+CChannel * CChannel::Bin_Create(DATA_HEROCHANNEL* pAIChannel)
+{
+	CChannel*			pInstance = new CChannel();
+
+	if (FAILED(pInstance->Bin_Initialize(pAIChannel)))
+	{
+		MSG_BOX(TEXT("Failed To Created : CBinChannel"));
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
 
 void CChannel::Free()
 {

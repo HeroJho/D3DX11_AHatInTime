@@ -92,29 +92,6 @@ HRESULT CAnimModel::Render()
 
 
 
-_int CAnimModel::Get_AnimCount()
-{
-	return m_pModelCom->Get_AnimIndex();
-}
-
-_int CAnimModel::Get_CurAnimIndex()
-{
-	return m_pModelCom->Get_CurAnimIndex();
-}
-
-void CAnimModel::Set_AnimIndex(_int iIndex)
-{
-	m_pModelCom->Set_AnimIndex(iIndex);
-}
-
-void CAnimModel::Delete_Anim(_int iIndex)
-{
-	m_pModelCom->Delete_Anim(iIndex);
-}
-
-
-
-
 
 
 HRESULT CAnimModel::Ready_Components()

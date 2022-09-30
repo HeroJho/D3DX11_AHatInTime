@@ -128,6 +128,11 @@ HRESULT CTerrain::SetUp_ShaderResources()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
 		return E_FAIL;
 
+
+	_bool bColor = false;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bColor", &bColor, sizeof(_bool))))
+		return E_FAIL;
+
 	RELEASE_INSTANCE(CGameInstance);
 
 	if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture")))

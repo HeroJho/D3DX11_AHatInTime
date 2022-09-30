@@ -22,7 +22,9 @@ HRESULT CLevel_SelectTool::Initialize()
 
 void CLevel_SelectTool::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
+
+	
+
 }
 
 HRESULT CLevel_SelectTool::Render()

@@ -19,7 +19,7 @@ HRESULT CDataManager::Init()
 	return S_OK;
 }
 
-HRESULT CDataManager::SampleSceneData(CModel * pModel)
+HRESULT CDataManager::Conv_Bin_Anim(CModel * pModel, char* cModelName)
 {
 	DATA_HEROSCENE Scene;
 	ZeroMemory(&Scene, sizeof(DATA_HEROSCENE));
@@ -29,56 +29,7 @@ HRESULT CDataManager::SampleSceneData(CModel * pModel)
 	pModel->Get_MeshData(&Scene);
 	pModel->Get_AnimData(&Scene);
 
-
-#pragma region Test Code
-
-	vector<DATA_HERONODE> temp;
-	for (_int i = 0; i < Scene.iNodeCount; ++i)
-	{
-		DATA_HERONODE Hero_Node;
-		ZeroMemory(&Hero_Node, sizeof(DATA_HERONODE));
-
-		const char* pMyName = Scene.pHeroNodes[i].cName;
-		const char* pParent = Scene.pHeroNodes[i].cParent;
-		XMFLOAT4X4 mMatrix = Scene.pHeroNodes[i].mTransform;
-
-		memcpy(&Hero_Node.cName, pMyName, sizeof(char) * MAX_PATH);
-		memcpy(&Hero_Node.cParent, pParent, sizeof(char) * MAX_PATH);
-		Hero_Node.mTransform = mMatrix;
-
-		temp.push_back(Hero_Node);
-	}
-
-
-	vector<DATA_HEROMATERIAL> temp2;
-	for (_int i = 0; i < Scene.iMaterialCount; ++i)
-	{
-		DATA_HEROMATERIAL Hero_Material;
-		ZeroMemory(&Hero_Material, sizeof(DATA_HEROMATERIAL));
-		
-		memcpy(&Hero_Material, &Scene.pHeroMaterial[i], sizeof(DATA_HEROMATERIAL));
-
-
-		temp2.push_back(Hero_Material);
-	}
-
-
-	//vector<DATA_HEROMETH> temp3;
-	//for (_int i = 0; i < Scene.iMeshCount; ++i)
-	//{
-	//	DATA_HEROMETH Hero_Meth;
-	//	ZeroMemory(&Hero_Meth, sizeof(DATA_HEROMETH));
-
-	//	memcpy(&Hero_Meth, &Scene.pHeroMesh[i], sizeof(DATA_HEROMETH));
-
-	//	temp3.push_back(Hero_Meth);
-	//}
-	
-#pragma endregion
-
-
-	SaveSceneData(&Scene);
-
+	SaveSceneData(&Scene, cModelName);
 
 	Safe_Delete_Array(Scene.pHeroNodes);
 	Safe_Delete_Array(Scene.pHeroMaterial);
@@ -104,9 +55,13 @@ HRESULT CDataManager::SampleSceneData(CModel * pModel)
 	return S_OK;
 }
 
-HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene)
+HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene, char* cModelName)
 {
-	std::ofstream ofs("Test.txt", ios::out | ios::binary);
+	char cPullName[MAX_PATH];
+	strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/");
+	strcat_s(cPullName, cModelName);
+
+	std::ofstream ofs(cPullName, ios::out | ios::binary);
 
 	if (!ofs)
 		return E_FAIL;
@@ -200,70 +155,22 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene)
 		}
 	}
 
-
-
-
 	ofs.close();
-
-
-
-
-
-
-
-
-
-
-
-
-
-#pragma region Test Code
-
-	//vector<DATA_HERONODE> temp;
-	//for (_int i = 0; i < ReadScene.iNodeCount; ++i)
-	//{
-	//	DATA_HERONODE Hero_Node;
-	//	ZeroMemory(&Hero_Node, sizeof(DATA_HERONODE));
-
-	//	const char* pMyName = ReadScene.pHeroNodes[i].cName;
-	//	const char* pParent = ReadScene.pHeroNodes[i].cParent;
-	//	XMFLOAT4X4 mMatrix = ReadScene.pHeroNodes[i].mTransform;
-	//	int iDepth = ReadScene.pHeroNodes[i].iDepth;
-
-	//	memcpy(&Hero_Node.cName, pMyName, sizeof(char) * MAX_PATH);
-	//	memcpy(&Hero_Node.cParent, pParent, sizeof(char) * MAX_PATH);
-	//	Hero_Node.mTransform = mMatrix;
-	//	Hero_Node.iDepth = iDepth;
-
-	//	temp.push_back(Hero_Node);
-	//}
-
-
-	//vector<DATA_HEROMATERIAL> temp2;
-	//for (_int i = 0; i < ReadScene.iMaterialCount; ++i)
-	//{
-	//	DATA_HEROMATERIAL Hero_Material;
-	//	ZeroMemory(&Hero_Material, sizeof(DATA_HEROMATERIAL));
-
-	//	memcpy(&Hero_Material, &ReadScene.pHeroMaterial[i], sizeof(DATA_HEROMATERIAL));
-
-
-	//	temp2.push_back(Hero_Material);
-	//}
-
-#pragma endregion
-
-
 
 
 	return S_OK;
 }
 
-HRESULT CDataManager::ReadSceneData(const char * pFileName, DATA_HEROSCENE* ReadScene)
+HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene)
 {
+	char cPullName[MAX_PATH];
+	strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/");
+	strcat_s(cPullName, pFileName);
 
-	ZeroMemory(&ReadScene, sizeof(DATA_HEROSCENE));
-	std::ifstream ifs("Test.txt", ios::in | ios::binary);
+
+	ZeroMemory(ReadScene, sizeof(DATA_HEROSCENE));
+	// strcat(pFileName, ".txt");
+	std::ifstream ifs(cPullName, ios::in | ios::binary);
 
 	if (!ifs)
 		return E_FAIL;
@@ -309,6 +216,7 @@ HRESULT CDataManager::ReadSceneData(const char * pFileName, DATA_HEROSCENE* Read
 		if (iIsAnim)
 		{
 			pHeroMash->pAnimVertices = new VTXANIMMODEL[pHeroMash->NumVertices];
+			pHeroMash->pNonAnimVertices = nullptr;
 			for (int j = 0; j < pHeroMash->NumVertices; ++j)
 			{
 				VTXANIMMODEL* VtxAniModel = &pHeroMash->pAnimVertices[j];
@@ -318,6 +226,7 @@ HRESULT CDataManager::ReadSceneData(const char * pFileName, DATA_HEROSCENE* Read
 		else
 		{
 			pHeroMash->pNonAnimVertices = new VTXMODEL[pHeroMash->NumVertices];
+			pHeroMash->pAnimVertices = nullptr;
 			for (int j = 0; j < pHeroMash->NumVertices; ++j)
 			{
 				VTXMODEL* VtxNonAniModel = &pHeroMash->pNonAnimVertices[j];
@@ -376,8 +285,10 @@ HRESULT CDataManager::ReadSceneData(const char * pFileName, DATA_HEROSCENE* Read
 
 
 	ifs.close();
-
+	return S_OK;
 }
+
+
 
 
 

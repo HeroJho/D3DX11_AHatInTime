@@ -22,9 +22,10 @@ public:
 public:
 	HRESULT Init();
 
-	HRESULT SampleSceneData(CModel* pModel);
-	HRESULT SaveSceneData(DATA_HEROSCENE* pScene);
-	HRESULT ReadSceneData(const char* pFileName, DATA_HEROSCENE* pScene);
+	HRESULT Conv_Bin_Anim(CModel* pModel, char* cModelName);
+	HRESULT SaveSceneData(DATA_HEROSCENE* pScene, char* cModelName);
+	HRESULT ReadSceneData(char* pFileName, DATA_HEROSCENE* pScene);
+
 
 public: // For. Map
 	const list<string>* Get_NonAnimFileNames() { return &m_NonAnimFilePaths; }

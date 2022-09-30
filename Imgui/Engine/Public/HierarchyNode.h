@@ -45,20 +45,28 @@ public:
 		XMStoreFloat4x4(&m_Transformation, Transformation);
 	}
 
+	CHierarchyNode* Get_Parent() { return m_pParent; }
+
 public:
 	HRESULT Initialize(aiNode* pAINode, class CHierarchyNode* pParent, _uint iDepth);
+	HRESULT Bin_Initialize(DATA_HERONODE* pNode);
+
 	void Set_CombinedTransformation();
 	void Set_OffsetMatrix(_fmatrix OffsetMatrix);
+	void Set_FindParent(CHierarchyNode* pNode);
+
 private:
 	char				m_szName[MAX_PATH] = "";
 	_float4x4			m_OffsetMatrix;
 	_float4x4			m_OriTransformation;
 	_float4x4			m_Transformation;
 	_float4x4			m_CombinedTransformation;
+	char				m_szParentName[MAX_PATH] = "";
 	CHierarchyNode*		m_pParent = nullptr;
 	_uint				m_iDepth = 0;
 
 public:
+	static CHierarchyNode* Bin_Create(DATA_HERONODE* pNode);
 	static CHierarchyNode* Create(aiNode* pAINode, class CHierarchyNode* pParent, _uint iDepth);
 	virtual void Free();
 };

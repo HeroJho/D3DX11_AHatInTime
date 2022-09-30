@@ -35,14 +35,8 @@ public:
 
 
 public:
-	_int Get_AnimCount();
-	_int Get_CurAnimIndex();
-	void Set_AnimIndex(_int iIndex);
-	void Delete_Anim(_int iIndex);
-
-
 	virtual _float3* Get_Axis() override { return &m_vAxis; };
-
+	TCHAR*		Get_ModelName() { return m_cModelTag; };
 
 private:
 	CShader*				m_pShaderCom = nullptr;

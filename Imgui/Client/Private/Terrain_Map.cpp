@@ -124,6 +124,11 @@ HRESULT CTerrain_Map::Ready_Components()
 	TerrainDesc.iNumVerticesX = 200;
 	TerrainDesc.iNumVerticesY = 200;
 
+
+	_bool bColor = false;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bColor", &bColor, sizeof(_bool))))
+		return E_FAIL;
+
 	/* For.Com_VIBuffer */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Map_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom, &TerrainDesc)))
 		return E_FAIL;

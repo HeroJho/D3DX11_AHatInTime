@@ -24,10 +24,15 @@ public:
 
 public:
 	virtual HRESULT Initialize_Prototype(CModel::TYPE eModelType, const aiMesh* pAIMesh, class CModel* pModel, _fmatrix PivotMatrix);
+	virtual HRESULT Bin_Initialize_Prototype(CModel::TYPE eModelType, DATA_HEROMETH* pAIMesh, class CModel* pModel, _fmatrix PivotMatrix);
+
 	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Bin_Initialize(void* pArg);
+
 
 public:
 	HRESULT SetUp_HierarchyNodes(class CModel* pModel, aiMesh* pAIMesh);
+	HRESULT Bin_SetUp_HierarchyNodes(class CModel* pModel, DATA_HEROMETH* pAIMesh);
 	void SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix PivotMatrix);
 
 
@@ -47,9 +52,16 @@ private:
 	HRESULT Ready_Vertices(const aiMesh* pAIMesh, _fmatrix PivotMatrix);
 	HRESULT Ready_AnimVertices(const aiMesh* pAIMesh, CModel* pModel);
 
+private:
+	HRESULT Bin_Ready_Vertices(DATA_HEROMETH* pAIMesh, _fmatrix PivotMatrix);
+	HRESULT Bin_Ready_AnimVertices(DATA_HEROMETH* pAIMesh, CModel* pModel);
+
 public:
 	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, const aiMesh* pAIMesh, class CModel* pModel, _fmatrix PivotMatrix);
+	static CMeshContainer* Bin_Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CModel::TYPE eModelType, DATA_HEROMETH* pAIMesh, class CModel* pModel, _fmatrix PivotMatrix);
+
 	virtual CComponent* Clone(void* pArg = nullptr) override;
+
 	virtual void Free() override;
 
 

@@ -7,13 +7,14 @@
 
 
 CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
-	: CComponent(pDevice, pContext)
+	: CComponent(pDevice, pContext), m_bIsProto(true)
 {
 }
 
 CModel::CModel(const CModel & rhs)
 	: CComponent(rhs)
 	, m_pAIScene(rhs.m_pAIScene)
+	, m_pBin_AIScene(rhs.m_pBin_AIScene)
 	, m_iNumMeshes(rhs.m_iNumMeshes)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_Meshes(rhs.m_Meshes)
@@ -62,29 +63,25 @@ _uint CModel::Get_MaterialIndex(_uint iMeshIndex)
 
 void CModel::Set_AnimIndex(_uint iAnimIndex)
 {
+	if (0 > iAnimIndex || m_iNumAnimations < iAnimIndex)
+		return;
 
-	if (0 <= iAnimIndex && m_iNumAnimations > iAnimIndex)
+	if (m_iCurrentAnimIndex == iAnimIndex)
+		return;
+
+	// 보간할 애가 있는지 체크
+	ANIM_LINEAR_DATA* pLinearData = Get_AnimLinearData(iAnimIndex);
+	if (nullptr == pLinearData)
 	{
-		// 다르다!
-		if (m_iCurrentAnimIndex != iAnimIndex)
-		{
-			// 보간할 애가 있는지 체크
-			ANIM_LINEAR_DATA* pLinearData = Get_AnimLinearData(iAnimIndex);
-			if (nullptr == pLinearData)
-			{
-				// 없으면 애니메이션 초기화하고 변화
-				m_Animations[m_iCurrentAnimIndex]->Init_PlayInfo();
-				m_iCurrentAnimIndex = iAnimIndex;
-			}
-			else
-			{
-				// 보간 데이터가 존재한다.
-				m_pCurLinearData = pLinearData;
-			}
-
-		}
+		// 없으면 애니메이션 초기화하고 변화
+		m_Animations[m_iCurrentAnimIndex]->Init_PlayInfo();
+		m_iCurrentAnimIndex = iAnimIndex;
 	}
-
+	else
+	{
+		// 보간 데이터가 존재한다.
+		m_pCurLinearData = pLinearData;
+	}
 }
 
 HRESULT CModel::Initialize_Prototype(TYPE eType, const char * pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
@@ -130,6 +127,7 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const char * pModelFilePath, co
 
 	return S_OK;
 }
+
 
 HRESULT CModel::Initialize(void * pArg)
 {
@@ -186,10 +184,83 @@ HRESULT CModel::Initialize(void * pArg)
 
 	m_Animations = Animations;
 
-	m_AnimLinearDatas.resize(500);
+	m_AnimLinearDatas.resize(250);
 
 	return S_OK;
 }
+
+HRESULT CModel::Bin_Initialize(void * pArg)
+{
+	Bin_Ready_HierarchyNodes();
+
+	sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
+	{
+		return pSour->Get_Depth() < pDest->Get_Depth();
+	});
+
+	for (int i = 0; i < m_pBin_AIScene->iNodeCount; ++i)
+	{
+		for (int j = 0; j < m_pBin_AIScene->iNodeCount; ++j)
+		{
+			if (nullptr != m_HierarchyNodes[i]->Get_Parent())
+				break;
+
+			m_HierarchyNodes[i]->Set_FindParent(m_HierarchyNodes[j]);
+		}
+	}
+
+	int iBin = 1;
+	if (TYPE_ANIM == m_eModelType)
+	{
+		_uint		iNumMeshes = 0;
+
+		vector<CMeshContainer*>		MeshContainers;
+
+		for (auto& pPrototype : m_Meshes)
+		{
+			
+			CMeshContainer*		pMeshContainer = (CMeshContainer*)pPrototype->Clone(&iBin);
+			if (nullptr == pMeshContainer)
+				return E_FAIL;
+
+			MeshContainers.push_back(pMeshContainer);
+
+			Safe_Release(pPrototype);
+		}
+
+		m_Meshes.clear();
+
+		m_Meshes = MeshContainers;
+
+		for (auto& pMeshContainer : m_Meshes)
+		{
+			if (nullptr != pMeshContainer)
+				pMeshContainer->Bin_SetUp_HierarchyNodes(this, &m_pBin_AIScene->pHeroMesh[iNumMeshes++]);
+		}
+	}
+
+	vector<CAnimation*>		Animations;
+
+	for (auto& pPrototype : m_Animations)
+	{
+		CAnimation*		pAnimation = pPrototype->Bin_Clone(this);
+		if (nullptr == pAnimation)
+			return E_FAIL;
+
+		Animations.push_back(pAnimation);
+
+		Safe_Release(pPrototype);
+	}
+
+	m_Animations.clear();
+
+	m_Animations = Animations;
+
+	m_AnimLinearDatas.resize(250);
+
+	return S_OK;
+}
+
 
 HRESULT CModel::SetUp_OnShader(CShader * pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char * pConstantName)
 {
@@ -265,6 +336,17 @@ HRESULT CModel::Delete_Anim(_uint iIndex)
 
 HRESULT CModel::Push_AnimLinearData(ANIM_LINEAR_DATA Data)
 {
+	vector<ANIM_LINEAR_DATA>* Temps = &m_AnimLinearDatas[Data.iMyIndex];
+	for (auto& TData : *Temps)
+	{
+		if (Data.iTargetIndex == TData.iTargetIndex)
+		{
+			TData.fTickPerSeconed = Data.fTickPerSeconed;
+			TData.fLimitRatio = Data.fLimitRatio;
+			return S_OK;
+		}
+	}
+
 	m_AnimLinearDatas[Data.iMyIndex].push_back(Data);
 
 	return S_OK;
@@ -399,6 +481,8 @@ HRESULT CModel::Ready_Animations()
 
 
 
+
+
 HRESULT CModel::Get_HierarchyNodeData(DATA_HEROSCENE * pHeroScene)
 {
 
@@ -482,15 +566,28 @@ CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, 
 	return pInstance;
 }
 
+
 CComponent * CModel::Clone(void * pArg)
 {
 	CModel*			pInstance = new CModel(*this);
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (!m_pBin_AIScene)
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CModel"));
-		Safe_Release(pInstance);
+		if (FAILED(pInstance->Initialize(pArg)))
+		{
+			MSG_BOX(TEXT("Failed To Cloned : CModel"));
+			Safe_Release(pInstance);
+		}
 	}
+	else
+	{
+		if (FAILED(pInstance->Bin_Initialize(pArg)))
+		{
+			MSG_BOX(TEXT("Failed To Cloned : CModel"));
+			Safe_Release(pInstance);
+		}
+	}
+
 
 	return pInstance;
 }
@@ -522,4 +619,201 @@ void CModel::Free()
 	m_Animations.clear();
 
 	m_Importer.FreeScene();
+
+	if (m_pBin_AIScene && m_bIsProto)
+	{
+		Safe_Release_Scene();
+	}
+}
+
+_float CModel::Get_CurAin_TickPerSecond()
+{
+	return Get_Anim_TickPerSecond(m_iCurrentAnimIndex);
+}
+
+void CModel::Set_CurAin_TickPerSecond(_float fTickPerSecond)
+{
+	Set_Anim_TickPerSecond(m_iCurrentAnimIndex, fTickPerSecond);
+}
+
+_float CModel::Get_Anim_TickPerSecond(_int iIndex)
+{
+	return m_Animations[iIndex]->Get_TickPerSecond();
+}
+
+void CModel::Set_Anim_TickPerSecond(_int iIndex, _float fTickperSecond)
+{
+	m_Animations[iIndex]->Set_TickPerSecond(fTickperSecond);
+}
+
+char * CModel::Get_CurAnim_Name()
+{
+	return m_Animations[m_iCurrentAnimIndex]->Get_Name();
+}
+
+
+
+
+
+HRESULT CModel::Bin_Initialize_Prototype(DATA_HEROSCENE* pScene, TYPE eType, const char* pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
+{
+	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
+	m_eModelType = eType;
+
+	m_pBin_AIScene = pScene;
+
+	if (nullptr == m_pBin_AIScene)
+		return E_FAIL;
+
+
+
+	/* 모델을 구성하는 메시들을 만든다. */
+	if (FAILED(Bin_Ready_MeshContainers(PivotMatrix)))
+		return E_FAIL;
+
+	if (FAILED(Bin_Ready_Materials(pModelFilePath)))
+		return E_FAIL;
+
+	if (FAILED(Bin_Ready_Animations()))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+
+HRESULT CModel::Bin_Ready_MeshContainers(_fmatrix PivotMatrix)
+{
+	m_iNumMeshes = m_pBin_AIScene->iMeshCount;
+
+	for (_uint i = 0; i < m_iNumMeshes; ++i)
+	{
+		CMeshContainer*		pMeshContainer = CMeshContainer::Bin_Create(m_pDevice, m_pContext, m_eModelType, &m_pBin_AIScene->pHeroMesh[i], this, PivotMatrix);
+		if (nullptr == pMeshContainer)
+			return E_FAIL;
+
+		m_Meshes.push_back(pMeshContainer);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Bin_Ready_Materials(const char* pModelFilePath)
+{
+	if (nullptr == m_pBin_AIScene)
+		return E_FAIL;
+
+	m_iNumMaterials = m_pBin_AIScene->iMaterialCount;
+
+	for (_uint i = 0; i < m_iNumMaterials; ++i)
+	{
+		MATERIALDESC		MaterialDesc;
+		ZeroMemory(&MaterialDesc, sizeof(MATERIALDESC));
+
+		DATA_HEROMATERIAL			pAIMaterial = m_pBin_AIScene->pHeroMaterial[i];
+
+		for (_uint j = 0; j < AI_TEXTURE_TYPE_MAX; ++j)
+		{
+			if (!strcmp(pAIMaterial.cNames[j], ""))
+				continue;
+
+
+			char			szFullPath[MAX_PATH] = "";
+			char			szExt[MAX_PATH] = ".dds";
+
+			strcpy_s(szFullPath, pModelFilePath);
+			strcat_s(szFullPath, pAIMaterial.cNames[j]);
+			strcat_s(szFullPath, szExt);
+
+			_tchar			szWideFullPath[MAX_PATH] = TEXT("");
+
+			MultiByteToWideChar(CP_ACP, 0, szFullPath, strlen(szFullPath), szWideFullPath, MAX_PATH);
+
+
+			MaterialDesc.pTexture[j] = CTexture::Create(m_pDevice, m_pContext, szWideFullPath);
+			if (nullptr == MaterialDesc.pTexture[j])
+				return E_FAIL;
+		}
+
+		m_Materials.push_back(MaterialDesc);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Bin_Ready_HierarchyNodes()
+{
+	for (int i = 0; i < m_pBin_AIScene->iNodeCount; ++i)
+	{
+		DATA_HERONODE Node = m_pBin_AIScene->pHeroNodes[i];
+
+		CHierarchyNode*		pHierarchyNode = CHierarchyNode::Bin_Create(&Node);
+		if (nullptr == pHierarchyNode)
+			return E_FAIL;
+
+		m_HierarchyNodes.push_back(pHierarchyNode);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Bin_Ready_Animations()
+{
+	m_iNumAnimations = m_pBin_AIScene->iNumAnimations;
+
+	for (_uint i = 0; i < m_pBin_AIScene->iNumAnimations; ++i)
+	{
+		DATA_HEROANIM*		pAIAnimation = &m_pBin_AIScene->pHeroAnim[i];
+
+		CAnimation*			pAnimation = CAnimation::Bin_Create(pAIAnimation);
+		if (nullptr == pAnimation)
+			return E_FAIL;
+
+		m_Animations.push_back(pAnimation);
+	}
+	return S_OK;
+}
+
+
+HRESULT CModel::Safe_Release_Scene()
+{
+	Safe_Delete_Array(m_pBin_AIScene->pHeroNodes);
+	Safe_Delete_Array(m_pBin_AIScene->pHeroMaterial);
+
+	for (_int i = 0; i < m_pBin_AIScene->iMeshCount; ++i)
+	{
+		Safe_Delete_Array(m_pBin_AIScene->pHeroMesh[i].pAnimVertices);
+		Safe_Delete_Array(m_pBin_AIScene->pHeroMesh[i].pNonAnimVertices);
+		Safe_Delete_Array(m_pBin_AIScene->pHeroMesh[i].pIndices);
+		Safe_Delete_Array(m_pBin_AIScene->pHeroMesh[i].pBones);
+	}
+	Safe_Delete_Array(m_pBin_AIScene->pHeroMesh);
+
+
+	for (_int i = 0; i < m_pBin_AIScene->iNumAnimations; ++i)
+	{
+		for (_int j = 0; j < m_pBin_AIScene->pHeroAnim[i].iNumChannels; ++j)
+		{
+			Safe_Delete_Array(m_pBin_AIScene->pHeroAnim[i].pHeroChannel[j].pKeyFrames);
+		}
+		Safe_Delete_Array(m_pBin_AIScene->pHeroAnim[i].pHeroChannel);
+	}
+	Safe_Delete_Array(m_pBin_AIScene->pHeroAnim);
+
+	Safe_Delete(m_pBin_AIScene);
+
+	return S_OK;
+}
+
+
+CModel * CModel::Bin_Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, DATA_HEROSCENE* pScene, TYPE eType, const char * pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
+{
+	CModel*			pInstance = new CModel(pDevice, pContext);
+
+	if (FAILED(pInstance->Bin_Initialize_Prototype(pScene, eType, pModelFilePath, pModelFileName, PivotMatrix)))
+	{
+		MSG_BOX(TEXT("Failed To Created : CTexture"));
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
 }

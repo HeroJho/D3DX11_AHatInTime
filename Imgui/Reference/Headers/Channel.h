@@ -17,6 +17,7 @@ public:
 
 public:
 	HRESULT Initialize(aiNodeAnim*	pAIChannel);
+	HRESULT Bin_Initialize(DATA_HEROCHANNEL*	pAIChannel);
 	_uint Update_Transformation(_float fPlayTime, _uint iCurrentKeyFrame, class CHierarchyNode* pNode);
 	_bool Update_LinearTransformation(_float fPlayTime, class CHierarchyNode* pNode, KEYFRAME DestKeyFrame, ANIM_LINEAR_DATA* pData);
 
@@ -34,6 +35,8 @@ private:
 
 public:
 	static CChannel* Create(aiNodeAnim*	pAIChannel);
+	static CChannel* Bin_Create(DATA_HEROCHANNEL*	pAIChannel);
+
 	virtual void Free() override;
 
 

@@ -16,12 +16,15 @@ CAnimation::CAnimation(const CAnimation & rhs)
 {
 	for (auto& pChannel : m_Channels)
 		Safe_AddRef(pChannel);
+
+	// strcpy_s(m_szName, rhs.m_szName);
 }
 
 HRESULT CAnimation::Initialize_Prototype(aiAnimation * pAIAnimation)
 {
 	m_fDuration = pAIAnimation->mDuration;
 	m_fTickPerSecond = pAIAnimation->mTicksPerSecond;
+	strcpy_s(m_szName, pAIAnimation->mName.data);
 
 	/* 현재 애니메이션에서 제어해야할 뼈들의 갯수를 저장한다. */
 	m_iNumChannels = pAIAnimation->mNumChannels;
@@ -59,6 +62,46 @@ HRESULT CAnimation::Initialize(CModel* pModel)
 	return S_OK;
 }
 
+HRESULT CAnimation::Bin_Initialize_Prototype(DATA_HEROANIM* pAIAnimation)
+{
+	m_fDuration = pAIAnimation->fDuration;
+	m_fTickPerSecond = pAIAnimation->fTickPerSecond;
+
+	/* 현재 애니메이션에서 제어해야할 뼈들의 갯수를 저장한다. */
+	m_iNumChannels = pAIAnimation->iNumChannels;
+
+
+	/* 현재 애니메이션에서 제어해야할 뼈정보들을 생성하여 보관한다. */
+	for (_uint i = 0; i < m_iNumChannels; ++i)
+	{
+		CChannel*		pChannel = CChannel::Bin_Create(&pAIAnimation->pHeroChannel[i]);
+		if (nullptr == pChannel)
+			return E_FAIL;
+
+		m_Channels.push_back(pChannel);
+	}
+
+	return S_OK;
+}
+
+HRESULT CAnimation::Bin_Initialize(CModel* pModel)
+{
+	for (_uint i = 0; i < m_iNumChannels; ++i)
+	{
+		m_ChannelKeyFrames.push_back(0);
+
+		CHierarchyNode*		pNode = pModel->Get_HierarchyNode(m_Channels[i]->Get_Name());
+
+		if (nullptr == pNode)
+			return E_FAIL;
+
+		m_HierarchyNodes.push_back(pNode);
+
+		Safe_AddRef(pNode);
+	}
+
+	return S_OK;
+}
 
 HRESULT CAnimation::Play_Animation(_float fTimeDelta)
 {
@@ -185,6 +228,33 @@ CAnimation * CAnimation::Clone(CModel* pModel)
 
 	return pInstance;
 }
+
+CAnimation * CAnimation::Bin_Create(DATA_HEROANIM* pAIAnimation)
+{
+	CAnimation*			pInstance = new CAnimation();
+
+	if (FAILED(pInstance->Bin_Initialize_Prototype(pAIAnimation)))
+	{
+		MSG_BOX(TEXT("Failed To Created : CAnimation"));
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CAnimation * CAnimation::Bin_Clone(CModel* pModel)
+{
+	CAnimation*			pInstance = new CAnimation(*this);
+
+	if (FAILED(pInstance->Bin_Initialize(pModel)))
+	{
+		MSG_BOX(TEXT("Failed To Created : CAnimation"));
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
 
 void CAnimation::Free()
 {

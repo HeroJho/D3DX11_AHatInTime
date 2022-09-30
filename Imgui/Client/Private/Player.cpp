@@ -23,23 +23,13 @@ HRESULT CPlayer::Initialize(void * pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-
 	m_eState = STATE_IDLE;
 
-	m_fWalkSpeed = 1.5f;
+	m_fWalkSpeed = 1.f;
 	m_fRunSpeed = 2.5f;
-	m_fTurnSpeed = 0.6f;
+	m_fTurnSpeed = 1.f;
 	m_fRotationSpeed = 3.5f;
 
-	ANIM_LINEAR_DATA LinearData;
-	ZeroMemory(&LinearData, sizeof(ANIM_LINEAR_DATA));
-	LinearData.fLimitRatio = 0.05f;
-	LinearData.fTickPerSeconed = 0.4f;
-	LinearData.iMyIndex = 111;
-	LinearData.iTargetIndex = 197;
-
-	m_pModelCom->Push_AnimLinearData(LinearData);
-	
 	return S_OK;
 }
 
@@ -50,6 +40,41 @@ void CPlayer::Tick(_float fTimeDelta)
 	Input(fTimeDelta);
 
 }
+
+_float CPlayer::Get_AnimSpeed(STATE eState)
+{
+	switch (eState)
+	{
+	case Client::CPlayer::STATE_IDLE:
+		return m_pModelCom->Get_Anim_TickPerSecond(111);
+	case Client::CPlayer::STATE_WALK:
+		return m_pModelCom->Get_Anim_TickPerSecond(197);
+	case Client::CPlayer::STATE_RUN:
+		return m_pModelCom->Get_Anim_TickPerSecond(198);
+	}
+}
+
+void CPlayer::Set_AnimSpeed(STATE eState, _float fSpeed)
+{
+	switch (eState)
+	{
+	case Client::CPlayer::STATE_IDLE:
+		m_pModelCom->Set_Anim_TickPerSecond(111, fSpeed);
+		break;
+	case Client::CPlayer::STATE_WALK:
+		m_pModelCom->Set_Anim_TickPerSecond(197, fSpeed);
+		break;
+	case Client::CPlayer::STATE_RUN:
+		m_pModelCom->Set_Anim_TickPerSecond(198, fSpeed);
+		break;
+	}
+}
+
+void CPlayer::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
+{
+	m_pModelCom->Push_AnimLinearData(LinearData);
+}
+
 void CPlayer::Input(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
