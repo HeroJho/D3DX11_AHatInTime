@@ -60,80 +60,6 @@ void CAnimManager::Tick(_float fTimeDelta)
 
 
 
-HRESULT CAnimManager::Create_Try_BinModel(const _tchar * pModelName)
-{
-
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	// 있으면 들어간다
-	if (FAILED(pGameInstance->Check_Prototype(LEVEL_ANIMTOOL, pModelName)))
-	{
-		RELEASE_INSTANCE(CGameInstance);
-		return S_OK;
-	}
-	RELEASE_INSTANCE(CGameInstance);
-
-
-
-	char cTempName[MAX_PATH];
-	CToolManager::Get_Instance()->TCtoC(pModelName, cTempName);
-
-	char* tPath = CToolManager::Get_Instance()->Get_ManagedChar();
-	strcpy(tPath, "../Bin/Resources/Meshes/Anim/");
-	strcat(tPath, cTempName);
-	strcat(tPath, "/");
-
-	char* tFileName = CToolManager::Get_Instance()->Get_ManagedChar();
-	strcpy(tFileName, cTempName);
-	char TempName[MAX_PATH];
-	strcpy(TempName, tFileName);
-	strcat(tFileName, ".fbx");
-
-
-	DATA_HEROSCENE* Scene = new DATA_HEROSCENE;
-	ZeroMemory(Scene, sizeof(DATA_HEROSCENE));
-	_bool bIsBin = true;
-	if (FAILED(CDataManager::Get_Instance()->ReadSceneData(TempName, Scene)))
-	{
-		bIsBin = false;
-		Safe_Delete(Scene);
-	}
-
-
-
-	pGameInstance = GET_INSTANCE(CGameInstance);
-
-
-	_matrix PivotMatrix;
-	PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-
-	if (bIsBin)
-	{
-		if (FAILED(pGameInstance->Add_Prototype(LEVEL_ANIMTOOL, pModelName,
-			CModel::Bin_Create(m_pDevice, m_pContext, Scene, CModel::TYPE_ANIM, tPath, tFileName, PivotMatrix))))
-		{
-			// 뭔가 파일 경로가 잘 못 됨.
-			RELEASE_INSTANCE(CGameInstance);
-			return E_FAIL;
-		}
-	}
-	else
-	{
-		if (FAILED(pGameInstance->Add_Prototype(LEVEL_ANIMTOOL, pModelName,
-			CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, tPath, tFileName, PivotMatrix))))
-		{
-			// 뭔가 파일 경로가 잘 못 됨.
-			RELEASE_INSTANCE(CGameInstance);
-			return E_FAIL;
-		}
-	}
-
-
-	RELEASE_INSTANCE(CGameInstance);
-
-	return S_OK;
-}
-
-
 void CAnimManager::Create_Model()
 {
 
@@ -145,7 +71,7 @@ void CAnimManager::Create_Model()
 	CToolManager::Get_Instance()->CtoTC(m_sPickedString.data(), tC);
 
 
-	if (FAILED(Create_Try_BinModel(tC)))
+	if (FAILED(CDataManager::Get_Instance()->Create_Try_BinModel(tC, LEVEL_ANIMTOOL, CDataManager::DATA_ANIM)))
 		return;
 
 
@@ -171,6 +97,59 @@ void CAnimManager::Create_Model()
 	RELEASE_INSTANCE(CGameInstance);
 }
 
+HRESULT CAnimManager::Create_ModelByOri()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	_tchar* tC = CToolManager::Get_Instance()->Get_ManagedTChar();
+	CToolManager::Get_Instance()->CtoTC(m_sPickedString.data(), tC);
+
+	// 원본 체크
+	if (FAILED(pGameInstance->Check_Prototype(LEVEL_ANIMTOOL, tC)))
+	{
+		RELEASE_INSTANCE(CGameInstance);
+		return S_OK;
+	}
+
+
+	char cTempName[MAX_PATH];
+	CToolManager::Get_Instance()->TCtoC(tC, cTempName);
+
+	char* tPath = CToolManager::Get_Instance()->Get_ManagedChar();
+	strcpy(tPath, "../Bin/Resources/Meshes/Anim/");
+	strcat(tPath, cTempName);
+	strcat(tPath, "/");
+
+	char* tFileName = CToolManager::Get_Instance()->Get_ManagedChar();
+	strcpy(tFileName, cTempName);
+	char TempName[MAX_PATH];
+	strcpy(TempName, tFileName);
+	strcat(tFileName, ".fbx");
+
+
+
+	_matrix PivotMatrix;
+	PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	// 원본 생성
+
+
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_ANIMTOOL, tC,
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, tPath, tFileName, PivotMatrix))))
+	{
+		// 뭔가 파일 경로가 잘 못 됨.
+		RELEASE_INSTANCE(CGameInstance);
+		return E_FAIL;
+	}
+	
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
 void CAnimManager::Delete_Model()
 {
 	if (nullptr == m_pAnimModel)
@@ -185,7 +164,7 @@ void CAnimManager::Create_Player()
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 
-	Create_Try_BinModel(TEXT("HatGirl"));
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("HatGirl"), LEVEL_ANIMTOOL, CDataManager::DATA_ANIM);
 
 	if (m_pPlayer != nullptr)
 	{
@@ -329,7 +308,7 @@ void CAnimManager::Conv_Bin_Anim()
 	ZeroMemory(cName, sizeof(char) * MAX_PATH);
 	CToolManager::Get_Instance()->TCtoC(m_pAnimModel->Get_ModelName(), cName);
 
-	CDataManager::Get_Instance()->Conv_Bin_Anim((CModel*)m_pAnimModel->Get_ComponentPtr(TEXT("Com_Model")), cName);
+	CDataManager::Get_Instance()->Conv_Bin_Model((CModel*)m_pAnimModel->Get_ComponentPtr(TEXT("Com_Model")), cName, CDataManager::DATA_ANIM);
 }
 
 char * CAnimManager::Get_CurAnimName(EDIT_TYPE eType)
@@ -368,6 +347,38 @@ void CAnimManager::Set_AnimLinearData()
 }
 
 
+
+
+
+void CAnimManager::Save_PlayerAnimData()
+{
+	if (nullptr == m_pPlayer)
+		return;
+
+	char cTemp[MAX_PATH];
+	memcpy(cTemp, "HatGirl", sizeof(char)*MAX_PATH);
+	CDataManager::Get_Instance()->Save_Anim(cTemp, m_LinearLists);
+}
+
+void CAnimManager::Load_PlayerAnimData()
+{
+	if (nullptr == m_pPlayer)
+		return;
+
+	m_LinearLists.clear();
+	m_pPlayer->Reset_AnimLinearData();
+
+	char cTemp[MAX_PATH];
+	memcpy(cTemp, "HatGirl", sizeof(char)*MAX_PATH);
+	list<ANIM_LINEAR_DATA> TempDatas = CDataManager::Get_Instance()->Load_Anim(cTemp);
+
+	for (auto& Data : TempDatas)
+	{
+		m_pPlayer->Set_AnimLinearData(Data);
+		m_LinearLists.push_back(Data);
+	}
+
+}
 
 
 

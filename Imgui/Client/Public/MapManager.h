@@ -11,6 +11,7 @@ public:
 	CMapManager();
 	virtual ~CMapManager() = default;
 
+
 	// For. Terrain
 public:
 	_float	Get_Height() { return m_fHeight; }
@@ -39,14 +40,23 @@ public:
 	string Get_PickedCreatedString() { return m_sPickedCreatedString; }
 	void Set_PickedCreatedString(string sPickedCreatedString) { m_sPickedCreatedString = sPickedCreatedString; }
 
+	_int Get_ID() { return m_iID; }
+	void Set_ID(_int iID) { m_iID = iID; }
+
 public:
-	void Make_Model();
+	void Make_PickedModel();
 	void Delete_Model();
+	void Delete_Model_All();
 	void Add_Model(class CStaticModel* pStaticModel);
 	
 	class CStaticModel* Get_PickedCreatedModel();
+
 	class CStaticModel* Find_Model(string sTag);
 
+	void Conv_PickedModel_To_Bin();
+
+	void Save_MapData();
+	void Load_MapData();
 
 private:
 	bool GenTag(string* pOut);
@@ -57,6 +67,10 @@ private:
 	
 	string		m_sPickedString;
 	
+	_int		m_iID = 0;
+
+
+
 
 
 public:

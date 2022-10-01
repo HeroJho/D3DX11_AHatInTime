@@ -75,6 +75,11 @@ void CPlayer::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
 	m_pModelCom->Push_AnimLinearData(LinearData);
 }
 
+void CPlayer::Reset_AnimLinearData()
+{
+	m_pModelCom->Reset_AnimLinearData();
+}
+
 void CPlayer::Input(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);

@@ -19,6 +19,9 @@ public:
 	typedef struct tagStaticModelDesc
 	{
 		TCHAR		cModelTag[MAX_PATH];
+		_float3		vPos;
+		_float3		vAngle;
+		_float3		vScale;
 	}STATICMODELDESC;
 
 private:
@@ -28,7 +31,7 @@ private:
 
 public:
 	_float3* Get_Axis() { return &m_vAxis; }
-
+	TCHAR* Get_ModelTag() { return m_cModelTag; }
 
 	void Set_ModelNum(string sModelNum) { m_sModelNum = sModelNum; }
 

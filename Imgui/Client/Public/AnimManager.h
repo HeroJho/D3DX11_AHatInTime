@@ -39,10 +39,10 @@ public:
 	void  Set_IsDelete(_bool bIsDelete) { m_bIsDelete = bIsDelete; }
 
 public:
-
-	HRESULT Create_Try_BinModel(const _tchar* pModelName);
-
 	void Create_Model();
+
+	HRESULT Create_ModelByOri();
+
 	void Delete_Model();
 
 	void Create_Player();
@@ -83,6 +83,8 @@ private:
 	void Delete_Anim(CGameObject* pObj, _int iIndex);
 	_float Get_AnimSpeed(CGameObject* pObj);
 	void Set_AnimSpeed(CGameObject* pObj, _float fSpeed);
+
+
 
 	//  For. Player
 public:
@@ -127,6 +129,16 @@ private:
 private:
 	ID3D11Device* m_pDevice;
 	ID3D11DeviceContext* m_pContext;
+
+
+
+
+
+public: // For. Data
+	void Save_PlayerAnimData();
+	void Load_PlayerAnimData();
+
+
 
 
 public:

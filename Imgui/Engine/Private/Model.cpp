@@ -20,13 +20,13 @@ CModel::CModel(const CModel & rhs)
 	, m_Meshes(rhs.m_Meshes)
 	, m_Materials(rhs.m_Materials)
 	, m_eModelType(rhs.m_eModelType)
-	/*, m_HierarchyNodes(rhs.m_HierarchyNodes)*/
 	, m_Animations(rhs.m_Animations)
 	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
 	, m_DataMaterials(rhs.m_DataMaterials)
-
+	, m_bIsBin(rhs.m_bIsBin)
+	, m_AnimLinearDatas(rhs.m_AnimLinearDatas)
 {
 	for (auto& pMeshContainer : m_Meshes)
 		Safe_AddRef(pMeshContainer);
@@ -86,6 +86,8 @@ void CModel::Set_AnimIndex(_uint iAnimIndex)
 
 HRESULT CModel::Initialize_Prototype(TYPE eType, const char * pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
 {
+	m_bIsBin = false;
+
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 
 	char		szFullPath[MAX_PATH] = "";
@@ -368,6 +370,17 @@ ANIM_LINEAR_DATA* CModel::Get_AnimLinearData(int iTargetIndex)
 	return nullptr;
 }
 
+void CModel::Reset_AnimLinearData()
+{
+	for (_int i = 0; i < m_AnimLinearDatas.size(); ++i)
+	{
+		m_AnimLinearDatas[i].clear();
+	}
+	m_AnimLinearDatas.clear();
+
+	m_AnimLinearDatas.resize(250);
+}
+
 
 
 
@@ -485,7 +498,12 @@ HRESULT CModel::Ready_Animations()
 
 HRESULT CModel::Get_HierarchyNodeData(DATA_HEROSCENE * pHeroScene)
 {
-
+	if (0 == m_HierarchyNodes.size())
+	{
+		pHeroScene->pHeroNodes = nullptr;
+		return S_OK;
+	}
+		
 	pHeroScene->pHeroNodes = new DATA_HERONODE[m_HierarchyNodes.size()];
 	pHeroScene->iNodeCount = m_HierarchyNodes.size();
 
@@ -538,6 +556,13 @@ HRESULT CModel::Get_MeshData(DATA_HEROSCENE * pNodeData)
 
 HRESULT CModel::Get_AnimData(DATA_HEROSCENE * pSceneData)
 {
+	if (0 == m_iNumAnimations)
+	{
+		pSceneData->pHeroAnim = nullptr;
+		pSceneData->iNumAnimations = 0;
+		return S_OK;
+	}
+
 	pSceneData->iNumAnimations = m_iNumAnimations;
 
 	pSceneData->pHeroAnim = new DATA_HEROANIM[m_iNumAnimations];
@@ -657,6 +682,8 @@ char * CModel::Get_CurAnim_Name()
 
 HRESULT CModel::Bin_Initialize_Prototype(DATA_HEROSCENE* pScene, TYPE eType, const char* pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
 {
+	m_bIsBin = true;
+
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 	m_eModelType = eType;
 

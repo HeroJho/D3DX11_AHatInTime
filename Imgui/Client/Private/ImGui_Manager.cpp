@@ -2,6 +2,7 @@
 #include "..\Public\ImGui_Manager.h"
 #include "Texture.h"
 
+#include "GameInstance.h"
 #include "ToolManager.h"
 #include "CamManager.h"
 #include "MapManager.h"
@@ -14,6 +15,7 @@
 #include "StaticModel.h"
 #include "AnimModel.h"
 #include "Player.h"
+
 
 #include "Transform.h"
 
@@ -573,7 +575,8 @@ void CImGui_Manager::Window_Model()
 	}
 
 	if(ImGui::Button("Create"))
-		CMapManager::Get_Instance()->Make_Model();
+		CMapManager::Get_Instance()->Make_PickedModel();
+
 
 
 
@@ -596,6 +599,19 @@ void CImGui_Manager::Window_CreatedModel()
 				CMapManager::Get_Instance()->Set_PickedCreatedString(sModel.first);
 
 
+			
+			CStaticModel* pStaticModel = CMapManager::Get_Instance()->Get_PickedCreatedModel();
+			if (nullptr != pStaticModel)
+			{
+				CModel* pModel = (CModel*)pStaticModel->Get_ComponentPtr(TEXT("Com_Model"));
+				if (pModel->Get_IsBin())
+				{
+					ImGui::SameLine();
+					ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), "Bin");
+				}
+			}
+		
+
 			if (isSelected)
 				ImGui::SetItemDefaultFocus();
 		}
@@ -604,6 +620,25 @@ void CImGui_Manager::Window_CreatedModel()
 
 	if (ImGui::Button("Delete"))
 		CMapManager::Get_Instance()->Delete_Model();
+	if (ImGui::Button("Convert To Bin"))
+		CMapManager::Get_Instance()->Conv_PickedModel_To_Bin();
+
+
+	ImGui::PushItemWidth(25.f);
+
+	_int ID = CMapManager::Get_Instance()->Get_ID();
+	if (ImGui::InputInt("Map_ID", &ID, 0))
+		CMapManager::Get_Instance()->Set_ID(ID);
+
+	if (ImGui::Button("Save_Map"))
+		CMapManager::Get_Instance()->Save_MapData();
+	ImGui::SameLine();
+	if (ImGui::Button("Load_Map"))
+		CMapManager::Get_Instance()->Load_MapData();
+	
+	ImGui::PopItemWidth();
+		
+
 
 	ImGui::End();
 }
@@ -652,10 +687,11 @@ void CImGui_Manager::Window_AnimModleList()
 	}
 
 
-	if (ImGui::Button("Load"))
+	if (ImGui::Button("Load by Bin"))
 		CAnimManager::Get_Instance()->Create_Model();
-
-
+	ImGui::SameLine();
+	if (ImGui::Button("Load By Scene"))
+		CAnimManager::Get_Instance()->Create_ModelByOri();
 
 
 	if (ImGui::Checkbox("Play Mode", CAnimManager::Get_Instance()->Get_PlayMode()))
@@ -843,6 +879,15 @@ void CImGui_Manager::Window_PlayMode()
 		ImGui::EndListBox();
 	}
 
+	ImGui::PushItemWidth(50.f);
+
+	if (ImGui::Button("SaveData"))
+		CAnimManager::Get_Instance()->Save_PlayerAnimData();
+	ImGui::SameLine();
+	if (ImGui::Button("LoadData"))
+		CAnimManager::Get_Instance()->Load_PlayerAnimData();
+
+	ImGui::PopItemWidth();
 
 	ImGui::End();
 

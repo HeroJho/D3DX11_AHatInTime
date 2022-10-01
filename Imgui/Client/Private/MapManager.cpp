@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "MapManager.h"
 #include "ToolManager.h"
+#include "DataManager.h"
 
 #include "StaticModel.h"
 
@@ -20,7 +21,7 @@ CMapManager::CMapManager()
 
 
 
-void CMapManager::Make_Model()
+void CMapManager::Make_PickedModel()
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -31,7 +32,7 @@ void CMapManager::Make_Model()
 
 	string sTemp = CMapManager::Get_Instance()->Get_PickedString();
 	CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
-	
+	Desc.vScale = _float3(1.f, 1.f, 1.f);
 	CGameObject* pObj = nullptr;
 	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), LEVEL_MAPTOOL, TEXT("Layer_Model"), &pObj, &Desc);
 
@@ -49,6 +50,13 @@ void CMapManager::Delete_Model()
 
 	pTemp->Set_Dead();
 	m_StaticModels.erase(m_sPickedCreatedString);
+}
+
+void CMapManager::Delete_Model_All()
+{
+	for (auto& Model : m_StaticModels)
+		Model.second->Set_Dead();
+	m_StaticModels.clear();
 }
 
 void CMapManager::Add_Model(CStaticModel * pStaticModel)
@@ -80,6 +88,68 @@ CStaticModel * CMapManager::Find_Model(string sTag)
 
 	return iter->second;
 }
+
+
+
+void CMapManager::Conv_PickedModel_To_Bin()
+{
+
+	CStaticModel* pStaticModel = Get_PickedCreatedModel();
+	if (nullptr == pStaticModel)
+		return;
+	CModel* pModel = (CModel*)pStaticModel->Get_ComponentPtr(TEXT("Com_Model"));
+
+	if (pModel->Get_IsBin())
+		return;
+
+
+	char cTemp[MAX_PATH];
+	CToolManager::Get_Instance()->TCtoC(pStaticModel->Get_ModelTag(), cTemp);
+
+	
+	CDataManager::Get_Instance()->Conv_Bin_Model(pModel, cTemp, CDataManager::DATA_NOEANIM);
+}
+
+void CMapManager::Save_MapData()
+{
+	CDataManager::Get_Instance()->Save_Map(m_iID);
+}
+
+void CMapManager::Load_MapData()
+{
+	// 기존 Obj를 지운다
+	Delete_Model_All();
+
+	CDataManager::DATA_MAP* pMapData = CDataManager::Get_Instance()->Load_Map(m_iID);
+	if (nullptr == pMapData)
+		return;
+
+	for (_int i = 0; i < pMapData->iNumObj; ++i)
+	{
+		CDataManager::DATA_MAP_OBJ DataObj = pMapData->pObjDatas[i];
+
+		CStaticModel::STATICMODELDESC Desc;
+		ZeroMemory(&Desc, sizeof(CStaticModel::STATICMODELDESC));
+
+		string sTemp = DataObj.cName;
+		CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
+		Desc.vPos = DataObj.vPos;
+		Desc.vAngle = DataObj.vAngle;
+		Desc.vScale = DataObj.vScale;
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		CGameObject* pObj = nullptr;
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), LEVEL_MAPTOOL, TEXT("Layer_Model"), &pObj, &Desc);
+
+		RELEASE_INSTANCE(CGameInstance);
+
+		Add_Model((CStaticModel*)pObj);
+
+	}
+
+}
+
 
 bool CMapManager::GenTag(string* pOut)
 {

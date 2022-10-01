@@ -41,6 +41,7 @@ public:
 	void		Set_AnimSpeed(STATE eState, _float fSpeed);
 
 	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
+	void Reset_AnimLinearData();
 
 private:
 	void Input(_float fTimeDelta);

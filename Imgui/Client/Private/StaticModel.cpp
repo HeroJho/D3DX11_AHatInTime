@@ -32,12 +32,23 @@ HRESULT CStaticModel::Initialize(void * pArg)
 	if (nullptr == pArg)
 		return E_FAIL;
 	STATICMODELDESC* Desc = (STATICMODELDESC*)pArg;
-
 	wcscpy(m_cModelTag, Desc->cModelTag);
+
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+
+	_vector vPos = XMLoadFloat3(&Desc->vPos);
+	vPos = XMVectorSetW(vPos, 1.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+
+	_vector vScale = XMLoadFloat3(&Desc->vScale);
+	vScale = XMVectorSetW(vScale, 1.f);
+	m_pTransformCom->Set_Scale(vScale);
+
+	m_vAxis = Desc->vAngle;
+	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_vAxis.x, XMVectorSet(0.f, 1.f, 0.f, 0.f), m_vAxis.y, XMVectorSet(0.f, 0.f, 1.f, 0.f), m_vAxis.z);
 
 	return S_OK;
 }

@@ -1,9 +1,13 @@
 ﻿#include "stdafx.h"
 #include "..\Public\DataManager.h"
 
+#include "GameInstance.h"
+
 #include "ToolManager.h"
-#include "Model.h"
-#include "HierarchyNode.h"
+#include "MapManager.h"
+
+#include "StaticModel.h"
+
 
 IMPLEMENT_SINGLETON(CDataManager)
 
@@ -11,15 +15,25 @@ CDataManager::CDataManager()
 {
 }
 
-HRESULT CDataManager::Init()
+HRESULT CDataManager::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
+	m_pDevice = pDevice;
+	m_pContext = pContext;
+
+	Safe_AddRef(m_pDevice);
+	Safe_AddRef(m_pContext);
+
 	if (FAILED(LoadModelPass()))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CDataManager::Conv_Bin_Anim(CModel * pModel, char* cModelName)
+
+
+
+
+HRESULT CDataManager::Conv_Bin_Model(CModel * pModel, char* cModelName, DATA_TYPE eTYPE)
 {
 	DATA_HEROSCENE Scene;
 	ZeroMemory(&Scene, sizeof(DATA_HEROSCENE));
@@ -29,7 +43,7 @@ HRESULT CDataManager::Conv_Bin_Anim(CModel * pModel, char* cModelName)
 	pModel->Get_MeshData(&Scene);
 	pModel->Get_AnimData(&Scene);
 
-	SaveSceneData(&Scene, cModelName);
+	SaveSceneData(&Scene, cModelName, eTYPE);
 
 	Safe_Delete_Array(Scene.pHeroNodes);
 	Safe_Delete_Array(Scene.pHeroMaterial);
@@ -54,11 +68,14 @@ HRESULT CDataManager::Conv_Bin_Anim(CModel * pModel, char* cModelName)
 
 	return S_OK;
 }
-
-HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene, char* cModelName)
+HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene, char* cModelName, DATA_TYPE eTYPE)
 {
 	char cPullName[MAX_PATH];
-	strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/");
+	if(eTYPE == DATA_ANIM)
+		strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/Anim/");
+	else
+		strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/NonAnim/");
+	
 	strcat_s(cPullName, cModelName);
 
 	std::ofstream ofs(cPullName, ios::out | ios::binary);
@@ -160,11 +177,14 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene, char* cModelName)
 
 	return S_OK;
 }
-
-HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene)
+HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene, DATA_TYPE eTYPE)
 {
 	char cPullName[MAX_PATH];
-	strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/");
+	if(DATA_ANIM == eTYPE)
+		strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/Anim/");
+	else
+		strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/NonAnim/");
+
 	strcat_s(cPullName, pFileName);
 
 
@@ -289,8 +309,88 @@ HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene)
 }
 
 
+HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVEL, DATA_TYPE eTYPE)
+{
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	// 원본 체크
+	if (FAILED(pGameInstance->Check_Prototype(eLEVEL, pModelName)))
+	{
+		RELEASE_INSTANCE(CGameInstance);
+		return S_OK;
+	}
+	RELEASE_INSTANCE(CGameInstance);
 
 
+
+	char cTempName[MAX_PATH];
+	CToolManager::Get_Instance()->TCtoC(pModelName, cTempName);
+
+	char* tPath = CToolManager::Get_Instance()->Get_ManagedChar();
+	if(DATA_ANIM == eTYPE)
+		strcpy(tPath, "../Bin/Resources/Meshes/Anim/");
+	else
+		strcpy(tPath, "../Bin/Resources/Meshes/NonAnim/");
+
+	strcat(tPath, cTempName);
+	strcat(tPath, "/");
+
+	char* tFileName = CToolManager::Get_Instance()->Get_ManagedChar();
+	strcpy(tFileName, cTempName);
+	char TempName[MAX_PATH];
+	strcpy(TempName, tFileName);
+	strcat(tFileName, ".fbx");
+
+	// Bin 체크 And Load
+	DATA_HEROSCENE* Scene = new DATA_HEROSCENE;
+	ZeroMemory(Scene, sizeof(DATA_HEROSCENE));
+	_bool bIsBin = true;
+	if (FAILED(CDataManager::Get_Instance()->ReadSceneData(TempName, Scene, eTYPE)))
+	{
+		bIsBin = false;
+		Safe_Delete(Scene);
+	}
+
+
+
+	pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	_matrix PivotMatrix;
+	PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+
+	CModel::TYPE etype = CModel::TYPE_END;
+	if (DATA_ANIM == eTYPE)
+		etype = CModel::TYPE_ANIM;
+	else
+		etype = CModel::TYPE_NONANIM;
+	// 원본 생성
+	if (bIsBin)
+	{
+		if (FAILED(pGameInstance->Add_Prototype(eLEVEL, pModelName,
+			CModel::Bin_Create(m_pDevice, m_pContext, Scene, etype, tPath, tFileName, PivotMatrix))))
+		{
+			// 뭔가 파일 경로가 잘 못 됨.
+			RELEASE_INSTANCE(CGameInstance);
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(pGameInstance->Add_Prototype(eLEVEL, pModelName,
+			CModel::Create(m_pDevice, m_pContext, etype, tPath, tFileName, PivotMatrix))))
+		{
+			// 뭔가 파일 경로가 잘 못 됨.
+			RELEASE_INSTANCE(CGameInstance);
+			return E_FAIL;
+		}
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
 
 
 
@@ -348,7 +448,177 @@ HRESULT CDataManager::LoadModelPass()
 	return S_OK;
 }
 
+
+
+
+
+
+HRESULT CDataManager::Save_Map(_int iMapID)
+{
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iMapID);
+	
+	strcpy_s(cName, "MAP_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Map/");
+	strcat_s(cPullName, cName);
+
+
+	std::ofstream ofs(cPullName, ios::out | ios::binary);
+
+	if (!ofs)
+		return E_FAIL;
+
+
+	const map<string, CStaticModel*>* pMap = CMapManager::Get_Instance()->Get_StaticModels();
+	_int iNumObj = pMap->size();
+
+
+
+	ofs.write((char*)&iMapID, sizeof(int));		// ID
+	ofs.write((char*)&iNumObj, sizeof(int));	// NumObj
+
+	for (auto& Model : *pMap)
+	{
+		// Name
+		char cTempName[MAX_PATH]; 
+		CToolManager::Get_Instance()->TCtoC(Model.second->Get_ModelTag(), cTempName);
+		ofs.write((char*)&cTempName, sizeof(char)*MAX_PATH);
+		
+		// 포 앵 스
+		CTransform* pTran = (CTransform*)Model.second->Get_ComponentPtr(TEXT("Com_Transform"));
+
+		_float3 vPos; XMStoreFloat3(&vPos, pTran->Get_State(CTransform::STATE_POSITION));
+		_float3 vAngle = *Model.second->Get_Axis();
+		_float3 vScale = pTran->Get_Scale();
+
+		ofs.write((char*)&vPos, sizeof(_float3));
+		ofs.write((char*)&vAngle, sizeof(_float3));
+		ofs.write((char*)&vScale, sizeof(_float3));
+	}
+
+
+	ofs.close();
+
+	return S_OK;
+}
+
+CDataManager::DATA_MAP* CDataManager::Load_Map(_int iMapID)
+{
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iMapID);
+
+	strcpy_s(cName, "MAP_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Map/");
+	strcat_s(cPullName, cName);
+
+	std::ifstream ifs(cPullName, ios::in | ios::binary);
+
+	if (!ifs)
+		return nullptr;
+
+	DATA_MAP*  pData_Map = new DATA_MAP;
+	ZeroMemory(pData_Map, sizeof(DATA_MAP));
+
+
+	ifs.read((char*)&pData_Map->iID, sizeof(int));
+	ifs.read((char*)&pData_Map->iNumObj, sizeof(int));
+
+	pData_Map->pObjDatas = new DATA_MAP_OBJ[pData_Map->iNumObj];
+	for (_int i = 0; i < pData_Map->iNumObj; ++i)
+	{
+		DATA_MAP_OBJ* DMJ = &pData_Map->pObjDatas[i];
+
+		ifs.read((char*)DMJ->cName, sizeof(char)*MAX_PATH);
+		ifs.read((char*)&DMJ->vPos, sizeof(_float3));
+		ifs.read((char*)&DMJ->vAngle, sizeof(_float3));
+		ifs.read((char*)&DMJ->vScale, sizeof(_float3));
+	}
+
+	m_Data_Maps.push_back(pData_Map);
+	return pData_Map;
+}
+
+HRESULT CDataManager::Save_Anim(char * pFileName, list<ANIM_LINEAR_DATA> Datas)
+{
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+
+	strcpy_s(cName, pFileName);
+	strcpy_s(cPullName, "../Bin/ToolData/Anim/");
+	strcat_s(cPullName, cName);
+
+
+	std::ofstream ofs(cPullName, ios::out | ios::binary);
+
+	if (!ofs)
+		return E_FAIL;
+
+	ofs.write((char*)cName, sizeof(char) * MAX_PATH);
+	_int iNum = Datas.size();
+	ofs.write((char*)&iNum, sizeof(_int));
+
+	for (auto& Data : Datas)
+	{
+		ofs.write((char*)&Data, sizeof(ANIM_LINEAR_DATA));
+	}
+
+
+	ofs.close();
+
+	return S_OK;
+}
+
+list<ANIM_LINEAR_DATA> CDataManager::Load_Anim(char * pFileName)
+{
+	list<ANIM_LINEAR_DATA> Datas;
+
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+
+	strcpy_s(cName, pFileName);
+	strcpy_s(cPullName, "../Bin/ToolData/Anim/");
+	strcat_s(cPullName, cName);
+
+	std::ifstream ifs(cPullName, ios::in | ios::binary);
+
+	if (!ifs)
+		return Datas;
+
+	ifs.read((char*)cName, sizeof(char) * MAX_PATH);
+	_int iNum = 0;
+	ifs.read((char*)&iNum, sizeof(_int));
+
+	for (_int i = 0; i < iNum; ++i)
+	{
+		ANIM_LINEAR_DATA TempData;
+		ZeroMemory(&TempData, sizeof(ANIM_LINEAR_DATA));
+		ifs.read((char*)&TempData, sizeof(ANIM_LINEAR_DATA));
+		Datas.push_back(TempData);
+	}
+
+	ifs.close();
+
+	return Datas;
+}
+
+
+
+
+
 void CDataManager::Free()
 {
+	for (auto& MapData : m_Data_Maps)
+	{
+		Safe_Delete_Array(MapData->pObjDatas);
+		Safe_Delete(MapData);
+	}
 
+
+
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
 }

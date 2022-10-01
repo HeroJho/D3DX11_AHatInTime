@@ -49,12 +49,15 @@ public:
 	HRESULT Delete_Anim(_uint iIndex);
 	HRESULT Push_AnimLinearData(ANIM_LINEAR_DATA Data);
 	ANIM_LINEAR_DATA* Get_AnimLinearData(int iIndex);
+	void Reset_AnimLinearData();
+
 
 private:
 	const aiScene*				m_pAIScene = nullptr;
 
 	DATA_HEROSCENE*				m_pBin_AIScene = nullptr;
 	_bool						m_bIsProto = false;
+	_bool						m_bIsBin = false;
 
 	Assimp::Importer			m_Importer;
 
@@ -93,6 +96,10 @@ private:
 	HRESULT Bin_Ready_HierarchyNodes();
 	HRESULT Bin_Ready_Animations();
 	HRESULT Safe_Release_Scene();
+public:
+	_bool	Get_IsBin() { return m_bIsBin; }
+
+
 
 
 public:

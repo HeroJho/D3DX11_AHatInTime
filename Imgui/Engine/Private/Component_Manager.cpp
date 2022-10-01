@@ -51,6 +51,15 @@ HRESULT CComponent_Manager::Check_Prototype(_int iLevelIndex, const _tchar * pPr
 	return E_FAIL;
 }
 
+CComponent * CComponent_Manager::Get_Component(_int iLevelIndex, const _tchar * pPrototypeTag)
+{
+	CComponent*		pPrototype = Find_Component(iLevelIndex, pPrototypeTag);
+	if (nullptr == pPrototype)
+		return nullptr;
+
+	return pPrototype;
+}
+
 CComponent * CComponent_Manager::Find_Component(_uint iLevelIndex, const _tchar * pPrototypeTag)
 {
 	auto	iter = find_if(m_pPrototypes[iLevelIndex].begin(), m_pPrototypes[iLevelIndex].end(), CTag_Finder(pPrototypeTag));

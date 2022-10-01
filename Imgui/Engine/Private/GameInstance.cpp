@@ -131,6 +131,14 @@ HRESULT CGameInstance::Add_Prototype(const _tchar * pPrototypeTag, CGameObject *
 	return m_pObject_Manager->Add_Prototype(pPrototypeTag, pPrototype);	
 }
 
+CGameObject * CGameInstance::Clone_GameObject(const _tchar * pPrototypeTag, void * pArg)
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Clone_GameObject(pPrototypeTag, pArg);
+}
+
 HRESULT CGameInstance::Add_GameObjectToLayer(const _tchar * pPrototypeTag, _uint iLevelIndex, const _tchar * pLayerTag, void * pArg)
 {
 	if (nullptr == m_pObject_Manager)
@@ -177,6 +185,14 @@ HRESULT CGameInstance::Check_Prototype(_int iLevelIndex, const _tchar * pPrototy
 		return E_FAIL;
 
 	return m_pComponent_Manager->Check_Prototype(iLevelIndex, pPrototypeTag);
+}
+
+CComponent * CGameInstance::Get_Component(_int iLevelIndex, const _tchar * pPrototypeTag)
+{
+	if (nullptr == m_pComponent_Manager)
+		return nullptr;
+
+	return m_pComponent_Manager->Get_Component(iLevelIndex, pPrototypeTag);
 }
 
 _float CGameInstance::Get_TimeDelta(const _tchar * pTimerTag)

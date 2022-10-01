@@ -114,11 +114,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CPlayer::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* For.Prototype_GameObject_Monster */
-	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster"),
-	//	CMonster::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
-
 	/* For.Prototype_GameObject_Camera_Free */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Free"),
 		CCamera_Free::Create(m_pDevice, m_pContext))))
@@ -128,11 +123,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_CamTool"),
 		CCamera_CamTool::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-
-	///* For.Prototype_GameObject_Sky */
-	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
-	//	CSky::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
 
 	/* For.Prototype_GameObject_ColorCube */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ColorCube"),
@@ -189,15 +179,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 
-	///* For.Prototype_Component_Texture_Player */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Player"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Player/Player.png")))))
-	//	return E_FAIL;
 
-	///* For.Prototype_Component_Texture_Sky */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Sky"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
-	//	return E_FAIL;
 
 
 
@@ -224,6 +206,15 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	
 
 
+	if (FAILED(Loading_Model_NoneAnim()))
+		return E_FAIL;
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩중입니다. "));
+	/* 셰이더를 로드한다. */
+
 	/* For.Prototype_Component_Shader_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Terrain"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX_DECLARATION::Elements, VTXNORTEX_DECLARATION::iNumElements))))
@@ -242,34 +233,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 
-
-
-
-
-
-
-
-
-
-	if (FAILED(Loading_Model_NoneAnim()))
-		return E_FAIL;
-
-
-
-
-	_matrix		PivotMatrix = XMMatrixIdentity();
-
-	///* For.Prototype_Component_Model_Fiona */
-	//PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fiona"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Meshes/Anim/Fiona/", "Fiona.fbx", PivotMatrix))))
-	//	return E_FAIL;
-
-	/* For.Prototype_Component_Model_Fiona */
-	//PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_ANIM, "../Bin/Resources/Meshes/Anim/Player/", "Player.fbx", PivotMatrix))))
-	//	return E_FAIL;
 
 
 
@@ -356,6 +319,11 @@ HRESULT CLoader::Loading_ForMapToolLevel()
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다. "));
 	/* 모델를 로드한다. */
+
+
+
+
+
 
 
 
@@ -510,28 +478,19 @@ HRESULT CLoader::Loading_Model_NoneAnim()
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 
+
 	const list<string>* FileNames = CDataManager::Get_Instance()->Get_NonAnimFileNames();
 	
 	_matrix		PivotMatrix = XMMatrixIdentity();
 	for (auto& sFileName : *FileNames)
 	{
-		PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+		_tchar czTag[MAX_PATH];
+		_tchar* cTag = CToolManager::Get_Instance()->Get_ManagedTChar();
+		CToolManager::Get_Instance()->CtoTC(sFileName.data(), czTag);
 
-		_tchar* tChar = CToolManager::Get_Instance()->Get_ManagedTChar();
-		CToolManager::Get_Instance()->CtoTC(sFileName.data(), tChar);
+		memcpy(cTag, czTag, sizeof(_tchar) * MAX_PATH);
 
-		char* tPath = CToolManager::Get_Instance()->Get_ManagedChar();
-		strcpy(tPath, "../Bin/Resources/Meshes/NonAnim/");
-		strcat(tPath, sFileName.data());
-		strcat(tPath, "/");
-
-		char* tFileName = CToolManager::Get_Instance()->Get_ManagedChar();
-		strcpy(tFileName, sFileName.data());
-		strcat(tFileName, ".fbx");
-
-		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, tChar,
-			CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, tPath, tFileName, PivotMatrix))))
-			return E_FAIL;
+		CDataManager::Get_Instance()->Create_Try_BinModel(cTag, LEVEL_GAMEPLAY, CDataManager::DATA_NOEANIM);
 	}
 
 
