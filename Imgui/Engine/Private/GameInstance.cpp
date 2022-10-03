@@ -65,6 +65,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pObject_Manager->Tick(fTimeDelta);
 
+	m_pPipeLine->Update();
+
 	m_pPicking->Tick();
 
 	m_pObject_Manager->LateTick(fTimeDelta);
@@ -346,7 +348,13 @@ _float4x4 CGameInstance::Get_TransformFloat4x4_TP(CPipeLine::TRANSFORMSTATE eTra
 	return m_pPipeLine->Get_TransformFloat4x4_TP(eTransformState);
 }
 
+_float4 CGameInstance::Get_CamPosition()
+{
+	if (nullptr == m_pPipeLine)
+		return _float4();
 
+	return m_pPipeLine->Get_CamPosition();
+}
 
 void CGameInstance::Release_Engine()
 {

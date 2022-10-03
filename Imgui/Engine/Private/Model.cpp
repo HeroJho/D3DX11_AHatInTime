@@ -69,6 +69,12 @@ void CModel::Set_AnimIndex(_uint iAnimIndex)
 	if (m_iCurrentAnimIndex == iAnimIndex)
 		return;
 
+	if (m_bIsLock)
+		return;
+
+	if (177 == iAnimIndex)
+		m_bIsLock = true;
+
 	// 보간할 애가 있는지 체크
 	ANIM_LINEAR_DATA* pLinearData = Get_AnimLinearData(iAnimIndex);
 	if (nullptr == pLinearData)
@@ -76,11 +82,13 @@ void CModel::Set_AnimIndex(_uint iAnimIndex)
 		// 없으면 애니메이션 초기화하고 변화
 		m_Animations[m_iCurrentAnimIndex]->Init_PlayInfo();
 		m_iCurrentAnimIndex = iAnimIndex;
+		m_iPreAnimIndex = m_iCurrentAnimIndex;
 	}
 	else
 	{
 		// 보간 데이터가 존재한다.
 		m_pCurLinearData = pLinearData;
+		m_iPreAnimIndex = m_iCurrentAnimIndex;
 	}
 }
 
@@ -272,20 +280,30 @@ HRESULT CModel::SetUp_OnShader(CShader * pShader, _uint iMaterialIndex, aiTextur
 	return m_Materials[iMaterialIndex].pTexture[eTextureType]->Set_SRV(pShader, pConstantName);
 }
 
-HRESULT CModel::Play_Animation(_float fTimeDelta)
+_bool CModel::Play_Animation(_float fTimeDelta)
 {
+	_bool IsEnd = false;
 	if (m_iCurrentAnimIndex >= m_iNumAnimations)
 		return E_FAIL;
 
 	/* 현재 재생하고자하는 애니메이션이 제어해야할 뼈들의 지역행렬을 갱신해낸다. */
-	if(!m_pCurLinearData)
-		m_Animations[m_iCurrentAnimIndex]->Play_Animation(fTimeDelta);
+	if (!m_pCurLinearData)
+	{
+		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(fTimeDelta))
+		{
+			IsEnd = true;
+			m_bIsLock = false;
+		}
+	}
 	else
 	{
 		list<KEYFRAME> NextFirstKeyFrams;
 		m_Animations[m_pCurLinearData->iTargetIndex]->Get_FirstKeys(&NextFirstKeyFrams);
-		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(m_pCurLinearData, &NextFirstKeyFrams, fTimeDelta))
+		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(m_pCurLinearData, &NextFirstKeyFrams, fTimeDelta, &IsEnd))
 		{
+			if (IsEnd)
+				m_bIsLock = false;
+
 			m_iCurrentAnimIndex = m_pCurLinearData->iTargetIndex;
 			m_pCurLinearData = nullptr;
 		}
@@ -297,7 +315,7 @@ HRESULT CModel::Play_Animation(_float fTimeDelta)
 		pHierarchyNode->Set_CombinedTransformation();
 	}
 
-	return S_OK;
+	return IsEnd;
 }
 
 HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex)

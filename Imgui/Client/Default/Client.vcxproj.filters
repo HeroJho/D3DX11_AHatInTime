@@ -130,6 +130,27 @@
     <Filter Include="02.GameObject\03. AnimTool\02. Terrain">
       <UniqueIdentifier>{984d1fae-f3cd-484f-9a62-5fda37f58016}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\99. Static\Parts">
+      <UniqueIdentifier>{ae8272ae-b405-49a2-90be-3eb92ad3736e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\99. Static\Parts\Hat">
+      <UniqueIdentifier>{38255c94-aff7-4b38-9a9d-5fbdd6befb65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Level\05. PartsTool">
+      <UniqueIdentifier>{9c5f7b2a-d1cf-48cc-bc69-b82396fa6e1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Manager\05. PartsManager">
+      <UniqueIdentifier>{0485d89d-71b5-4e9f-b264-309e7a5fb82b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\04. PartTool">
+      <UniqueIdentifier>{9503049c-432c-4ff7-a9b8-7d4ac1aaa0bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\04. PartTool\01. Parts">
+      <UniqueIdentifier>{2ca47bdf-ee01-4bfe-8ba8-30a5536aafad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\03. AnimTool\03. AnimPlayer">
+      <UniqueIdentifier>{bd246964-9169-407a-8b5b-ca74e6f7710e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -269,6 +290,21 @@
     <ClInclude Include="Terrain_Anim.h">
       <Filter>02.GameObject\03. AnimTool\02. Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Ori_Hat.h">
+      <Filter>02.GameObject\99. Static\Parts\Hat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Parts.h">
+      <Filter>02.GameObject\04. PartTool\01. Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Level_PartsTool.h">
+      <Filter>01.Level\05. PartsTool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PartsManager.h">
+      <Filter>97.Manager\05. PartsManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AnimPlayer.h">
+      <Filter>02.GameObject\03. AnimTool\03. AnimPlayer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -393,6 +429,21 @@
     </ClCompile>
     <ClCompile Include="Terrain_Anim.cpp">
       <Filter>02.GameObject\03. AnimTool\02. Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Ori_Hat.cpp">
+      <Filter>02.GameObject\99. Static\Parts\Hat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Parts.cpp">
+      <Filter>02.GameObject\04. PartTool\01. Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_PartsTool.cpp">
+      <Filter>01.Level\05. PartsTool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PartsManager.cpp">
+      <Filter>97.Manager\05. PartsManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AnimPlayer.cpp">
+      <Filter>02.GameObject\03. AnimTool\03. AnimPlayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

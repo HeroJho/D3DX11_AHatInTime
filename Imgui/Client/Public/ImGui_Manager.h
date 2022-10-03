@@ -48,6 +48,7 @@ private:
 	void Init_MapTool();
 	void Init_CamTool();
 	void Init_AnimTool();
+	void Init_PartsTool();
 	void Init_TestLevel();
 	
 
@@ -58,6 +59,7 @@ private:
 	void Render_MapTool();
 	void Render_CamTool();
 	void Render_AnimTool();
+	void Render_PartsTool();
 	void Render_TestLevel();
 
 	void Render_StaticTool();
@@ -69,6 +71,7 @@ private:
 	void Clear_MapTool();
 	void Clear_CamTool();
 	void Clear_AnimTool();
+	void Clear_PartsTool();
 	void Clear_TestLevel();
 
 
@@ -88,6 +91,10 @@ private:
 	void Window_IsDelete();
 	void Window_AnimEditor();
 	void Window_PlayMode();
+
+	// FOR. Part
+	void Window_Part();
+
 
 private:
 	// FOR. Static

@@ -29,8 +29,17 @@ public:
 		return Transform;
 	}
 
+	_float4 Get_CamPosition() const {
+		return m_vCamPosition;
+	}
+
+public:
+	void Update();
+
 private:
 	_float4x4				m_TransformMatrix[D3DTS_END];
+	_float4x4				m_TransformInverseMatrix[D3DTS_END];
+	_float4					m_vCamPosition;
 
 public:
 	virtual void Free() override;

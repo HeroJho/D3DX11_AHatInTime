@@ -121,6 +121,9 @@
     <Filter Include="03.Components\02.VIBuffer\Terrain\Map_Terrain">
       <UniqueIdentifier>{3297bd68-07bc-4e7b-a194-744fbdb4c2ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Components\07.Sockat">
+      <UniqueIdentifier>{e9c5e28e-7bea-44b5-bcbb-a98851e9bc1e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -243,6 +246,9 @@
     <ClInclude Include="..\Public\VIBuffer_Terrain.h">
       <Filter>03.Components\02.VIBuffer\Terrain\VIBuffer_Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Sockat.h">
+      <Filter>03.Components\07.Sockat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -349,6 +355,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
       <Filter>03.Components\02.VIBuffer\Terrain\VIBuffer_Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Sockat.cpp">
+      <Filter>03.Components\07.Sockat</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

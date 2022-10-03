@@ -73,9 +73,11 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene, char* cModelName, D
 	char cPullName[MAX_PATH];
 	if(eTYPE == DATA_ANIM)
 		strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/Anim/");
-	else
+	else if(eTYPE == DATA_NOEANIM)
 		strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/NonAnim/");
-	
+	else if (eTYPE == DATA_PARTS)
+		strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/Parts/");
+
 	strcat_s(cPullName, cModelName);
 
 	std::ofstream ofs(cPullName, ios::out | ios::binary);
@@ -180,16 +182,17 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene, char* cModelName, D
 HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene, DATA_TYPE eTYPE)
 {
 	char cPullName[MAX_PATH];
-	if(DATA_ANIM == eTYPE)
-		strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/Anim/");
-	else
-		strcpy_s(cPullName, "../Bin/ToolData/Bin_Model/NonAnim/");
+	if (DATA_ANIM == eTYPE)
+		strcpy(cPullName, "../Bin/ToolData/Bin_Model/Anim/");
+	else if (DATA_NOEANIM == eTYPE)
+		strcpy(cPullName, "../Bin/ToolData/Bin_Model/NonAnim/");
+	else if (DATA_PARTS == eTYPE)
+		strcpy(cPullName, "../Bin/ToolData/Bin_Model/Parts/");
 
 	strcat_s(cPullName, pFileName);
 
 
 	ZeroMemory(ReadScene, sizeof(DATA_HEROSCENE));
-	// strcat(pFileName, ".txt");
 	std::ifstream ifs(cPullName, ios::in | ios::binary);
 
 	if (!ifs)
@@ -329,8 +332,10 @@ HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVE
 	char* tPath = CToolManager::Get_Instance()->Get_ManagedChar();
 	if(DATA_ANIM == eTYPE)
 		strcpy(tPath, "../Bin/Resources/Meshes/Anim/");
-	else
+	else if(DATA_NOEANIM == eTYPE)
 		strcpy(tPath, "../Bin/Resources/Meshes/NonAnim/");
+	else if(DATA_PARTS == eTYPE)
+		strcpy(tPath, "../Bin/Resources/Meshes/Parts/");
 
 	strcat(tPath, cTempName);
 	strcat(tPath, "/");
@@ -444,6 +449,26 @@ HRESULT CDataManager::LoadModelPass()
 	m_AnimFilePaths.pop_front();
 	m_AnimFilePaths.pop_front();
 
+
+
+
+	hFind = FindFirstFile(TEXT("../Bin/Resources/Meshes/Parts//*"), &data);
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
+		do {
+			// TC -> C
+			char temp[MAX_PATH];
+			CToolManager::Get_Instance()->TCtoC(data.cFileName, temp);
+
+			m_PartFilePaths.push_back(temp);
+
+		} while (FindNextFile(hFind, &data) != 0);
+
+		FindClose(hFind);
+	}
+
+	m_PartFilePaths.pop_front();
+	m_PartFilePaths.pop_front();
 
 	return S_OK;
 }

@@ -167,6 +167,7 @@
   <ItemGroup>
     <ClInclude Include="..\public\AnimManager.h" />
     <ClInclude Include="..\public\AnimModel.h" />
+    <ClInclude Include="..\public\AnimPlayer.h" />
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\public\Camera_CamTool.h" />
     <ClInclude Include="..\public\Camera_Free.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\public\Level_MapTool.h" />
+    <ClInclude Include="..\public\Level_PartsTool.h" />
     <ClInclude Include="..\public\Level_SelectTool.h" />
     <ClInclude Include="..\public\Level_TestLevel.h" />
     <ClInclude Include="..\public\Loader.h" />
@@ -197,6 +199,9 @@
     <ClInclude Include="..\public\MapManager.h" />
     <ClInclude Include="..\public\MarkCube.h" />
     <ClInclude Include="..\Public\Monster.h" />
+    <ClInclude Include="..\public\Ori_Hat.h" />
+    <ClInclude Include="..\public\Parts.h" />
+    <ClInclude Include="..\public\PartsManager.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\RenderCube.h" />
     <ClInclude Include="..\Public\Sky.h" />
@@ -215,6 +220,7 @@
   <ItemGroup>
     <ClCompile Include="..\private\AnimManager.cpp" />
     <ClCompile Include="..\private\AnimModel.cpp" />
+    <ClCompile Include="..\private\AnimPlayer.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\private\Camera_CamTool.cpp" />
     <ClCompile Include="..\private\Camera_Free.cpp" />
@@ -235,6 +241,7 @@
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\private\Level_MapTool.cpp" />
+    <ClCompile Include="..\private\Level_PartsTool.cpp" />
     <ClCompile Include="..\private\Level_SelectTool.cpp" />
     <ClCompile Include="..\private\Level_TestLevel.cpp" />
     <ClCompile Include="..\private\Loader.cpp" />
@@ -243,6 +250,9 @@
     <ClCompile Include="..\private\MapManager.cpp" />
     <ClCompile Include="..\private\MarkCube.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
+    <ClCompile Include="..\private\Ori_Hat.cpp" />
+    <ClCompile Include="..\private\Parts.cpp" />
+    <ClCompile Include="..\private\PartsManager.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\RenderCube.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />

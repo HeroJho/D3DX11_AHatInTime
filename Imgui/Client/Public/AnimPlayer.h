@@ -14,15 +14,15 @@ END
 
 BEGIN(Client)
 
-class CPlayer final : public CGameObject
+class CAnimPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_ATTACK, STATE_STATU, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SLIP, STATE_STATU, STATE_END };
 
 private:
-	CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CPlayer(const CPlayer& rhs);
-	virtual ~CPlayer() = default;
+	CAnimPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CAnimPlayer(const CAnimPlayer& rhs);
+	virtual ~CAnimPlayer() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -46,10 +46,14 @@ public:
 
 
 private:
-	void Input(_float fTimeDelta);
+	void Tool_Mode(_float fTimeDelta);
 	void Set_State();
 	void Set_Anim();
 
+
+
+	void Game_Mode(_float fTimeDelta);
+	void Game_Input(_float fTimeDelta);
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -63,6 +67,9 @@ private:
 	STATE				m_eState = STATE_END;
 	list<STATE>			m_TickStates;
 
+
+	_float3				m_vDestLook;
+	_float				m_fCulSpeed = 0.f;
 	_float				m_fWalkSpeed = 0.f;
 	_float				m_fRunSpeed = 0.f;
 	_float				m_fTurnSpeed = 0.f;
@@ -80,7 +87,7 @@ public:
 	void Set_bStatu(_bool bStatu) { m_bStatu = bStatu; }
 
 public:
-	static CPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CAnimPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

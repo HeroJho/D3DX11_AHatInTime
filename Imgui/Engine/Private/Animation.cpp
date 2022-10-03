@@ -103,13 +103,14 @@ HRESULT CAnimation::Bin_Initialize(CModel* pModel)
 	return S_OK;
 }
 
-HRESULT CAnimation::Play_Animation(_float fTimeDelta)
+_bool CAnimation::Play_Animation(_float fTimeDelta)
 {
 	m_fPlayTime += m_fTickPerSecond * fTimeDelta;
 
 	if (m_fPlayTime >= m_fDuration)
 	{
 		Init_PlayInfo();
+		return true;
 	}
 
 	_uint		iChannelIndex = 0;
@@ -121,10 +122,10 @@ HRESULT CAnimation::Play_Animation(_float fTimeDelta)
 		++iChannelIndex;
 	}
 
-	return S_OK;
+	return false;
 }
 
-_bool CAnimation::Play_Animation(ANIM_LINEAR_DATA * pData, list<KEYFRAME>* pFirstKeyFrames, _float fTimeDelta)
+_bool CAnimation::Play_Animation(ANIM_LINEAR_DATA * pData, list<KEYFRAME>* pFirstKeyFrames, _float fTimeDelta, _bool* Out_bIsEnd)
 {
 	
 	_float fRatio = m_fPlayTime / m_fDuration;
@@ -144,6 +145,7 @@ _bool CAnimation::Play_Animation(ANIM_LINEAR_DATA * pData, list<KEYFRAME>* pFirs
 
 			m_bStartLinear = true;
 			m_fPlayTime = 0;
+			*Out_bIsEnd = true;
 
 		}
 		else

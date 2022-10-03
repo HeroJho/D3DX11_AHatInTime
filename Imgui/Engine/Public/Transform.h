@@ -46,6 +46,11 @@ public:
 
 	void Set_State(STATE eState, _fvector vState);
 
+	void Set_Scale(_fvector vScaleInfo);
+	_float3 Get_Scale();
+
+	void Set_Look(_fvector vLook);
+
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
@@ -59,8 +64,6 @@ public:
 
 	void Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta);
 
-	void Set_Scale(_fvector vScaleInfo);
-	_float3 Get_Scale();
 
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void Turn(_fvector vAxis, _float fRotationPerSce, _float fTimeDelta);
@@ -68,6 +71,7 @@ public:
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2);
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2, _fvector vAxis3, _float fAngle3);
 
+	_bool LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta);
 
 	void LookAt(_fvector vAt);
 	void LookAt_ForLandObject(_fvector vAt);
@@ -76,6 +80,8 @@ public:
 private:
 	_float4x4				m_WorldMatrix;
 	TRANSFORMDESC			m_TransformDesc;
+	_float					m_fTimeAcc = 0.f;
+	_float3					m_vDest;
 
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

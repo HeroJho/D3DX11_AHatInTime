@@ -1,20 +1,23 @@
 #include "stdafx.h"
-#include "..\Public\Level_TestLevel.h"
+#include "..\Public\LEVEL_PartsTool.h"
 
 #include "GameInstance.h"
 #include "Camera_Free.h"
 #include "ToolManager.h"
+#include "PartsManager.h"
 
-CLevel_TestLevel::CLevel_TestLevel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLevel_PartsTool::CLevel_PartsTool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
 }
 
-HRESULT CLevel_TestLevel::Initialize()
+HRESULT CLevel_PartsTool::Initialize()
 {
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Lights()))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
@@ -33,14 +36,14 @@ HRESULT CLevel_TestLevel::Initialize()
 	return S_OK;
 }
 
-void CLevel_TestLevel::Tick(_float fTimeDelta)
+void CLevel_PartsTool::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
 
 }
 
-HRESULT CLevel_TestLevel::Render()
+HRESULT CLevel_PartsTool::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -51,7 +54,27 @@ HRESULT CLevel_TestLevel::Render()
 	return S_OK;
 }
 
-HRESULT CLevel_TestLevel::Ready_Layer_Camera(const _tchar * pLayerTag)
+HRESULT CLevel_PartsTool::Ready_Lights()
+{
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+
+	LIGHTDESC			LightDesc;
+	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+
+	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
+	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+HRESULT CLevel_PartsTool::Ready_Layer_Camera(const _tchar * pLayerTag)
 {
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
@@ -68,7 +91,7 @@ HRESULT CLevel_TestLevel::Ready_Layer_Camera(const _tchar * pLayerTag)
 	CameraDesc.TransformDesc.fSpeedPerSec = 5.f;
 	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_TESTLEVEL, pLayerTag, &CameraDesc)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_PARTSTOOL, pLayerTag, &CameraDesc)))
 		return E_FAIL;
 
 	Safe_Release(pGameInstance);
@@ -76,29 +99,41 @@ HRESULT CLevel_TestLevel::Ready_Layer_Camera(const _tchar * pLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_TestLevel::Ready_Layer_Player(const _tchar * pLayerTag)
+HRESULT CLevel_PartsTool::Ready_Layer_Player(const _tchar * pLayerTag)
 {
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_TESTLEVEL, pLayerTag)))
-		return E_FAIL;
+
+
+
 
 	Safe_Release(pGameInstance);
+
+
+
+
+
+	CPartsManager::Get_Instance()->Create_Player();
+
+
+	
 
 	return S_OK;
 }
 
-HRESULT CLevel_TestLevel::Ready_Layer_BackGround(const _tchar * pLayerTag)
+HRESULT CLevel_PartsTool::Ready_Layer_BackGround(const _tchar * pLayerTag)
 {
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_TESTLEVEL, pLayerTag)))
+
+
+
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain_Anim"), LEVEL_PARTSTOOL, pLayerTag)))
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_TESTLEVEL, pLayerTag)))
-		return E_FAIL;
+
 
 	Safe_Release(pGameInstance);
 
@@ -106,21 +141,20 @@ HRESULT CLevel_TestLevel::Ready_Layer_BackGround(const _tchar * pLayerTag)
 }
 
 
-
-CLevel_TestLevel * CLevel_TestLevel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLevel_PartsTool * CLevel_PartsTool::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CLevel_TestLevel*		pInstance = new CLevel_TestLevel(pDevice, pContext);
+	CLevel_PartsTool*		pInstance = new CLevel_PartsTool(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CLevel_TestLevel"));
+		MSG_BOX(TEXT("Failed To Created : CLevel_PartsTool"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CLevel_TestLevel::Free()
+void CLevel_PartsTool::Free()
 {
 	__super::Free();
 

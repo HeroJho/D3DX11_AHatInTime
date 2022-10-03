@@ -9,7 +9,9 @@
 #include "Level_MapTool.h"
 #include "Level_CamTool.h"
 #include "Level_AnimTool.h"
+#include "Level_PartsTool.h"
 #include "Level_TestLevel.h"
+
 
 #include "Loader.h"
 
@@ -63,6 +65,9 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 				break;
 			case LEVEL_ANIMTOOL:
 				pNewLevel = CLevel_AnimTool::Create(m_pDevice, m_pDeviceContext);
+				break;
+			case LEVEL_PARTSTOOL:
+				pNewLevel = CLevel_PartsTool::Create(m_pDevice, m_pDeviceContext);
 				break;
 			case LEVEL_TESTLEVEL:
 				pNewLevel = CLevel_TestLevel::Create(m_pDevice, m_pDeviceContext);

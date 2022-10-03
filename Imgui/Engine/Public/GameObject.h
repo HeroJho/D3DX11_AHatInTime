@@ -26,7 +26,7 @@ public:
 	virtual _float3* Get_Axis() { return nullptr; }
 
 public:
-
+	virtual HRESULT SetUp_State(_fmatrix StateMatrix) { return S_OK; }
 
 public:
 	virtual HRESULT Initialize_Prototype();

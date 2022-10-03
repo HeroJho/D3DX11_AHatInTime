@@ -18,8 +18,8 @@ public:
 	HRESULT Bin_Initialize(class CModel* pModel);
 
 
-	HRESULT Play_Animation(_float fTimeDelta);
-	_bool Play_Animation(ANIM_LINEAR_DATA* pData, list<KEYFRAME>* pFirstKeyFrames, _float fTimeDelta);
+	_bool Play_Animation(_float fTimeDelta);
+	_bool Play_Animation(ANIM_LINEAR_DATA* pData, list<KEYFRAME>* pFirstKeyFrames, _float fTimeDelta, _bool* Out_bIsEnd);
 
 public:
 	void	Get_FirstKeys(list<KEYFRAME>* pFirstKeys);

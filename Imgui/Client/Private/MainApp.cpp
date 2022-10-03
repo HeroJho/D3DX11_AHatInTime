@@ -8,6 +8,7 @@
 #include "MapManager.h"
 #include "DataManager.h"
 #include "AnimManager.h"
+#include "PartsManager.h"
 
 #include "Level_Loading.h"
 
@@ -39,15 +40,14 @@ HRESULT CMainApp::Initialize()
 
 	if (FAILED(CDataManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
-
-
 	if (FAILED(CToolManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
 	if (FAILED(CImGui_Manager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
 	if (FAILED(CAnimManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
-
+	if (FAILED(CPartsManager::Get_Instance()->Init(m_pDevice, m_pContext)))
+		return E_FAIL;
 
 	if (FAILED(CToolManager::Get_Instance()->Change_Level(LEVEL_GAMEPLAY)))
 		return E_FAIL;
@@ -139,7 +139,10 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CTransform::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-
+	/* For.Prototype_Component_Sockat */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sockat"),
+		CSockat::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
@@ -171,6 +174,7 @@ CMainApp * CMainApp::Create()
 
 void CMainApp::Free()
 {
+	CPartsManager::Destroy_Instance();
 	CAnimManager::Destroy_Instance();
 	CDataManager::Destroy_Instance();
 	CToolManager::Destroy_Instance();

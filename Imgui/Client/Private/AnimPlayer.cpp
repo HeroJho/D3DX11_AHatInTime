@@ -1,25 +1,29 @@
 #include "stdafx.h"
-#include "..\Public\Player.h"
+#include "..\Public\AnimPlayer.h"
 #include "GameInstance.h"
 #include "Parts.h"
 
-CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+#include "AnimManager.h"
+#include "Camera_Free.h"
+
+CAnimPlayer::CAnimPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CPlayer::CPlayer(const CPlayer & rhs)
+CAnimPlayer::CAnimPlayer(const CAnimPlayer & rhs)
 	: CGameObject(rhs)
 {
 	ZeroMemory(&m_vAxis, sizeof(_float3));
+	ZeroMemory(&m_vDestLook, sizeof(_float3));
 }
 
-HRESULT CPlayer::Initialize_Prototype()
+HRESULT CAnimPlayer::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CPlayer::Initialize(void * pArg)
+HRESULT CAnimPlayer::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -30,7 +34,9 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_fRunSpeed = 2.5f;
 	m_fTurnSpeed = 1.f;
 	m_fRotationSpeed = 3.5f;
-	
+
+	m_fCulSpeed = m_fWalkSpeed;
+
 	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
 
 	return S_OK;
@@ -38,71 +44,72 @@ HRESULT CPlayer::Initialize(void * pArg)
 
 
 
-_float CPlayer::Get_AnimSpeed(STATE eState)
+_float CAnimPlayer::Get_AnimSpeed(STATE eState)
 {
 	switch (eState)
 	{
-	case Client::CPlayer::STATE_IDLE:
+	case Client::CAnimPlayer::STATE_IDLE:
 		return m_pModelCom->Get_Anim_TickPerSecond(111);
-	case Client::CPlayer::STATE_WALK:
+	case Client::CAnimPlayer::STATE_WALK:
 		return m_pModelCom->Get_Anim_TickPerSecond(197);
-	case Client::CPlayer::STATE_RUN:
+	case Client::CAnimPlayer::STATE_RUN:
 		return m_pModelCom->Get_Anim_TickPerSecond(198);
 	}
 }
 
-void CPlayer::Set_AnimSpeed(STATE eState, _float fSpeed)
+void CAnimPlayer::Set_AnimSpeed(STATE eState, _float fSpeed)
 {
 	switch (eState)
 	{
-	case Client::CPlayer::STATE_IDLE:
+	case Client::CAnimPlayer::STATE_IDLE:
 		m_pModelCom->Set_Anim_TickPerSecond(111, fSpeed);
 		break;
-	case Client::CPlayer::STATE_WALK:
+	case Client::CAnimPlayer::STATE_WALK:
 		m_pModelCom->Set_Anim_TickPerSecond(197, fSpeed);
 		break;
-	case Client::CPlayer::STATE_RUN:
+	case Client::CAnimPlayer::STATE_RUN:
 		m_pModelCom->Set_Anim_TickPerSecond(198, fSpeed);
 		break;
 	}
 }
 
-void CPlayer::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
+void CAnimPlayer::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
 {
 	m_pModelCom->Push_AnimLinearData(LinearData);
 }
 
-void CPlayer::Reset_AnimLinearData()
+void CAnimPlayer::Reset_AnimLinearData()
 {
 	m_pModelCom->Reset_AnimLinearData();
 }
 
 
-void CPlayer::Set_State()
+void CAnimPlayer::Set_State()
 {
-
 	list<STATE>::iterator iter = max_element(m_TickStates.begin(), m_TickStates.end());
-
 	m_eState = (*iter);
 
 	Set_Anim();
 	m_TickStates.clear();
 }
 
-void CPlayer::Set_Anim()
+void CAnimPlayer::Set_Anim()
 {
 	switch (m_eState)
 	{
-	case Client::CPlayer::STATE_IDLE:
+	case Client::CAnimPlayer::STATE_IDLE:
 		m_pModelCom->Set_AnimIndex(111);
 		break;
-	case Client::CPlayer::STATE_WALK:
+	case Client::CAnimPlayer::STATE_WALK:
 		m_pModelCom->Set_AnimIndex(197);
 		break;
-	case Client::CPlayer::STATE_RUN:
+	case Client::CAnimPlayer::STATE_RUN:
 		m_pModelCom->Set_AnimIndex(198);
 		break;
-	case Client::CPlayer::STATE_STATU:
+	case Client::CAnimPlayer::STATE_SLIP:
+		m_pModelCom->Set_AnimIndex(177);
+		break;
+	case Client::CAnimPlayer::STATE_STATU:
 		m_pModelCom->Set_AnimIndex(204);
 		break;
 	}
@@ -110,24 +117,24 @@ void CPlayer::Set_Anim()
 
 
 
-
-
-
-
-
-void CPlayer::Tick(_float fTimeDelta)
+void CAnimPlayer::Tick(_float fTimeDelta)
 {
 	m_TickStates.push_back(STATE_IDLE);
 
 	if (m_bStatu)
 		m_TickStates.push_back(STATE_STATU);
 
-	Input(fTimeDelta);
+	if (CAnimManager::Get_Instance()->Get_GameMode())
+		Game_Mode(fTimeDelta);
+	else
+		Tool_Mode(fTimeDelta);
+
+
 
 	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
 }
 
-void CPlayer::Input(_float fTimeDelta)
+void CAnimPlayer::Tool_Mode(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -174,22 +181,130 @@ void CPlayer::Input(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 }
 
+void CAnimPlayer::Game_Mode(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-void CPlayer::LateTick(_float fTimeDelta)
+
+	// 1) 키입력을 받는다. 내가 바라봐야할 방향을 결정한다.
+	Game_Input(fTimeDelta);
+
+	// 2) 내 Look과 바라볼 방향을 선형보간하여 점점 바라본다.
+	if (m_pTransformCom->LinearTurn(m_vDestLook, 1.f, 0.3f, fTimeDelta))
+		m_TickStates.push_back(STATE_SLIP);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CAnimPlayer::Game_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// WD : 카메라 Lend Look으로 Look
+	// AD : 카메라 Right로 Look
+	_matrix mCamWorld = XMMatrixInverse(nullptr, pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	_vector vCamRight = mCamWorld.r[0];
+	_vector vCamUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	_vector vLendLook = XMVector3Cross(vCamRight, vCamUp);
+
+
+	if (pGameInstance->Key_Pressing(DIK_W))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			XMStoreFloat3(&m_vDestLook, vLendLook);
+			m_TickStates.push_back(STATE_RUN);
+		}
+		else
+		{
+			XMStoreFloat3(&m_vDestLook, vLendLook);
+			m_TickStates.push_back(STATE_WALK);
+		}
+	}
+	else if (pGameInstance->Key_Pressing(DIK_S))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			XMStoreFloat3(&m_vDestLook, -1.f * vLendLook);
+			m_TickStates.push_back(STATE_RUN);
+		}
+		else
+		{
+			XMStoreFloat3(&m_vDestLook, -1.f * vLendLook);
+			m_TickStates.push_back(STATE_WALK);
+		}
+	}
+
+
+	if (pGameInstance->Key_Pressing(DIK_A))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			XMStoreFloat3(&m_vDestLook, -1.f*vCamRight);
+			m_TickStates.push_back(STATE_RUN);
+		}
+		else
+		{
+			XMStoreFloat3(&m_vDestLook, -1.f*vCamRight);
+			m_TickStates.push_back(STATE_WALK);
+		}
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			XMStoreFloat3(&m_vDestLook, vCamRight);
+			m_TickStates.push_back(STATE_RUN);
+		}
+		else
+		{
+			XMStoreFloat3(&m_vDestLook, vCamRight);
+			m_TickStates.push_back(STATE_WALK);
+		}
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+
+
+
+
+void CAnimPlayer::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pModelCom->Play_Animation(fTimeDelta);
+	Set_State();
+	if (STATE_WALK == m_eState)
+	{
+		m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta);
+	}
+	else if (STATE_RUN == m_eState)
+	{
+		m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta);
+	}
+
+
+	// 애니메이션 끝
+	if (m_pModelCom->Play_Animation(fTimeDelta))
+	{
+		_uint index = m_pModelCom->Get_PreAnimIndex();
+		if (177 == index)
+		{
+
+		}
+	}
 
 	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-
-	Set_State();
 }
 
-HRESULT CPlayer::Render()
+HRESULT CAnimPlayer::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -233,7 +348,7 @@ HRESULT CPlayer::Render()
 
 
 
-HRESULT CPlayer::Ready_Components()
+HRESULT CAnimPlayer::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -248,9 +363,8 @@ HRESULT CPlayer::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_PARTSTOOL, TEXT("HatGirl"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_ANIMTOOL, TEXT("HatGirl"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
-
 
 
 
@@ -258,14 +372,14 @@ HRESULT CPlayer::Ready_Components()
 	CSockat::SOCATDESC SockatDesc;
 	ZeroMemory(&SockatDesc, sizeof(CSockat::SOCATDESC));
 	XMStoreFloat4x4(&SockatDesc.mPivot, m_pModelCom->Get_PivotMatrix());
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sockat"), TEXT("Com_Sockat"), (CComponent**)&m_pSockatCom ,&SockatDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sockat"), TEXT("Com_Sockat"), (CComponent**)&m_pSockatCom, &SockatDesc)))
 		return E_FAIL;
 
 
 	return S_OK;
 }
 
-CGameObject* CPlayer::Add_Sockat(char* pBoneName, _tchar* cName)
+CGameObject* CAnimPlayer::Add_Sockat(char* pBoneName, _tchar* cName)
 {
 	if (nullptr == m_pSockatCom || nullptr == m_pModelCom)
 		return nullptr;
@@ -307,33 +421,33 @@ CGameObject* CPlayer::Add_Sockat(char* pBoneName, _tchar* cName)
 
 
 
-CPlayer * CPlayer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CAnimPlayer * CAnimPlayer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CPlayer*		pInstance = new CPlayer(pDevice, pContext);
+	CAnimPlayer*		pInstance = new CAnimPlayer(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CPlayer"));
+		MSG_BOX(TEXT("Failed To Created : CAnimPlayer"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CPlayer::Clone(void * pArg)
+CGameObject * CAnimPlayer::Clone(void * pArg)
 {
-	CPlayer*		pInstance = new CPlayer(*this);
+	CAnimPlayer*		pInstance = new CAnimPlayer(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CPlayer"));
+		MSG_BOX(TEXT("Failed To Cloned : CAnimPlayer"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CPlayer::Free()
+void CAnimPlayer::Free()
 {
 	__super::Free();
 

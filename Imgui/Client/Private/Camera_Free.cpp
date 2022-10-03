@@ -41,7 +41,16 @@ HRESULT CCamera_Free::Initialize(void * pArg)
 void CCamera_Free::Tick(_float fTimeDelta)
 {
 
-	Input(fTimeDelta);
+	switch (m_eType)
+	{
+	case Client::CCamera_Free::CAM_TOOL:
+		Tool_Mode(fTimeDelta);
+		break;
+	case Client::CCamera_Free::CAM_GAME:
+		Game_Mode(fTimeDelta);
+		break;
+	}
+
 
 	__super::Tick(fTimeDelta);
 
@@ -63,7 +72,32 @@ HRESULT CCamera_Free::Render()
 
 
 
-void CCamera_Free::Input(_float fTimeDelta)
+void CCamera_Free::ChangeGameMode(CGameObject * pPlayer)
+{
+	if (nullptr == pPlayer)
+		return;
+
+	m_pPlayer = pPlayer;
+	m_fDis = 5.f;
+	ZeroMemory(&m_vAngle, sizeof(_float3));
+
+	Safe_AddRef(m_pPlayer);
+
+	m_eType = CAM_GAME;
+}
+
+void CCamera_Free::ChangeToolMode()
+{
+	Safe_Release(m_pPlayer);
+	m_eType = CAM_TOOL;
+}
+
+
+
+
+
+
+void CCamera_Free::Tool_Mode(_float fTimeDelta)
 {
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
@@ -115,6 +149,63 @@ void CCamera_Free::Input(_float fTimeDelta)
 
 
 
+void CCamera_Free::Game_Mode(_float fTimeDelta)
+{
+	if (nullptr == m_pPlayer)
+		m_eType = CAM_TOOL;
+
+	Game_Mode_Input(fTimeDelta);
+
+
+	CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+	
+	_matrix mX = XMMatrixRotationAxis(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.x));
+	_matrix mY = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.y));
+
+	_vector vCamDir = XMVector3TransformNormal(XMVector3Normalize(XMVectorSet(0.f, 1.f, -1.f, 0.f)), mX);
+	vCamDir = XMVector3TransformNormal(vCamDir, mY);
+	_vector vCamPos = vCamDir * m_fDis;
+	_vector vDestPos = pPlayerTran->Get_State(CTransform::STATE_POSITION) + vCamPos;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDestPos);
+	m_pTransformCom->LookAt(pPlayerTran->Get_State(CTransform::STATE_POSITION));
+
+}
+
+void CCamera_Free::Game_Mode_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	_long	MouseMove = 0;
+
+
+	if (MouseMove = pGameInstance->Get_DIMMoveState(DIMM_Y))
+	{
+		m_vAngle.x += MouseMove * fTimeDelta * 2.f;
+		if (360.f <= m_vAngle.x)
+			m_vAngle.x = 0.f;
+		else if (0.f >= m_vAngle.x)
+			m_vAngle.x = 360.f;
+
+	}
+
+	if (MouseMove = pGameInstance->Get_DIMMoveState(DIMM_X))
+	{
+		m_vAngle.y += MouseMove * fTimeDelta * 2.f;
+		if (360.f <= m_vAngle.y)
+			m_vAngle.y = 0.f;
+		else if (0.f >= m_vAngle.y)
+			m_vAngle.y = 360.f;
+	}
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+
+
 
 
 
@@ -152,5 +243,7 @@ void CCamera_Free::Free()
 {
 	__super::Free();
 
+
+	Safe_Release(m_pPlayer);
 
 }

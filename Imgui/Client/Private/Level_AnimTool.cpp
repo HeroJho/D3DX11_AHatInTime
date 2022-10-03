@@ -6,6 +6,7 @@
 #include "AnimManager.h"
 #include "Camera_CamTool.h"
 #include "ColorCube.h"
+#include "Camera_Free.h"
 
 CLevel_AnimTool::CLevel_AnimTool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -102,8 +103,11 @@ HRESULT CLevel_AnimTool::Ready_Layer_Camera(const _tchar * pLayerTag)
 	CameraDesc.TransformDesc.fSpeedPerSec = 20.f;
 	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_ANIMTOOL, pLayerTag, &CameraDesc)))
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_ANIMTOOL, pLayerTag, &pObj, &CameraDesc)))
 		return E_FAIL;
+
+	CAnimManager::Get_Instance()->Set_Cam((CCamera_Free*)pObj);
 
 	Safe_Release(pGameInstance);
 

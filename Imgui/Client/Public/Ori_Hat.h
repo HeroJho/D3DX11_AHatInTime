@@ -13,18 +13,12 @@ END
 
 BEGIN(Client)
 
-class CAnimModel final : public CGameObject
+class COri_Hat final : public CGameObject
 {
-public:
-	typedef struct tagAnimModelDesc
-	{
-		TCHAR		cModelTag[MAX_PATH];
-	}ANIMMODELDESC;
-
 private:
-	CAnimModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CAnimModel(const CAnimModel& rhs);
-	virtual ~CAnimModel() = default;
+	COri_Hat(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	COri_Hat(const COri_Hat& rhs);
+	virtual ~COri_Hat() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -32,29 +26,23 @@ public:
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
-
-
-public:
-	virtual _float3* Get_Axis() override { return &m_vAxis; };
-	TCHAR*		Get_ModelName() { return m_cModelTag; };
+	virtual HRESULT SetUp_State(_fmatrix StateMatrix);
 
 private:
 	CShader*				m_pShaderCom = nullptr;
+
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
+	CTransform*				m_pParentTransformCom = nullptr;
 	CModel*					m_pModelCom = nullptr;
 
-private:
-	TCHAR					m_cModelTag[MAX_PATH];
-	string					m_sModelNum;
-	_float3					m_vAxis;
-	LEVEL					m_eModelLevel = LEVEL_END;
+
 
 private:
 	HRESULT Ready_Components();
 
 public:
-	static CAnimModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static COri_Hat* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

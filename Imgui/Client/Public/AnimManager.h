@@ -2,7 +2,7 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
-#include "Player.h"
+#include "AnimPlayer.h"
 
 BEGIN(Engine)
 
@@ -32,8 +32,7 @@ public:
 	void Set_PickedString(string sPickedString) { m_sPickedString = sPickedString; }
 
 	class CAnimModel* Get_AnimModel() { return m_pAnimModel; }
-	class CPlayer*	Get_PlayerModel() { return m_pPlayer; }
-
+	class CAnimPlayer*	Get_PlayerModel() { return m_pPlayer; }
 
 	_bool Get_IsDelete() { return m_bIsDelete; }
 	void  Set_IsDelete(_bool bIsDelete) { m_bIsDelete = bIsDelete; }
@@ -88,8 +87,8 @@ private:
 
 	//  For. Player
 public:
-	_float Get_Player_AnimSpeed(CPlayer::STATE eType);
-	void Set_Player_AnimSpeed(CPlayer::STATE eType, _float fSpeed);
+	_float Get_Player_AnimSpeed(CAnimPlayer::STATE eType);
+	void Set_Player_AnimSpeed(CAnimPlayer::STATE eType, _float fSpeed);
 
 	void Set_AnimLinearData();
 	_int* Get_iMyIndex() { return &m_iMyIndex; }
@@ -100,7 +99,6 @@ public:
 	list<ANIM_LINEAR_DATA>* Get_LinearLists() { return &m_LinearLists; }
 
 private:
-
 	int	m_iA = 0;
 	int	m_iD = 0;
 	int	m_iNone = 0;
@@ -114,17 +112,31 @@ private:
 	_float m_fLimitRatio = 0.f;
 
 
+
+
 	// For. Static
 public:
 	_bool* Get_PlayMode() { return &m_bPlayMode; }
 	char* Get_CurAnimName(EDIT_TYPE eType);
 
+	void Set_Cam(class CCamera_Free* pCam) { m_pCam = pCam; }
+	class CCamera_Free* Get_Cam() { return m_pCam; }
+
+	void Set_GameMode(_bool bGameMode);
+	_bool Get_GameMode() { return m_bCamGameModel; }
+
+
 private:
-	class CAnimModel*	m_pAnimModel = nullptr;
-	class CPlayer*		m_pPlayer = nullptr;
+	class CAnimModel*			m_pAnimModel = nullptr;
+	class CAnimPlayer*				m_pPlayer = nullptr;
+
+
 	string				m_sPickedString;
 
 	_bool				m_bPlayMode = false;
+
+	class CCamera_Free* m_pCam = nullptr;
+	_bool				m_bCamGameModel = false;
 
 private:
 	ID3D11Device* m_pDevice;

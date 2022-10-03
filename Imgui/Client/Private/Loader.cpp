@@ -13,6 +13,7 @@
 #include "Terrain_Anim.h"
 #include "Monster.h"
 #include "Player.h"
+#include "AnimPlayer.h"
 #include "Sky.h"
 #include "VIBuffer_ColorCube.h"
 #include "ColorCube.h"
@@ -22,6 +23,8 @@
 #include "RenderCube.h"
 #include "StaticModel.h"
 #include "AnimModel.h"
+#include "Ori_Hat.h"
+#include "Parts.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -56,6 +59,9 @@ _uint APIENTRY LoadingMain(void* pArg)
 		break;
 	case LEVEL_ANIMTOOL :
 		pLoader->Loading_ForAnimToolLevel();
+		break;
+	case LEVEL_PARTSTOOL :
+		pLoader->Loading_ForPartsToolLevel();
 		break;
 	case LEVEL_TESTLEVEL:
 		pLoader->Loading_ForTestLevel();
@@ -113,6 +119,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
 		CPlayer::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_AnimPlayer*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_AnimPlayer"),
+		CAnimPlayer::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 	/* For.Prototype_GameObject_Camera_Free */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Free"),
@@ -158,10 +169,16 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CAnimModel::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_Ori_Hat*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ori_Hat"),
+		COri_Hat::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
-
-
-
+	/* For.Prototype_GameObject_Ori_Hat*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Parts"),
+		CParts::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
 
 
 
@@ -204,6 +221,12 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CVIBuffer_ColorCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	
+	// TEST
+	/* For.Prototype_Component_Ori_Hat */
+	_matrix mPivot = XMMatrixScaling(0.1f, 0.1f, 0.1f);
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Ori_Hat"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Meshes/NonAnim/Ori_Hat/", "Ori_Hat.fbx", mPivot))))
+		return E_FAIL;
 
 
 	if (FAILED(Loading_Model_NoneAnim()))
@@ -384,6 +407,49 @@ HRESULT CLoader::Loading_ForCamToolLevel()
 HRESULT CLoader::Loading_ForAnimToolLevel()
 {
 
+	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("객체원형을 로딩중입니다. "));
+	/* 객체원형 로드한다. */
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다. "));
+	/* 텍스쳐를 로드한다. */
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다. "));
+	/* 모델를 로드한다. */
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니ㅏㄷ.  "));
+
+	Safe_Release(pGameInstance);
+
+	m_isFinished = true;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_ForPartsToolLevel()
+{
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 

@@ -75,11 +75,13 @@ public: /* For.Input_Device */
 	_bool Mouse_Up(DIMK eMouseKeyID);
 	_bool Mouse_Pressing(DIMK eMouseKeyID);
 
-public:
+
+public: /* For.PipeLine */
 	void Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix);
 	_matrix Get_TransformMatrix(CPipeLine::TRANSFORMSTATE eTransformState) const;
 	_float4x4 Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE eTransformState) const;
 	_float4x4 Get_TransformFloat4x4_TP(CPipeLine::TRANSFORMSTATE eTransformState) const;
+	_float4 Get_CamPosition();
 
 
 private:

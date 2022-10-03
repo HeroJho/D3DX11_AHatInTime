@@ -8,7 +8,8 @@
 #include "DataManager.h"
 
 #include "AnimModel.h"
-#include "Player.h"
+#include "AnimPlayer.h"
+#include "Camera_Free.h"
 
 IMPLEMENT_SINGLETON(CAnimManager)
 
@@ -62,7 +63,6 @@ void CAnimManager::Tick(_float fTimeDelta)
 
 void CAnimManager::Create_Model()
 {
-
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 
@@ -96,7 +96,6 @@ void CAnimManager::Create_Model()
 
 	RELEASE_INSTANCE(CGameInstance);
 }
-
 HRESULT CAnimManager::Create_ModelByOri()
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -149,7 +148,6 @@ HRESULT CAnimManager::Create_ModelByOri()
 
 	return S_OK;
 }
-
 void CAnimManager::Delete_Model()
 {
 	if (nullptr == m_pAnimModel)
@@ -177,14 +175,13 @@ void CAnimManager::Create_Player()
 	memcpy(Desc.cModelTag, TEXT("HatGirl"), sizeof(_tchar)*MAX_PATH);
 
 	CGameObject* pObj = nullptr;
-	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_ANIMTOOL, TEXT("Layer_Player"), &pObj, &Desc);
+	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_AnimPlayer"), LEVEL_ANIMTOOL, TEXT("Layer_Player"), &pObj, &Desc);
 
-	m_pPlayer = (CPlayer*)pObj;
+	m_pPlayer = (CAnimPlayer*)pObj;
 
 
 	RELEASE_INSTANCE(CGameInstance);
 }
-
 void CAnimManager::Delete_Player()
 {
 	if (nullptr == m_pPlayer)
@@ -194,12 +191,11 @@ void CAnimManager::Delete_Player()
 	m_pPlayer = nullptr;
 }
 
-_float CAnimManager::Get_Player_AnimSpeed(CPlayer::STATE eType)
+_float CAnimManager::Get_Player_AnimSpeed(CAnimPlayer::STATE eType)
 {
 	return m_pPlayer->Get_AnimSpeed(eType);
 }
-
-void CAnimManager::Set_Player_AnimSpeed(CPlayer::STATE eType, _float fSpeed)
+void CAnimManager::Set_Player_AnimSpeed(CAnimPlayer::STATE eType, _float fSpeed)
 {
 	m_pPlayer->Set_AnimSpeed(eType, fSpeed);
 }
@@ -319,6 +315,15 @@ char * CAnimManager::Get_CurAnimName(EDIT_TYPE eType)
 		return ((CModel*)m_pAnimModel->Get_ComponentPtr(TEXT("Com_Model")))->Get_CurAnim_Name();
 }
 
+void CAnimManager::Set_GameMode(_bool bGameMode)
+{
+	m_bCamGameModel = bGameMode;
+	if (m_bCamGameModel)
+		m_pCam->ChangeGameMode(m_pPlayer);
+	else
+		m_pCam->ChangeToolMode();
+}
+
 
 void CAnimManager::Set_AnimLinearData()
 {
@@ -391,6 +396,7 @@ void CAnimManager::Free()
 	m_bPlayMode = false;
 	m_pAnimModel = nullptr;
 	m_pPlayer = nullptr;
+
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

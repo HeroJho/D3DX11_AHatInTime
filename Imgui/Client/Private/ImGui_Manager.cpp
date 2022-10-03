@@ -8,6 +8,7 @@
 #include "MapManager.h"
 #include "DataManager.h"
 #include "AnimManager.h"
+#include "PartsManager.h"
 
 #include "ColorCube.h"
 #include "MarkCube.h"
@@ -101,6 +102,9 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 	case Client::LEVEL_ANIMTOOL:
 		Render_AnimTool();
 		break;
+	case Client::LEVEL_PARTSTOOL:
+		Render_PartsTool();
+		break;
 	case Client::LEVEL_TESTLEVEL:
 		Render_TestLevel();
 		break;
@@ -148,6 +152,9 @@ void CImGui_Manager::Init_Level(LEVEL eCurLevel)
 	case Client::LEVEL_ANIMTOOL:
 		Init_AnimTool();
 		break;
+	case Client::LEVEL_PARTSTOOL:
+		Init_PartsTool();
+		break;
 	case Client::LEVEL_TESTLEVEL:
 		Init_TestLevel();
 		break;
@@ -173,6 +180,9 @@ void CImGui_Manager::Clear_Level()
 	case Client::LEVEL_ANIMTOOL:
 		Clear_AnimTool();
 		break;
+	case Client::LEVEL_PARTSTOOL:
+		Clear_PartsTool();
+		break;
 	case Client::LEVEL_TESTLEVEL:
 		Clear_TestLevel();
 		break;
@@ -193,6 +203,9 @@ void CImGui_Manager::Init_CamTool()
 {
 }
 void CImGui_Manager::Init_AnimTool()
+{
+}
+void CImGui_Manager::Init_PartsTool()
 {
 }
 void CImGui_Manager::Init_TestLevel()
@@ -218,6 +231,8 @@ void CImGui_Manager::Render_SelectTool()
 		CToolManager::Get_Instance()->Change_Level(LEVEL_CAMTOOL);
 	else if (ImGui::Button("AnimTool"))
 		CToolManager::Get_Instance()->Change_Level(LEVEL_ANIMTOOL);
+	else if (ImGui::Button("PartsTool"))
+		CToolManager::Get_Instance()->Change_Level(LEVEL_PARTSTOOL);
 	else if (ImGui::Button("TestTool"))
 		CToolManager::Get_Instance()->Change_Level(LEVEL_TESTLEVEL);
 
@@ -284,6 +299,7 @@ void CImGui_Manager::Render_AnimTool()
 	Render_StaticTool();
 
 
+	// Player Mode
 	CGameObject* pObj = nullptr;
 	if (*CAnimManager::Get_Instance()->Get_PlayMode())
 	{
@@ -291,6 +307,7 @@ void CImGui_Manager::Render_AnimTool()
 		pObj = CAnimManager::Get_Instance()->Get_PlayerModel();
 		Window_PlayMode();
 	}
+	// Anim Mode
 	else
 	{
 		CAnimManager::Get_Instance()->Delete_Player();
@@ -314,6 +331,12 @@ void CImGui_Manager::Render_AnimTool()
 		Window_IsDelete();
 
 
+}
+void CImGui_Manager::Render_PartsTool()
+{
+	Render_StaticTool();
+
+	Window_Part();
 }
 void CImGui_Manager::Render_TestLevel()
 {
@@ -373,6 +396,12 @@ void CImGui_Manager::Clear_AnimTool()
 {
 
 	CAnimManager::Get_Instance()->Free();
+
+}
+void CImGui_Manager::Clear_PartsTool()
+{
+
+	CPartsManager::Get_Instance()->Free();
 
 }
 void CImGui_Manager::Clear_TestLevel()
@@ -743,8 +772,7 @@ void CImGui_Manager::Window_AnimEditor()
 	_int iAnimCount = CAnimManager::Get_Instance()->Get_AnimCount(CAnimManager::EDIT_MODEL);
 	_int iCurIndex = CAnimManager::Get_Instance()->Get_CurAimIndex(CAnimManager::EDIT_MODEL);
 	
-	//char* cAnimName = CAnimManager::Get_Instance()->Get_CurAnimName(CAnimManager::EDIT_MODEL);
-	//ImGui::Text(cAnimName);
+
 	ImGui::Text("AnimCount: %d", iAnimCount);
 	ImGui::Text("CurIndex: %d", iCurIndex);
 
@@ -774,7 +802,6 @@ void CImGui_Manager::Window_AnimEditor()
 		ImGui::InputInt("Idle", CAnimManager::Get_Instance()->Get_KeyNone(), 0);
 	}
 
-	
 
 	ImGui::PopItemWidth();
 
@@ -798,8 +825,7 @@ void CImGui_Manager::Window_PlayMode()
 	_int iAnimCount = CAnimManager::Get_Instance()->Get_AnimCount(CAnimManager::EDIT_PLAYER);
 	_int iCurIndex = CAnimManager::Get_Instance()->Get_CurAimIndex(CAnimManager::EDIT_PLAYER);
 
-	//char* cAnimName = CAnimManager::Get_Instance()->Get_CurAnimName(CAnimManager::EDIT_PLAYER);
-	//ImGui::Text(cAnimName);
+
 	ImGui::Text("AnimCount: %d", iAnimCount);
 	ImGui::Text("CurIndex: %d", iCurIndex);
 
@@ -810,9 +836,13 @@ void CImGui_Manager::Window_PlayMode()
 		if (bPlayMode)
 			CAnimManager::Get_Instance()->Create_Player();
 	}
+	_bool bGameMode = CAnimManager::Get_Instance()->Get_GameMode();
+	if (ImGui::Checkbox("GameMode", &bGameMode))
+		CAnimManager::Get_Instance()->Set_GameMode(bGameMode);
+
 
 	ImGui::Text("======GameSpeed======");
-	CPlayer* pPlayer = CAnimManager::Get_Instance()->Get_PlayerModel();
+	CAnimPlayer* pPlayer = CAnimManager::Get_Instance()->Get_PlayerModel();
 	ImGui::InputFloat("WalkSpeed", pPlayer->Get_WalkSpeed());
 	ImGui::InputFloat("RunSpeed", pPlayer->Get_RunSpeed());
 	ImGui::InputFloat("TurnSpeed", pPlayer->Get_TurnSpeed());
@@ -820,17 +850,17 @@ void CImGui_Manager::Window_PlayMode()
 
 
 	ImGui::Text("======AnimSpeed======");
-	_float fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CPlayer::STATE_IDLE);
+	_float fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_IDLE);
 	if (ImGui::InputFloat("IDLE", &fSpeed))
-		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CPlayer::STATE_IDLE, fSpeed);
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_IDLE, fSpeed);
 
-	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CPlayer::STATE_WALK);
+	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_WALK);
 	if (ImGui::InputFloat("WALK", &fSpeed))
-		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CPlayer::STATE_WALK, fSpeed);
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_WALK, fSpeed);
 
-	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CPlayer::STATE_RUN);
+	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_RUN);
 	if (ImGui::InputFloat("RUN", &fSpeed))
-		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CPlayer::STATE_RUN, fSpeed);
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_RUN, fSpeed);
 
 
 
@@ -887,10 +917,74 @@ void CImGui_Manager::Window_PlayMode()
 	if (ImGui::Button("LoadData"))
 		CAnimManager::Get_Instance()->Load_PlayerAnimData();
 
+
+
+
 	ImGui::PopItemWidth();
 
 	ImGui::End();
 
+}
+
+void CImGui_Manager::Window_Part()
+{
+	ImGui::Begin("Part Editor");
+
+	const list<string>* FileNames = CDataManager::Get_Instance()->Get_PartFileNames();
+
+	ImVec2 vSize{ 150.f, 200.f };
+	if (ImGui::BeginListBox("Parts", vSize))
+	{
+		for (auto& sModelName : *FileNames)
+		{
+			bool isSelected = CPartsManager::Get_Instance()->Get_PickedString() == sModelName;
+			vSize = { 100.f, 10.f };
+			if (ImGui::Selectable(sModelName.data(), isSelected, 0, vSize))
+				CPartsManager::Get_Instance()->Set_PickedString(sModelName);
+
+			if (CPartsManager::Get_Instance()->Find_Parts(sModelName))
+			{
+				ImGui::SameLine();
+				ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), "Created");
+			}
+
+
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+
+		ImGui::EndListBox();
+	}
+
+	
+	ImGui::InputText("BoneName", CPartsManager::Get_Instance()->Get_BoneName(), sizeof(char) * MAX_PATH);
+
+	if (ImGui::Button("Load by Bin"))
+		CPartsManager::Get_Instance()->Create_Parts();
+	//ImGui::SameLine();
+	//if (ImGui::Button("Load By Scene"))
+	//	CAnimManager::Get_Instance()->Create_ModelByOri();
+	if (ImGui::Button("Delete"))
+		CPartsManager::Get_Instance()->Delete_Parts();
+	if (ImGui::Button("Convert_AllCreatedParts_To_Bin"))
+		CPartsManager::Get_Instance()->Conv_AllCratedModel_To_Bin();
+
+
+	_bool bStatu = CPartsManager::Get_Instance()->Get_StatuMode();
+	if (ImGui::Checkbox("Statu_Mode", &bStatu))
+		CPartsManager::Get_Instance()->Set_StatuMode(bStatu);
+
+
+	CGameObject* pObj = (CGameObject*)CPartsManager::Get_Instance()->Find_Parts(CPartsManager::Get_Instance()->Get_PickedString());
+	if (nullptr != pObj)
+	{
+		CTransform* pTransform = (CTransform*)pObj->Get_ComponentPtr(TEXT("Com_Transform"));
+		_float3* pAixs = pObj->Get_Axis();
+		Window_Transform(pTransform, pAixs);
+	}
+
+
+	ImGui::End();
 }
 
 
@@ -929,7 +1023,11 @@ void CImGui_Manager::Window_Transform(CTransform* pTransform, _float3* vAxis)
 		_float3 vPos; XMStoreFloat3(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
 		_float3 vScale = pTransform->Get_Scale();
 
-		if (ImGui::DragFloat3("Pos", (_float*)&vPos, 0.1f))
+
+		_float fSensPos = 0.1f;
+		if (m_eCurLevel == LEVEL_PARTSTOOL)
+			fSensPos = 0.01f;
+		if (ImGui::DragFloat3("Pos", (_float*)&vPos, fSensPos))
 			pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
 		if (ImGui::DragFloat3("Scale", (_float*)&vScale, 0.01f, 0.001f))
 			pTransform->Set_Scale(XMLoadFloat3(&vScale));

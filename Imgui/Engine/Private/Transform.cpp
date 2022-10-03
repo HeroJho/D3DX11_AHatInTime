@@ -28,6 +28,8 @@ HRESULT CTransform::Initialize(void * pArg)
 {
 	if (nullptr != pArg)
 		memcpy(&m_TransformDesc, pArg, sizeof(TRANSFORMDESC));
+	
+	m_vDest = _float3{ 0.f, 0.f, 1.f};
 
 	return S_OK;
 }
@@ -70,6 +72,19 @@ _float3 CTransform::Get_Scale()
 		XMVectorGetX(XMVector3Length(Get_State(CTransform::STATE_RIGHT))),
 		XMVectorGetX(XMVector3Length(Get_State(CTransform::STATE_UP))),
 		XMVectorGetX(XMVector3Length(Get_State(CTransform::STATE_LOOK))));
+}
+
+void CTransform::Set_Look(_fvector vLook)
+{
+	_vector		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
+
+	_vector		vUp = XMVector3Cross(vLook, vRight);
+
+	_float3		vScale = Get_Scale();
+
+	Set_State(CTransform::STATE_RIGHT, XMVector3Normalize(vRight) * vScale.x);
+	Set_State(CTransform::STATE_UP, XMVector3Normalize(vUp) * vScale.y);
+	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLook) * vScale.z);
 }
 
 
@@ -210,6 +225,47 @@ void CTransform::Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _flo
 	Set_State(CTransform::STATE_RIGHT, XMVector3TransformNormal(Get_State(CTransform::STATE_RIGHT), RotationMatrix));
 	Set_State(CTransform::STATE_UP, XMVector3TransformNormal(Get_State(CTransform::STATE_UP), RotationMatrix));
 	Set_State(CTransform::STATE_LOOK, XMVector3TransformNormal(Get_State(CTransform::STATE_LOOK), RotationMatrix));
+}
+
+
+_bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta)
+{
+	_vector vMyLook = Get_State(STATE_LOOK);
+	_vector vVDestLook = XMLoadFloat3(&vDestLook);
+	_vector vPreDest = XMLoadFloat3(&m_vDest);
+	vMyLook = XMVector3Normalize(vMyLook);
+	vVDestLook = XMVector3Normalize(vVDestLook);
+	vPreDest = XMVector3Normalize(vPreDest);
+
+	// 이전 목표랑 다른지w
+	_float fDistance = XMVectorGetX(XMVector3Length(vPreDest - vVDestLook));
+	if (0.001f < fDistance)
+		m_fTimeAcc = 0.f;
+
+	m_fTimeAcc += fRoationPerSce * fTimeDelta;
+	_float fRatio = m_fTimeAcc / fDuration;
+	if (1.f < fRatio)
+	{
+		m_fTimeAcc = 0.f;
+		return false;
+	}
+
+
+
+	_vector vCalCulLook = vVDestLook * fRatio + vMyLook * (1.f - fRatio);
+	_float fSlip = XMVectorGetX(XMVector3Length(vCalCulLook));
+	if (0.4f > fSlip)
+	{
+		return true;
+	}
+
+
+
+	Set_Look(vCalCulLook);
+
+	m_vDest = vDestLook;
+
+	return false;
 }
 
 void CTransform::LookAt(_fvector vAt)
