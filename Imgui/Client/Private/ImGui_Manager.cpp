@@ -786,6 +786,10 @@ void CImGui_Manager::Window_AnimEditor()
 	if (ImGui::InputFloat("Anim_Speed", &fSpeed))
 		CAnimManager::Get_Instance()->Set_AnimSpeed(CAnimManager::EDIT_MODEL, fSpeed);
 
+	_bool bLoop = CAnimManager::Get_Instance()->Get_Loop();
+	if (ImGui::Checkbox("Loop", &bLoop))
+		CAnimManager::Get_Instance()->Set_Loop(bLoop);
+
 
 	if (ImGui::Button("Convert_Model"))
 		CAnimManager::Get_Instance()->Conv_Bin_Anim();

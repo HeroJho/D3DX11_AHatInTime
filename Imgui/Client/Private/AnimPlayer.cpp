@@ -44,6 +44,10 @@ HRESULT CAnimPlayer::Initialize(void * pArg)
 
 
 
+
+
+#pragma region GET_SET
+
 _float CAnimPlayer::Get_AnimSpeed(STATE eState)
 {
 	switch (eState)
@@ -86,7 +90,11 @@ void CAnimPlayer::Reset_AnimLinearData()
 
 void CAnimPlayer::Set_State()
 {
+	if (m_TickStates.empty())
+		return;
+
 	list<STATE>::iterator iter = max_element(m_TickStates.begin(), m_TickStates.end());
+	m_ePreState = m_eState;
 	m_eState = (*iter);
 
 	Set_Anim();
@@ -97,29 +105,44 @@ void CAnimPlayer::Set_Anim()
 {
 	switch (m_eState)
 	{
-	case Client::CAnimPlayer::STATE_IDLE:
+	case STATE_IDLE:
 		m_pModelCom->Set_AnimIndex(111);
 		break;
-	case Client::CAnimPlayer::STATE_WALK:
+	case STATE_WALK:
 		m_pModelCom->Set_AnimIndex(197);
 		break;
-	case Client::CAnimPlayer::STATE_RUN:
+	case STATE_RUN:
 		m_pModelCom->Set_AnimIndex(198);
 		break;
-	case Client::CAnimPlayer::STATE_SLIP:
+	case STATE_ATTACK_1:
+		m_pModelCom->Set_AnimIndex(187);
+		break;
+	case STATE_ATTACK_2:
+		m_pModelCom->Set_AnimIndex(190);
+		break;
+	case STATE_ATTACK_3:
+		m_pModelCom->Set_AnimIndex(193);
+		break;
+	case STATE_SLEP:
 		m_pModelCom->Set_AnimIndex(177);
 		break;
-	case Client::CAnimPlayer::STATE_STATU:
+	case STATE_STATU:
 		m_pModelCom->Set_AnimIndex(204);
 		break;
 	}
 }
 
+#pragma endregion
 
+
+
+
+
+#pragma region Tick
 
 void CAnimPlayer::Tick(_float fTimeDelta)
 {
-	m_TickStates.push_back(STATE_IDLE);
+
 
 	if (m_bStatu)
 		m_TickStates.push_back(STATE_STATU);
@@ -136,6 +159,8 @@ void CAnimPlayer::Tick(_float fTimeDelta)
 
 void CAnimPlayer::Tool_Mode(_float fTimeDelta)
 {
+	m_TickStates.push_back(STATE_IDLE);
+
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 
@@ -174,8 +199,7 @@ void CAnimPlayer::Tool_Mode(_float fTimeDelta)
 		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fRotationSpeed, fTimeDelta);
 		m_TickStates.push_back(STATE_WALK);
 	}
-
-
+	
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -183,22 +207,38 @@ void CAnimPlayer::Tool_Mode(_float fTimeDelta)
 
 void CAnimPlayer::Game_Mode(_float fTimeDelta)
 {
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	
 
 
-	// 1) 키입력을 받는다. 내가 바라봐야할 방향을 결정한다.
-	Game_Input(fTimeDelta);
+	switch (m_eState)
+	{
+	case STATE_IDLE:
+	case STATE_WALK:
+	case STATE_RUN:
+		Move_Tick(fTimeDelta);
+		break;
+	case STATE_SLEP:
 
-	// 2) 내 Look과 바라볼 방향을 선형보간하여 점점 바라본다.
-	if (m_pTransformCom->LinearTurn(m_vDestLook, 1.f, 0.3f, fTimeDelta))
-		m_TickStates.push_back(STATE_SLIP);
+		break;
+	case STATE_ATTACK_1:
+	case STATE_ATTACK_2:
+		Attack_Input(fTimeDelta);
+		break;
+	case STATE_ATTACK_3:
+
+		break;
+	case STATE_READYATTACK:
+		ReadyAttack_Input(fTimeDelta);
+		break;
+	}
 
 
-	RELEASE_INSTANCE(CGameInstance);
+
 }
 
-void CAnimPlayer::Game_Input(_float fTimeDelta)
+void CAnimPlayer::Move_Input(_float fTimeDelta)
 {
+
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	// WD : 카메라 Lend Look으로 Look
@@ -265,20 +305,94 @@ void CAnimPlayer::Game_Input(_float fTimeDelta)
 		}
 	}
 
+	if (pGameInstance->Mouse_Down(DIMK_LBUTTON))
+	{
+		m_TickStates.push_back(STATE_ATTACK_1);
+	}
+
 
 	RELEASE_INSTANCE(CGameInstance);
 }
 
+void CAnimPlayer::Move_Tick(_float fTimeDelta)
+{
+	m_TickStates.push_back(STATE_IDLE);
+
+	Move_Input(fTimeDelta);
+
+	if (m_pTransformCom->LinearTurn(m_vDestLook, 1.f, 0.3f, fTimeDelta))
+	{
+		m_TickStates.push_back(STATE_SLEP);
+	}
+
+}
+
+void CAnimPlayer::Attack_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	if (pGameInstance->Mouse_Down(DIMK_LBUTTON))
+	{
+		if (STATE_ATTACK_1 == m_eState)
+			m_ComboStates.push_back(STATE_ATTACK_2);
+		else if(STATE_ATTACK_2 == m_eState)
+			m_ComboStates.push_back(STATE_ATTACK_3);
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CAnimPlayer::ReadyAttack_Input(_float fTimeDelta)
+{
+	if (m_ComboStates.empty())
+	{
+		m_TickStates.push_back(STATE_IDLE);
+		return;
+	}
+		
+	if (STATE_ATTACK_2 == m_ComboStates.front())
+		m_TickStates.push_back(STATE_ATTACK_2);
+	else if(STATE_ATTACK_3 == m_ComboStates.front())
+		m_TickStates.push_back(STATE_ATTACK_3);
+	else
+		m_TickStates.push_back(STATE_IDLE);
+
+	m_ComboStates.clear();
+}
+
+#pragma endregion 
 
 
 
+
+
+
+#pragma region LateTick
 
 void CAnimPlayer::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
 
+	// 상태 갱신
 	Set_State();
+
+	// 이동 갱신
+	Calcul_State(fTimeDelta);;
+
+	// 애니메이션 이벤트
+	if (m_pModelCom->Play_Animation(fTimeDelta))
+		Check_EndAnim();
+
+	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
+
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+}
+
+void CAnimPlayer::Calcul_State(_float fTimeDelta)
+{
 	if (STATE_WALK == m_eState)
 	{
 		m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta);
@@ -287,22 +401,41 @@ void CAnimPlayer::LateTick(_float fTimeDelta)
 	{
 		m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta);
 	}
+}
+
+void CAnimPlayer::Check_EndAnim()
+{
+
+	// _uint index = m_pModelCom->Get_CurAnimIndex();
 
 
-	// 애니메이션 끝
-	if (m_pModelCom->Play_Animation(fTimeDelta))
+	switch (m_eState)
 	{
-		_uint index = m_pModelCom->Get_PreAnimIndex();
-		if (177 == index)
-		{
-
-		}
+	case STATE_ATTACK_1:
+		m_TickStates.push_back(STATE_READYATTACK);
+		break;
+	case STATE_ATTACK_2:
+		m_TickStates.push_back(STATE_READYATTACK);
+		break;
+	case STATE_ATTACK_3:
+		m_TickStates.push_back(STATE_IDLE);
+		break;
+	case STATE_SLEP:
+		m_TickStates.push_back(STATE_IDLE);
+		break;
 	}
 
-	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
+
+#pragma	endregion 
+
+
+
+
+
+
+#pragma region Render
 
 HRESULT CAnimPlayer::Render()
 {
@@ -340,6 +473,7 @@ HRESULT CAnimPlayer::Render()
 	return S_OK;
 }
 
+#pragma endregion
 
 
 
@@ -347,6 +481,9 @@ HRESULT CAnimPlayer::Render()
 
 
 
+
+
+#pragma region Init
 
 HRESULT CAnimPlayer::Ready_Components()
 {
@@ -414,9 +551,7 @@ CGameObject* CAnimPlayer::Add_Sockat(char* pBoneName, _tchar* cName)
 	return pGameObject;
 }
 
-
-
-
+#pragma endregion
 
 
 

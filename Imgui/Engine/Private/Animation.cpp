@@ -13,6 +13,7 @@ CAnimation::CAnimation(const CAnimation & rhs)
 	, m_iNumChannels(rhs.m_iNumChannels)
 	, m_fTickPerSecond(rhs.m_fTickPerSecond)
 	, m_fPlayTime(rhs.m_fPlayTime)
+	, m_bLoop(rhs.m_bLoop)
 {
 	for (auto& pChannel : m_Channels)
 		Safe_AddRef(pChannel);
@@ -66,6 +67,7 @@ HRESULT CAnimation::Bin_Initialize_Prototype(DATA_HEROANIM* pAIAnimation)
 {
 	m_fDuration = pAIAnimation->fDuration;
 	m_fTickPerSecond = pAIAnimation->fTickPerSecond;
+	m_bLoop = pAIAnimation->bLoop;
 
 	/* 현재 애니메이션에서 제어해야할 뼈들의 갯수를 저장한다. */
 	m_iNumChannels = pAIAnimation->iNumChannels;
@@ -109,7 +111,9 @@ _bool CAnimation::Play_Animation(_float fTimeDelta)
 
 	if (m_fPlayTime >= m_fDuration)
 	{
-		Init_PlayInfo();
+		if(m_bLoop)
+			Init_PlayInfo();
+
 		return true;
 	}
 
@@ -125,7 +129,7 @@ _bool CAnimation::Play_Animation(_float fTimeDelta)
 	return false;
 }
 
-_bool CAnimation::Play_Animation(ANIM_LINEAR_DATA * pData, list<KEYFRAME>* pFirstKeyFrames, _float fTimeDelta, _bool* Out_bIsEnd)
+_bool CAnimation::Play_Animation(ANIM_LINEAR_DATA * pData, list<KEYFRAME>* pFirstKeyFrames, _float fTimeDelta)
 {
 	
 	_float fRatio = m_fPlayTime / m_fDuration;
@@ -135,7 +139,6 @@ _bool CAnimation::Play_Animation(ANIM_LINEAR_DATA * pData, list<KEYFRAME>* pFirs
 	{
 		if (pData->fLimitRatio < fRatio)
 		{
-			// 마지막 행렬을 가져온다.
 			_uint		iChannelIndex = 0;
 			for (auto& pChannel : m_Channels)
 			{
@@ -145,8 +148,6 @@ _bool CAnimation::Play_Animation(ANIM_LINEAR_DATA * pData, list<KEYFRAME>* pFirs
 
 			m_bStartLinear = true;
 			m_fPlayTime = 0;
-			*Out_bIsEnd = true;
-
 		}
 		else
 		{
@@ -174,7 +175,7 @@ _bool CAnimation::Play_Animation(ANIM_LINEAR_DATA * pData, list<KEYFRAME>* pFirs
 		{
 			if (pChannel->Update_LinearTransformation(m_fPlayTime, m_HierarchyNodes[iChannelIndex], *iter, pData))
 			{
-				m_bStartLinear = false;
+				// m_bStartLinear = false;
 				Init_PlayInfo();
 				return true;
 			}
@@ -197,12 +198,15 @@ void CAnimation::Get_FirstKeys(list<KEYFRAME>* pFirstKeys)
 void CAnimation::Init_PlayInfo()
 {
 	m_fPlayTime = 0.f;
+	m_bStartLinear = false;
 
 	for (auto& pChannel : m_Channels)
 	{
-		for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
-			iCurrentKeyFrame = 0;
+
 	}
+
+	for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
+		iCurrentKeyFrame = 0;
 }
 
 CAnimation * CAnimation::Create(aiAnimation * pAIAnimation)
@@ -280,6 +284,7 @@ void CAnimation::Get_AnimData(DATA_HEROANIM * pData)
 	pData->fDuration = m_fDuration;
 	pData->iNumChannels = m_iNumChannels;
 	pData->fTickPerSecond = m_fTickPerSecond;
+	pData->bLoop = m_bLoop;
 
 	pData->pHeroChannel = new DATA_HEROCHANNEL[m_iNumChannels];
 

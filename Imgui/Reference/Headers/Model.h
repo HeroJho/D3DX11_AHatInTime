@@ -33,8 +33,8 @@ public:
 	void Set_Anim_TickPerSecond(_int iIndex, _float fTickperSecond);
 	char* Get_CurAnim_Name();
 
-	_uint Get_PreAnimIndex() {return m_iPreAnimIndex; }
-
+	_bool Get_CurAnim_Loop();
+	void Set_CurAnim_Loop(_bool bLoop);
 
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
@@ -80,10 +80,8 @@ private:
 
 private:
 	_uint								m_iCurrentAnimIndex = 0;
-	_uint								m_iPreAnimIndex = 0;
 	_uint								m_iNumAnimations = 0;
 	vector<class CAnimation*>			m_Animations;
-	_bool								m_bIsLock = false;
 
 	vector<vector<ANIM_LINEAR_DATA>>	m_AnimLinearDatas;
 	ANIM_LINEAR_DATA*					m_pCurLinearData = nullptr;

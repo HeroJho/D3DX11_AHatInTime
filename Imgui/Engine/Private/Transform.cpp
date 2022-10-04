@@ -237,7 +237,7 @@ _bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fD
 	vVDestLook = XMVector3Normalize(vVDestLook);
 	vPreDest = XMVector3Normalize(vPreDest);
 
-	// 이전 목표랑 다른지w
+	// 이전 목표랑 다른지
 	_float fDistance = XMVectorGetX(XMVector3Length(vPreDest - vVDestLook));
 	if (0.001f < fDistance)
 		m_fTimeAcc = 0.f;

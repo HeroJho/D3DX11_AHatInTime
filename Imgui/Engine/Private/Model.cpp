@@ -69,26 +69,20 @@ void CModel::Set_AnimIndex(_uint iAnimIndex)
 	if (m_iCurrentAnimIndex == iAnimIndex)
 		return;
 
-	if (m_bIsLock)
-		return;
-
-	if (177 == iAnimIndex)
-		m_bIsLock = true;
 
 	// 보간할 애가 있는지 체크
 	ANIM_LINEAR_DATA* pLinearData = Get_AnimLinearData(iAnimIndex);
 	if (nullptr == pLinearData)
 	{
 		// 없으면 애니메이션 초기화하고 변화
+		m_pCurLinearData = nullptr;
 		m_Animations[m_iCurrentAnimIndex]->Init_PlayInfo();
 		m_iCurrentAnimIndex = iAnimIndex;
-		m_iPreAnimIndex = m_iCurrentAnimIndex;
 	}
 	else
 	{
 		// 보간 데이터가 존재한다.
 		m_pCurLinearData = pLinearData;
-		m_iPreAnimIndex = m_iCurrentAnimIndex;
 	}
 }
 
@@ -292,18 +286,14 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(fTimeDelta))
 		{
 			IsEnd = true;
-			m_bIsLock = false;
 		}
 	}
 	else
 	{
 		list<KEYFRAME> NextFirstKeyFrams;
 		m_Animations[m_pCurLinearData->iTargetIndex]->Get_FirstKeys(&NextFirstKeyFrams);
-		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(m_pCurLinearData, &NextFirstKeyFrams, fTimeDelta, &IsEnd))
+		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(m_pCurLinearData, &NextFirstKeyFrams, fTimeDelta))
 		{
-			if (IsEnd)
-				m_bIsLock = false;
-
 			m_iCurrentAnimIndex = m_pCurLinearData->iTargetIndex;
 			m_pCurLinearData = nullptr;
 		}
@@ -379,7 +369,7 @@ ANIM_LINEAR_DATA* CModel::Get_AnimLinearData(int iTargetIndex)
 
 	for (auto& data : m_AnimLinearDatas[m_iCurrentAnimIndex])
 	{
-		if (data.iTargetIndex = iTargetIndex)
+		if (data.iTargetIndex == iTargetIndex)
 		{
 			return &data;
 		}
@@ -582,7 +572,6 @@ HRESULT CModel::Get_AnimData(DATA_HEROSCENE * pSceneData)
 	}
 
 	pSceneData->iNumAnimations = m_iNumAnimations;
-
 	pSceneData->pHeroAnim = new DATA_HEROANIM[m_iNumAnimations];
 
 	for (_int i = 0; i < m_iNumAnimations; ++i)
@@ -692,6 +681,16 @@ void CModel::Set_Anim_TickPerSecond(_int iIndex, _float fTickperSecond)
 char * CModel::Get_CurAnim_Name()
 {
 	return m_Animations[m_iCurrentAnimIndex]->Get_Name();
+}
+
+_bool CModel::Get_CurAnim_Loop()
+{
+	return m_Animations[m_iCurrentAnimIndex]->Get_Loop();
+}
+
+void CModel::Set_CurAnim_Loop(_bool bLoop)
+{
+	m_Animations[m_iCurrentAnimIndex]->Set_Loop(bLoop);
 }
 
 

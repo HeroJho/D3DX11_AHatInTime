@@ -161,6 +161,7 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene, char* cModelName, D
 		ofs.write((char*)&Anim.iNumChannels, sizeof(int));
 		ofs.write((char*)&Anim.fDuration, sizeof(float));
 		ofs.write((char*)&Anim.fTickPerSecond, sizeof(float));
+		ofs.write((char*)&Anim.bLoop, sizeof(bool));
 
 		for (int j = 0; j < Anim.iNumChannels; ++j)
 		{
@@ -289,6 +290,7 @@ HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene,
 		ifs.read((char*)&ReadScene->pHeroAnim[i].iNumChannels, sizeof(int));
 		ifs.read((char*)&ReadScene->pHeroAnim[i].fDuration, sizeof(float));
 		ifs.read((char*)&ReadScene->pHeroAnim[i].fTickPerSecond, sizeof(float));
+		ifs.read((char*)&ReadScene->pHeroAnim[i].bLoop, sizeof(bool));
 
 		ReadScene->pHeroAnim[i].pHeroChannel = new DATA_HEROCHANNEL[ReadScene->pHeroAnim[i].iNumChannels];
 		for (int j = 0; j < ReadScene->pHeroAnim[i].iNumChannels; ++j)

@@ -17,7 +17,7 @@ BEGIN(Client)
 class CAnimPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SLIP, STATE_STATU, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SLEP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_STATU, STATE_END };
 
 private:
 	CAnimPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -53,7 +53,14 @@ private:
 
 
 	void Game_Mode(_float fTimeDelta);
-	void Game_Input(_float fTimeDelta);
+	void Move_Input(_float fTimeDelta);
+	void Move_Tick(_float fTimeDelta);
+
+
+	void Attack_Input(_float fTimeDelta);
+	void ReadyAttack_Input(_float fTimeDelta);
+
+	void Calcul_State(_float fTimeDelta);
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -65,8 +72,9 @@ private:
 private:
 	_float3					m_vAxis;
 	STATE				m_eState = STATE_END;
+	STATE				m_ePreState = STATE_END;
 	list<STATE>			m_TickStates;
-
+	list<STATE>			m_ComboStates;
 
 	_float3				m_vDestLook;
 	_float				m_fCulSpeed = 0.f;
@@ -80,6 +88,8 @@ private:
 
 private:
 	HRESULT Ready_Components();
+
+	void Check_EndAnim();
 
 public:
 	CGameObject* Add_Sockat(char* pBoneName, _tchar* cName);

@@ -224,6 +224,7 @@ namespace Engine
 	typedef struct tagHeroAnim
 	{
 
+		bool				bLoop;
 		int					iNumChannels;
 		float				fDuration;
 		float				fTickPerSecond;

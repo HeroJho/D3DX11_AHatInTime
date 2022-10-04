@@ -75,6 +75,10 @@ public:
 	int* Get_KeyNone() { return &m_iNone; }
 	_bool* Get_KeyTest() { return &m_bKeyTest; }
 
+	_bool Get_Loop();
+	void Set_Loop(_bool bLoop);
+
+
 private:
 	_int Get_AnimCount(CGameObject* pObj);
 	_int Get_CurAimIndex(CGameObject* pObj);
@@ -82,8 +86,7 @@ private:
 	void Delete_Anim(CGameObject* pObj, _int iIndex);
 	_float Get_AnimSpeed(CGameObject* pObj);
 	void Set_AnimSpeed(CGameObject* pObj, _float fSpeed);
-
-
+	
 
 	//  For. Player
 public:

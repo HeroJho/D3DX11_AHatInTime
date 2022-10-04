@@ -291,6 +291,16 @@ void CAnimManager::Set_AnimSpeed(CGameObject * pObj, _float fSpeed)
 	((CModel*)pObj->Get_ComponentPtr(TEXT("Com_Model")))->Set_CurAin_TickPerSecond(fSpeed);
 }
 
+_bool CAnimManager::Get_Loop()
+{
+	return ((CModel*)m_pAnimModel->Get_ComponentPtr(TEXT("Com_Model")))->Get_CurAnim_Loop();
+}
+
+void CAnimManager::Set_Loop(_bool bLoop)
+{
+	((CModel*)m_pAnimModel->Get_ComponentPtr(TEXT("Com_Model")))->Set_CurAnim_Loop(bLoop);
+}
+
 
 
 
