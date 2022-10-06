@@ -15,6 +15,16 @@ CComponent * CLayer::Get_ComponentPtr(const _tchar * pComponentTag, _uint iLayer
 	return (*iter)->Get_ComponentPtr(pComponentTag);	
 }
 
+CGameObject * CLayer::Get_GameObjectPtr(_uint iLayerIndex)
+{
+	auto	iter = m_GameObjects.begin();
+
+	for (_uint i = 0; i < iLayerIndex; ++i)
+		++iter;
+
+	return (*iter);
+}
+
 HRESULT CLayer::Add_GameObject(CGameObject * pGameObject)
 {
 	if (nullptr == pGameObject)

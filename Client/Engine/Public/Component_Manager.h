@@ -1,13 +1,20 @@
 #pragma once
-
+#include "OBB.h"
+#include "AABB.h"
 #include "Model.h"
 #include "Shader.h"
+#include "Sockat.h"
+#include "Sphere.h"
 #include "Texture.h"
 #include "Renderer.h"
 #include "Transform.h"
 #include "VIBuffer_Rect.h"
-//#include "VIBuffer_Cube.h"
 #include "VIBuffer_Terrain.h"
+#include "VIBuffer_Map_Terrain.h"
+
+
+
+
 
 BEGIN(Engine)
 
@@ -22,6 +29,8 @@ public:
 	HRESULT Reserve_Container(_uint iNumLevels);
 	HRESULT Add_Prototype(_uint iLevelIndex, const _tchar* pPrototypeTag, class CComponent* pPrototype);
 	class CComponent* Clone_Component(_uint iLevelIndex, const _tchar* pPrototypeTag, void* pArg);
+	HRESULT	Check_Prototype(_int iLevelIndex, const _tchar* pPrototypeTag);
+
 
 private:
 	_uint												m_iNumLevels = 0;

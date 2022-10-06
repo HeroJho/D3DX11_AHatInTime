@@ -17,7 +17,7 @@ BEGIN(Client)
 class CAnimPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SLEP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_STATU, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_STATU, STATE_END };
 
 private:
 	CAnimPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -53,10 +53,11 @@ private:
 
 
 	void Game_Mode(_float fTimeDelta);
-	void Move_Input(_float fTimeDelta);
+	
 	void Move_Tick(_float fTimeDelta);
+	void Slep_Tick(_float fTimeDelta);
 
-
+	void Move_Input(_float fTimeDelta);
 	void Attack_Input(_float fTimeDelta);
 	void ReadyAttack_Input(_float fTimeDelta);
 
@@ -76,15 +77,18 @@ private:
 	list<STATE>			m_TickStates;
 	list<STATE>			m_ComboStates;
 
+
 	_float3				m_vDestLook;
 	_float				m_fCulSpeed = 0.f;
 	_float				m_fWalkSpeed = 0.f;
 	_float				m_fRunSpeed = 0.f;
 	_float				m_fTurnSpeed = 0.f;
 	_float				m_fRotationSpeed = 0.f;
+	_float				m_fSlepSpeed = 0.f;
 
 
 	_bool				m_bStatu = false;
+	_bool				m_bImStop = false;
 
 private:
 	HRESULT Ready_Components();

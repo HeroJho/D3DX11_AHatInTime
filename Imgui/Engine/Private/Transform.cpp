@@ -181,6 +181,14 @@ void CTransform::Turn(_fvector vAxis, _float fRotationPerSce, _float fTimeDelta)
 	Set_State(CTransform::STATE_LOOK, XMVector3TransformNormal(Get_State(CTransform::STATE_LOOK), RotationMatrix));
 }
 
+void CTransform::TurnBack()
+{
+	_vector vMyLook = Get_State(STATE_LOOK);
+	vMyLook *= -1.f;
+	XMStoreFloat3(&m_vDest, vMyLook);
+	Set_DestLook();
+}
+
 void CTransform::Rotation(_fvector vAxis, _float fAngle)
 {
 	_matrix		RotationMatrix = XMMatrixRotationAxis(vAxis, XMConvertToRadians(fAngle));
@@ -230,6 +238,11 @@ void CTransform::Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _flo
 
 _bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta)
 {
+	// 이상한 크기의 (0)벡터가 들어올 시에
+	_float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vDestLook)));
+	if (0.01f > fDistance)
+		return false;
+
 	_vector vMyLook = Get_State(STATE_LOOK);
 	_vector vVDestLook = XMLoadFloat3(&vDestLook);
 	_vector vPreDest = XMLoadFloat3(&m_vDest);
@@ -238,7 +251,7 @@ _bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fD
 	vPreDest = XMVector3Normalize(vPreDest);
 
 	// 이전 목표랑 다른지
-	_float fDistance = XMVectorGetX(XMVector3Length(vPreDest - vVDestLook));
+	fDistance = XMVectorGetX(XMVector3Length(vPreDest - vVDestLook));
 	if (0.001f < fDistance)
 		m_fTimeAcc = 0.f;
 
@@ -254,18 +267,24 @@ _bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fD
 
 	_vector vCalCulLook = vVDestLook * fRatio + vMyLook * (1.f - fRatio);
 	_float fSlip = XMVectorGetX(XMVector3Length(vCalCulLook));
-	if (0.4f > fSlip)
+	if (0.8f > fSlip)
 	{
+		m_vDest = vDestLook;
+		// Set_Look(XMLoadFloat3(&m_vDest));
 		return true;
 	}
+		
 
-
-
+	
+	m_vDest = vDestLook;
 	Set_Look(vCalCulLook);
 
-	m_vDest = vDestLook;
-
 	return false;
+}
+
+void CTransform::Set_DestLook()
+{
+	Set_Look(XMLoadFloat3(&m_vDest));
 }
 
 void CTransform::LookAt(_fvector vAt)

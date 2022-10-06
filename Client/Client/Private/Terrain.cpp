@@ -78,20 +78,13 @@ HRESULT CTerrain::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_VIBuffer */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Map_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 		return E_FAIL;
 
 	/* For.Com_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom[TYPE_DIFFUSE])))
 		return E_FAIL;
 
-	/* For.Com_Brush*/
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Brush"), TEXT("Com_Brush"), (CComponent**)&m_pTextureCom[TYPE_BRUSH])))
-		return E_FAIL;
-
-	/* For.Com_Filter */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Filter"), TEXT("Com_Filter"), (CComponent**)&m_pTextureCom[TYPE_FILTER])))
-		return E_FAIL;
 
 	return S_OK;
 }
@@ -142,23 +135,10 @@ HRESULT CTerrain::SetUp_ShaderResources()
 
 	RELEASE_INSTANCE(CGameInstance);
 
+
 	if (FAILED(m_pTextureCom[TYPE_DIFFUSE]->Set_SRV(m_pShaderCom, "g_DiffuseTexture", 0)))
 		return E_FAIL;
-	if (FAILED(m_pTextureCom[TYPE_DIFFUSE]->Set_SRV(m_pShaderCom, "g_DiffuseTexture1", 1)))
-		return E_FAIL;
-	//if (FAILED(m_pTextureCom[TYPE_FILTER]->Set_SRV(m_pShaderCom, "g_FilterTexture")))
-	//	return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Set_ShaderResourceView("g_FilterTexture", m_pFilterSRV)))
-		return E_FAIL;
-
-	/*if (FAILED(m_pTextureCom[TYPE_FILTER]->Set_SRV(m_pShaderCom, "g_FilterTexture")))
-		return E_FAIL;*/
-
-
-
-	if (FAILED(m_pTextureCom[TYPE_BRUSH]->Set_SRV(m_pShaderCom, "g_BrushTexture")))
-		return E_FAIL;
 
 	return S_OK;
 }
@@ -218,7 +198,9 @@ HRESULT CTerrain::Ready_FilterTexture()
 	if (FAILED(DirectX::SaveDDSTextureToFile(m_pContext, pTexture, TEXT("../Bin/Filter.dds"))))
 		return E_FAIL;
 
-	Safe_Delete(pPixel);
+	Safe_Delete_Array(pPixel);
+
+	Safe_Release(pTexture);
 
 	return S_OK;
 }
@@ -256,6 +238,7 @@ void CTerrain::Free()
 	for (auto& pTextureCom : m_pTextureCom)	
 		Safe_Release(pTextureCom);	
 	
+	Safe_Release(m_pFilterSRV);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);

@@ -866,6 +866,9 @@ void CImGui_Manager::Window_PlayMode()
 	if (ImGui::InputFloat("RUN", &fSpeed))
 		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_RUN, fSpeed);
 
+	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_SLEP);
+	if (ImGui::InputFloat("SLEP", &fSpeed))
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_SLEP, fSpeed);
 
 
 

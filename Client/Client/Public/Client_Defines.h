@@ -1,5 +1,8 @@
 #pragma once
 
+#include <fstream>
+#include <iostream>
+
 namespace Client
 {
 	static const unsigned int g_iWinSizeX = 1280;

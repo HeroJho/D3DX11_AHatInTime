@@ -2,17 +2,16 @@
 #include "..\Public\Loader.h"
 
 #include "GameInstance.h"
-#include "Camera_Free.h"
-#include "BackGround.h"
-#include "Terrain.h"
-//#include "Monster.h"
-#include "Player.h"
-//#include "Effect.h"
-//#include "Sky.h"
+#include "ToolManager.h"
+#include "DataManager.h"
 
-//#include "UI.h"
+#include "Camera_Free.h"
+#include "Terrain.h"
+#include "Monster.h"
+#include "Player.h"
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
+#include "StaticModel.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -62,29 +61,55 @@ HRESULT CLoader::Initialize(LEVEL eNextLevelID)
 
 HRESULT CLoader::Loading_ForLogoLevel()
 {
-	lstrcpy(m_szLoadingText, TEXT("객체원형을 로딩중입니다. "));
-
-	//CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	//Safe_AddRef(pGameInstance);
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
-	/* 개ㅑㄱ체원형 로드한다. */	
+	lstrcpy(m_szLoadingText, TEXT("객체원형을 로딩중입니다. "));
+	/* 객체원형 로드한다. */	
 
-	/* For.Prototype_GameObject_BackGround */ 
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BackGround"), CBackGround::Create(m_pDevice, m_pContext))))
-		return E_FAIL;	
+	// TEST
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Edit"),
+		CUI_Edit::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_UI_Edit_Button */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Edit_Button"),
+		CUI_Edit_Button::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다. "));
 	/* 텍스쳐를 로드한다. */
+
 
 	/* For.Prototype_Component_Texture_Default */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Default"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
 		return E_FAIL;
 
+	// TEST
+	/* For.Prototype_Component_Texture_InvenFrame */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_InvenFrame"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/TestUI/Inventory/InvenFrame.png"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_InvenBtn */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_InvenBtn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/TestUI/Inventory/InvenBtn/CashBtn%d.png"), 2))))
+		return E_FAIL;
+
+
+
+
+
+
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다. "));	
 	/* 모델를 로드한다. */
+
+
+
+
+
 
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니ㅏㄷ.  "));
@@ -109,46 +134,35 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTerrain::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* For.Prototype_GameObject_UI*/
-	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI"),
-	//	CUI::Create(m_pGraphic_Device))))
-	//	return E_FAIL;
-
 	/* For.Prototype_GameObject_Player*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
 		CPlayer::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* For.Prototype_GameObject_Monster */
-	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster"),
-	//	CMonster::Create(m_pGraphic_Device))))
-	//	return E_FAIL;
+	/* For.Prototype_GameObject_Monster */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster"),
+		CMonster::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	/* For.Prototype_GameObject_Camera_Free */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Free"),
 		CCamera_Free::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* For.Prototype_GameObject_Sky */
-	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
-	//	CSky::Create(m_pGraphic_Device))))
-	//	return E_FAIL;
-
-	///* For.Prototype_GameObject_Effect */
-	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Effect"),
-	//	CEffect::Create(m_pGraphic_Device))))
-	//	return E_FAIL;
-
-
-	// TEST
-	/* For.Prototype_GameObject_UI_Edit */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Edit"),
-		CUI_Edit::Create(m_pDevice, m_pContext))))
+	/* For.Prototype_GameObject_Terrain_StaticModel*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_StaticModel"),
+		CStaticModel::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-	/* For.Prototype_GameObject_UI_Edit_Button */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Edit_Button"),
-		CUI_Edit_Button::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -159,45 +173,13 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Grass_%d.dds"), 2))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Brush*/
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Brush"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png"), 1))))
-		return E_FAIL;
-
-	/* For.Prototype_Component_Texture_Filter */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Filter"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Filter.bmp"), 1))))
-		return E_FAIL;
-
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile0.jpg"), 1))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Player */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Player"),
-	//	CTexture::Create(m_pGraphic_Device, CTexture::TYPE_DEFAULT, TEXT("../Bin/Resources/Textures/Player/Player.png")))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Sky */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Sky"),
-	//	CTexture::Create(m_pGraphic_Device, CTexture::TYPE_CUBEMAP, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Effect */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Effect"),
-	//	CTexture::Create(m_pGraphic_Device, CTexture::TYPE_DEFAULT, TEXT("../Bin/Resources/Textures/Explosion/Explosion%d.png"), 90))))
-	//	return E_FAIL;
 
 
-	// TEST
-	/* For.Prototype_Component_Texture_InvenFrame */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_InvenFrame"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/TestUI/Inventory/InvenFrame.png"), 1))))
-		return E_FAIL;
-	/* For.Prototype_Component_Texture_InvenBtn */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_InvenBtn"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/TestUI/Inventory/InvenBtn/CashBtn%d.png"), 2))))
-		return E_FAIL;
+
+
+
+
+
 
 
 
@@ -206,20 +188,24 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* 모델를 로드한다. */
 
 	/* For.Prototype_Component_VIBuffer_Terrain */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Map_Terrain"),
+		CVIBuffer_Map_Terrain::Create(m_pDevice, m_pContext, 100, 100))))
 		return E_FAIL;
 
 
-	/* For.Prototype_Component_Model_Fiona */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fiona"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Meshes/Fiona/", "Fiona.fbx"))))
+
+	if (FAILED(Loading_Model_NoneAnim()))
 		return E_FAIL;
 
-	///* For.Prototype_Component_VIBuffer_Cube */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"),
-	//	CVIBuffer_Cube::Create(m_pGraphic_Device))))
-	//	return E_FAIL;
+
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("HatGirl"), LEVEL_STATIC, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Mad_Crow"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩중입니다. "));
 
 	/* For.Prototype_Component_Shader_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Terrain"),
@@ -231,20 +217,70 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxModel.hlsl"), VTXMODEL_DECLARATION::Elements, VTXMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
 
-	///* For.Prototype_Component_Shader_Cube */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Sky"),
-	//	CShader::Create(m_pGraphic_Device, TEXT("../Bin/ShaderFiles/Shader_Sky.hlsl")))))
-	//	return E_FAIL;
-
-	
+	/* For.Prototype_Component_Shader_AnimModel */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_AnimModel"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimModel.hlsl"), VTXANIMMODEL_DECLARATION::Elements, VTXANIMMODEL_DECLARATION::iNumElements))))
+		return E_FAIL;
 
 
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("충돌체를 로딩중입니다. "));
+
+	/* For.Prototype_Component_Collider_AABB */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"),
+		CAABB::Create(m_pDevice, m_pContext, CCollider::TYPE_AABB))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Collider_OBB */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"),
+		COBB::Create(m_pDevice, m_pContext, CCollider::TYPE_OBB))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Collider_Sphere */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"),
+		CSphere::Create(m_pDevice, m_pContext, CCollider::TYPE_SPHERE))))
+		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니ㅏㄷ.  "));
 
 	Safe_Release(pGameInstance);
 
 	m_isFinished = true;
+
+	return S_OK;
+}
+
+
+HRESULT CLoader::Loading_Model_NoneAnim()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+
+	const list<string>* FileNames = CDataManager::Get_Instance()->Get_NonAnimFileNames();
+
+	_matrix		PivotMatrix = XMMatrixIdentity();
+	for (auto& sFileName : *FileNames)
+	{
+		_tchar czTag[MAX_PATH];
+		_tchar* cTag = CToolManager::Get_Instance()->Get_ManagedTChar();
+		CToolManager::Get_Instance()->CtoTC(sFileName.data(), czTag);
+
+		memcpy(cTag, czTag, sizeof(_tchar) * MAX_PATH);
+
+		CDataManager::Get_Instance()->Create_Try_BinModel(cTag, LEVEL_GAMEPLAY, CDataManager::DATA_NOEANIM);
+	}
+
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
 }

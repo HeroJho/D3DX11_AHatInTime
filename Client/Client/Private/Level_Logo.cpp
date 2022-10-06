@@ -3,7 +3,7 @@
 
 #include "GameInstance.h"
 #include "Level_Loading.h"
-
+#include "UI.h"
 
 CLevel_Logo::CLevel_Logo(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -56,8 +56,21 @@ HRESULT CLevel_Logo::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BackGround"), LEVEL_LOGO, pLayerTag)))
+
+
+
+	CUI::UIINFODESC UiInfoDesc;
+	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+	UiInfoDesc.fSizeX = 197;
+	UiInfoDesc.fSizeY = 380;
+	UiInfoDesc.fX = g_iWinSizeX * 0.5f;
+	UiInfoDesc.fY = g_iWinSizeY * 0.5f;
+
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_Edit"), LEVEL_LOGO, pLayerTag, &UiInfoDesc)))
 		return E_FAIL;
+
+
+
 
 	Safe_Release(pGameInstance);
 

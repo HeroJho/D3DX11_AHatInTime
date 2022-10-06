@@ -2,6 +2,10 @@
 #include "..\Public\MainApp.h"
 
 #include "GameInstance.h"
+
+#include "DataManager.h"
+#include "ToolManager.h"
+
 #include "Level_Loading.h"
 
 using namespace Client;
@@ -9,8 +13,7 @@ using namespace Client;
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::Get_Instance())
 {
-	//D3D11_SAMPLER_DESC
-	// D3D11_SAMPLER_DESC
+
 	Safe_AddRef(m_pGameInstance);
 }
 
@@ -25,6 +28,13 @@ HRESULT CMainApp::Initialize()
 	GraphicDesc.iWinSizeY = g_iWinSizeY;
 
 	if (FAILED(m_pGameInstance->Initialize_Engine(LEVEL_END, g_hInst, GraphicDesc, &m_pDevice, &m_pContext)))
+		return E_FAIL;
+
+
+
+	if (FAILED(CDataManager::Get_Instance()->Init(m_pDevice, m_pContext)))
+		return E_FAIL;
+	if (FAILED(CToolManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Prototype_Component()))
@@ -46,6 +56,9 @@ void CMainApp::Tick(_float fTimeDelta)
 #endif // _DEBUG
 
 	m_pGameInstance->Tick_Engine(fTimeDelta);
+
+	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_MONSTER);
+	m_pGameInstance->Clear_ColGroup();
 }
 
 HRESULT CMainApp::Render()
@@ -104,6 +117,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
 		m_pRenderer = CRenderer::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	Safe_AddRef(m_pRenderer);
 
 	/* For.Prototype_Component_VIBuffer_Rect */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"),
@@ -123,8 +137,29 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxTex.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
 		return E_FAIL;
+
+	/* For.Prototype_Component_Sockat */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sockat"),
+		CSockat::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 	
-	Safe_AddRef(m_pRenderer);
+
+
+	/* For.Prototype_Component_Collider_AABB */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Collider_AABB"),
+		CAABB::Create(m_pDevice, m_pContext, CCollider::TYPE_AABB))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Collider_OBB */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Collider_OBB"),
+		COBB::Create(m_pDevice, m_pContext, CCollider::TYPE_OBB))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Collider_Sphere */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Collider_Sphere"),
+		CSphere::Create(m_pDevice, m_pContext, CCollider::TYPE_SPHERE))))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -150,6 +185,10 @@ CMainApp * CMainApp::Create()
 
 void CMainApp::Free()
 {
+
+	CDataManager::Get_Instance()->Destroy_Instance();
+	CToolManager::Get_Instance()->Destroy_Instance();
+
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 	Safe_Release(m_pRenderer);

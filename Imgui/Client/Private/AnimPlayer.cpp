@@ -58,6 +58,8 @@ _float CAnimPlayer::Get_AnimSpeed(STATE eState)
 		return m_pModelCom->Get_Anim_TickPerSecond(197);
 	case Client::CAnimPlayer::STATE_RUN:
 		return m_pModelCom->Get_Anim_TickPerSecond(198);
+	case Client::CAnimPlayer::STATE_SLEP:
+		return m_pModelCom->Get_Anim_TickPerSecond(177);
 	}
 }
 
@@ -73,6 +75,9 @@ void CAnimPlayer::Set_AnimSpeed(STATE eState, _float fSpeed)
 		break;
 	case Client::CAnimPlayer::STATE_RUN:
 		m_pModelCom->Set_Anim_TickPerSecond(198, fSpeed);
+		break;
+	case Client::CAnimPlayer::STATE_SLEP:
+		m_pModelCom->Set_Anim_TickPerSecond(177, fSpeed);
 		break;
 	}
 }
@@ -94,10 +99,29 @@ void CAnimPlayer::Set_State()
 		return;
 
 	list<STATE>::iterator iter = max_element(m_TickStates.begin(), m_TickStates.end());
+
+
 	m_ePreState = m_eState;
 	m_eState = (*iter);
 
+
+
+
+
+	switch (m_eState)
+	{
+	case Client::CAnimPlayer::STATE_SLEP:
+		m_fSlepSpeed = 2.f;
+		break;
+	}
+
+
+
+
+
+	// 애니 갱신
 	Set_Anim();
+
 	m_TickStates.clear();
 }
 
@@ -112,7 +136,23 @@ void CAnimPlayer::Set_Anim()
 		m_pModelCom->Set_AnimIndex(197);
 		break;
 	case STATE_RUN:
+	{
+		if (STATE_SLEP == m_ePreState)
+		{
+			if (m_bImStop)
+			{
+				m_pTransformCom->TurnBack();
+				XMStoreFloat3(&m_vDestLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+				m_bImStop = false;
+			}
+			else
+				m_pTransformCom->Set_DestLook();
+		}
 		m_pModelCom->Set_AnimIndex(198);
+	}
+		break;
+	case STATE_SPRINT:
+		m_pModelCom->Set_AnimIndex(150);
 		break;
 	case STATE_ATTACK_1:
 		m_pModelCom->Set_AnimIndex(187);
@@ -207,18 +247,23 @@ void CAnimPlayer::Tool_Mode(_float fTimeDelta)
 
 void CAnimPlayer::Game_Mode(_float fTimeDelta)
 {
-	
-
 
 	switch (m_eState)
 	{
 	case STATE_IDLE:
+		if (STATE_SPRINT == m_ePreState)
+		{
+			m_bImStop = true;
+			m_TickStates.push_back(STATE_SLEP);
+		}
+
 	case STATE_WALK:
 	case STATE_RUN:
+	case STATE_SPRINT:
 		Move_Tick(fTimeDelta);
 		break;
 	case STATE_SLEP:
-
+		Slep_Tick(fTimeDelta);
 		break;
 	case STATE_ATTACK_1:
 	case STATE_ATTACK_2:
@@ -249,30 +294,49 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 
 	_vector vLendLook = XMVector3Cross(vCamRight, vCamUp);
 
+	vLendLook = XMVector3Normalize(vLendLook);
+	vCamRight = XMVector3Normalize(vCamRight);
+
+
+	_vector vTotalLook = XMLoadFloat3(&m_vDestLook);
 
 	if (pGameInstance->Key_Pressing(DIK_W))
 	{
+		// XMStoreFloat3(&m_vDestLook, vLendLook);
+		vTotalLook += vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vLendLook;
+
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			XMStoreFloat3(&m_vDestLook, vLendLook);
 			m_TickStates.push_back(STATE_RUN);
+		}
+		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		{
+			m_TickStates.push_back(STATE_SPRINT);
 		}
 		else
 		{
-			XMStoreFloat3(&m_vDestLook, vLendLook);
 			m_TickStates.push_back(STATE_WALK);
 		}
 	}
 	else if (pGameInstance->Key_Pressing(DIK_S))
 	{
+		// XMStoreFloat3(&m_vDestLook, -1.f * vLendLook);
+		vTotalLook += -1.f * vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vLendLook;
+
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			XMStoreFloat3(&m_vDestLook, -1.f * vLendLook);
 			m_TickStates.push_back(STATE_RUN);
+		}
+		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		{
+			m_TickStates.push_back(STATE_SPRINT);
 		}
 		else
 		{
-			XMStoreFloat3(&m_vDestLook, -1.f * vLendLook);
 			m_TickStates.push_back(STATE_WALK);
 		}
 	}
@@ -280,27 +344,41 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 
 	if (pGameInstance->Key_Pressing(DIK_A))
 	{
+		// XMStoreFloat3(&m_vDestLook, -1.f*vCamRight);
+		vTotalLook += -1.f * vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vCamRight;
+
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			XMStoreFloat3(&m_vDestLook, -1.f*vCamRight);
 			m_TickStates.push_back(STATE_RUN);
+		}
+		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		{
+			m_TickStates.push_back(STATE_SPRINT);
 		}
 		else
 		{
-			XMStoreFloat3(&m_vDestLook, -1.f*vCamRight);
 			m_TickStates.push_back(STATE_WALK);
 		}
 	}
 	else if (pGameInstance->Key_Pressing(DIK_D))
 	{
+		// XMStoreFloat3(&m_vDestLook, vCamRight);
+		vTotalLook += vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vCamRight;
+
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			XMStoreFloat3(&m_vDestLook, vCamRight);
 			m_TickStates.push_back(STATE_RUN);
+		}
+		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		{
+			m_TickStates.push_back(STATE_SPRINT);
 		}
 		else
 		{
-			XMStoreFloat3(&m_vDestLook, vCamRight);
 			m_TickStates.push_back(STATE_WALK);
 		}
 	}
@@ -309,6 +387,10 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 	{
 		m_TickStates.push_back(STATE_ATTACK_1);
 	}
+
+
+	vTotalLook = XMVector3Normalize(vTotalLook);
+	XMStoreFloat3(&m_vDestLook, vTotalLook);
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -320,11 +402,18 @@ void CAnimPlayer::Move_Tick(_float fTimeDelta)
 
 	Move_Input(fTimeDelta);
 
+	// 슬립했냐 안 했냐
 	if (m_pTransformCom->LinearTurn(m_vDestLook, 1.f, 0.3f, fTimeDelta))
 	{
+		m_fSlepSpeed = 2.f;
 		m_TickStates.push_back(STATE_SLEP);
 	}
 
+}
+
+void CAnimPlayer::Slep_Tick(_float fTimeDelta)
+{
+	m_fSlepSpeed -= 5.f * fTimeDelta;
 }
 
 void CAnimPlayer::Attack_Input(_float fTimeDelta)
@@ -380,11 +469,12 @@ void CAnimPlayer::LateTick(_float fTimeDelta)
 	Set_State();
 
 	// 이동 갱신
-	Calcul_State(fTimeDelta);;
+	Calcul_State(fTimeDelta);
 
-	// 애니메이션 이벤트
+	// 애니메이션 END 이벤트
 	if (m_pModelCom->Play_Animation(fTimeDelta))
 		Check_EndAnim();
+
 
 	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
@@ -400,6 +490,14 @@ void CAnimPlayer::Calcul_State(_float fTimeDelta)
 	else if (STATE_RUN == m_eState)
 	{
 		m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta);
+	}
+	else if (STATE_SPRINT == m_eState)
+	{
+		m_pTransformCom->Go_Straight(m_fRunSpeed + 1.f, fTimeDelta);
+	}
+	else if (STATE_SLEP == m_eState)
+	{
+		m_pTransformCom->Go_Straight(m_fSlepSpeed, fTimeDelta);
 	}
 }
 
@@ -421,7 +519,7 @@ void CAnimPlayer::Check_EndAnim()
 		m_TickStates.push_back(STATE_IDLE);
 		break;
 	case STATE_SLEP:
-		m_TickStates.push_back(STATE_IDLE);
+		m_TickStates.push_back(STATE_RUN);
 		break;
 	}
 

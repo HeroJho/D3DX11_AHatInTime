@@ -9,9 +9,13 @@ CGameInstance::CGameInstance()
 	, m_pObject_Manager(CObject_Manager::Get_Instance())
 	, m_pComponent_Manager(CComponent_Manager::Get_Instance())
 	, m_pTimer_Manager(CTimer_Manager::Get_Instance())	
+	, m_pPicking(CPicking::Get_Instance())
 	, m_pPipeLine(CPipeLine::Get_Instance())
 	, m_pLight_Manager(CLight_Manager::Get_Instance())
+	, m_pColliderManager(CColliderManager::Get_Instance())
 {	
+	Safe_AddRef(m_pColliderManager);
+	Safe_AddRef(m_pPicking);
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
 	Safe_AddRef(m_pTimer_Manager);
@@ -39,6 +43,8 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInst, cons
 
 	/* 사운드 초기화. */
 
+	if (FAILED(m_pPicking->Initialize(GraphicDesc.hWnd, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY, *ppDevice, *ppContext)))
+		return E_FAIL;
 
 	if (FAILED(m_pObject_Manager->Reserve_Container(iNumLevels)))
 		return E_FAIL;
@@ -61,6 +67,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pObject_Manager->Tick(fTimeDelta);
 
 	m_pPipeLine->Update();
+
+	m_pPicking->Tick();
 
 	m_pObject_Manager->LateTick(fTimeDelta);
 
@@ -115,6 +123,30 @@ HRESULT CGameInstance::Render_Level()
 	return m_pLevel_Manager->Render();	
 }
 
+CGameObject * CGameInstance::Get_GameObjectPtr(_uint iLevelIndex, const _tchar * pLayerTag, _uint iLayerIndex)
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Get_GameObjectPtr(iLevelIndex, pLayerTag, iLayerIndex);
+}
+
+CComponent * CGameInstance::Get_ComponentPtr(_uint iLevelIndex, const _tchar * pLayerTag, const _tchar * pComponentTag, _uint iLayerIndex)
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Get_ComponentPtr(iLevelIndex, pLayerTag, pComponentTag, iLayerIndex);	
+}
+
+CGameObject * CGameInstance::Clone_GameObject(const _tchar * pPrototypeTag, void * pArg)
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Clone_GameObject(pPrototypeTag, pArg);	
+}
+
 HRESULT CGameInstance::Add_Prototype(const _tchar * pPrototypeTag, CGameObject * pPrototype)
 {
 	if (nullptr == m_pObject_Manager)
@@ -129,14 +161,6 @@ HRESULT CGameInstance::Add_GameObjectToLayer(const _tchar * pPrototypeTag, _uint
 		return E_FAIL;
 
 	return m_pObject_Manager->Add_GameObjectToLayer(pPrototypeTag, iLevelIndex, pLayerTag, pArg);
-}
-
-HRESULT CGameInstance::Add_GameObjectToMe(const _tchar * pPrototypeTag, _uint iLevelIndex, CGameObject ** pOut, void * pArg)
-{
-	if (nullptr == m_pObject_Manager)
-		return E_FAIL;
-
-	return m_pObject_Manager->Add_GameObjectToMe(pPrototypeTag, iLevelIndex, pOut, pArg);
 }
 
 HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const _tchar * pPrototypeTag, CComponent * pPrototype)
@@ -154,6 +178,15 @@ CComponent * CGameInstance::Clone_Component(_uint iLevelIndex, const _tchar * pP
 
 	return m_pComponent_Manager->Clone_Component(iLevelIndex, pPrototypeTag, pArg);	
 }
+
+HRESULT CGameInstance::Check_Prototype(_int iLevelIndex, const _tchar * pPrototypeTag)
+{
+	if (nullptr == m_pComponent_Manager)
+		return E_FAIL;
+
+	return m_pComponent_Manager->Check_Prototype(iLevelIndex, pPrototypeTag);
+}
+
 
 _float CGameInstance::Get_TimeDelta(const _tchar * pTimerTag)
 {
@@ -182,7 +215,7 @@ _char CGameInstance::Get_DIKState(_uchar eKeyID)
 	if (nullptr == m_pInput_Device)
 		return 0;
 
-	return m_pInput_Device->Get_DIKState(eKeyID);	
+	return m_pInput_Device->Get_DIKState(eKeyID);
 }
 
 _char CGameInstance::Get_DIMKeyState(DIMK eMouseKeyID)
@@ -306,9 +339,39 @@ HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * p
 	return m_pLight_Manager->Add_Light(pDevice, pContext, LightDesc);	
 }
 
+
+
+void CGameInstance::Add_ColGroup(CColliderManager::COLLIDERGROUP eGroup, CGameObject * pObj)
+{
+	if (nullptr == m_pColliderManager)
+		return;
+
+	m_pColliderManager->Add_ColGroup(eGroup, pObj);
+}
+
+void CGameInstance::Calcul_ColGroup(CColliderManager::COLLIDERGROUP eGroupL, CColliderManager::COLLIDERGROUP eGroupR)
+{
+	if (nullptr == m_pColliderManager)
+		return;
+
+	m_pColliderManager->Calcul_ColGroup(eGroupL, eGroupR);
+}
+
+void CGameInstance::Clear_ColGroup()
+{
+	if (nullptr == m_pColliderManager)
+		return;
+
+	m_pColliderManager->Clear_ColGroup();
+}
+
+
+
 void CGameInstance::Release_Engine()
 {
 	CGameInstance::Get_Instance()->Destroy_Instance();
+
+	CColliderManager::Get_Instance()->Destroy_Instance();
 
 	CComponent_Manager::Get_Instance()->Destroy_Instance();
 
@@ -317,6 +380,8 @@ void CGameInstance::Release_Engine()
 	CLevel_Manager::Get_Instance()->Destroy_Instance();
 
 	CTimer_Manager::Get_Instance()->Destroy_Instance();
+
+	CPicking::Get_Instance()->Destroy_Instance();
 
 	CPipeLine::Get_Instance()->Destroy_Instance();
 
@@ -329,8 +394,10 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pColliderManager);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pPipeLine);
+	Safe_Release(m_pPicking);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pComponent_Manager);
 	Safe_Release(m_pObject_Manager);

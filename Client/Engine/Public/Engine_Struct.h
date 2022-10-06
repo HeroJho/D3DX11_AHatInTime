@@ -2,6 +2,15 @@
 
 namespace Engine
 {
+	typedef struct tagKeyFrame
+	{
+		float		fTime;
+
+		XMFLOAT3	vScale;
+		XMFLOAT4	vRotation;
+		XMFLOAT3	vPosition;		
+	}KEYFRAME;
+
 	/* 빛의 정보를 담아놓기 위한 구조체. */
 	typedef struct tagLightDesc
 	{
@@ -22,9 +31,7 @@ namespace Engine
 
 	typedef struct tagMaterialDesc
 	{
-		XMFLOAT4		vMtrlDiffuse;
-		XMFLOAT4		vMtrlAmbient;
-
+		class CTexture*		pTexture[AI_TEXTURE_TYPE_MAX];
 	}MATERIALDESC;
 
 	typedef struct tagLineIndices16
@@ -87,6 +94,22 @@ namespace Engine
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	}VTXMODEL_DECLARATION;
 
+	typedef struct tagVertexAnimModel
+	{
+		XMFLOAT3		vPosition;
+		XMFLOAT3		vNormal;
+		XMFLOAT2		vTexture;
+		XMFLOAT3		vTangent;
+		XMUINT4			vBlendIndex; /* 이 정점에 영향을 주는 뼈의 인덱스 네개. */
+		XMFLOAT4		vBlendWeight; /* 영향르 주고 있는 각 뼈대의 영향 비율 */
+	}VTXANIMMODEL;
+
+	typedef struct ENGINE_DLL tagVertexAnimModel_Declaration
+	{
+		static const unsigned int iNumElements = 6;
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	}VTXANIMMODEL_DECLARATION;
+
 
 	
 
@@ -119,5 +142,102 @@ namespace Engine
 		WINMODE eWinMode;
 
 	}GRAPHICDESC;
+
+
+
+
+
+	// For. Data
+
+	typedef struct tagHeroHierarchyNode
+	{
+
+		char cName[MAX_PATH];
+		char cParent[MAX_PATH];
+		int  iDepth;
+		XMFLOAT4X4 mTransform;
+
+	}DATA_HERONODE;
+
+	typedef struct tagHeroMaterial
+	{
+
+		char cNames[AI_TEXTURE_TYPE_MAX][MAX_PATH];
+
+	}DATA_HEROMATERIAL;
+
+
+	typedef struct tagHeroBone
+	{
+		char		cNames[MAX_PATH];
+		XMFLOAT4X4	mOffsetTransform;
+	}DATA_HEROBONE;
+
+	typedef struct tagHeroMesh
+	{
+		char				cName[MAX_PATH];
+		int					iMaterialIndex;
+
+		int					NumVertices;
+		VTXMODEL*			pNonAnimVertices;
+		VTXANIMMODEL*		pAnimVertices;
+
+		int					iNumPrimitives;
+		FACEINDICES32*		pIndices;
+
+		int					iNumBones;
+		DATA_HEROBONE*		pBones;
+
+	}DATA_HEROMETH;
+
+
+	typedef struct tagHeroChannel
+	{
+
+		char				szName[MAX_PATH];
+		int					iNumKeyFrames;
+		KEYFRAME*			pKeyFrames;
+
+	}DATA_HEROCHANNEL;
+	typedef struct tagHeroAnim
+	{
+
+		bool				bLoop;
+		int					iNumChannels;
+		float				fDuration;
+		float				fTickPerSecond;
+		DATA_HEROCHANNEL*	pHeroChannel;
+
+
+	}DATA_HEROANIM;
+
+	typedef struct tagHeroScene
+	{
+
+		int iNodeCount;
+		DATA_HERONODE* pHeroNodes;
+
+		int iMaterialCount;
+		DATA_HEROMATERIAL* pHeroMaterial;
+
+		int iMeshCount;
+		DATA_HEROMETH* pHeroMesh;
+
+		int iNumAnimations;
+		DATA_HEROANIM* pHeroAnim;
+
+	}DATA_HEROSCENE;
+
+
+
+	// For. 애니 선형보간 데이터
+	typedef struct tagAnimLinearData
+	{
+		int iMyIndex;
+		int iTargetIndex;
+		float fTickPerSeconed;
+		float fLimitRatio;
+
+	}ANIM_LINEAR_DATA;
 
 }

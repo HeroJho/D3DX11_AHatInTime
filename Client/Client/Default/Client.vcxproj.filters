@@ -31,9 +31,6 @@
     <Filter Include="97.ShaderFiles">
       <UniqueIdentifier>{84640545-3351-4721-a11c-de1b2a88ed44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\BackGround">
-      <UniqueIdentifier>{3cb37fbb-5a48-442b-857d-c8d7bd9d9f34}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\Terrain">
       <UniqueIdentifier>{7cbdf00b-05f3-4112-a0c9-09e6a54c4fa7}</UniqueIdentifier>
     </Filter>
@@ -43,14 +40,29 @@
     <Filter Include="02.GameObjects\Player">
       <UniqueIdentifier>{abc6b74f-e41e-4559-9c08-356e0bb3ccf6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Monster">
+      <UniqueIdentifier>{9f9aa060-c1d1-4c0c-9337-85dfe2c8a63d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="03.UI">
-      <UniqueIdentifier>{a91d0088-f4f1-4481-8994-594936ba2d54}</UniqueIdentifier>
+      <UniqueIdentifier>{17659bbc-2fda-409b-8ec5-5f477e826333}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03.UI\01.Edit">
-      <UniqueIdentifier>{b3596c07-96bd-4796-8f45-3aec065a008e}</UniqueIdentifier>
+    <Filter Include="03.UI\Edit">
+      <UniqueIdentifier>{cdbb2772-00f5-4f20-ad1f-5381f12fde7c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03.UI\00.Manager">
-      <UniqueIdentifier>{0eed5dc5-870d-45fb-bd52-525aae9a942a}</UniqueIdentifier>
+    <Filter Include="96.Managers">
+      <UniqueIdentifier>{af061b58-fdb0-48d1-84af-cff0967c2e15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.Managers\DataManager">
+      <UniqueIdentifier>{6df124ab-6c06-495b-91e8-3146e9e4779b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.Managers\ToolManager">
+      <UniqueIdentifier>{77af86f4-3362-4805-b14e-8b22e2ada6b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.Managers\UIManager">
+      <UniqueIdentifier>{7c4f1f5e-3dec-4148-93c3-e277ef769c9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\StaticModel">
+      <UniqueIdentifier>{b15507a3-a706-491f-8b58-a202933ae4e9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +99,6 @@
     <ClInclude Include="..\Public\Loader.h">
       <Filter>01.Levels\00.Loading\Loader</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\BackGround.h">
-      <Filter>02.GameObjects\BackGround</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02.GameObjects\Terrain</Filter>
     </ClInclude>
@@ -99,17 +108,29 @@
     <ClInclude Include="..\Public\Player.h">
       <Filter>02.GameObjects\Player</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UI_Edit.h">
-      <Filter>03.UI\01.Edit</Filter>
+    <ClInclude Include="..\Public\Monster.h">
+      <Filter>02.GameObjects\Monster</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UIManager.h">
-      <Filter>03.UI\00.Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\UI_Edit_Button.h">
-      <Filter>03.UI\01.Edit</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\UI.h">
+    <ClInclude Include="..\Public\UI.h">
       <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Edit_Button.h">
+      <Filter>03.UI\Edit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Edit.h">
+      <Filter>03.UI\Edit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\DataManager.h">
+      <Filter>96.Managers\DataManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ToolManager.h">
+      <Filter>96.Managers\ToolManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIManager.h">
+      <Filter>96.Managers\UIManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\StaticModel.h">
+      <Filter>02.GameObjects\StaticModel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -134,9 +155,6 @@
     <ClCompile Include="..\Private\Loader.cpp">
       <Filter>01.Levels\00.Loading\Loader</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\BackGround.cpp">
-      <Filter>02.GameObjects\BackGround</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02.GameObjects\Terrain</Filter>
     </ClCompile>
@@ -146,17 +164,29 @@
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02.GameObjects\Player</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\UI_Edit.cpp">
-      <Filter>03.UI\01.Edit</Filter>
+    <ClCompile Include="..\Private\Monster.cpp">
+      <Filter>02.GameObjects\Monster</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\UIManager.cpp">
-      <Filter>03.UI\00.Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\UI_Edit_Button.cpp">
-      <Filter>03.UI\01.Edit</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\UI.cpp">
+    <ClCompile Include="..\Private\UI.cpp">
       <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Edit.cpp">
+      <Filter>03.UI\Edit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Edit_Button.cpp">
+      <Filter>03.UI\Edit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\DataManager.cpp">
+      <Filter>96.Managers\DataManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ToolManager.cpp">
+      <Filter>96.Managers\ToolManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIManager.cpp">
+      <Filter>96.Managers\UIManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\StaticModel.cpp">
+      <Filter>02.GameObjects\StaticModel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +210,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimModel.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

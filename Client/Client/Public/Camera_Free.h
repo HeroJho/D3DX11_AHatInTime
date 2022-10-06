@@ -19,6 +19,18 @@ public:
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+
+
+private:
+
+	void Game_Mode(_float fTimeDelta);
+	void Game_Mode_Input(_float fTimeDelta);
+
+private:
+	CGameObject*		m_pPlayer = nullptr;
+	_float3				m_vAngle;
+	_float				m_fDis = 0.f;
+
 public:
 	static CCamera_Free* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

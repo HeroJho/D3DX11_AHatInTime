@@ -50,6 +50,7 @@ public:
 	_float3 Get_Scale();
 
 	void Set_Look(_fvector vLook);
+	
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -67,11 +68,13 @@ public:
 
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void Turn(_fvector vAxis, _float fRotationPerSce, _float fTimeDelta);
+	void TurnBack();
 	void Rotation(_fvector vAxis, _float fAngle);
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2);
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2, _fvector vAxis3, _float fAngle3);
 
 	_bool LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta);
+	void Set_DestLook();
 
 	void LookAt(_fvector vAt);
 	void LookAt_ForLandObject(_fvector vAt);

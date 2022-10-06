@@ -30,6 +30,23 @@ HRESULT CObject_Manager::Reserve_Container(_uint iNumLevels)
 	return S_OK;
 }
 
+CGameObject * CObject_Manager::Clone_GameObject(const _tchar * pPrototypeTag, void * pArg)
+{
+	CGameObject*	pPrototype = Find_Prototype(pPrototypeTag);
+
+	if (nullptr == pPrototype)
+		return nullptr;
+
+	CGameObject*	pGameObject = pPrototype->Clone(pArg);
+
+	if (nullptr == pGameObject)
+		return nullptr;
+
+
+	return pGameObject;
+	
+}
+
 // Add_Prototype(TEXT("Prototype_GameObject_Player"), CPlayer::Create());
 
 HRESULT CObject_Manager::Add_Prototype(const _tchar * pPrototypeTag, CGameObject * pPrototype)
@@ -42,14 +59,17 @@ HRESULT CObject_Manager::Add_Prototype(const _tchar * pPrototypeTag, CGameObject
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg)
+HRESULT CObject_Manager::Check_Prototype(const _tchar * pPrototypeTag)
 {
-	CGameObject*	pPrototype = Find_Prototype(pPrototypeTag);
-
-	if (nullptr == pPrototype)
+	if (nullptr != Find_Prototype(pPrototypeTag))
 		return E_FAIL;
 
-	CGameObject*	pGameObject = pPrototype->Clone(pArg);
+	return S_OK;
+}
+
+HRESULT CObject_Manager::Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg)
+{
+	CGameObject*		pGameObject = Clone_GameObject(pPrototypeTag, pArg);
 
 	if (nullptr == pGameObject)
 		return E_FAIL;
@@ -73,21 +93,14 @@ HRESULT CObject_Manager::Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uin
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_GameObjectToMe(const _tchar * pPrototypeTag, _uint iLevelIndex, CGameObject** pOut, void * pArg)
+CGameObject * CObject_Manager::Get_GameObjectPtr(_uint iLevelIndex, const _tchar * pLayerTag, _uint iLayerIndex)
 {
-	CGameObject*	pPrototype = Find_Prototype(pPrototypeTag);
+	CLayer*		pLayer = Find_Layer(iLevelIndex, pLayerTag);
 
-	if (nullptr == pPrototype)
-		return E_FAIL;
+	if (nullptr == pLayer)
+		return nullptr;
 
-	CGameObject*	pGameObject = pPrototype->Clone(pArg);
-
-	if (nullptr == pGameObject)
-		return E_FAIL;
-
-	*pOut = pGameObject;
-
-	return S_OK;
+	return pLayer->Get_GameObjectPtr(iLayerIndex);
 }
 
 void CObject_Manager::Tick(_float fTimeDelta)

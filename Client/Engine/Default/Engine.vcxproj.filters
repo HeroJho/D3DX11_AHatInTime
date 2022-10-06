@@ -67,9 +67,6 @@
     <ClCompile Include="..\private\PipeLine.cpp">
       <Filter>04.Utility\01.PipeLine</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
-      <Filter>03.Components\02.VIBuffer\Terrain</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Light.cpp">
       <Filter>04.Utility\02.Lights</Filter>
     </ClCompile>
@@ -81,6 +78,45 @@
     </ClCompile>
     <ClCompile Include="..\private\MeshContainer.cpp">
       <Filter>03.Components\06.Model\MeshContainer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\HierarchyNode.cpp">
+      <Filter>03.Components\06.Model\HierarchyNode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Animation.cpp">
+      <Filter>03.Components\06.Model\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Channel.cpp">
+      <Filter>03.Components\06.Model\Animation\Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Collider.cpp">
+      <Filter>03.Components\07.Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AABB.cpp">
+      <Filter>03.Components\07.Collider\AABB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sphere.cpp">
+      <Filter>03.Components\07.Collider\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\OBB.cpp">
+      <Filter>03.Components\07.Collider\OBB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DebugDraw.cpp">
+      <Filter>03.Components\07.Collider\00.DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
+      <Filter>03.Components\02.VIBuffer\Terrain\VIBuffer_Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer_Map_Terrain.cpp">
+      <Filter>03.Components\02.VIBuffer\Terrain\Map_Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Picking.cpp">
+      <Filter>04.Utility\03.Picking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Sockat.cpp">
+      <Filter>03.Components\08.Sockat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ColliderManager.cpp">
+      <Filter>97.Managers\ColliderManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -165,9 +201,6 @@
     <ClInclude Include="..\public\PipeLine.h">
       <Filter>04.Utility\01.PipeLine</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\VIBuffer_Terrain.h">
-      <Filter>03.Components\02.VIBuffer\Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Light.h">
       <Filter>04.Utility\02.Lights</Filter>
     </ClInclude>
@@ -179,6 +212,45 @@
     </ClInclude>
     <ClInclude Include="..\public\MeshContainer.h">
       <Filter>03.Components\06.Model\MeshContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\HierarchyNode.h">
+      <Filter>03.Components\06.Model\HierarchyNode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Animation.h">
+      <Filter>03.Components\06.Model\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Channel.h">
+      <Filter>03.Components\06.Model\Animation\Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Collider.h">
+      <Filter>03.Components\07.Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AABB.h">
+      <Filter>03.Components\07.Collider\AABB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\OBB.h">
+      <Filter>03.Components\07.Collider\OBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sphere.h">
+      <Filter>03.Components\07.Collider\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DebugDraw.h">
+      <Filter>03.Components\07.Collider\00.DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Terrain.h">
+      <Filter>03.Components\02.VIBuffer\Terrain\VIBuffer_Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer_Map_Terrain.h">
+      <Filter>03.Components\02.VIBuffer\Terrain\Map_Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Picking.h">
+      <Filter>04.Utility\03.Picking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Sockat.h">
+      <Filter>03.Components\08.Sockat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ColliderManager.h">
+      <Filter>97.Managers\ColliderManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +340,48 @@
     </Filter>
     <Filter Include="03.Components\06.Model\MeshContainer">
       <UniqueIdentifier>{c4b5b40d-8191-4467-892d-40eb77becdc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\06.Model\HierarchyNode">
+      <UniqueIdentifier>{e16cc473-4b88-4bbe-994c-a8afb2d2d30f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\06.Model\Animation">
+      <UniqueIdentifier>{e8197c2b-5b48-4aa5-8e01-61c7b7d7c364}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\06.Model\Animation\Channel">
+      <UniqueIdentifier>{eaf46b2e-7adf-448e-b337-37e974509e75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\07.Collider">
+      <UniqueIdentifier>{50507ca0-9aa0-40c9-9af5-159d550ed82f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\07.Collider\AABB">
+      <UniqueIdentifier>{c17d2671-8999-4ef3-bde1-6e3fb67d4880}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\07.Collider\OBB">
+      <UniqueIdentifier>{759a274c-8297-4a9d-9a23-c67fb06cd514}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\07.Collider\Sphere">
+      <UniqueIdentifier>{f9d1767e-804c-4592-8500-74dfeeb651fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\07.Collider\00.DebugDraw">
+      <UniqueIdentifier>{0ad83d6e-e6b6-433a-9a94-4ccb21f7e80d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Terrain\Map_Terrain">
+      <UniqueIdentifier>{ac88a2d5-545e-42b1-bede-7648b77ff534}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Terrain\VIBuffer_Terrain">
+      <UniqueIdentifier>{3c743c2c-b246-4e65-bbad-a44ae91dc175}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\03.Picking">
+      <UniqueIdentifier>{4be65dd8-f01e-407d-82fa-ba9e6058c5c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\08.Sockat">
+      <UniqueIdentifier>{411f024d-61a4-4c9c-8e79-c47652879815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Managers">
+      <UniqueIdentifier>{c8f1f186-1d70-442a-a457-428156155f0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Managers\ColliderManager">
+      <UniqueIdentifier>{0d54a6a1-0b8d-4d17-9a1b-beabcbc45018}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

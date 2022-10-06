@@ -108,8 +108,8 @@ HRESULT CUI::Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _t
 	UiInfoDesc.fY = fY;
 
 	CGameObject* pObj = nullptr;
-	if (FAILED(pGameInstance->Add_GameObjectToMe(pTag, LEVEL_GAMEPLAY, &pObj, &UiInfoDesc)))
-		return E_FAIL;
+	pObj = pGameInstance->Clone_GameObject(pTag, &UiInfoDesc);
+	
 	m_pChildUIs.push_back((CUI*)pObj);
 
 	RELEASE_INSTANCE(CGameInstance);

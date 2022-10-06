@@ -8,6 +8,9 @@
 #include "Component_Manager.h"
 #include "Light_Manager.h"
 #include "PipeLine.h"
+#include "Picking.h"
+#include "ColliderManager.h"
+
 
 
 /* 클라이언트로 보여주기위한 가장 대표적인 클래스이다. */
@@ -42,13 +45,18 @@ public: /* For.Level_Manager */
 	HRESULT Render_Level();
 
 public: /* For.Object_Manager */
+	class CGameObject* Get_GameObjectPtr(_uint iLevelIndex, const _tchar* pLayerTag, _uint iLayerIndex);
+	class CComponent* Get_ComponentPtr(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pComponentTag, _uint iLayerIndex);
+	class CGameObject* Clone_GameObject(const _tchar* pPrototypeTag, void* pArg = nullptr);
 	HRESULT Add_Prototype(const _tchar* pPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg = nullptr);
-	HRESULT Add_GameObjectToMe(const _tchar * pPrototypeTag, _uint iLevelIndex, CGameObject** pOut, void * pArg = nullptr);
+
 
 public: /*For.Component_Manager*/
 	HRESULT Add_Prototype(_uint iLevelIndex, const _tchar* pPrototypeTag, class CComponent* pPrototype);
 	class CComponent* Clone_Component(_uint iLevelIndex, const _tchar* pPrototypeTag, void* pArg = nullptr);
+	HRESULT Check_Prototype(_int iLevelIndex, const _tchar * pPrototypeTag);
+
 
 public: /* for.Timer_Manager */
 	_float Get_TimeDelta(const _tchar* pTimerTag);
@@ -66,6 +74,7 @@ public: /* For.Input_Device */
 	_bool Mouse_Up(DIMK eMouseKeyID);
 	_bool Mouse_Pressing(DIMK eMouseKeyID);
 
+
 public: /* For.PipeLine */
 	void Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix);
 	_matrix Get_TransformMatrix(CPipeLine::TRANSFORMSTATE eTransformState) const;		
@@ -77,6 +86,11 @@ public: /* For.Light_Manager */
 	const LIGHTDESC* Get_LightDesc(_uint iIndex);
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);
 
+public: /* For. ColliderManager */
+	void Add_ColGroup(CColliderManager::COLLIDERGROUP eGroup, class CGameObject* pObj);
+	void Calcul_ColGroup(CColliderManager::COLLIDERGROUP eGroupL, CColliderManager::COLLIDERGROUP eGroupR);
+	void Clear_ColGroup();
+
 
 private:
 	CGraphic_Device*				m_pGraphic_Device = nullptr;
@@ -87,6 +101,8 @@ private:
 	CTimer_Manager*					m_pTimer_Manager = nullptr;
 	CPipeLine*						m_pPipeLine = nullptr;
 	CLight_Manager*					m_pLight_Manager = nullptr;
+	CPicking*						m_pPicking = nullptr;
+	CColliderManager*				m_pColliderManager = nullptr;
 
 
 public:

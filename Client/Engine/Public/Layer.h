@@ -11,6 +11,7 @@ public:
 	virtual ~CLayer() = default;
 public:
 	class CComponent* Get_ComponentPtr(const _tchar* pComponentTag, _uint iLayerIndex);
+	class CGameObject* Get_GameObjectPtr(_uint iLayerIndex);
 
 public:
 	HRESULT Add_GameObject(class CGameObject* pGameObject);

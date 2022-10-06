@@ -60,6 +60,7 @@ HRESULT CTexture::Initialize(void * pArg)
 
 HRESULT CTexture::Set_SRV(CShader * pShader, const char * pConstantName, _uint iTextureIndex)
 {
+
 	if (iTextureIndex >= m_iNumTextures)
 		return E_FAIL;
 

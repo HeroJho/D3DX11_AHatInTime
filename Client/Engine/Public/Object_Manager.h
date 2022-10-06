@@ -19,9 +19,12 @@ public:
 
 public:
 	HRESULT Reserve_Container(_uint iNumLevels);
+	class CGameObject* Clone_GameObject(const _tchar* pPrototypeTag, void* pArg = nullptr);
 	HRESULT Add_Prototype(const _tchar* pPrototypeTag, class CGameObject* pPrototype);
+	HRESULT Check_Prototype(const _tchar* pPrototypeTag);
 	HRESULT Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg = nullptr);
-	HRESULT Add_GameObjectToMe(const _tchar* pPrototypeTag, _uint iLevelIndex, CGameObject** pOut, void* pArg = nullptr);
+	CGameObject* Get_GameObjectPtr(_uint iLevelIndex, const _tchar * pLayerTag, _uint iLayerIndex);
+
 
 public:
 	void Tick(_float fTimeDelta);

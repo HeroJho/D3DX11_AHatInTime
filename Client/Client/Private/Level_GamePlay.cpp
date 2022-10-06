@@ -3,7 +3,7 @@
 
 #include "GameInstance.h"
 #include "Camera_Free.h"
-#include "UI.h"
+#include "DataManager.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -25,17 +25,18 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
+	if (FAILED(CDataManager::Get_Instance()->Load_Map(0, LEVEL_GAMEPLAY)))
+		return E_FAIL;
+
+
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
-		return E_FAIL;
-
-	if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
+	//	return E_FAIL;
 
 	
 
@@ -65,15 +66,6 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 	LIGHTDESC			LightDesc;
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 
-	//LightDesc.eType = LIGHTDESC::TYPE_POINT;
-	//LightDesc.vPosition = _float4(15.0f, 5.0f, 15.0f, 1.f);
-	//LightDesc.fRange = 10.f;
-	//LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	//LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
-	//LightDesc.vSpecular = _float4(1.f, 0.f, 0.f, 1.f);
-
-	//if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
-	//	return E_FAIL;
 
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
@@ -122,6 +114,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
 
+
 	Safe_Release(pGameInstance);
 
 	return S_OK;
@@ -136,21 +129,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		return E_FAIL;
 
 
-
-	CUI::UIINFODESC UiInfoDesc;
-	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
-	UiInfoDesc.fSizeX = 197;
-	UiInfoDesc.fSizeY = 380;
-	UiInfoDesc.fX = g_iWinSizeX * 0.5f;
-	UiInfoDesc.fY = g_iWinSizeY * 0.5f;
-
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_Edit"), LEVEL_GAMEPLAY, pLayerTag, &UiInfoDesc)))
-		return E_FAIL;
-
-
-/* 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))
-		return E_FAIL;
-*/
 	Safe_Release(pGameInstance);
 
 	return S_OK;
@@ -161,14 +139,13 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	//for (_uint i = 0; i < 3; ++i)
-	//{
-	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, pLayerTag)))
-	//		return E_FAIL;
+	for (_uint i = 0; i < 10; ++i)
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, pLayerTag)))
+			return E_FAIL;
 
-	//}
+	}
 
-	
 	Safe_Release(pGameInstance);
 
 
@@ -195,24 +172,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _tchar * pLayerTag)
-{
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
 
-	//for (_uint i = 0; i < 10; ++i)
-	//{
-	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Effect"), LEVEL_GAMEPLAY, pLayerTag)))
-	//		return E_FAIL;
-
-	//}
-
-
-	Safe_Release(pGameInstance);
-
-
-	return S_OK;
-}
 
 CLevel_GamePlay * CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
