@@ -124,6 +124,18 @@
     <Filter Include="03.Components\07.Sockat">
       <UniqueIdentifier>{e9c5e28e-7bea-44b5-bcbb-a98851e9bc1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Components\08.Navigation">
+      <UniqueIdentifier>{8e1f21c7-2f85-4fbe-879f-6a74479bbbce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\08.Navigation\Cell">
+      <UniqueIdentifier>{1315bd64-55f4-4b19-9b9e-df0e20c8dc7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\08.Navigation\Cell\Shader">
+      <UniqueIdentifier>{beda4263-f410-412e-9cb4-b1439c3cf8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Cell">
+      <UniqueIdentifier>{663c6a2f-4f0a-415f-bca3-612fde9a13d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -249,6 +261,15 @@
     <ClInclude Include="..\public\Sockat.h">
       <Filter>03.Components\07.Sockat</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Navigation.h">
+      <Filter>03.Components\08.Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Cell.h">
+      <Filter>03.Components\08.Navigation\Cell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer_Cell.h">
+      <Filter>03.Components\02.VIBuffer\Cell</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -359,5 +380,19 @@
     <ClCompile Include="..\private\Sockat.cpp">
       <Filter>03.Components\07.Sockat</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Navigation.cpp">
+      <Filter>03.Components\08.Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Cell.cpp">
+      <Filter>03.Components\08.Navigation\Cell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer_Cell.cpp">
+      <Filter>03.Components\02.VIBuffer\Cell</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl">
+      <Filter>03.Components\08.Navigation\Cell\Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

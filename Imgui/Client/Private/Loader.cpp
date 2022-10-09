@@ -223,10 +223,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	
 	// TEST
 	/* For.Prototype_Component_Ori_Hat */
-	_matrix mPivot = XMMatrixScaling(0.1f, 0.1f, 0.1f);
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Ori_Hat"),
-		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Meshes/NonAnim/Ori_Hat/", "Ori_Hat.fbx", mPivot))))
-		return E_FAIL;
+	//_matrix mPivot = XMMatrixScaling(0.1f, 0.1f, 0.1f);
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Ori_Hat"),
+	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Meshes/NonAnim/Ori_Hat/", "Ori_Hat.fbx", mPivot))))
+	//	return E_FAIL;
 
 
 	if (FAILED(Loading_Model_NoneAnim()))

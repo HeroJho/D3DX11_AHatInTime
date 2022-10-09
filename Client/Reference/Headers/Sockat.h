@@ -11,7 +11,12 @@ public:
 	{
 		_float4x4		mPivot;
 	}SOCATDESC;
-
+	typedef struct tagPartsDsc
+	{
+		_float3			vPos;
+		_float3			vRot;
+		_float3			vScale;
+	}PARTSDESC;
 
 private:
 	CSockat(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -26,11 +31,12 @@ public:
 	void LateTick(_float fTimeDelta, class CRenderer* pRenderer);
 
 public:
-	HRESULT Add_Child(class CGameObject* pObj, class CHierarchyNode* pHierarchyNode);
+	HRESULT Add_Sockat(char* pBoneName, class CModel* pModel, _tchar* cName, PARTSDESC PartsDesc);
+
 
 private:
 	void Update_ParentPos(CTransform* pParentTran);
-
+	HRESULT Add_Child(class CGameObject* pObj, class CHierarchyNode* pHierarchyNode);
 
 private:
 	vector<class CGameObject*>			m_Parts;

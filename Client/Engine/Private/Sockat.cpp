@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "HierarchyNode.h"
 #include "Transform.h"
+#include "GameInstance.h"
 
 CSockat::CSockat(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CComponent(pDevice, pContext)
@@ -58,10 +59,39 @@ void CSockat::LateTick(_float fTimeDelta, CRenderer* pRenderer)
 		return;
 
 	for (auto& pPart : m_Parts)
+	{
 		pPart->LateTick(fTimeDelta);
-
-	for (auto& pPart : m_Parts)
 		pRenderer->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, pPart);
+	}
+
+}
+
+HRESULT CSockat::Add_Sockat(char * pBoneName, CModel* pModel, _tchar * cName, PARTSDESC PartsDesc)
+{
+	if (nullptr == pModel)
+		return E_FAIL;
+	
+	CHierarchyNode*		pSocket = pModel->Get_HierarchyNode(pBoneName);
+	if (nullptr == pSocket)
+		return E_FAIL;
+
+
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CGameObject*		pGameObject = pGameInstance->Clone_GameObject(cName, &PartsDesc);
+	if (nullptr == pGameObject)
+	{
+		RELEASE_INSTANCE(CGameInstance);
+		return E_FAIL;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+	Add_Child(pGameObject, pSocket);
+
+	return S_OK;
 }
 
 

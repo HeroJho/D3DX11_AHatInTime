@@ -3,7 +3,7 @@
 
 #include "GameInstance.h"
 #include "Camera_Free.h"
-
+#include "MeshManager.h"
 
 CLevel_MapTool::CLevel_MapTool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -21,8 +21,8 @@ HRESULT CLevel_MapTool::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
+	//	return E_FAIL;
 
 	//if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 	//	return E_FAIL;
@@ -71,8 +71,10 @@ HRESULT CLevel_MapTool::Render()
 	if (FAILED(__super::Render()))
 		return E_FAIL;
 
-
 	SetWindowText(g_hWnd, TEXT("¸ÊÅø ·¹º§ÀÓ"));
+
+	CMeshManager::Get_Instance()->Comput_Cell();
+	CMeshManager::Get_Instance()->Render();
 
 	return S_OK;
 }
@@ -91,7 +93,7 @@ HRESULT CLevel_MapTool::Ready_Layer_Camera(const _tchar * pLayerTag)
 	CameraDesc.fNear = 0.2f;
 	CameraDesc.fFar = 300.0f;
 
-	CameraDesc.TransformDesc.fSpeedPerSec = 20.f;
+	CameraDesc.TransformDesc.fSpeedPerSec = 100.f;
 	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_MAPTOOL, pLayerTag, &CameraDesc)))

@@ -316,6 +316,14 @@ _bool CGameInstance::Mouse_Pressing(DIMK eMouseKeyID)
 	return m_pInput_Device->Mouse_Pressing(eMouseKeyID);
 }
 
+_float3 CGameInstance::Get_MouseDir()
+{
+	if (nullptr == m_pPicking)
+		return _float3{ 0.f ,0.f, 0.f };
+
+	return m_pPicking->Get_MouseDir();
+}
+
 void CGameInstance::Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix)
 {
 	if (nullptr == m_pPipeLine)

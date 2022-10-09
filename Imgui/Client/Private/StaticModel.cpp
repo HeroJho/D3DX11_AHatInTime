@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 
 #include "MapManager.h"
-
+#include "MeshManager.h"
 
 CStaticModel::CStaticModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -21,6 +21,25 @@ CStaticModel::CStaticModel(const CStaticModel & rhs)
 
 }
 
+
+_uint CStaticModel::Get_NumMesh()
+{
+	return m_pModelCom->Get_NumMeshes();
+}
+
+_uint CStaticModel::Get_Mesh_NumPrimitives(_uint iIndex)
+{
+	return m_pModelCom->Get_Mesh_NumPrimitives(iIndex);
+}
+
+const VTXMODEL * CStaticModel::Get_Mesh_NonAnimVertices(_uint iIndex)
+{
+	return m_pModelCom->Get_Mesh_NonAnimVertices(iIndex);
+}
+const FACEINDICES32 * CStaticModel::Get_Mesh_Indices(_uint iIndex)
+{
+	return m_pModelCom->Get_Mesh_Indices(iIndex);
+}
 
 HRESULT CStaticModel::Initialize_Prototype()
 {
@@ -55,7 +74,36 @@ HRESULT CStaticModel::Initialize(void * pArg)
 
 void CStaticModel::Tick(_float fTimeDelta)
 {
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	_float3 vPoss[3];
+	_float fMinDis = 0.f;
+	
+	if (pGameInstance->Key_Down(DIK_SPACE))
+	{
+		if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+		{
+			CMeshManager::Get_Instance()->Add_Cell(fMinDis, vPoss);
+		}
+	}
+
+	if (pGameInstance->Key_Pressing(DIK_SPACE))
+	{
+		m_fSpaceTimeAcc += fTimeDelta;
+		if (1.f < m_fSpaceTimeAcc)
+		{
+			if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+			{
+				CMeshManager::Get_Instance()->Add_Cell(fMinDis, vPoss);
+			}
+		}
+	}
+	else
+	{
+		m_fSpaceTimeAcc = 0.f;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 void CStaticModel::LateTick(_float fTimeDelta)
@@ -86,13 +134,30 @@ HRESULT CStaticModel::Render()
 
 
 	string sTemp2 = CMapManager::Get_Instance()->Get_PickedCreatedString();
-	_bool bIsPicked = m_sModelNum == sTemp2;
+	_bool bRendPickingColor = CMapManager::Get_Instance()->Get_RendPickingColor();
+	_bool bIsPicked = m_sModelNum == sTemp2 && bRendPickingColor;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_IsPicked", &bIsPicked, sizeof(_bool))))
 		return E_FAIL;
 
 
 
 	RELEASE_INSTANCE(CGameInstance);
+
+
+	if (CMapManager::Get_Instance()->Get_RendCulMode())
+	{
+		ID3D11RasterizerState* m_WireFrame;
+		D3D11_RASTERIZER_DESC temp;
+		ZeroMemory(&temp, sizeof(D3D11_RASTERIZER_DESC));
+		temp.FillMode = D3D11_FILL_WIREFRAME;
+		temp.CullMode = D3D11_CULL_NONE;
+		temp.DepthClipEnable = true;
+		m_pDevice->CreateRasterizerState(&temp, &m_WireFrame);
+
+		m_pDeviceContext->RSSetState(m_WireFrame);
+		Safe_Release(m_WireFrame);
+	}
+
 
 
 
@@ -109,6 +174,10 @@ HRESULT CStaticModel::Render()
 		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
 			return E_FAIL;
 	}
+
+
+	m_pDeviceContext->RSSetState(nullptr);
+
 
 	return S_OK;
 }

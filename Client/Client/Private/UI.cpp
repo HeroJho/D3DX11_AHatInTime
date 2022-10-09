@@ -5,11 +5,15 @@
 CUI::CUI(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
+	ZeroMemory(&m_UiInfo, sizeof(UIINFODESC));
+	ZeroMemory(&m_TotalInfo, sizeof(UIINFODESC));
 }
 
 CUI::CUI(const CUI & rhs)
 	: CGameObject(rhs)
 {
+	ZeroMemory(&m_UiInfo, sizeof(UIINFODESC));
+	ZeroMemory(&m_TotalInfo, sizeof(UIINFODESC));
 }
 
 
@@ -43,17 +47,23 @@ HRESULT CUI::Initialize(void * pArg)
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(g_iWinSizeX, g_iWinSizeY, 0.f, 1.f)));
 
+	m_TotalInfo = m_UiInfo;
 
 	return S_OK;
 }
 
 void CUI::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_Scale(XMVectorSet(m_UiInfo.fSizeX, m_UiInfo.fSizeY, 1.f, 0.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_UiInfo.fX - g_iWinSizeX * 0.5f, -m_UiInfo.fY + g_iWinSizeY * 0.5f, 0.0f, 1.f));
-
 	for (auto& pChildUI : m_pChildUIs)
+	{
+		pChildUI->SetParentUI(m_TotalInfo);
 		pChildUI->Tick(fTimeDelta);
+	}
+
+
+	m_pTransformCom->Set_Scale(XMVectorSet(m_UiInfo.fSizeX, m_UiInfo.fSizeY, 1.f, 0.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_TotalInfo.fX - g_iWinSizeX * 0.5f, -m_TotalInfo.fY + g_iWinSizeY * 0.5f, 0.0f, 1.f));
+
 
 	Handle_Collision();
 }
@@ -79,7 +89,7 @@ void CUI::LateTick(_float fTimeDelta)
 	ScreenToClient(g_hWnd, &ptMouse);
 
 	RECT		rcUI;
-	SetRect(&rcUI, m_UiInfo.fX - m_UiInfo.fSizeX * 0.5f, m_UiInfo.fY - m_UiInfo.fSizeY * 0.5f, m_UiInfo.fX + m_UiInfo.fSizeX * 0.5f, m_UiInfo.fY + m_UiInfo.fSizeY * 0.5f);
+	SetRect(&rcUI, m_TotalInfo.fX - m_UiInfo.fSizeX * 0.5f, m_TotalInfo.fY - m_UiInfo.fSizeY * 0.5f, m_TotalInfo.fX + m_UiInfo.fSizeX * 0.5f, m_TotalInfo.fY + m_UiInfo.fSizeY * 0.5f);
 
 	if (PtInRect(&rcUI, ptMouse))
 	{
@@ -115,6 +125,12 @@ HRESULT CUI::Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _t
 	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
+}
+
+void CUI::SetParentUI(UIINFODESC ParentUiInfo)
+{
+	m_TotalInfo.fX = ParentUiInfo.fX + m_UiInfo.fX;
+	m_TotalInfo.fY = ParentUiInfo.fY + m_UiInfo.fY;
 }
 
 

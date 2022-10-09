@@ -114,11 +114,11 @@ namespace Engine
 		XMFLOAT3		vPosition;
 		XMFLOAT4		vColor;
 	}VTXCOL;
-	typedef struct ENGINE_DLL tagVertexCubeColorTexture_Declaration
+	typedef struct ENGINE_DLL tagVertexColor_Declaration
 	{
 		static const unsigned int iNumElements = 2;
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
-	}VTXCUBECOLTEX_DECLARATION;
+	}VTXCOL_DECLARATION;
 
 
 	typedef struct tagVertexModel

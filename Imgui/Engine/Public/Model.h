@@ -36,6 +36,10 @@ public:
 	_bool Get_CurAnim_Loop();
 	void Set_CurAnim_Loop(_bool bLoop);
 
+	const VTXMODEL* Get_Mesh_NonAnimVertices(_uint iIndex);
+	const FACEINDICES32* Get_Mesh_Indices(_uint iIndex);
+	_uint Get_Mesh_NumPrimitives(_uint iIndex);
+
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
 	virtual HRESULT Bin_Initialize_Prototype(DATA_HEROSCENE* pScene, TYPE eType, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
@@ -53,6 +57,7 @@ public:
 	ANIM_LINEAR_DATA* Get_AnimLinearData(int iIndex);
 	void Reset_AnimLinearData();
 
+	_bool Picking(class CTransform* pTransform, _float* pOutDis, _float3* pOutPoss);
 
 private:
 	const aiScene*				m_pAIScene = nullptr;

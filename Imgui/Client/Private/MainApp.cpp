@@ -9,6 +9,7 @@
 #include "DataManager.h"
 #include "AnimManager.h"
 #include "PartsManager.h"
+#include "MeshManager.h"
 
 #include "Level_Loading.h"
 
@@ -47,6 +48,8 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(CAnimManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
 	if (FAILED(CPartsManager::Get_Instance()->Init(m_pDevice, m_pContext)))
+		return E_FAIL;
+	if (FAILED(CMeshManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(CToolManager::Get_Instance()->Change_Level(LEVEL_GAMEPLAY)))
@@ -174,6 +177,8 @@ CMainApp * CMainApp::Create()
 
 void CMainApp::Free()
 {
+
+	CMeshManager::Destroy_Instance();
 	CPartsManager::Destroy_Instance();
 	CAnimManager::Destroy_Instance();
 	CDataManager::Destroy_Instance();

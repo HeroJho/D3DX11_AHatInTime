@@ -198,6 +198,7 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\public\MapManager.h" />
     <ClInclude Include="..\public\MarkCube.h" />
+    <ClInclude Include="..\public\MeshManager.h" />
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\public\Ori_Hat.h" />
     <ClInclude Include="..\public\Parts.h" />
@@ -249,6 +250,7 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\private\MapManager.cpp" />
     <ClCompile Include="..\private\MarkCube.cpp" />
+    <ClCompile Include="..\private\MeshManager.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\private\Ori_Hat.cpp" />
     <ClCompile Include="..\private\Parts.cpp" />

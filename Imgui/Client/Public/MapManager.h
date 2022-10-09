@@ -40,6 +40,12 @@ public:
 	string Get_PickedCreatedString() { return m_sPickedCreatedString; }
 	void Set_PickedCreatedString(string sPickedCreatedString) { m_sPickedCreatedString = sPickedCreatedString; }
 
+	_bool Get_RendPickingColor() { return m_bRendPickingColor; }
+	void Set_RendPickingColor(_bool bRendPickingColor) { m_bRendPickingColor = bRendPickingColor; }
+
+	_bool Get_RendCulMode() { return m_bRendCulMode; }
+	void Set_RendCulMode(_bool bRendCulMode) { m_bRendCulMode = bRendCulMode; }
+
 	_int Get_ID() { return m_iID; }
 	void Set_ID(_int iID) { m_iID = iID; }
 
@@ -50,6 +56,8 @@ public:
 	void Add_Model(class CStaticModel* pStaticModel);
 	
 	class CStaticModel* Get_PickedCreatedModel();
+
+	map<string, class CStaticModel*>* Get_CreatedModels() { return &m_StaticModels; }
 
 	class CStaticModel* Find_Model(string sTag);
 
@@ -64,11 +72,13 @@ private:
 private:
 	map<string, class CStaticModel*> m_StaticModels;
 	string		m_sPickedCreatedString;
-	
+
 	string		m_sPickedString;
-	
+
 	_int		m_iID = 0;
 
+	_bool		m_bRendPickingColor = false;
+	_bool		m_bRendCulMode = false;
 
 
 

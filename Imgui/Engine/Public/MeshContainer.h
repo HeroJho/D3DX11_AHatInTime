@@ -22,6 +22,10 @@ public:
 		return m_iMaterialIndex;
 	}
 
+	const VTXMODEL* Get_NonAnimVertices() { return m_pNonAnimVertices; }
+	const FACEINDICES32* Get_Indices() { return m_pIndices; }
+	_uint Get_NumPrimitives() { return m_iNumPrimitives; }
+
 public:
 	virtual HRESULT Initialize_Prototype(CModel::TYPE eModelType, const aiMesh* pAIMesh, class CModel* pModel, _fmatrix PivotMatrix);
 	virtual HRESULT Bin_Initialize_Prototype(CModel::TYPE eModelType, DATA_HEROMETH* pAIMesh, class CModel* pModel, _fmatrix PivotMatrix);
@@ -29,6 +33,7 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Bin_Initialize(void* pArg);
 
+	virtual _bool Picking(class CTransform* pTransform, _float* pOut_Dis, _float3* pOut_Poss);
 
 public:
 	HRESULT SetUp_HierarchyNodes(class CModel* pModel, aiMesh* pAIMesh);

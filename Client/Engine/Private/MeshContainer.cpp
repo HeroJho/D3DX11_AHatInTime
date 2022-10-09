@@ -374,6 +374,7 @@ HRESULT CMeshContainer::Bin_Ready_Vertices(DATA_HEROMETH* pAIMesh, _fmatrix Pivo
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
 		pVertices[i] = pAIMesh->pNonAnimVertices[i];
+		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PivotMatrix));
 	}
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));

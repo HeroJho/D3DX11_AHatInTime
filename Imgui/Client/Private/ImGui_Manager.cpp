@@ -6,6 +6,7 @@
 #include "ToolManager.h"
 #include "CamManager.h"
 #include "MapManager.h"
+#include "MeshManager.h"
 #include "DataManager.h"
 #include "AnimManager.h"
 #include "PartsManager.h"
@@ -649,6 +650,21 @@ void CImGui_Manager::Window_CreatedModel()
 
 	if (ImGui::Button("Delete"))
 		CMapManager::Get_Instance()->Delete_Model();
+	
+	_bool bRendPickingColor = CMapManager::Get_Instance()->Get_RendPickingColor();
+	if (ImGui::Checkbox("Rend_PickingColor", &bRendPickingColor))
+		CMapManager::Get_Instance()->Set_RendPickingColor(bRendPickingColor);
+	_bool bRendCulMode = CMapManager::Get_Instance()->Get_RendCulMode();
+	if (ImGui::Checkbox("Rend_CulMode", &bRendCulMode))
+		CMapManager::Get_Instance()->Set_RendCulMode(bRendCulMode);
+
+	if ((ImGui::Button("Bake Navi")))
+		CMeshManager::Get_Instance()->Comput_AllObjNaviMesh();
+	ImGui::SameLine();
+	_float fCosRatio = CMeshManager::Get_Instance()->Get_CosRatio();
+	if (ImGui::InputFloat("CosRatio", &fCosRatio))
+		CMeshManager::Get_Instance()->Set_CosRatio(fCosRatio);
+
 	if (ImGui::Button("Convert To Bin"))
 		CMapManager::Get_Instance()->Conv_PickedModel_To_Bin();
 

@@ -75,6 +75,8 @@ public: /* For.Input_Device */
 	_bool Mouse_Up(DIMK eMouseKeyID);
 	_bool Mouse_Pressing(DIMK eMouseKeyID);
 
+public: /* Picking */
+	_float3 Get_MouseDir();
 
 public: /* For.PipeLine */
 	void Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix);

@@ -42,7 +42,9 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_fRunSpeed = 2.5f;
 	m_fTurnSpeed = 1.f;
 	m_fRotationSpeed = 3.5f;
-	m_vDestLook = _float3{ 0.f, 1.f, 0.f };
+	m_vDestLook = _float3{ 0.f, 0.f, 1.f };
+	m_pTransformCom->Set_Look(XMLoadFloat3(&m_vDestLook));
+	m_pTransformCom->Set_DestLook();
 
 	m_fCulSpeed = m_fWalkSpeed;
 
@@ -147,10 +149,6 @@ void CPlayer::Set_Anim()
 void CPlayer::Tick(_float fTimeDelta)
 {
 
-	_float3 vPos, vScale;
-	XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-	vScale = m_pTransformCom->Get_Scale();
-
 	switch (m_eState)
 	{
 	case STATE_IDLE:
@@ -175,10 +173,6 @@ void CPlayer::Tick(_float fTimeDelta)
 		break;
 	}
 
-
-	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
-
-	Tick_Col(m_pTransformCom->Get_WorldMatrix());
 }
 
 
@@ -377,15 +371,22 @@ void CPlayer::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
+	// NOTE : Tick으로 올리면 Trun할 때 문제 생김
 	// 상태 갱신
 	Set_State();
-
 	// 이동 갱신
 	Calcul_State(fTimeDelta);
-
 	// 애니메이션 END 이벤트
 	if (m_pModelCom->Play_Animation(fTimeDelta))
 		Check_EndAnim();
+
+
+	// Set_State를 한 후에 갱신 한다.
+	Tick_Col(m_pTransformCom->Get_WorldMatrix());
+
+	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
+
+
 
 
 
@@ -493,6 +494,7 @@ HRESULT CPlayer::Render()
 
 	Render_Col();
 
+
 	return S_OK;
 }
 
@@ -537,6 +539,19 @@ HRESULT CPlayer::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sockat"), TEXT("Com_Sockat"), (CComponent**)&m_pSockatCom, &SockatDesc)))
 		return E_FAIL;
 
+	CSockat::PARTSDESC PartsDesc;
+	ZeroMemory(&PartsDesc, sizeof(CSockat::PARTSDESC));
+	PartsDesc.vPos =	_float3(0.f, 0.f, -0.63f);
+	PartsDesc.vScale =	_float3(1.f, 1.f, 1.f);
+	PartsDesc.vRot =	_float3(-90.f, 0, 0);
+	m_pSockatCom->Add_Sockat("bip_hat01", m_pModelCom, TEXT("Prototype_GameObject_Ori_Hat"), PartsDesc);
+
+	PartsDesc.vPos = _float3(-0.28f, 0.11f, -0.41f);
+	PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+	PartsDesc.vRot = _float3(0.f, 0.f, 178.f);
+	m_pSockatCom->Add_Sockat("bip_ItemPalmR01", m_pModelCom, TEXT("Prototype_GameObject_Umbrella"), PartsDesc);
+
+
 
 
 
@@ -566,41 +581,7 @@ HRESULT CPlayer::Ready_Components()
 	return S_OK;
 }
 
-CGameObject* CPlayer::Add_Sockat(char* pBoneName, _tchar* cName)
-{
-	//if (nullptr == m_pSockatCom || nullptr == m_pModelCom)
-	//	return nullptr;
 
-	//CHierarchyNode*		pSocket = m_pModelCom->Get_HierarchyNode(pBoneName);
-	//if (nullptr == pSocket)
-	//	return nullptr;
-
-
-	//CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
-
-
-	//CParts::PARTSMODELDESC Desc;
-	//ZeroMemory(&Desc, sizeof(CParts::PARTSMODELDESC));
-	//memcpy(Desc.cModelTag, cName, sizeof(_tchar)*MAX_PATH);
-
-	///* For.Sword */
-	//CGameObject*		pGameObject = pGameInstance->Clone_GameObject(TEXT("Prototype_GameObject_Parts"), &Desc);
-	//if (nullptr == pGameObject)
-	//{
-	//	RELEASE_INSTANCE(CGameInstance);
-	//	return nullptr;
-	//}
-
-
-
-	//RELEASE_INSTANCE(CGameInstance);
-
-
-	//m_pSockatCom->Add_Child(pGameObject, pSocket);
-
-	//return pGameObject;
-	return nullptr;
-}
 
 
 #pragma endregion

@@ -287,7 +287,7 @@ HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVE
 
 
 	_matrix PivotMatrix;
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01, 0.01) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 
 	CModel::TYPE etype = CModel::TYPE_END;
 	if (DATA_ANIM == eTYPE)

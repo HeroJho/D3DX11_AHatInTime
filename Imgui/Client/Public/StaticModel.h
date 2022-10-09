@@ -35,6 +35,12 @@ public:
 
 	void Set_ModelNum(string sModelNum) { m_sModelNum = sModelNum; }
 
+
+	_uint Get_NumMesh();
+	_uint Get_Mesh_NumPrimitives(_uint iIndex);
+	const VTXMODEL* Get_Mesh_NonAnimVertices(_uint iIndex);
+	const FACEINDICES32* Get_Mesh_Indices(_uint iIndex);
+
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
@@ -53,6 +59,8 @@ private:
 	TCHAR					m_cModelTag[MAX_PATH];
 	string					m_sModelNum;
 	_float3					m_vAxis;
+
+	_float					m_fSpaceTimeAcc = 0.f;
 
 private:
 	HRESULT Ready_Components();

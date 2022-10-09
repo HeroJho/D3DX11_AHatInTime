@@ -43,6 +43,7 @@ public:
 	UIINFODESC	Get_Info() { return m_UiInfo; };
 	HRESULT Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _tchar* pTag);
 
+	void SetParentUI(UIINFODESC ParentUiInfo);
 
 protected:
 	CRenderer*				m_pRendererCom = nullptr;		// ∞Ì¡§
@@ -53,6 +54,7 @@ protected:
 	list<CUI*>				m_pChildUIs;
 
 	UIINFODESC				m_UiInfo;
+	UIINFODESC				m_TotalInfo;
 	_float4x4				m_ViewMatrix, m_ProjMatrix;
 
 	UI_STATE				m_eState = UI_END;

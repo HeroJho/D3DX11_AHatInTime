@@ -12,6 +12,9 @@ public:
 	virtual ~CPicking() = default;
 
 public:
+	_float3 Get_MouseDir() { return m_vRayDir; }
+
+public:
 	HRESULT Initialize(HWND hWnd, _uint iWinCX, _uint iWinCY, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void Tick(); /* 월드스페이스 상의 마우스레이, 레이포스를 구한다. */
 	void Compute_LocalRayInfo(_float3* pRayDir, _float3* pRayPos, class CTransform* pTransform);

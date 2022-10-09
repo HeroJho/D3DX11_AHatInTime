@@ -389,6 +389,41 @@ void CModel::Reset_AnimLinearData()
 	m_AnimLinearDatas.resize(250);
 }
 
+_bool CModel::Picking(CTransform * pTransform, _float* pOutDis, _float3* pOutPoss)
+{
+
+	_float3 MinPoss[3];
+	_float3 Poss[3];
+	_float fMinDis = FLT_MAX_EXP;
+	_float fMeshMin = 0.f;
+	for (_uint i = 0; i < m_iNumMeshes; ++i)
+	{
+		if (m_Meshes[i]->Picking(pTransform, &fMeshMin, Poss))
+		{
+			if (fMinDis > fMeshMin)
+			{
+				fMinDis = fMeshMin;
+
+				MinPoss[0] = Poss[0];
+				MinPoss[1] = Poss[1];
+				MinPoss[2] = Poss[2];
+			}
+		}
+	}
+
+	if (fMinDis != FLT_MAX_EXP)
+	{
+		*pOutDis = fMinDis;
+		pOutPoss[0] = MinPoss[0];
+		pOutPoss[1] = MinPoss[1];
+		pOutPoss[2] = MinPoss[2];
+		return true;
+	}
+
+
+	return false;
+}
+
 
 
 
@@ -691,6 +726,33 @@ _bool CModel::Get_CurAnim_Loop()
 void CModel::Set_CurAnim_Loop(_bool bLoop)
 {
 	m_Animations[m_iCurrentAnimIndex]->Set_Loop(bLoop);
+}
+
+
+
+
+const VTXMODEL * CModel::Get_Mesh_NonAnimVertices(_uint iIndex)
+{
+	if (m_iNumMeshes <= iIndex)
+		return nullptr;
+
+	return 	m_Meshes[iIndex]->Get_NonAnimVertices();
+}
+
+const FACEINDICES32 * CModel::Get_Mesh_Indices(_uint iIndex)
+{
+	if (m_iNumMeshes <= iIndex)
+		return nullptr;
+
+	return 	m_Meshes[iIndex]->Get_Indices();
+}
+
+_uint CModel::Get_Mesh_NumPrimitives(_uint iIndex)
+{
+	if (m_iNumMeshes <= iIndex)
+		return 0;
+
+	return m_Meshes[iIndex]->Get_NumPrimitives();
 }
 
 

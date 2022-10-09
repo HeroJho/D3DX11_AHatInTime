@@ -176,6 +176,7 @@
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\Monster.h" />
+    <ClInclude Include="..\public\Ori_Hat.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\StaticModel.h" />
     <ClInclude Include="..\Public\Terrain.h" />
@@ -184,6 +185,9 @@
     <ClInclude Include="..\Public\UIManager.h" />
     <ClInclude Include="..\Public\UI_Edit.h" />
     <ClInclude Include="..\Public\UI_Edit_Button.h" />
+    <ClInclude Include="..\public\UI_Health.h" />
+    <ClInclude Include="..\Public\UI_TextLife.h" />
+    <ClInclude Include="..\public\Umbrella.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -198,6 +202,7 @@
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
+    <ClCompile Include="..\private\Ori_Hat.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\StaticModel.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
@@ -206,6 +211,9 @@
     <ClCompile Include="..\Private\UIManager.cpp" />
     <ClCompile Include="..\Private\UI_Edit.cpp" />
     <ClCompile Include="..\Private\UI_Edit_Button.cpp" />
+    <ClCompile Include="..\private\UI_Health.cpp" />
+    <ClCompile Include="..\Private\UI_TextLife.cpp" />
+    <ClCompile Include="..\private\Umbrella.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

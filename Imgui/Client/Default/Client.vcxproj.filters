@@ -151,6 +151,9 @@
     <Filter Include="02.GameObject\03. AnimTool\03. AnimPlayer">
       <UniqueIdentifier>{bd246964-9169-407a-8b5b-ca74e6f7710e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.Manager\06. MeshManager">
+      <UniqueIdentifier>{79e1cd9f-1a36-4a95-a47e-3a6a14cc4cff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -305,6 +308,9 @@
     <ClInclude Include="..\public\AnimPlayer.h">
       <Filter>02.GameObject\03. AnimTool\03. AnimPlayer</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MeshManager.h">
+      <Filter>97.Manager\06. MeshManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -444,6 +450,9 @@
     </ClCompile>
     <ClCompile Include="..\private\AnimPlayer.cpp">
       <Filter>02.GameObject\03. AnimTool\03. AnimPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MeshManager.cpp">
+      <Filter>97.Manager\06. MeshManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

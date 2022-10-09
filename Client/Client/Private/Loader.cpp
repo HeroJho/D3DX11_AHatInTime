@@ -12,6 +12,10 @@
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
 #include "StaticModel.h"
+#include "Ori_Hat.h"
+#include "Umbrella.h"
+#include "UI_Health.h"
+#include "UI_TextLife.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -154,10 +158,26 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CStaticModel::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_Ori_Hat*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ori_Hat"),
+		COri_Hat::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Umbrella*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Umbrella"),
+		CUmbrella::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
-
+	/* For.Prototype_UI_Health*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Health"),
+		CUI_Health::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_UI_TextLife*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_TextLife"),
+		CUI_TextLife::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
@@ -173,10 +193,15 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Grass_%d.dds"), 2))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_PlayerHealth */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_PlayerHealth"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/PlayerHealth/playerhealth_new_%d.dds"), 5))))
+		return E_FAIL;
 
-
-
-
+	/* For.Prototype_Component_Texture_LifeText */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_LifeText"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/PlayerHealth/text_life.dds"), 1))))
+		return E_FAIL;
 
 
 
@@ -199,9 +224,13 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 
+	/* For. AnimModel */
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("HatGirl"), LEVEL_STATIC, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Mad_Crow"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 
+	/* For. PartsModel */
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Ori_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Umbrella"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 
 
 
@@ -226,26 +255,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 
-
-
-
-
-	lstrcpy(m_szLoadingText, TEXT("충돌체를 로딩중입니다. "));
-
-	/* For.Prototype_Component_Collider_AABB */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"),
-		CAABB::Create(m_pDevice, m_pContext, CCollider::TYPE_AABB))))
-		return E_FAIL;
-
-	/* For.Prototype_Component_Collider_OBB */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"),
-		COBB::Create(m_pDevice, m_pContext, CCollider::TYPE_OBB))))
-		return E_FAIL;
-
-	/* For.Prototype_Component_Collider_Sphere */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"),
-		CSphere::Create(m_pDevice, m_pContext, CCollider::TYPE_SPHERE))))
-		return E_FAIL;
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니ㅏㄷ.  "));
 

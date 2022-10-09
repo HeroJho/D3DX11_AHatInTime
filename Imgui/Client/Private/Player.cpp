@@ -100,7 +100,7 @@ void CPlayer::Set_Anim()
 		m_pModelCom->Set_AnimIndex(197);
 		break;
 	case Client::CPlayer::STATE_RUN:
-		m_pModelCom->Set_AnimIndex(198);
+		m_pModelCom->Set_AnimIndex(150);
 		break;
 	case Client::CPlayer::STATE_STATU:
 		m_pModelCom->Set_AnimIndex(204);

@@ -5,6 +5,8 @@
 #include "Camera_Free.h"
 #include "DataManager.h"
 
+#include "UI.h"
+
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -35,8 +37,8 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
 
-	//if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
+		return E_FAIL;
 
 	
 
@@ -157,14 +159,17 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	/*for (_uint i = 0; i < 1; ++i)
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI"), LEVEL_GAMEPLAY, pLayerTag)))
-			return E_FAIL;
 
-	}
+	CUI::UIINFODESC UiInfoDesc;
+	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+	UiInfoDesc.fSizeX = 150;
+	UiInfoDesc.fSizeY = 150;
+	UiInfoDesc.fX = 120;
+	UiInfoDesc.fY = 120;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Health"), LEVEL_GAMEPLAY, pLayerTag, &UiInfoDesc)))
+		return E_FAIL;
 
-*/
+
 	Safe_Release(pGameInstance);
 
 

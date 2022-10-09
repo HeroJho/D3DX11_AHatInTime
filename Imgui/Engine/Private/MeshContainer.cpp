@@ -1,6 +1,8 @@
 #include "..\Public\MeshContainer.h"
 #include "Model.h"
 #include "HierarchyNode.h"
+#include "Picking.h"
+#include "Transform.h"
 
 CMeshContainer::CMeshContainer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CVIBuffer(pDevice, pContext)
@@ -131,7 +133,7 @@ HRESULT CMeshContainer::Bin_Initialize_Prototype(CModel::TYPE eModelType, DATA_H
 	if (FAILED(__super::Create_IndexBuffer()))
 		return E_FAIL;
 
-	Safe_Delete_Array(pIndices);
+	m_pIndices = pIndices;
 
 #pragma endregion
 
@@ -147,6 +149,85 @@ HRESULT CMeshContainer::Bin_Initialize(void * pArg)
 {
 	return S_OK;
 }
+
+
+
+_bool CMeshContainer::Picking(CTransform* pTransform, _float* pOut_Dis, _float3* pOut_Poss)
+{
+
+	if (nullptr == m_pNonAnimVertices)
+		return false;
+
+	CPicking*		pPicking = CPicking::Get_Instance();
+	Safe_AddRef(pPicking);
+
+
+	_matrix		WorldMatrixInv = pTransform->Get_WorldMatrixInverse();
+
+
+	_float3			vTempRayDir, vTempRayPos;
+	XMVECTOR		vRayDir, vRayPos;
+	pPicking->Compute_LocalRayInfo(&vTempRayDir, &vTempRayPos, pTransform);
+	vRayDir = XMLoadFloat3(&vTempRayDir);
+
+	// 내 로컬까지 내려온 마우스 Pos, Dir
+	vRayPos = XMLoadFloat3(&vTempRayPos);
+	vRayDir = XMVector3Normalize(vRayDir);
+
+
+	_float fMinDis = FLT_MAX_EXP;
+	_float3 vPoss[3];
+
+	for (_uint i = 0; i < m_iNumPrimitives; ++i)
+	{
+		
+		_int iIndices[] = {
+			(_int)m_pIndices[i]._0,
+			(_int)m_pIndices[i]._1,
+			(_int)m_pIndices[i]._2
+		};
+
+		_float		fU, fV, fDist;
+		_matrix	WorldMatrix = pTransform->Get_WorldMatrix();
+		
+		
+
+		_vector vTemp_1 = XMLoadFloat3(&m_pNonAnimVertices[iIndices[0]].vPosition);
+		vTemp_1 = XMVectorSetW(vTemp_1, 1.f);
+		_vector vTemp_2 = XMLoadFloat3(&m_pNonAnimVertices[iIndices[1]].vPosition);
+		vTemp_2 = XMVectorSetW(vTemp_2, 1.f);
+		_vector vTemp_3 = XMLoadFloat3(&m_pNonAnimVertices[iIndices[2]].vPosition);
+		vTemp_3 = XMVectorSetW(vTemp_3, 1.f);
+		if (true == TriangleTests::Intersects(vRayPos, vRayDir, vTemp_1, vTemp_2, vTemp_3, fDist))
+		{
+			// _vector	vPickPos = vRayPos + vRayDir * fDist;
+			
+			if (fMinDis > fDist)
+			{
+				XMStoreFloat3(&vPoss[0], XMVector3TransformCoord(XMLoadFloat3(&m_pNonAnimVertices[iIndices[0]].vPosition), WorldMatrix));
+				XMStoreFloat3(&vPoss[1], XMVector3TransformCoord(XMLoadFloat3(&m_pNonAnimVertices[iIndices[1]].vPosition), WorldMatrix));
+				XMStoreFloat3(&vPoss[2], XMVector3TransformCoord(XMLoadFloat3(&m_pNonAnimVertices[iIndices[2]].vPosition), WorldMatrix));
+				fMinDis = fDist;
+			}
+
+		}
+
+	}
+
+	if (fMinDis != FLT_MAX_EXP)
+	{
+		*pOut_Dis = fMinDis;
+		pOut_Poss[0] = vPoss[0];
+		pOut_Poss[1] = vPoss[1];
+		pOut_Poss[2] = vPoss[2];
+		Safe_Release(pPicking);
+		return true;
+	}
+
+	Safe_Release(pPicking);
+	return false;
+}
+
 
 
 HRESULT CMeshContainer::SetUp_HierarchyNodes(CModel * pModel, aiMesh* pAIMesh)
@@ -374,6 +455,8 @@ HRESULT CMeshContainer::Bin_Ready_Vertices(DATA_HEROMETH* pAIMesh, _fmatrix Pivo
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
 		pVertices[i] = pAIMesh->pNonAnimVertices[i];
+		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PivotMatrix));
+		XMStoreFloat3(&pVertices[i].vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices[i].vNormal), PivotMatrix));
 	}
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -382,7 +465,8 @@ HRESULT CMeshContainer::Bin_Ready_Vertices(DATA_HEROMETH* pAIMesh, _fmatrix Pivo
 	if (FAILED(__super::Create_VertexBuffer()))
 		return E_FAIL;
 
-	Safe_Delete_Array(pVertices);
+
+	m_pNonAnimVertices = pVertices;
 
 	return S_OK;
 }
@@ -415,7 +499,7 @@ HRESULT CMeshContainer::Bin_Ready_AnimVertices(DATA_HEROMETH* pAIMesh, CModel* p
 	if (FAILED(__super::Create_VertexBuffer()))
 		return E_FAIL;
 
-	Safe_Delete_Array(pVertices);
+	m_pAnimVertices = pVertices;
 
 	return S_OK;
 }

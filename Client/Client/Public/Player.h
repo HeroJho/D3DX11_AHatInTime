@@ -35,7 +35,6 @@ public:
 
 public:
 	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
-	CGameObject* Add_Sockat(char* pBoneName, _tchar* cName);
 
 
 private:

@@ -64,6 +64,18 @@
     <Filter Include="02.GameObjects\StaticModel">
       <UniqueIdentifier>{b15507a3-a706-491f-8b58-a202933ae4e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Parts">
+      <UniqueIdentifier>{ee9b07d1-45ff-43ee-a2d6-f277ea5e71bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Parts\Ori_Hat">
+      <UniqueIdentifier>{4d2183fa-d646-43d0-a888-e625096f410e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Parts\Umbrella">
+      <UniqueIdentifier>{9d5e333c-588b-4dd4-ac67-71a086b0c6c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\Health">
+      <UniqueIdentifier>{a14786f4-1821-40ab-b9ae-1c59f54cafc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -132,6 +144,18 @@
     <ClInclude Include="..\public\StaticModel.h">
       <Filter>02.GameObjects\StaticModel</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Ori_Hat.h">
+      <Filter>02.GameObjects\Parts\Ori_Hat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Umbrella.h">
+      <Filter>02.GameObjects\Parts\Umbrella</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Health.h">
+      <Filter>03.UI\Health</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_TextLife.h">
+      <Filter>03.UI\Health</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -187,6 +211,18 @@
     </ClCompile>
     <ClCompile Include="..\private\StaticModel.cpp">
       <Filter>02.GameObjects\StaticModel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Ori_Hat.cpp">
+      <Filter>02.GameObjects\Parts\Ori_Hat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Umbrella.cpp">
+      <Filter>02.GameObjects\Parts\Umbrella</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Health.cpp">
+      <Filter>03.UI\Health</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_TextLife.cpp">
+      <Filter>03.UI\Health</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

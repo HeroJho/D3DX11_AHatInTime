@@ -1,59 +1,63 @@
 #include "stdafx.h"
-#include "..\Public\Parts.h"
+#include "..\Public\Umbrella.h"
 #include "GameInstance.h"
 
-CParts::CParts(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CUmbrella::CUmbrella(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
 	ZeroMemory(&m_vAxis, sizeof(_float3));
 }
 
-CParts::CParts(const CParts & rhs)
+CUmbrella::CUmbrella(const CUmbrella & rhs)
 	: CGameObject(rhs)
 {
 	ZeroMemory(&m_vAxis, sizeof(_float3));
 }
 
-HRESULT CParts::Initialize_Prototype()
+HRESULT CUmbrella::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CParts::Initialize(void * pArg)
+HRESULT CUmbrella::Initialize(void * pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
 
-	PARTSMODELDESC* Desc = (PARTSMODELDESC*)pArg;
-
-	wcscpy(m_cModelTag, Desc->cModelTag);
+	CSockat::PARTSDESC* Desc = (CSockat::PARTSDESC*)pArg;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	// m_pTransformCom->Set_Scale(XMVectorSet(0.1f, 0.1f, 0.1f, 1.f));
-	// m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.0f));
 
+	m_pTransformCom->Set_Scale(XMLoadFloat3(&Desc->vScale));
 
+	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), Desc->vRot.x
+		, XMVectorSet(0.f, 1.f, 0.f, 0.f), Desc->vRot.y
+		, XMVectorSet(0.f, 0.f, 1.f, 0.f), Desc->vRot.z);
 
+	_vector vPos = XMLoadFloat3(&Desc->vPos);
+	vPos = XMVectorSetW(vPos, 1.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 
 
 	return S_OK;
 }
 
-void CParts::Tick(_float fTimeDelta)
+void CUmbrella::Tick(_float fTimeDelta)
 {
 
 }
 
-void CParts::LateTick(_float fTimeDelta)
+void CUmbrella::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
 
+	// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
-HRESULT CParts::Render()
+HRESULT CUmbrella::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -90,7 +94,7 @@ HRESULT CParts::Render()
 	return S_OK;
 }
 
-HRESULT CParts::SetUp_State(_fmatrix StateMatrix)
+HRESULT CUmbrella::SetUp_State(_fmatrix StateMatrix)
 {
 	m_pParentTransformCom->Set_State(CTransform::STATE_RIGHT, StateMatrix.r[0]);
 	m_pParentTransformCom->Set_State(CTransform::STATE_UP, StateMatrix.r[1]);
@@ -102,7 +106,7 @@ HRESULT CParts::SetUp_State(_fmatrix StateMatrix)
 	return S_OK;
 }
 
-HRESULT CParts::Ready_Components()
+HRESULT CUmbrella::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -111,8 +115,6 @@ HRESULT CParts::Ready_Components()
 	/* For.Com_ParentTransform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_ParentTransform"), (CComponent**)&m_pParentTransformCom)))
 		return E_FAIL;
-
-
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -123,39 +125,39 @@ HRESULT CParts::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_PARTSTOOL, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Umbrella"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-CParts * CParts::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CUmbrella * CUmbrella::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CParts*		pInstance = new CParts(pDevice, pContext);
+	CUmbrella*		pInstance = new CUmbrella(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CParts"));
+		MSG_BOX(TEXT("Failed To Created : CUmbrella"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CParts::Clone(void * pArg)
+CGameObject * CUmbrella::Clone(void * pArg)
 {
-	CParts*		pInstance = new CParts(*this);
+	CUmbrella*		pInstance = new CUmbrella(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CParts"));
+		MSG_BOX(TEXT("Failed To Cloned : CUmbrella"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CParts::Free()
+void CUmbrella::Free()
 {
 	__super::Free();
 
