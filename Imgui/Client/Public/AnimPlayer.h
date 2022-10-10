@@ -54,6 +54,7 @@ private:
 
 	void Game_Mode(_float fTimeDelta);
 	
+	void Idle_Tick(_float fTimeDelta);
 	void Move_Tick(_float fTimeDelta);
 	void Slep_Tick(_float fTimeDelta);
 

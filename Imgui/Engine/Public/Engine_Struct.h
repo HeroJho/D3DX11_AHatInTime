@@ -225,6 +225,7 @@ namespace Engine
 	{
 
 		bool				bLoop;
+		char				szName[MAX_PATH];
 		int					iNumChannels;
 		float				fDuration;
 		float				fTickPerSecond;

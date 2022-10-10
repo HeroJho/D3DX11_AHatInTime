@@ -787,10 +787,11 @@ void CImGui_Manager::Window_AnimEditor()
 
 	_int iAnimCount = CAnimManager::Get_Instance()->Get_AnimCount(CAnimManager::EDIT_MODEL);
 	_int iCurIndex = CAnimManager::Get_Instance()->Get_CurAimIndex(CAnimManager::EDIT_MODEL);
-	
+	char* cCurName = CAnimManager::Get_Instance()->Get_CurAnimName(CAnimManager::EDIT_MODEL);
 
 	ImGui::Text("AnimCount: %d", iAnimCount);
 	ImGui::Text("CurIndex: %d", iCurIndex);
+	ImGui::Text(cCurName);
 
 	if (ImGui::InputInt("Input Index", &iCurIndex))
 		CAnimManager::Get_Instance()->Change_Anim(CAnimManager::EDIT_MODEL, iCurIndex);

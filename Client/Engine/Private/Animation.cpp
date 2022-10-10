@@ -18,7 +18,7 @@ CAnimation::CAnimation(const CAnimation & rhs)
 	for (auto& pChannel : m_Channels)
 		Safe_AddRef(pChannel);
 
-	// strcpy_s(m_szName, rhs.m_szName);
+	strcpy_s(m_szName, rhs.m_szName);
 }
 
 HRESULT CAnimation::Initialize_Prototype(aiAnimation * pAIAnimation)
@@ -68,6 +68,8 @@ HRESULT CAnimation::Bin_Initialize_Prototype(DATA_HEROANIM* pAIAnimation)
 	m_fDuration = pAIAnimation->fDuration;
 	m_fTickPerSecond = pAIAnimation->fTickPerSecond;
 	m_bLoop = pAIAnimation->bLoop;
+
+	strcpy(m_szName, pAIAnimation->szName);
 
 	/* 현재 애니메이션에서 제어해야할 뼈들의 갯수를 저장한다. */
 	m_iNumChannels = pAIAnimation->iNumChannels;
@@ -285,6 +287,7 @@ void CAnimation::Get_AnimData(DATA_HEROANIM * pData)
 	pData->iNumChannels = m_iNumChannels;
 	pData->fTickPerSecond = m_fTickPerSecond;
 	pData->bLoop = m_bLoop;
+	strcpy_s(pData->szName, m_szName);
 
 	pData->pHeroChannel = new DATA_HEROCHANNEL[m_iNumChannels];
 

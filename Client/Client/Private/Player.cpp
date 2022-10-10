@@ -99,10 +99,10 @@ void CPlayer::Set_Anim()
 	switch (m_eState)
 	{
 	case STATE_IDLE:
-		m_pModelCom->Set_AnimIndex(111);
+		m_pModelCom->Set_AnimIndex(113);
 		break;
 	case STATE_WALK:
-		m_pModelCom->Set_AnimIndex(197);
+		m_pModelCom->Set_AnimIndex(192);
 		break;
 	case STATE_RUN:
 		if (STATE_SLEP == m_ePreState)
@@ -116,22 +116,22 @@ void CPlayer::Set_Anim()
 			else
 				m_pTransformCom->Set_DestLook();
 		}
-		m_pModelCom->Set_AnimIndex(198);
-		break;
-	case STATE_SPRINT:
-		m_pModelCom->Set_AnimIndex(150);
-		break;
-	case STATE_ATTACK_1:
-		m_pModelCom->Set_AnimIndex(187);
-		break;
-	case STATE_ATTACK_2:
-		m_pModelCom->Set_AnimIndex(190);
-		break;
-	case STATE_ATTACK_3:
 		m_pModelCom->Set_AnimIndex(193);
 		break;
+	case STATE_SPRINT:
+		m_pModelCom->Set_AnimIndex(153);
+		break;
+	case STATE_ATTACK_1:
+		m_pModelCom->Set_AnimIndex(188);
+		break;
+	case STATE_ATTACK_2:
+		m_pModelCom->Set_AnimIndex(189);
+		break;
+	case STATE_ATTACK_3:
+		m_pModelCom->Set_AnimIndex(190);
+		break;
 	case STATE_SLEP:
-		m_pModelCom->Set_AnimIndex(177);
+		m_pModelCom->Set_AnimIndex(180);
 		break;
 	}
 }
@@ -487,8 +487,13 @@ HRESULT CPlayer::Render()
 		return E_FAIL;*/
 
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		_uint iPassIndex = 0;
+		if (3 == m_pModelCom->Get_MaterialIndex(i))
+			iPassIndex = 1;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
+
 	}
 
 

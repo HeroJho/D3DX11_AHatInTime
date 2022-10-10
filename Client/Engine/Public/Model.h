@@ -46,7 +46,7 @@ public:
 public:
 	HRESULT SetUp_OnShader(class CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName);
 	_bool Play_Animation(_float fTimeDelta);
-	HRESULT Render(class CShader* pShader, _uint iMeshIndex);
+	HRESULT Render(class CShader* pShader, _uint iMeshIndex, _uint iPassIndex = 0);
 
 	HRESULT Delete_Anim(_uint iIndex);
 	HRESULT Push_AnimLinearData(ANIM_LINEAR_DATA Data);

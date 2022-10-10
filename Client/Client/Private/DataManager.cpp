@@ -214,6 +214,7 @@ HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene,
 		ifs.read((char*)&ReadScene->pHeroAnim[i].fDuration, sizeof(float));
 		ifs.read((char*)&ReadScene->pHeroAnim[i].fTickPerSecond, sizeof(float));
 		ifs.read((char*)&ReadScene->pHeroAnim[i].bLoop, sizeof(bool));
+		ifs.read((char*)&ReadScene->pHeroAnim[i].szName, sizeof(char) * MAX_PATH);
 
 		ReadScene->pHeroAnim[i].pHeroChannel = new DATA_HEROCHANNEL[ReadScene->pHeroAnim[i].iNumChannels];
 		for (int j = 0; j < ReadScene->pHeroAnim[i].iNumChannels; ++j)

@@ -162,6 +162,7 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene, char* cModelName, D
 		ofs.write((char*)&Anim.fDuration, sizeof(float));
 		ofs.write((char*)&Anim.fTickPerSecond, sizeof(float));
 		ofs.write((char*)&Anim.bLoop, sizeof(bool));
+		ofs.write((char*)&Anim.szName, sizeof(char)*MAX_PATH);
 
 		for (int j = 0; j < Anim.iNumChannels; ++j)
 		{
@@ -291,6 +292,7 @@ HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene,
 		ifs.read((char*)&ReadScene->pHeroAnim[i].fDuration, sizeof(float));
 		ifs.read((char*)&ReadScene->pHeroAnim[i].fTickPerSecond, sizeof(float));
 		ifs.read((char*)&ReadScene->pHeroAnim[i].bLoop, sizeof(bool));
+		ifs.read((char*)&ReadScene->pHeroAnim[i].szName, sizeof(char) * MAX_PATH);
 
 		ReadScene->pHeroAnim[i].pHeroChannel = new DATA_HEROCHANNEL[ReadScene->pHeroAnim[i].iNumChannels];
 		for (int j = 0; j < ReadScene->pHeroAnim[i].iNumChannels; ++j)
@@ -383,7 +385,7 @@ HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVE
 	}
 	else
 	{
-		PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+		PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 		if (FAILED(pGameInstance->Add_Prototype(eLEVEL, pModelName,
 			CModel::Create(m_pDevice, m_pContext, etype, tPath, tFileName, PivotMatrix))))
 		{

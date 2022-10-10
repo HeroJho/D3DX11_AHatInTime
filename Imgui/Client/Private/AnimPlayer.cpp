@@ -130,10 +130,10 @@ void CAnimPlayer::Set_Anim()
 	switch (m_eState)
 	{
 	case STATE_IDLE:
-		m_pModelCom->Set_AnimIndex(111);
+		m_pModelCom->Set_AnimIndex(113);
 		break;
 	case STATE_WALK:
-		m_pModelCom->Set_AnimIndex(197);
+		m_pModelCom->Set_AnimIndex(192);
 		break;
 	case STATE_RUN:
 	{
@@ -148,23 +148,23 @@ void CAnimPlayer::Set_Anim()
 			else
 				m_pTransformCom->Set_DestLook();
 		}
-		m_pModelCom->Set_AnimIndex(198);
+		m_pModelCom->Set_AnimIndex(193);
 	}
 		break;
 	case STATE_SPRINT:
-		m_pModelCom->Set_AnimIndex(150);
+		m_pModelCom->Set_AnimIndex(153);
 		break;
 	case STATE_ATTACK_1:
-		m_pModelCom->Set_AnimIndex(187);
+		m_pModelCom->Set_AnimIndex(188);
 		break;
 	case STATE_ATTACK_2:
-		m_pModelCom->Set_AnimIndex(190);
+		m_pModelCom->Set_AnimIndex(189);
 		break;
 	case STATE_ATTACK_3:
-		m_pModelCom->Set_AnimIndex(193);
+		m_pModelCom->Set_AnimIndex(190);
 		break;
 	case STATE_SLEP:
-		m_pModelCom->Set_AnimIndex(177);
+		m_pModelCom->Set_AnimIndex(180);
 		break;
 	case STATE_STATU:
 		m_pModelCom->Set_AnimIndex(204);
@@ -251,12 +251,7 @@ void CAnimPlayer::Game_Mode(_float fTimeDelta)
 	switch (m_eState)
 	{
 	case STATE_IDLE:
-		if (STATE_SPRINT == m_ePreState)
-		{
-			m_bImStop = true;
-			m_TickStates.push_back(STATE_SLEP);
-		}
-
+		Idle_Tick(fTimeDelta);
 	case STATE_WALK:
 	case STATE_RUN:
 	case STATE_SPRINT:
@@ -394,6 +389,15 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 
 
 	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CAnimPlayer::Idle_Tick(_float fTimeDelta)
+{
+	if (STATE_SPRINT == m_ePreState)
+	{
+		m_bImStop = true;
+		m_TickStates.push_back(STATE_SLEP);
+	}
 }
 
 void CAnimPlayer::Move_Tick(_float fTimeDelta)

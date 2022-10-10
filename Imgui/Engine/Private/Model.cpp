@@ -188,7 +188,7 @@ HRESULT CModel::Initialize(void * pArg)
 
 	m_Animations = Animations;
 
-	m_AnimLinearDatas.resize(250);
+	m_AnimLinearDatas.resize(600);
 
 	return S_OK;
 }
@@ -260,7 +260,7 @@ HRESULT CModel::Bin_Initialize(void * pArg)
 
 	m_Animations = Animations;
 
-	m_AnimLinearDatas.resize(250);
+	m_AnimLinearDatas.resize(600);
 
 	return S_OK;
 }
@@ -386,7 +386,7 @@ void CModel::Reset_AnimLinearData()
 	}
 	m_AnimLinearDatas.clear();
 
-	m_AnimLinearDatas.resize(250);
+	m_AnimLinearDatas.resize(600);
 }
 
 _bool CModel::Picking(CTransform * pTransform, _float* pOutDis, _float3* pOutPoss)
@@ -524,6 +524,16 @@ HRESULT CModel::Ready_Animations()
 
 	for (_uint i = 0; i < m_pAIScene->mNumAnimations; ++i)
 	{
+		//// 같은 애니메이션은 추가 X
+		//for (_uint j = i + 1; j < m_pAIScene->mNumAnimations; ++j)
+		//{
+		//	if (!strcmp(m_pAIScene->mAnimations[i]->mName.data, m_pAIScene->mAnimations[j]->mName.data))
+		//	{
+		//		--m_iNumAnimations;
+		//		continue;
+		//	}
+		//}
+		
 		aiAnimation*		pAIAnimation = m_pAIScene->mAnimations[i];
 
 		CAnimation*			pAnimation = CAnimation::Create(pAIAnimation);
@@ -692,6 +702,7 @@ void CModel::Free()
 		Safe_Release_Scene();
 	}
 }
+
 
 _float CModel::Get_CurAin_TickPerSecond()
 {
@@ -868,6 +879,7 @@ HRESULT CModel::Bin_Ready_Animations()
 
 	for (_uint i = 0; i < m_pBin_AIScene->iNumAnimations; ++i)
 	{
+
 		DATA_HEROANIM*		pAIAnimation = &m_pBin_AIScene->pHeroAnim[i];
 
 		CAnimation*			pAnimation = CAnimation::Bin_Create(pAIAnimation);
