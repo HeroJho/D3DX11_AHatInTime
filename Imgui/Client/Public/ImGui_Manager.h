@@ -86,6 +86,8 @@ private:
 	void Window_CreatedModel();
 	void Window_Transform();
 
+	void Window_LoadingReadyNeighbor();
+
 	// FOR. AnimTool
 	void Window_AnimModleList();
 	void Window_IsDelete();

@@ -83,13 +83,8 @@ _bool CCell::Compare(const _float3 & vSourPoint, const _float3 & vDestPoint)
 #ifdef _DEBUG
 HRESULT CCell::Render_Cell()
 {
-	_float4 vTempCamPos = CPipeLine::Get_Instance()->Get_CamPosition();
-	_float3 vCamPos;
-	memcpy(&vCamPos, &vTempCamPos, sizeof(_float3));
-	_float fADis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vPoints[POINT_A]) - XMLoadFloat3(&vCamPos)));
 
-	if(m_fRendRange > fADis)
-		m_pVIBuffer->Render();
+	m_pVIBuffer->Render();
 
 	return S_OK;
 }

@@ -48,6 +48,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 
 	m_fCulSpeed = m_fWalkSpeed;
 
+	m_FaceAnimIndex[0] = 0;
+	m_FaceAnimIndex[1] = 32;
 
 	return S_OK;
 }
@@ -148,6 +150,7 @@ void CPlayer::Set_Anim()
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+	Anim_Face(fTimeDelta);
 
 	switch (m_eState)
 	{
@@ -309,7 +312,7 @@ void CPlayer::Move_Tick(_float fTimeDelta)
 	// 슬립했냐 안 했냐
 	if (m_pTransformCom->LinearTurn(m_vDestLook, 1.f, 0.3f, fTimeDelta))
 	{
-		m_fSlepSpeed = 2.f;
+		m_fSlepSpeed = 2.2f;
 		m_TickStates.push_back(STATE_SLEP);
 	}
 
@@ -317,7 +320,7 @@ void CPlayer::Move_Tick(_float fTimeDelta)
 
 void CPlayer::Slep_Tick(_float fTimeDelta)
 {
-	m_fSlepSpeed -= 5.f * fTimeDelta;
+	m_fSlepSpeed -= 6.f * fTimeDelta;
 }
 
 void CPlayer::Attack_Input(_float fTimeDelta)
@@ -355,6 +358,33 @@ void CPlayer::ReadyAttack_Input(_float fTimeDelta)
 	m_ComboStates.clear();
 }
 
+
+
+void CPlayer::Anim_Face(_float fTimeDelta)
+{
+	if(0 != m_FaceAnimIndex[0])
+		m_fAnimFaceAcc += fTimeDelta * 200.f;
+	else
+		m_fAnimFaceAcc += fTimeDelta * 0.5f;
+
+	if (1.f < m_fAnimFaceAcc)
+	{
+		if (m_bWingk)
+			--m_FaceAnimIndex[0];
+		else
+			++m_FaceAnimIndex[0];
+
+		if (m_FaceAnimIndex[1]-1 <= m_FaceAnimIndex[0] || 0 >= m_FaceAnimIndex[0])
+		{
+			if (m_bWingk)
+				m_bWingk = false;
+			else
+				m_bWingk = true;
+		}
+
+		m_fAnimFaceAcc = 0.f;
+	}
+}
 
 #pragma endregion 
 
@@ -481,19 +511,7 @@ HRESULT CPlayer::Render()
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-		/*if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-		return E_FAIL;*/
-
-
-		_uint iPassIndex = 0;
-		if (3 == m_pModelCom->Get_MaterialIndex(i))
-			iPassIndex = 1;
-
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
-			return E_FAIL;
-
+		Choose_Pass(i);
 	}
 
 
@@ -503,6 +521,38 @@ HRESULT CPlayer::Render()
 	return S_OK;
 }
 
+HRESULT CPlayer::Choose_Pass(_int iIndex)
+{
+	_uint iPassIndex = 0;
+
+	switch (m_pModelCom->Get_MaterialIndex(iIndex))
+	{
+		case 3:	// 눈 
+		{
+			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(iIndex), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+			if (FAILED(m_pShaderCom->Set_RawValue("g_iFaceIndex", &m_FaceAnimIndex[0], sizeof(int))))
+				return E_FAIL;
+			if (FAILED(m_pTextureCom_SmartEye->Set_SRV(m_pShaderCom, "g_SmartEyeTexture", 0)))
+				return E_FAIL;
+
+
+			iPassIndex = 1;
+		}
+		break;
+		default:
+		{
+			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(iIndex), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+		}
+		break;
+	}
+
+
+	if (FAILED(m_pModelCom->Render(m_pShaderCom, iIndex, iPassIndex)))
+		return E_FAIL;
+
+}
 
 #pragma endregion
 
@@ -533,6 +583,10 @@ HRESULT CPlayer::Ready_Components()
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("HatGirl"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	/* For.Com_Texture_SmartEye */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_SmartEye"), TEXT("Com_Texture_SmartEye"), (CComponent**)&m_pTextureCom_SmartEye)))
 		return E_FAIL;
 
 
@@ -633,7 +687,7 @@ void CPlayer::Free()
 {
 	__super::Free();
 
-
+	Safe_Release(m_pTextureCom_SmartEye);
 	Safe_Release(m_pSockatCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);

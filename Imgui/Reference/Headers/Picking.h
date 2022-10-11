@@ -13,6 +13,7 @@ public:
 
 public:
 	_float3 Get_MouseDir() { return m_vRayDir; }
+	_float3 Get_MousePos() { return m_vRayPos; }
 
 public:
 	HRESULT Initialize(HWND hWnd, _uint iWinCX, _uint iWinCY, ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

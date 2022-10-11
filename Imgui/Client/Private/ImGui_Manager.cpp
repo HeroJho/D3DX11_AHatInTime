@@ -17,7 +17,7 @@
 #include "StaticModel.h"
 #include "AnimModel.h"
 #include "Player.h"
-
+#include "MultiThread.h"
 
 #include "Transform.h"
 
@@ -253,6 +253,9 @@ void CImGui_Manager::Render_MapTool()
 
 	Window_Transform();
 
+	if(nullptr != CMeshManager::Get_Instance()->Get_MultiThread())
+		Window_LoadingReadyNeighbor();
+
 }
 void CImGui_Manager::Render_CamTool()
 {
@@ -385,6 +388,7 @@ void CImGui_Manager::Clear_MapTool()
 {
 
 	CMapManager::Get_Instance()->Free();
+	CMeshManager::Get_Instance()->Free();
 
 }
 void CImGui_Manager::Clear_CamTool()
@@ -665,6 +669,13 @@ void CImGui_Manager::Window_CreatedModel()
 	if (ImGui::InputFloat("CosRatio", &fCosRatio))
 		CMeshManager::Get_Instance()->Set_CosRatio(fCosRatio);
 
+	_float fRendRange = CMeshManager::Get_Instance()->Get_RendRange();
+	if (ImGui::InputFloat("Rend Cells Range", &fRendRange))
+		CMeshManager::Get_Instance()->Set_RendRange(fRendRange);
+
+	if (ImGui::Button("Find Neighbor"))
+		CMeshManager::Get_Instance()->Ready_Neighbor();
+
 	if (ImGui::Button("Convert To Bin"))
 		CMapManager::Get_Instance()->Conv_PickedModel_To_Bin();
 
@@ -700,6 +711,21 @@ void CImGui_Manager::Window_Transform()
 	_float3* vAixs = pPickedModel->Get_Axis();
 	Window_Transform(pTransform, vAixs);
 
+
+}
+
+void CImGui_Manager::Window_LoadingReadyNeighbor()
+{
+	ImGui::Begin("ReadyNeighbor Loading...");
+
+	
+	CMultiThread* pLoading = CMeshManager::Get_Instance()->Get_MultiThread();
+
+	_float iPersent = (pLoading->Get_iNumReadyNeighbor() / (_float)pLoading->Get_iNumReadyNeighborMax()) * 100.f;
+
+	ImGui::Text("%f / 100.0", iPersent);
+
+	ImGui::End();
 
 }
 

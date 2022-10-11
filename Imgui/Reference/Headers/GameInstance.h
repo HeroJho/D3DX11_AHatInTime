@@ -77,6 +77,7 @@ public: /* For.Input_Device */
 
 public: /* Picking */
 	_float3 Get_MouseDir();
+	_float3 Get_MousePos();
 
 public: /* For.PipeLine */
 	void Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix);

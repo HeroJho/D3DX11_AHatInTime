@@ -42,6 +42,8 @@ private:
 	void Set_Anim();
 	void Check_EndAnim();
 
+	void Anim_Face(_float fTimeDelta);
+
 	void Idle_Tick(_float fTimeDelta);
 	void Move_Tick(_float fTimeDelta);
 	void Slep_Tick(_float fTimeDelta);
@@ -52,6 +54,7 @@ private:
 
 	void Calcul_State(_float fTimeDelta);
 
+	HRESULT Choose_Pass(_int iIndex);
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -59,6 +62,7 @@ private:
 	CTransform*				m_pTransformCom = nullptr;
 	CModel*					m_pModelCom = nullptr;
 	CSockat*				m_pSockatCom = nullptr;
+	CTexture*				m_pTextureCom_SmartEye = nullptr;
 
 private:
 	_float3					m_vAxis;
@@ -77,6 +81,12 @@ private:
 	_float				m_fSlepSpeed = 0.f;
 
 	_bool				m_bImStop = false;
+
+
+	// For. FaceAnim
+	_int				m_FaceAnimIndex[2];
+	_float				m_fAnimFaceAcc = 0.f;
+	_bool				m_bWingk = false;
 
 private:
 	HRESULT Ready_Components();

@@ -5,6 +5,7 @@
 #include "Cell.h"
 #include "MapManager.h"
 #include "StaticModel.h"
+#include "MultiThread.h"
 
 IMPLEMENT_SINGLETON(CMeshManager)
 
@@ -31,10 +32,37 @@ HRESULT CMeshManager::Init(ID3D11Device * pDevice, ID3D11DeviceContext * pContex
 	return S_OK;
 }
 
+void CMeshManager::Tick(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Pressing(DIK_DELETE))
+	{
+		m_fDeleteKeyTimeAcc += fTimeDelta;
+		if (1.f < m_fDeleteKeyTimeAcc)
+		{
+			Delete_Cell();
+		}
+	}
+	else
+		m_fDeleteKeyTimeAcc = 0.f;
+
+	if (pGameInstance->Key_Down(DIK_DELETE))
+	{
+		Delete_Cell();
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
 
 
 
 
+CMultiThread * CMeshManager::Get_MultiThread()
+{
+	return m_pLoading;
+}
 
 
 HRESULT CMeshManager::Add_Cell(_float fDis, _float3* vPoss)
@@ -64,7 +92,7 @@ HRESULT CMeshManager::Comput_Cell()
 		Safe_Delete(Pair.second);
 	}
 	m_TempCells.clear();
-	
+
 
 
 
@@ -95,6 +123,79 @@ HRESULT CMeshManager::Comput_Cell()
 
 	return S_OK;
 }
+
+HRESULT CMeshManager::Delete_Cell()
+{
+	CCell* pMinPickedCell = Find_PickingCell();
+	if (nullptr == pMinPickedCell)
+		return S_OK;
+
+	_uint iIndex = pMinPickedCell->Get_Index();
+
+	m_Cells[iIndex] = nullptr;
+
+	Safe_Release(pMinPickedCell);
+
+	return S_OK;
+}
+
+CCell * CMeshManager::Find_PickingCell()
+{
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	_float3			vTempRayDir, vTempRayPos;
+	XMVECTOR		vRayDir, vRayPos;
+
+	vRayDir = XMLoadFloat3(&pGameInstance->Get_MouseDir());
+	vRayDir = XMVector3Normalize(vRayDir);
+	vRayPos = XMLoadFloat3(&pGameInstance->Get_MousePos());
+	vRayPos = XMVectorSetW(vRayPos, 1.f);
+
+	_float fMinDis = FLT_MAX_EXP;
+	CCell* pMinCell = nullptr;
+
+
+	for (_uint i = 0; i < m_Cells.size(); ++i)
+	{
+		CCell* pCell = m_Cells[i];
+		if (nullptr == pCell)
+			continue;
+
+		_float3 vPosA = pCell->Get_Point(CCell::POINT_A);
+		_float3 vPosB = pCell->Get_Point(CCell::POINT_B);
+		_float3 vPosC = pCell->Get_Point(CCell::POINT_C);
+
+		_float		fDist;
+
+		_vector vTemp_1 = XMLoadFloat3(&vPosA);
+		vTemp_1 = XMVectorSetW(vTemp_1, 1.f);
+		_vector vTemp_2 = XMLoadFloat3(&vPosB);
+		vTemp_2 = XMVectorSetW(vTemp_2, 1.f);
+		_vector vTemp_3 = XMLoadFloat3(&vPosC);
+		vTemp_3 = XMVectorSetW(vTemp_3, 1.f);
+		if (true == TriangleTests::Intersects(vRayPos, vRayDir, vTemp_1, vTemp_2, vTemp_3, fDist))
+		{
+			if (fMinDis > fDist)
+			{
+				fMinDis = fDist;
+				pMinCell = m_Cells[i];
+			}
+		}
+	}
+
+	if (fMinDis != FLT_MAX_EXP)
+	{
+		RELEASE_INSTANCE(CGameInstance);
+		return pMinCell;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+	return nullptr;
+}
+
+
 
 
 void CMeshManager::Comput_AllObjNaviMesh()
@@ -190,11 +291,25 @@ void CMeshManager::Clear_Cells()
 	m_Cells.clear();
 }
 
+HRESULT CMeshManager::Ready_Neighbor()
+{
+	if (nullptr != m_pLoading)
+		return E_FAIL;
+
+	m_pLoading = CMultiThread::Create(m_pDevice, m_pContext, CMultiThread::LOADING_READYNEIGHBOR);
+	if (nullptr == m_pLoading)
+		return E_FAIL;
+
+	return S_OK;
+}
 
 _bool CMeshManager::Check_Cell(_float3 * vPoss)
 {
 	for (_uint i = 0; i < m_Cells.size(); ++i)
 	{
+		if (nullptr == m_Cells[i])
+			continue;
+
 		_float3 vAPoint = m_Cells[i]->Get_Point(CCell::POINT_A);
 		_float3 vBPoint = m_Cells[i]->Get_Point(CCell::POINT_B);
 		_float3 vCPoint = m_Cells[i]->Get_Point(CCell::POINT_C);
@@ -281,35 +396,60 @@ void CMeshManager::Sort_CellByDot(_float3 * vPoss)
 
 HRESULT CMeshManager::Render()
 {
-
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
-	_float4x4			WorldMatrix;
-	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
-
-	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-
-
-
-	RELEASE_INSTANCE(CGameInstance);
-
-
-	for (auto& pCell : m_Cells)
+	if (1.f < m_fRendRange)
 	{
-		if (nullptr != pCell)
-		{
-			if (FAILED(m_pShader->Set_RawValue("g_vNor", &pCell->Get_Nor(), sizeof(_float3))))
-				return E_FAIL;
-			m_pShader->Begin(0);
-			pCell->Render_Cell();
-		}
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+
+		_float4x4			WorldMatrix;
+		XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
+
+		if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+			return E_FAIL;
+
+
+		_float3 vCamPos = *(_float3*)&pGameInstance->Get_CamPosition();
+
+		RELEASE_INSTANCE(CGameInstance);
+		
+
+		for (auto& pCell : m_Cells)
+		{
+			if (nullptr != pCell)
+			{
+				_float fADis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_A)) - XMLoadFloat3(&vCamPos)));
+
+				if (m_fRendRange < fADis)
+					continue;
+
+				if (FAILED(m_pShader->Set_RawValue("g_vNor", &pCell->Get_Nor(), sizeof(_float3))))
+					return E_FAIL;
+				m_pShader->Begin(0);
+				pCell->Render_Cell();
+			}
+
+		}
+	}
+	
+
+	// =============================================================
+
+	if (nullptr == m_pLoading)
+		return S_OK;
+
+	if (m_pLoading->Get_Finished())
+	{
+
+		m_pLoading->Get_iNumReadyNeighbor();
+		m_pLoading->Get_iNumReadyNeighborMax();
+
+
+
+		Safe_Release(m_pLoading);
 	}
 
 	return S_OK;

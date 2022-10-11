@@ -21,6 +21,9 @@ public:
 	_int Get_Index() const {
 		return m_iIndex;
 	}
+	void Set_Index(_int iIndex) {
+		m_iIndex = iIndex;
+	}
 
 	void Set_NeighborIndex(LINE eLine, CCell* pNeighbor) {
 		m_iNeighborIndex[eLine] = pNeighbor->Get_Index();
@@ -51,7 +54,6 @@ private:
 	class CVIBuffer_Cell*	m_pVIBuffer = nullptr;
 	// class CShader*			m_pShader = nullptr;
 	_float3					m_vNor;
-	_float					m_fRendRange = 150.f;
 #endif
 
 public:

@@ -324,6 +324,14 @@ _float3 CGameInstance::Get_MouseDir()
 	return m_pPicking->Get_MouseDir();
 }
 
+_float3 CGameInstance::Get_MousePos()
+{
+	if (nullptr == m_pPicking)
+		return _float3{ 0.f ,0.f, 0.f };
+
+	return m_pPicking->Get_MousePos();
+}
+
 void CGameInstance::Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix)
 {
 	if (nullptr == m_pPipeLine)

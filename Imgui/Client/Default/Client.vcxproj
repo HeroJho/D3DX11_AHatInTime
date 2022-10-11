@@ -200,6 +200,7 @@
     <ClInclude Include="..\public\MarkCube.h" />
     <ClInclude Include="..\public\MeshManager.h" />
     <ClInclude Include="..\Public\Monster.h" />
+    <ClInclude Include="..\public\MultiThread.h" />
     <ClInclude Include="..\public\Ori_Hat.h" />
     <ClInclude Include="..\public\Parts.h" />
     <ClInclude Include="..\public\PartsManager.h" />
@@ -252,6 +253,7 @@
     <ClCompile Include="..\private\MarkCube.cpp" />
     <ClCompile Include="..\private\MeshManager.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
+    <ClCompile Include="..\private\MultiThread.cpp" />
     <ClCompile Include="..\private\Ori_Hat.cpp" />
     <ClCompile Include="..\private\Parts.cpp" />
     <ClCompile Include="..\private\PartsManager.cpp" />

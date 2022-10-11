@@ -154,6 +154,9 @@
     <Filter Include="97.Manager\06. MeshManager">
       <UniqueIdentifier>{79e1cd9f-1a36-4a95-a47e-3a6a14cc4cff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Level\99. Loading\MultiThread">
+      <UniqueIdentifier>{4ecb9bb7-87ea-415f-93d6-026d7c5a27dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -311,6 +314,9 @@
     <ClInclude Include="..\public\MeshManager.h">
       <Filter>97.Manager\06. MeshManager</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MultiThread.h">
+      <Filter>01.Level\99. Loading\MultiThread</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -453,6 +459,9 @@
     </ClCompile>
     <ClCompile Include="..\private\MeshManager.cpp">
       <Filter>97.Manager\06. MeshManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MultiThread.cpp">
+      <Filter>01.Level\99. Loading\MultiThread</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

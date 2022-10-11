@@ -61,6 +61,7 @@ void CLevel_MapTool::Tick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	CMeshManager::Get_Instance()->Tick(fTimeDelta);
 
 	RELEASE_INSTANCE(CGameInstance);
 
