@@ -25,6 +25,7 @@
 #include "AnimModel.h"
 #include "Ori_Hat.h"
 #include "Parts.h"
+#include "ClickedVertexCube.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -158,6 +159,13 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_RenderCube"),
 		CRenderCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	/* For.Prototype_GameObject_ClickedVertexCube */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ClickedVertexCube"),
+		CClickedVertexCube::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
 
 	/* For.Prototype_GameObject_Terrain_StaticModel*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_StaticModel"),

@@ -75,6 +75,7 @@ HRESULT CLevel_MapTool::Render()
 	SetWindowText(g_hWnd, TEXT("¸ÊÅø ·¹º§ÀÓ"));
 
 	CMeshManager::Get_Instance()->Comput_Cell();
+	CMeshManager::Get_Instance()->Comput_FreeVectexCube();
 	CMeshManager::Get_Instance()->Render();
 
 	return S_OK;

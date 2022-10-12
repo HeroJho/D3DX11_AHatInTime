@@ -29,6 +29,8 @@ public:
 		m_iNeighborIndex[eLine] = pNeighbor->Get_Index();
 	}
 
+	_int Get_NumNeighbor();
+
 	_float3 Get_Nor() { return m_vNor; }
 
 public:

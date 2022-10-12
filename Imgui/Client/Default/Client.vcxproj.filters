@@ -157,6 +157,9 @@
     <Filter Include="01.Level\99. Loading\MultiThread">
       <UniqueIdentifier>{4ecb9bb7-87ea-415f-93d6-026d7c5a27dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\02. MapTool\03. ClickedVertexCube">
+      <UniqueIdentifier>{a640c109-257c-42ea-81ca-a39b2500f0e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -317,6 +320,9 @@
     <ClInclude Include="..\public\MultiThread.h">
       <Filter>01.Level\99. Loading\MultiThread</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\ClickedVertexCube.h">
+      <Filter>02.GameObject\02. MapTool\03. ClickedVertexCube</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -462,6 +468,9 @@
     </ClCompile>
     <ClCompile Include="..\private\MultiThread.cpp">
       <Filter>01.Level\99. Loading\MultiThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ClickedVertexCube.cpp">
+      <Filter>02.GameObject\02. MapTool\03. ClickedVertexCube</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

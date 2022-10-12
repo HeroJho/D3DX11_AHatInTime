@@ -173,6 +173,7 @@
     <ClInclude Include="..\public\Camera_Free.h" />
     <ClInclude Include="..\public\CamManager.h" />
     <ClInclude Include="..\public\CamSelectingCube.h" />
+    <ClInclude Include="..\public\ClickedVertexCube.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\ColorCube.h" />
     <ClInclude Include="..\public\DataManager.h" />
@@ -228,6 +229,7 @@
     <ClCompile Include="..\private\Camera_Free.cpp" />
     <ClCompile Include="..\private\CamManager.cpp" />
     <ClCompile Include="..\private\CamSelectingCube.cpp" />
+    <ClCompile Include="..\private\ClickedVertexCube.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
     <ClCompile Include="..\Private\imgui.cpp" />

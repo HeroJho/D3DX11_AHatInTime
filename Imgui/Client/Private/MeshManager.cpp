@@ -6,6 +6,8 @@
 #include "MapManager.h"
 #include "StaticModel.h"
 #include "MultiThread.h"
+#include "ClickedVertexCube.h"
+
 
 IMPLEMENT_SINGLETON(CMeshManager)
 
@@ -53,6 +55,57 @@ void CMeshManager::Tick(_float fTimeDelta)
 	}
 
 
+	// =============== Click Vertex ==============
+	if (m_bClickVertexModel)
+	{
+		if (pGameInstance->Mouse_Down(DIMK_LBUTTON))
+		{
+			Click_Vertex();
+		}
+		else if (pGameInstance->Mouse_Down(DIMK_RBUTTON))
+		{
+			Clear_ClickedVertex();
+		}
+		else if (pGameInstance->Key_Down(DIK_SPACE))
+		{
+			if (3 == m_fvClickedPoss.size())
+			{
+				_float3 vPoss[3];
+				for (_int i = 0; i < 3; ++i)
+					vPoss[i] = m_fvClickedPoss[i];
+
+				Add_Cell(vPoss, true);
+			}
+		}
+
+		if (pGameInstance->Key_Pressing(DIK_UP))
+		{
+			CTransform* pTran = (CTransform*)m_pClickedFreeVerteixCube->Get_ComponentPtr(TEXT("Com_Transform"));
+			pTran->Go_Dir(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, fTimeDelta);
+		}
+		else if (pGameInstance->Key_Pressing(DIK_DOWN))
+		{
+			CTransform* pTran = (CTransform*)m_pClickedFreeVerteixCube->Get_ComponentPtr(TEXT("Com_Transform"));
+			pTran->Go_Dir(XMVectorSet(0.f, -1.f, 0.f, 0.f), 10.f, fTimeDelta);
+		}
+		else if (pGameInstance->Key_Down(DIK_C))
+		{
+			if (!(2 < m_fvClickedPoss.size()))
+			{
+				_float3 vPos = m_pClickedFreeVerteixCube->Get_Pos();
+				m_fvClickedPoss.push_back(vPos);
+			}
+		}
+
+		Set_ClickedVertexCube();
+	}
+
+	if (pGameInstance->Key_Down(DIK_I))
+	{
+		Find_CellIndex();
+	}
+
+
 	RELEASE_INSTANCE(CGameInstance);
 }
 
@@ -62,6 +115,15 @@ void CMeshManager::Tick(_float fTimeDelta)
 CMultiThread * CMeshManager::Get_MultiThread()
 {
 	return m_pLoading;
+}
+
+void CMeshManager::Set_ClickVertexMode(_bool bClickVertexMode)
+{
+	m_bClickVertexModel = bClickVertexMode;
+	if (m_bClickVertexModel)
+		Create_ClickedVertexCube();
+	else
+		Delete_ClickedVertexCube();
 }
 
 
@@ -92,8 +154,6 @@ HRESULT CMeshManager::Comput_Cell()
 		Safe_Delete(Pair.second);
 	}
 	m_TempCells.clear();
-
-
 
 
 	//// 시계 방향으로 정리한다 0 1 2
@@ -264,16 +324,22 @@ void CMeshManager::Comput_AllObjNaviMesh()
 
 }
 
-HRESULT CMeshManager::Add_Cell(_float3 * vPoss)
+HRESULT CMeshManager::Add_Cell(_float3 * vPoss, _bool bCheckOverlap)
 {
-	// 시계 방향으로 정리한다 0 1 2
-	// Sort_Cell(vPoss);
-	//// 마우스 Lay와 Cell의 법선 벡터를 내적하여 2차 Sort를 한다.
-	//Sort_CellByDot(vPoss);
+	if (bCheckOverlap)
+	{
+		// 시계 방향으로 정리한다 0 1 2
+		Sort_Cell(vPoss);
+		// 마우스 Lay와 Cell의 법선 벡터를 내적하여 2차 Sort를 한다.
+		Sort_CellByDot(vPoss);
+	}
 
-	//// 똑같은 셀이 등록되어 있는지 확인한다.
-	//if (Check_Cell(vPoss))
-	//	return S_OK;
+	// 똑같은 셀이 등록되어 있는지 확인한다.
+	if (bCheckOverlap && Check_Cell(vPoss))
+		return S_OK;
+
+	if (!bCheckOverlap && !Check_Area(vPoss))
+		return S_OK;
 
 	// 추가한다.
 	CCell*			pCell = CCell::Create(m_pDevice, m_pContext, vPoss, m_Cells.size());
@@ -302,6 +368,192 @@ HRESULT CMeshManager::Ready_Neighbor()
 
 	return S_OK;
 }
+
+void CMeshManager::Find_CellIndex()
+{
+	CCell* pCell = Find_PickingCell();
+	if (nullptr == pCell)
+		return;
+
+	m_iClickedCell = pCell->Get_Index();
+}
+
+
+
+void CMeshManager::Click_Vertex()
+{
+	CCell* pCell = Find_PickingCell();
+	if (nullptr == pCell)
+		return;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_vector vMousePos;
+
+	XMVECTOR		vRayDir, vRayPos;
+
+	vRayDir = XMLoadFloat3(&pGameInstance->Get_MouseDir());
+	vRayDir = XMVector3Normalize(vRayDir);
+	vRayPos = XMLoadFloat3(&pGameInstance->Get_MousePos());
+	vRayPos = XMVectorSetW(vRayPos, 1.f);
+	
+	_float3 vPosA = pCell->Get_Point(CCell::POINT_A);
+	_float3 vPosB = pCell->Get_Point(CCell::POINT_B);
+	_float3 vPosC = pCell->Get_Point(CCell::POINT_C);
+
+	_float		fDist;
+
+	_vector vTemp_1 = XMLoadFloat3(&vPosA);
+	vTemp_1 = XMVectorSetW(vTemp_1, 1.f);
+	_vector vTemp_2 = XMLoadFloat3(&vPosB);
+	vTemp_2 = XMVectorSetW(vTemp_2, 1.f);
+	_vector vTemp_3 = XMLoadFloat3(&vPosC);
+	vTemp_3 = XMVectorSetW(vTemp_3, 1.f);
+	if (true == TriangleTests::Intersects(vRayPos, vRayDir, vTemp_1, vTemp_2, vTemp_3, fDist))
+	{
+		vMousePos = vRayPos + vRayDir * fDist;
+	}
+
+
+	_float fDis_A = XMVectorGetX(XMVector3Length(vTemp_1 - vMousePos));
+	_float fDis_B = XMVectorGetX(XMVector3Length(vTemp_2 - vMousePos));
+	_float fDis_C = XMVectorGetX(XMVector3Length(vTemp_3 - vMousePos));
+
+	_float3 vClickedPos;
+	
+	if (fDis_A < fDis_B && fDis_A < fDis_C)
+		XMStoreFloat3(&vClickedPos, vTemp_1);
+	else if (fDis_B < fDis_A && fDis_B < fDis_C)
+		XMStoreFloat3(&vClickedPos, vTemp_2);
+	else if (fDis_C < fDis_A && fDis_C < fDis_B)
+		XMStoreFloat3(&vClickedPos, vTemp_3);
+
+
+	if (2 < m_fvClickedPoss.size())
+	{
+		RELEASE_INSTANCE(CGameInstance);
+		return;
+	}
+
+	m_fvClickedPoss.push_back(vClickedPos);
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CMeshManager::Clear_ClickedVertex()
+{
+	m_fvClickedPoss.clear();
+}
+
+
+
+
+void CMeshManager::Create_ClickedVertexCube()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	for (_uint i = 0; i < 3; ++i)
+	{
+		CClickedVertexCube::COLORCUBEDESC Desc;
+		ZeroMemory(&Desc, sizeof(CClickedVertexCube::COLORCUBEDESC));
+		Desc.vColor = _float4(1.f, 0.f, 0.f, 1.f);
+		Desc.vPos = _float3(0.f, 0.f, 0.f);
+		Desc.vScale = _float3(0.5f, 0.5f, 0.5f);
+		CGameObject* pObj = nullptr;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_ClickedVertexCube"), LEVEL_MAPTOOL, TEXT("Layer_ClickedVertex"), &pObj, &Desc)))
+		{
+			RELEASE_INSTANCE(CGameInstance);
+			return;
+		}
+
+		m_ClickedVertexCube.push_back((CClickedVertexCube*)pObj);
+
+	}
+
+
+	CClickedVertexCube::COLORCUBEDESC Desc;
+	ZeroMemory(&Desc, sizeof(CClickedVertexCube::COLORCUBEDESC));
+	Desc.vColor = _float4(0.f, 1.f, 0.f, 1.f);
+	Desc.vPos = _float3(0.f, 0.f, 0.f);
+	Desc.vScale = _float3(0.5f, 0.5f, 0.5f);
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_ClickedVertexCube"), LEVEL_MAPTOOL, TEXT("Layer_ClickedVertex"), &pObj, &Desc)))
+	{
+		RELEASE_INSTANCE(CGameInstance);
+		return;
+	}
+
+	m_pClickedFreeVerteixCube = (CClickedVertexCube*)pObj;
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+void CMeshManager::Set_ClickedVertexCube()
+{
+	Reset_ClickedVertexCube();
+
+	for (_uint i = 0; i < m_fvClickedPoss.size(); ++i)
+	{
+		m_ClickedVertexCube[i]->Set_Pos(m_fvClickedPoss[i]);
+	}
+
+}
+void CMeshManager::Reset_ClickedVertexCube()
+{
+	for (_uint i = 0; i < m_ClickedVertexCube.size(); ++i)
+	{
+		m_ClickedVertexCube[i]->Set_Pos(_float3(0.f, 9999.f, 0.f));
+	}
+}
+void CMeshManager::Delete_ClickedVertexCube()
+{
+	for (auto& pCube : m_ClickedVertexCube)
+		pCube->Set_Dead();
+	m_pClickedFreeVerteixCube->Set_Dead();
+
+	m_ClickedVertexCube.clear();
+	m_pClickedFreeVerteixCube = nullptr;
+}
+
+void CMeshManager::Move_FreeVectexCube(_float fDis)
+{
+	m_TempMoveFreeVertax.push_back(fDis);
+}
+
+void CMeshManager::Comput_FreeVectexCube()
+{
+	if (m_TempMoveFreeVertax.empty())
+		return;
+
+	_float fMinDis = FLT_MAX_EXP;
+	for (auto& fDis : m_TempMoveFreeVertax)
+	{
+		if (fMinDis > fDis)
+		{
+			fMinDis = fDis;
+		}
+	}
+	m_TempMoveFreeVertax.clear();
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_float3 vDir = pGameInstance->Get_MouseDir();
+	_float3 vMousePos = pGameInstance->Get_MousePos();
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	_float3 vPos;
+	XMStoreFloat3(&vPos , XMLoadFloat3(&vMousePos) + fMinDis * XMVector3Normalize(XMLoadFloat3(&vDir)));
+
+	if (m_bClickVertexModel)
+		m_pClickedFreeVerteixCube->Set_Pos(vPos);
+}
+
+
+
+
+
+
 
 _bool CMeshManager::Check_Cell(_float3 * vPoss)
 {
@@ -388,6 +640,23 @@ void CMeshManager::Sort_CellByDot(_float3 * vPoss)
 
 }
 
+_bool CMeshManager::Check_Area(_float3 * vPoss)
+{
+	_vector vA = XMLoadFloat3(&vPoss[0]);
+	_vector vB = XMLoadFloat3(&vPoss[1]);
+	_vector vC = XMLoadFloat3(&vPoss[2]);
+
+	_float3 vAB; XMStoreFloat3(&vAB, vB - vA);
+	_float3 vAC; XMStoreFloat3(&vAC, vC - vA);
+
+	_float fArea = sqrt(pow(((vAB.y*vAC.z) - (vAC.y*vAB.z)), 2) + pow(((vAC.x*vAB.z) - (vAB.x*vAC.z)), 2) + pow(((vAB.x*vAC.y) - (vAC.x*vAB.y)), 2));
+
+	if (m_fMaxArea > fArea)
+		return false;
+
+	return true;
+}
+
 
 
 
@@ -428,6 +697,12 @@ HRESULT CMeshManager::Render()
 
 				if (FAILED(m_pShader->Set_RawValue("g_vNor", &pCell->Get_Nor(), sizeof(_float3))))
 					return E_FAIL;
+
+				_int iNum = pCell->Get_NumNeighbor();
+				if (FAILED(m_pShader->Set_RawValue("g_iNumNeighbor", &iNum, sizeof(_int))))
+					return E_FAIL;
+
+
 				m_pShader->Begin(0);
 				pCell->Render_Cell();
 			}
@@ -458,6 +733,7 @@ HRESULT CMeshManager::Render()
 void CMeshManager::Free()
 {
 	Clear_Cells();
+	Delete_ClickedVertexCube();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

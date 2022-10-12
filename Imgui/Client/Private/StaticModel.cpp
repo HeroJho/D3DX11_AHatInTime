@@ -79,6 +79,22 @@ void CStaticModel::Tick(_float fTimeDelta)
 	_float3 vPoss[3];
 	_float fMinDis = 0.f;
 	
+	if (CMeshManager::Get_Instance()->Get_ClickVertexMode())
+	{
+		if (pGameInstance->Mouse_Pressing(DIMK_WHEEL) && pGameInstance->Mouse_Pressing(DIMK_LBUTTON))
+		{
+			if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+			{
+				CMeshManager::Get_Instance()->Move_FreeVectexCube(fMinDis);
+			}
+		}
+
+
+		RELEASE_INSTANCE(CGameInstance);
+		return;
+	}
+
+
 	if (pGameInstance->Key_Down(DIK_SPACE))
 	{
 		if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))

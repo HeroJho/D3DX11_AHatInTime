@@ -48,6 +48,23 @@ HRESULT CCell::Initialize(const _float3 * pPoints, _int iIndex)
 	return S_OK;
 }
 
+
+
+_int CCell::Get_NumNeighbor()
+{
+	_int iNum = 0;
+	for (_uint i = 0; i < 3; ++i)
+	{
+		if (-1 != m_iNeighborIndex[i])
+			++iNum;
+	}
+
+
+	return iNum;
+}
+
+
+
 _bool CCell::Compare(const _float3 & vSourPoint, const _float3 & vDestPoint)
 {
 	if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), XMLoadFloat3(&vSourPoint)))

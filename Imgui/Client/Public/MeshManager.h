@@ -25,9 +25,17 @@ public:
 	_float Get_RendRange() { return m_fRendRange; }
 	void Set_RendRange(_float fRendRange) { m_fRendRange = fRendRange; }
 
+	_float Get_MaxArea() { return m_fMaxArea; }
+	void Set_MaxArea(_float fMaxArea) { m_fMaxArea = fMaxArea; }
+
 	vector<CCell*>*	Get_Cells() { return &m_Cells; }
 
 	class CMultiThread* Get_MultiThread();
+
+	_bool Get_ClickVertexMode() { return m_bClickVertexModel; }
+	void Set_ClickVertexMode(_bool bClickVertexMode);
+
+	_uint Get_ClickedCell() { return m_iClickedCell; }
 
 public:
 	HRESULT Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -43,30 +51,52 @@ public:
 	_bool Check_Cell(_float3* vPoss);
 	void Sort_Cell(_float3* vPoss);
 	void Sort_CellByDot(_float3* vPoss);
+	_bool Check_Area(_float3* vPoss);
 
 	HRESULT Comput_Cell();
 
 	void Comput_AllObjNaviMesh();
-	HRESULT Add_Cell(_float3* vPoss);
+	HRESULT Add_Cell(_float3* vPoss, _bool bCheckOverlap = false);
 
 	void Clear_Cells();
 
 	HRESULT Ready_Neighbor();
 
+	void Find_CellIndex();
 
+// =============================================
 
+	void Click_Vertex();
+	void Clear_ClickedVertex();
+
+	void Create_ClickedVertexCube();
+	void Set_ClickedVertexCube();
+	void Reset_ClickedVertexCube();
+	void Delete_ClickedVertexCube();
+
+	void Move_FreeVectexCube(_float fDis);
+	void Comput_FreeVectexCube();
 
 private:
 	vector<CCell*>			m_Cells;
 	typedef vector<CCell*>	CELLS;
 
+	_uint m_iClickedCell = 0;
+
 	map<_float, _float3*> m_TempCells;
+	vector<_float> m_TempMoveFreeVertax;
 
 	_float m_fCosRatio = 0.f;
-
 	_float m_fRendRange = 0.f;
+	_float m_fMaxArea = 0.f;
 
 	_float m_fDeleteKeyTimeAcc = 0.f;
+
+	vector<_float3> m_fvClickedPoss;
+	vector<class CClickedVertexCube*> m_ClickedVertexCube;
+	class CClickedVertexCube* m_pClickedFreeVerteixCube = nullptr;
+	_bool	m_bClickVertexModel = false;
+
 
 private:
 	ID3D11Device* m_pDevice;

@@ -256,6 +256,7 @@ void CImGui_Manager::Render_MapTool()
 	if(nullptr != CMeshManager::Get_Instance()->Get_MultiThread())
 		Window_LoadingReadyNeighbor();
 
+
 }
 void CImGui_Manager::Render_CamTool()
 {
@@ -662,19 +663,6 @@ void CImGui_Manager::Window_CreatedModel()
 	if (ImGui::Checkbox("Rend_CulMode", &bRendCulMode))
 		CMapManager::Get_Instance()->Set_RendCulMode(bRendCulMode);
 
-	if ((ImGui::Button("Bake Navi")))
-		CMeshManager::Get_Instance()->Comput_AllObjNaviMesh();
-	ImGui::SameLine();
-	_float fCosRatio = CMeshManager::Get_Instance()->Get_CosRatio();
-	if (ImGui::InputFloat("CosRatio", &fCosRatio))
-		CMeshManager::Get_Instance()->Set_CosRatio(fCosRatio);
-
-	_float fRendRange = CMeshManager::Get_Instance()->Get_RendRange();
-	if (ImGui::InputFloat("Rend Cells Range", &fRendRange))
-		CMeshManager::Get_Instance()->Set_RendRange(fRendRange);
-
-	if (ImGui::Button("Find Neighbor"))
-		CMeshManager::Get_Instance()->Ready_Neighbor();
 
 	if (ImGui::Button("Convert To Bin"))
 		CMapManager::Get_Instance()->Conv_PickedModel_To_Bin();
@@ -695,6 +683,35 @@ void CImGui_Manager::Window_CreatedModel()
 	ImGui::PopItemWidth();
 		
 
+
+	ImGui::Text("===============Navigation==============");
+	ImGui::PushItemWidth(30.f);
+
+	_float fCosRatio = CMeshManager::Get_Instance()->Get_CosRatio();
+	if (ImGui::InputFloat("CosRatio", &fCosRatio))
+		CMeshManager::Get_Instance()->Set_CosRatio(fCosRatio);
+
+	_float fMaxArea = CMeshManager::Get_Instance()->Get_MaxArea();
+	if (ImGui::InputFloat("MaxArea", &fMaxArea))
+		CMeshManager::Get_Instance()->Set_MaxArea(fMaxArea);
+
+	if ((ImGui::Button("Bake Navi")))
+		CMeshManager::Get_Instance()->Comput_AllObjNaviMesh();
+	ImGui::SameLine();
+	if (ImGui::Button("Find Neighbor"))
+		CMeshManager::Get_Instance()->Ready_Neighbor();
+
+	_float fRendRange = CMeshManager::Get_Instance()->Get_RendRange();
+	if (ImGui::InputFloat("Rend Cells Range", &fRendRange))
+		CMeshManager::Get_Instance()->Set_RendRange(fRendRange);
+	ImGui::PopItemWidth();
+
+	_bool bClickVertexModel = CMeshManager::Get_Instance()->Get_ClickVertexMode();
+	if (ImGui::Checkbox("ClickVertexModel", &bClickVertexModel))
+		CMeshManager::Get_Instance()->Set_ClickVertexMode(bClickVertexModel);
+
+	_uint iClickedCellIndex = CMeshManager::Get_Instance()->Get_ClickedCell();
+	ImGui::Text("ClickedCellIndex: %d", iClickedCellIndex);
 
 	ImGui::End();
 }
