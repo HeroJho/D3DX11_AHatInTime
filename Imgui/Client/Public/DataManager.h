@@ -40,6 +40,20 @@ public:
 
 	}DATA_LENEARANIM;
 
+
+	typedef struct dataCell
+	{
+		_float3		vPoints[3];
+		_int		iNeighborIndex[3];
+	}DATA_CELL;
+	typedef struct dataNavi
+	{
+		_int iID;
+		_uint iNumCell;
+		DATA_CELL* pCellDatas;
+
+	}DATA_NAVI;
+
 #pragma endregion
 
 	DECLARE_SINGLETON(CDataManager)
@@ -95,6 +109,9 @@ public:
 
 	HRESULT Save_Anim(char* pFileName, list<ANIM_LINEAR_DATA> Datas);
 	list<ANIM_LINEAR_DATA> Load_Anim(char* pFileName);
+
+	HRESULT Save_Navi(_int iMapID);
+	DATA_NAVI Load_Navi(_int iMapID);
 
 private:
 	list<DATA_MAP*> m_Data_Maps;

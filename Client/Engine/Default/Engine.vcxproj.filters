@@ -118,6 +118,15 @@
     <ClCompile Include="..\private\ColliderManager.cpp">
       <Filter>97.Managers\ColliderManager</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Navigation.cpp">
+      <Filter>03.Components\09.Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Cell.cpp">
+      <Filter>03.Components\09.Navigation\Cell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VIBuffer_Cell.cpp">
+      <Filter>03.Components\02.VIBuffer\Cell</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -252,6 +261,15 @@
     <ClInclude Include="..\public\ColliderManager.h">
       <Filter>97.Managers\ColliderManager</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Navigation.h">
+      <Filter>03.Components\09.Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Cell.h">
+      <Filter>03.Components\09.Navigation\Cell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VIBuffer_Cell.h">
+      <Filter>03.Components\02.VIBuffer\Cell</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -383,5 +401,22 @@
     <Filter Include="97.Managers\ColliderManager">
       <UniqueIdentifier>{0d54a6a1-0b8d-4d17-9a1b-beabcbc45018}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Components\09.Navigation">
+      <UniqueIdentifier>{59daf009-986f-475b-8b28-0fb425cb7df4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\09.Navigation\Cell">
+      <UniqueIdentifier>{90af3770-3b3f-444b-80e3-dd00964810be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\09.Navigation\Cell\Shader">
+      <UniqueIdentifier>{ca8b5fa6-c808-4316-bac4-0bf09daed52a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Cell">
+      <UniqueIdentifier>{fb18379e-0cfa-4487-99d9-05ecc3adaac1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl">
+      <Filter>03.Components\09.Navigation\Cell\Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

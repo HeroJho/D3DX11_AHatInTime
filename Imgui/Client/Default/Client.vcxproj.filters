@@ -296,9 +296,6 @@
     <ClInclude Include="..\public\AnimModel.h">
       <Filter>02.GameObject\03. AnimTool\01. AnimModel</Filter>
     </ClInclude>
-    <ClInclude Include="Terrain_Anim.h">
-      <Filter>02.GameObject\03. AnimTool\02. Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Ori_Hat.h">
       <Filter>02.GameObject\99. Static\Parts\Hat</Filter>
     </ClInclude>
@@ -322,6 +319,9 @@
     </ClInclude>
     <ClInclude Include="..\public\ClickedVertexCube.h">
       <Filter>02.GameObject\02. MapTool\03. ClickedVertexCube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Terrain_Anim.h">
+      <Filter>02.GameObject\03. AnimTool\02. Terrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -445,9 +445,6 @@
     <ClCompile Include="..\private\AnimModel.cpp">
       <Filter>02.GameObject\03. AnimTool\01. AnimModel</Filter>
     </ClCompile>
-    <ClCompile Include="Terrain_Anim.cpp">
-      <Filter>02.GameObject\03. AnimTool\02. Terrain</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Ori_Hat.cpp">
       <Filter>02.GameObject\99. Static\Parts\Hat</Filter>
     </ClCompile>
@@ -471,6 +468,9 @@
     </ClCompile>
     <ClCompile Include="..\private\ClickedVertexCube.cpp">
       <Filter>02.GameObject\02. MapTool\03. ClickedVertexCube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Terrain_Anim.cpp">
+      <Filter>02.GameObject\03. AnimTool\02. Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

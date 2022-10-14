@@ -8,9 +8,12 @@
 #include "Texture.h"
 #include "Renderer.h"
 #include "Transform.h"
+#include "Navigation.h"
+#include "VIBuffer_Cell.h"
 #include "VIBuffer_Rect.h"
 #include "VIBuffer_Terrain.h"
 #include "VIBuffer_Map_Terrain.h"
+
 
 
 

@@ -105,8 +105,25 @@ void CMeshManager::Tick(_float fTimeDelta)
 		Find_CellIndex();
 	}
 
-
 	RELEASE_INSTANCE(CGameInstance);
+
+
+	// ============ Loading =============
+
+	if (nullptr == m_pLoading)
+		return;
+
+	if (m_pLoading->Get_Finished())
+	{
+		vector<CCell*>* pCells = m_pLoading->Get_FinishCells();
+
+		m_Cells.clear();
+		for (auto& pCell : *pCells)
+			m_Cells.push_back(pCell);
+
+		Safe_Release(m_pLoading);
+	}
+
 }
 
 
@@ -375,7 +392,7 @@ void CMeshManager::Find_CellIndex()
 	if (nullptr == pCell)
 		return;
 
-	m_iClickedCell = pCell->Get_Index();
+	m_iClickedCellIndex = pCell->Get_Index();
 }
 
 
@@ -509,7 +526,9 @@ void CMeshManager::Delete_ClickedVertexCube()
 {
 	for (auto& pCube : m_ClickedVertexCube)
 		pCube->Set_Dead();
-	m_pClickedFreeVerteixCube->Set_Dead();
+
+	if(nullptr != m_pClickedFreeVerteixCube)
+		m_pClickedFreeVerteixCube->Set_Dead();
 
 	m_ClickedVertexCube.clear();
 	m_pClickedFreeVerteixCube = nullptr;
@@ -546,7 +565,11 @@ void CMeshManager::Comput_FreeVectexCube()
 	XMStoreFloat3(&vPos , XMLoadFloat3(&vMousePos) + fMinDis * XMVector3Normalize(XMLoadFloat3(&vDir)));
 
 	if (m_bClickVertexModel)
+	{
 		m_pClickedFreeVerteixCube->Set_Pos(vPos);
+		m_vClickedPos = vPos;
+	}
+
 }
 
 
@@ -713,19 +736,6 @@ HRESULT CMeshManager::Render()
 
 	// =============================================================
 
-	if (nullptr == m_pLoading)
-		return S_OK;
-
-	if (m_pLoading->Get_Finished())
-	{
-
-		m_pLoading->Get_iNumReadyNeighbor();
-		m_pLoading->Get_iNumReadyNeighborMax();
-
-
-
-		Safe_Release(m_pLoading);
-	}
 
 	return S_OK;
 }

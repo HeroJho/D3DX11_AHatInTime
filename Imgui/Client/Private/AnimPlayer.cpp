@@ -38,6 +38,7 @@ HRESULT CAnimPlayer::Initialize(void * pArg)
 	m_fCulSpeed = m_fWalkSpeed;
 
 	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.5f, 0.f, 0.5f, 1.f));
 
 	return S_OK;
 }
@@ -53,13 +54,15 @@ _float CAnimPlayer::Get_AnimSpeed(STATE eState)
 	switch (eState)
 	{
 	case Client::CAnimPlayer::STATE_IDLE:
-		return m_pModelCom->Get_Anim_TickPerSecond(111);
+		return m_pModelCom->Get_Anim_TickPerSecond(113);
 	case Client::CAnimPlayer::STATE_WALK:
-		return m_pModelCom->Get_Anim_TickPerSecond(197);
+		return m_pModelCom->Get_Anim_TickPerSecond(192);
 	case Client::CAnimPlayer::STATE_RUN:
-		return m_pModelCom->Get_Anim_TickPerSecond(198);
+		return m_pModelCom->Get_Anim_TickPerSecond(193);
 	case Client::CAnimPlayer::STATE_SLEP:
-		return m_pModelCom->Get_Anim_TickPerSecond(177);
+		return m_pModelCom->Get_Anim_TickPerSecond(180);
+	case Client::CAnimPlayer::STATE_JUMPLENDING:
+		return m_pModelCom->Get_Anim_TickPerSecond(103);
 	}
 }
 
@@ -79,6 +82,8 @@ void CAnimPlayer::Set_AnimSpeed(STATE eState, _float fSpeed)
 	case Client::CAnimPlayer::STATE_SLEP:
 		m_pModelCom->Set_Anim_TickPerSecond(177, fSpeed);
 		break;
+	case Client::CAnimPlayer::STATE_JUMPLENDING:
+		m_pModelCom->Set_Anim_TickPerSecond(103, fSpeed);
 	}
 }
 
@@ -136,7 +141,6 @@ void CAnimPlayer::Set_Anim()
 		m_pModelCom->Set_AnimIndex(192);
 		break;
 	case STATE_RUN:
-	{
 		if (STATE_SLEP == m_ePreState)
 		{
 			if (m_bImStop)
@@ -149,10 +153,15 @@ void CAnimPlayer::Set_Anim()
 				m_pTransformCom->Set_DestLook();
 		}
 		m_pModelCom->Set_AnimIndex(193);
-	}
 		break;
 	case STATE_SPRINT:
 		m_pModelCom->Set_AnimIndex(153);
+		break;
+	case STATE_JUMP:
+		m_pModelCom->Set_AnimIndex(96);
+		break;
+	case STATE_JUMPLENDING:
+		m_pModelCom->Set_AnimIndex(103);
 		break;
 	case STATE_ATTACK_1:
 		m_pModelCom->Set_AnimIndex(188);
@@ -247,6 +256,7 @@ void CAnimPlayer::Tool_Mode(_float fTimeDelta)
 
 void CAnimPlayer::Game_Mode(_float fTimeDelta)
 {
+	Anim_Face(fTimeDelta);
 
 	switch (m_eState)
 	{
@@ -260,6 +270,10 @@ void CAnimPlayer::Game_Mode(_float fTimeDelta)
 	case STATE_SLEP:
 		Slep_Tick(fTimeDelta);
 		break;
+	case STATE_JUMP:
+	case STATE_JUMPLENDING :
+		Jump_Tick(fTimeDelta);
+		break;
 	case STATE_ATTACK_1:
 	case STATE_ATTACK_2:
 		Attack_Input(fTimeDelta);
@@ -271,8 +285,6 @@ void CAnimPlayer::Game_Mode(_float fTimeDelta)
 		ReadyAttack_Input(fTimeDelta);
 		break;
 	}
-
-
 
 }
 
@@ -383,6 +395,13 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 		m_TickStates.push_back(STATE_ATTACK_1);
 	}
 
+	if (pGameInstance->Key_Down(DIK_J))
+	{
+		m_pTransformCom->Jump(m_fJumpPower);
+		m_TickStates.push_back(STATE_JUMP);
+	}
+
+
 
 	vTotalLook = XMVector3Normalize(vTotalLook);
 	XMStoreFloat3(&m_vDestLook, vTotalLook);
@@ -409,15 +428,23 @@ void CAnimPlayer::Move_Tick(_float fTimeDelta)
 	// 슬립했냐 안 했냐
 	if (m_pTransformCom->LinearTurn(m_vDestLook, 1.f, 0.3f, fTimeDelta))
 	{
-		m_fSlepSpeed = 2.f;
+		m_fSlepSpeed = 2.2f;
 		m_TickStates.push_back(STATE_SLEP);
 	}
 
 }
 
+void CAnimPlayer::Jump_Tick(_float fTimeDelta)
+{
+	m_eJumpState = STATE_END;
+
+	Jump_Input(fTimeDelta);
+	m_pTransformCom->LinearTurn(m_vDestLook, 0.5f, 0.3f, fTimeDelta);
+}
+
 void CAnimPlayer::Slep_Tick(_float fTimeDelta)
 {
-	m_fSlepSpeed -= 5.f * fTimeDelta;
+	m_fSlepSpeed -= 6.f * fTimeDelta;
 }
 
 void CAnimPlayer::Attack_Input(_float fTimeDelta)
@@ -455,6 +482,149 @@ void CAnimPlayer::ReadyAttack_Input(_float fTimeDelta)
 	m_ComboStates.clear();
 }
 
+void CAnimPlayer::Jump_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// WD : 카메라 Lend Look으로 Look
+	// AD : 카메라 Right로 Look
+	_matrix mCamWorld = XMMatrixInverse(nullptr, pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	_vector vCamRight = mCamWorld.r[0];
+	_vector vCamUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	_vector vLendLook = XMVector3Cross(vCamRight, vCamUp);
+
+	vLendLook = XMVector3Normalize(vLendLook);
+	vCamRight = XMVector3Normalize(vCamRight);
+
+
+	_vector vTotalLook = XMLoadFloat3(&m_vDestLook);
+
+	if (pGameInstance->Key_Pressing(DIK_W))
+	{
+		// XMStoreFloat3(&m_vDestLook, vLendLook);
+		vTotalLook += vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vLendLook;
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		{
+			
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+	else if (pGameInstance->Key_Pressing(DIK_S))
+	{
+		// XMStoreFloat3(&m_vDestLook, -1.f * vLendLook);
+		vTotalLook += -1.f * vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vLendLook;
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		{
+
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+
+
+	if (pGameInstance->Key_Pressing(DIK_A))
+	{
+		// XMStoreFloat3(&m_vDestLook, -1.f*vCamRight);
+		vTotalLook += -1.f * vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vCamRight;
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		{
+
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		// XMStoreFloat3(&m_vDestLook, vCamRight);
+		vTotalLook += vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vCamRight;
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		{
+
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+
+
+	//if (pGameInstance->Key_Down(DIK_J))
+	//	m_pTransformCom->Jump(m_fJumpPower);
+
+
+	vTotalLook = XMVector3Normalize(vTotalLook);
+	XMStoreFloat3(&m_vDestLook, vTotalLook);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+
+
+
+void CAnimPlayer::Anim_Face(_float fTimeDelta)
+{
+	if (0 != m_FaceAnimIndex[0])
+		m_fAnimFaceAcc += fTimeDelta * 200.f;
+	else
+		m_fAnimFaceAcc += fTimeDelta * 0.5f;
+
+	if (1.f < m_fAnimFaceAcc)
+	{
+		if (m_bWingk)
+			--m_FaceAnimIndex[0];
+		else
+			++m_FaceAnimIndex[0];
+
+		if (m_FaceAnimIndex[1] - 1 <= m_FaceAnimIndex[0] || 0 >= m_FaceAnimIndex[0])
+		{
+			if (m_bWingk)
+				m_bWingk = false;
+			else
+				m_bWingk = true;
+		}
+
+		m_fAnimFaceAcc = 0.f;
+	}
+}
+
+
 #pragma endregion 
 
 
@@ -469,15 +639,27 @@ void CAnimPlayer::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
+	m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.008f);
+	_float fTemp = 0.f;
+	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp))
+		if (STATE_JUMP == m_eState)
+			m_TickStates.push_back(STATE_JUMPLENDING);
+
+
+
+	// NOTE : Tick으로 올리면 Trun할 때 문제 생김
 	// 상태 갱신
 	Set_State();
-
 	// 이동 갱신
 	Calcul_State(fTimeDelta);
+
 
 	// 애니메이션 END 이벤트
 	if (m_pModelCom->Play_Animation(fTimeDelta))
 		Check_EndAnim();
+
+
+	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
 
 
 	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
@@ -489,20 +671,28 @@ void CAnimPlayer::Calcul_State(_float fTimeDelta)
 {
 	if (STATE_WALK == m_eState)
 	{
-		m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta);
+		m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta, m_pNavigationCom);
 	}
 	else if (STATE_RUN == m_eState)
 	{
-		m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta);
+		m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta, m_pNavigationCom);
 	}
 	else if (STATE_SPRINT == m_eState)
 	{
-		m_pTransformCom->Go_Straight(m_fRunSpeed + 1.f, fTimeDelta);
+		m_pTransformCom->Go_Straight(m_fRunSpeed + 2.f, fTimeDelta, m_pNavigationCom);
 	}
 	else if (STATE_SLEP == m_eState)
 	{
-		m_pTransformCom->Go_Straight(m_fSlepSpeed, fTimeDelta);
+		m_pTransformCom->Go_Straight(m_fSlepSpeed, fTimeDelta, m_pNavigationCom);
 	}
+	else if ((STATE_JUMP == m_eState || STATE_JUMPLENDING == m_eState) && STATE_END != m_eJumpState)
+	{
+		if(STATE_RUN == m_eJumpState)
+			m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta, m_pNavigationCom);
+		else if(STATE_WALK)
+			m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta, m_pNavigationCom);
+	}
+
 }
 
 void CAnimPlayer::Check_EndAnim()
@@ -524,6 +714,9 @@ void CAnimPlayer::Check_EndAnim()
 		break;
 	case STATE_SLEP:
 		m_TickStates.push_back(STATE_RUN);
+		break;
+	case STATE_JUMPLENDING:
+		m_TickStates.push_back(STATE_IDLE);
 		break;
 	}
 
@@ -562,18 +755,45 @@ HRESULT CAnimPlayer::Render()
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-		/*if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-		return E_FAIL;*/
-
-
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
-			return E_FAIL;
+		Choose_Pass(i);
 	}
 
 	return S_OK;
 }
+
+HRESULT CAnimPlayer::Choose_Pass(_int iIndex)
+{
+	_uint iPassIndex = 0;
+
+	switch (m_pModelCom->Get_MaterialIndex(iIndex))
+	{
+	case 3:	// 눈 
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(iIndex), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_iFaceIndex", &m_FaceAnimIndex[0], sizeof(int))))
+			return E_FAIL;
+		//if (FAILED(m_pTextureCom_SmartEye->Set_SRV(m_pShaderCom, "g_SmartEyeTexture", 0)))
+		//	return E_FAIL;
+
+
+		iPassIndex = 1;
+	}
+	break;
+	default:
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(iIndex), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+	}
+	break;
+	}
+
+
+	if (FAILED(m_pModelCom->Render(m_pShaderCom, iIndex, iPassIndex)))
+		return E_FAIL;
+
+}
+
 
 #pragma endregion
 
@@ -613,6 +833,16 @@ HRESULT CAnimPlayer::Ready_Components()
 	XMStoreFloat4x4(&SockatDesc.mPivot, m_pModelCom->Get_PivotMatrix());
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sockat"), TEXT("Com_Sockat"), (CComponent**)&m_pSockatCom, &SockatDesc)))
 		return E_FAIL;
+
+
+
+	/* For.Com_Navigation */
+	CNavigation::NAVIGATIONDESC NaviDesc;
+	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
+	NaviDesc.iCurrentIndex = 0;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+		return E_FAIL;
+
 
 
 	return S_OK;

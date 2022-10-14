@@ -713,6 +713,9 @@ void CImGui_Manager::Window_CreatedModel()
 	_uint iClickedCellIndex = CMeshManager::Get_Instance()->Get_ClickedCell();
 	ImGui::Text("ClickedCellIndex: %d", iClickedCellIndex);
 
+	_float3 vClickedCellPos = CMeshManager::Get_Instance()->Get_ClickedCellPos();
+	ImGui::Text("CllickedCellos: %.2f/%.2f/%.2f", vClickedCellPos.x, vClickedCellPos.y, vClickedCellPos.z);
+
 	ImGui::End();
 }
 
@@ -905,12 +908,6 @@ void CImGui_Manager::Window_PlayMode()
 		CAnimManager::Get_Instance()->Set_GameMode(bGameMode);
 
 
-	ImGui::Text("======GameSpeed======");
-	CAnimPlayer* pPlayer = CAnimManager::Get_Instance()->Get_PlayerModel();
-	ImGui::InputFloat("WalkSpeed", pPlayer->Get_WalkSpeed());
-	ImGui::InputFloat("RunSpeed", pPlayer->Get_RunSpeed());
-	ImGui::InputFloat("TurnSpeed", pPlayer->Get_TurnSpeed());
-	ImGui::InputFloat("RotationSpeed", pPlayer->Get_RotationSpeed());
 
 
 	ImGui::Text("======AnimSpeed======");
@@ -930,6 +927,9 @@ void CImGui_Manager::Window_PlayMode()
 	if (ImGui::InputFloat("SLEP", &fSpeed))
 		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_SLEP, fSpeed);
 
+	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_JUMPLENDING);
+	if (ImGui::InputFloat("JUMPRENDING", &fSpeed))
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_JUMPLENDING, fSpeed);
 
 
 	ImGui::Text("======AnimLinear======");

@@ -94,16 +94,16 @@ void CPlayer::Set_Anim()
 	switch (m_eState)
 	{
 	case Client::CPlayer::STATE_IDLE:
-		m_pModelCom->Set_AnimIndex(111);
+		m_pModelCom->Set_AnimIndex(113);
 		break;
 	case Client::CPlayer::STATE_WALK:
-		m_pModelCom->Set_AnimIndex(197);
+		m_pModelCom->Set_AnimIndex(192);
 		break;
 	case Client::CPlayer::STATE_RUN:
-		m_pModelCom->Set_AnimIndex(150);
+		m_pModelCom->Set_AnimIndex(193);
 		break;
 	case Client::CPlayer::STATE_STATU:
-		m_pModelCom->Set_AnimIndex(204);
+		m_pModelCom->Set_AnimIndex(130);
 		break;
 	}
 }

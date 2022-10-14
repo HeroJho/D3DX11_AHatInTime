@@ -68,7 +68,6 @@ HRESULT CMultiThread::Ready_Neighbor()
 	}
 
 
-
 	m_iNumReadyNeighborMax = Cells.size();
 
 	for (auto& pSourCell : Cells)
@@ -101,7 +100,9 @@ HRESULT CMultiThread::Ready_Neighbor()
 		}
 	}
 
-
+	for (auto& pCell : Cells)
+		m_pCells.push_back(pCell);
+	
 	m_isFinished = true;
 
 	return S_OK;

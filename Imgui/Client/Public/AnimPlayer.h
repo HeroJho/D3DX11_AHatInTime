@@ -10,6 +10,7 @@ class CRenderer;
 class CTransform;
 class CModel;
 class CSockat;
+class CNavigation;
 END
 
 BEGIN(Client)
@@ -17,7 +18,8 @@ BEGIN(Client)
 class CAnimPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_STATU, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_JUMPLENDING, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_STATU, STATE_END };
+
 
 private:
 	CAnimPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -31,38 +33,31 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-public:
-	virtual _float3* Get_Axis() override { return &m_vAxis; };
-	_float*		Get_WalkSpeed() { return &m_fWalkSpeed; }
-	_float*		Get_RunSpeed() { return &m_fRunSpeed; }
-	_float*		Get_TurnSpeed() { return &m_fTurnSpeed; }
-	_float*		Get_RotationSpeed() { return &m_fRotationSpeed; }
 
-	_float		Get_AnimSpeed(STATE eState);
-	void		Set_AnimSpeed(STATE eState, _float fSpeed);
-
-	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
-	void Reset_AnimLinearData();
 
 
 private:
-	void Tool_Mode(_float fTimeDelta);
 	void Set_State();
 	void Set_Anim();
+	void Check_EndAnim();
 
-
+	void Anim_Face(_float fTimeDelta);
 
 	void Game_Mode(_float fTimeDelta);
 	
 	void Idle_Tick(_float fTimeDelta);
+	void Jump_Tick(_float fTimeDelta);
 	void Move_Tick(_float fTimeDelta);
 	void Slep_Tick(_float fTimeDelta);
 
 	void Move_Input(_float fTimeDelta);
 	void Attack_Input(_float fTimeDelta);
 	void ReadyAttack_Input(_float fTimeDelta);
+	void Jump_Input(_float fTimeDelta);
 
 	void Calcul_State(_float fTimeDelta);
+
+	HRESULT Choose_Pass(_int iIndex);
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -70,9 +65,9 @@ private:
 	CTransform*				m_pTransformCom = nullptr;
 	CModel*					m_pModelCom = nullptr;
 	CSockat*				m_pSockatCom = nullptr;
+	CNavigation*			m_pNavigationCom = nullptr;
 
 private:
-	_float3					m_vAxis;
 	STATE				m_eState = STATE_END;
 	STATE				m_ePreState = STATE_END;
 	list<STATE>			m_TickStates;
@@ -87,14 +82,21 @@ private:
 	_float				m_fRotationSpeed = 0.f;
 	_float				m_fSlepSpeed = 0.f;
 
+	_float				m_fJumpPower = 5.f;
 
-	_bool				m_bStatu = false;
 	_bool				m_bImStop = false;
+
+	STATE				m_eJumpState = STATE_END;
+
+	// For. FaceAnim
+	_int				m_FaceAnimIndex[2];
+	_float				m_fAnimFaceAcc = 0.f;
+	_bool				m_bWingk = false;
 
 private:
 	HRESULT Ready_Components();
 
-	void Check_EndAnim();
+
 
 public:
 	CGameObject* Add_Sockat(char* pBoneName, _tchar* cName);
@@ -105,6 +107,30 @@ public:
 	static CAnimPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
+
+
+
+
+
+
+
+	// For. Tool
+public:
+	virtual _float3* Get_Axis() override { return &m_vAxis; };
+
+	_float		Get_AnimSpeed(STATE eState);
+	void		Set_AnimSpeed(STATE eState, _float fSpeed);
+
+	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
+	void Reset_AnimLinearData();
+
+private:
+	void Tool_Mode(_float fTimeDelta);
+
+private:
+	_float3				m_vAxis;
+	_bool				m_bStatu = false;
+
 };
 
 END

@@ -13,6 +13,8 @@
 #include "VIBuffer_Terrain.h"
 #include "VIBuffer_Map_Terrain.h"
 
+#include "Navigation.h"
+
 
 BEGIN(Engine)
 

@@ -10,6 +10,7 @@ class CRenderer;
 class CTransform;
 class CModel;
 class CSockat;
+class CNavigation;
 END
 
 BEGIN(Client)
@@ -17,7 +18,7 @@ BEGIN(Client)
 class CPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_JUMPLENDING, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_STATU, STATE_END };
 
 private:
 	CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -45,12 +46,14 @@ private:
 	void Anim_Face(_float fTimeDelta);
 
 	void Idle_Tick(_float fTimeDelta);
+	void Jump_Tick(_float fTimeDelta);
 	void Move_Tick(_float fTimeDelta);
 	void Slep_Tick(_float fTimeDelta);
 
 	void Move_Input(_float fTimeDelta);
 	void Attack_Input(_float fTimeDelta);
 	void ReadyAttack_Input(_float fTimeDelta);
+	void Jump_Input(_float fTimeDelta);
 
 	void Calcul_State(_float fTimeDelta);
 
@@ -62,6 +65,8 @@ private:
 	CTransform*				m_pTransformCom = nullptr;
 	CModel*					m_pModelCom = nullptr;
 	CSockat*				m_pSockatCom = nullptr;
+	CNavigation*			m_pNavigationCom = nullptr;
+
 	CTexture*				m_pTextureCom_SmartEye = nullptr;
 
 private:
@@ -80,7 +85,11 @@ private:
 	_float				m_fRotationSpeed = 0.f;
 	_float				m_fSlepSpeed = 0.f;
 
+	_float				m_fJumpPower = 5.f;
+	STATE				m_eJumpState = STATE_END;
+
 	_bool				m_bImStop = false;
+
 
 
 	// For. FaceAnim

@@ -147,6 +147,10 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CSockat::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Sockat */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Navigation"),
+		CNavigation::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 	

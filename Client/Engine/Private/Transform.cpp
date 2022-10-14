@@ -1,5 +1,7 @@
 #include "..\Public\Transform.h"
 
+#include "Navigation.h"
+
 CTransform::CTransform(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -67,14 +69,31 @@ void CTransform::Go_Straight(_float fTimeDelta)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Straight(_float fSpeedPerSec, _float fTimeDelta)
+void CTransform::Go_Straight(_float fSpeedPerSec, _float fTimeDelta, class CNavigation* pNavigation)
 {
 	_vector		vPosition = Get_State(CTransform::STATE_POSITION);
 	_vector		vLook = Get_State(CTransform::STATE_LOOK);
 
 	vPosition += XMVector3Normalize(vLook) * fSpeedPerSec * fTimeDelta;
 
-	Set_State(CTransform::STATE_POSITION, vPosition);
+	/* 프렐이어가 움직이고 난 이후의 위치를 네비게이션에 전달하여. */
+	/* 현재 상황에서 움직일 수 있늕지 체크한다. */
+	_bool		isMove = true;
+
+	if (nullptr != pNavigation)
+		isMove = pNavigation->isMove(vPosition);
+
+	if (true == isMove)
+	{
+		if (nullptr != pNavigation)
+		{
+			//_float fY = pNavigation->Compute_Height(vPosition);
+			//if(fY > XMVectorGetY(vPosition))
+			//	vPosition = XMVectorSetY(vPosition, fY);
+		}
+		Set_State(CTransform::STATE_POSITION, vPosition);
+	}
+
 }
 
 void CTransform::Go_Backward(_float fTimeDelta)
@@ -266,31 +285,66 @@ void CTransform::LookAt_ForLandObject(_fvector vAt)
 {
 	_vector		vLook = vAt - Get_State(CTransform::STATE_POSITION);
 
-	
 
 
 	_float3		vScale = Get_Scale();
 
 	_vector		vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook)) * vScale.x;	
 
-	vLook = XMVector3Normalize(XMVector3Cross(vRight, Get_State(CTransform::STATE_UP))) * vScale.z;
+	vLook = XMVector3Normalize(XMVector3Cross(vRight, XMVectorSet(0.f, 1.f, 0.f, 0.f))) * vScale.z;
+
 
 	Set_State(CTransform::STATE_RIGHT, vRight);
+	Set_State(CTransform::STATE_UP, XMVectorSet(0.f, 1.f, 0.f, 0.f) * vScale.y);
 	Set_State(CTransform::STATE_LOOK, vLook);
 
 }
 
-void CTransform::Move(_fvector vTargetPos, _float fTimeDelta, _float fLimitDistance)
+
+void CTransform::MoveTarget_Lend(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, CNavigation* pNavigation, _float fLimitDistance)
 {
-	_vector		vPosition = Get_State(CTransform::STATE_POSITION);
-	_vector		vDirection = vTargetPos - vPosition;
+	_vector		vDirection = vTargetPos - Get_State(CTransform::STATE_POSITION);
 
 	_float		fDistance = XMVectorGetX(XMVector3Length(vDirection));
 
-	if(fDistance > fLimitDistance)
-		vPosition += XMVector3Normalize(vDirection) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+	if (fDistance > fLimitDistance)
+	{
+		LookAt_ForLandObject(vTargetPos);
+		Go_Straight(fSpeed, fTimeDelta, pNavigation);
+	}
+}
 
-	Set_State(CTransform::STATE_POSITION, vPosition);
+
+
+
+void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _float fGravity)
+{
+	_float3 vPos;
+	XMStoreFloat3(&vPos, Get_State(CTransform::STATE_POSITION));
+
+	_float fCellY = 0.f;
+	if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY) && (0.01f > m_fVelocity))
+	{
+		m_fGravityAcc = 0.f;
+		m_fVelocity = 0.f;
+		vPos.y = fCellY;
+	}
+	else
+	{
+		m_fGravityAcc += fGravity;
+		if (0.5f < m_fGravityAcc)
+			m_fGravityAcc = 0.5f;
+		m_fVelocity -= m_fGravityAcc;
+	}
+
+	vPos.y += m_fVelocity * fTimeDelta;
+	
+	Set_State(STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
+}
+
+void CTransform::Jump(_float fPower)
+{
+	m_fVelocity += fPower;
 }
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)

@@ -5,6 +5,7 @@
 BEGIN(Engine)
 
 class CModel;
+class CCell;
 
 END
 
@@ -39,6 +40,20 @@ public:
 		ANIM_LINEAR_DATA* pLinearDatas;
 
 	}DATA_LENEARANIM;
+
+
+	typedef struct dataCell
+	{
+		_float3		vPoints[3];
+		_int		iNeighborIndex[3];
+	}DATA_CELL;
+	typedef struct dataNavi
+	{
+		_int iID;
+		_uint iNumCell;
+		DATA_CELL* pCellDatas;
+
+	}DATA_NAVI;
 
 #pragma endregion
 
@@ -92,6 +107,8 @@ private:
 	// For. Data
 public:
 	HRESULT Load_Map(_int iMapID, LEVEL eLEVEL);
+
+	vector<CCell*> Load_Navi(_int iMapID);
 
 	list<ANIM_LINEAR_DATA> Load_Anim(char* pFileName);
 

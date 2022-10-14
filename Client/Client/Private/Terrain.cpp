@@ -31,6 +31,19 @@ HRESULT CTerrain::Initialize(void * pArg)
 void CTerrain::Tick(_float fTimeDelta)
 {
 	// m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_P))
+	{
+		if (m_bTest)
+			m_bTest = false;
+		else
+			m_bTest = true;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
 }
 
 void CTerrain::LateTick(_float fTimeDelta)
@@ -55,6 +68,9 @@ HRESULT CTerrain::Render()
 
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
+
+	if(m_bTest)
+		m_pNavigation->Render();
 
 	return S_OK;
 }
@@ -83,6 +99,10 @@ HRESULT CTerrain::Ready_Components()
 
 	/* For.Com_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom[TYPE_DIFFUSE])))
+		return E_FAIL;
+
+	/* For.m_pNavigation */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigation)))
 		return E_FAIL;
 
 
@@ -238,6 +258,7 @@ void CTerrain::Free()
 	for (auto& pTextureCom : m_pTextureCom)	
 		Safe_Release(pTextureCom);	
 	
+	Safe_Release(m_pNavigation);
 	Safe_Release(m_pFilterSRV);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pShaderCom);

@@ -3,8 +3,11 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
-/* 특정 레벨을 위한 리소스, 객체원형 등을 생성하는 역활을 한다. */
-/* 서브스레드릉ㄹ 생성하여 위 작업을 수행하게끔 한다. */
+BEGIN(Engine)
+
+class CCell;
+
+END
 
 BEGIN(Client)
 
@@ -36,6 +39,8 @@ public:
 	HRESULT Ready_Neighbor();
 	LOADINGTYPE Get_Type() { return m_eLoadingType; };
 
+	vector<CCell*>* Get_FinishCells() { return &m_pCells; }
+
 private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
@@ -51,6 +56,8 @@ private:
 
 	_uint				m_iNumReadyNeighbor = 0;
 	_uint				m_iNumReadyNeighborMax = 0;
+
+	vector<CCell*> m_pCells;
 
 public:
 	static CMultiThread* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LOADINGTYPE eLoadingType);

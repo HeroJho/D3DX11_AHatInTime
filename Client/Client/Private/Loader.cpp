@@ -258,6 +258,16 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 
+	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
+
+	vector<CCell*> Cells = CDataManager::Get_Instance()->Load_Navi(0);
+
+	/* For.Prototype_Component_Navigation */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
+		CNavigation::Create(m_pDevice, m_pContext, &Cells))))
+		return E_FAIL;
+
+
 
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니ㅏㄷ.  "));

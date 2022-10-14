@@ -5,8 +5,10 @@
 
 #include "ToolManager.h"
 #include "MapManager.h"
+#include "MeshManager.h"
 
 #include "StaticModel.h"
+#include "Cell.h"
 
 
 IMPLEMENT_SINGLETON(CDataManager)
@@ -385,7 +387,7 @@ HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVE
 	}
 	else
 	{
-		PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+		PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 		if (FAILED(pGameInstance->Add_Prototype(eLEVEL, pModelName,
 			CModel::Create(m_pDevice, m_pContext, etype, tPath, tFileName, PivotMatrix))))
 		{
@@ -632,6 +634,81 @@ list<ANIM_LINEAR_DATA> CDataManager::Load_Anim(char * pFileName)
 	ifs.close();
 
 	return Datas;
+}
+
+
+
+HRESULT CDataManager::Save_Navi(_int iMapID)
+{
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iMapID);
+
+	strcpy_s(cName, "Navi_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Map/Navi/");
+	strcat_s(cPullName, cName);
+
+
+	std::ofstream ofs(cPullName, ios::out | ios::binary);
+
+	if (!ofs)
+		return E_FAIL;
+
+
+	vector<CCell*>* pCells = CMeshManager::Get_Instance()->Get_Cells();
+	_uint iNumCell = pCells->size();
+	ofs.write((char*)&iMapID, sizeof(int));
+	ofs.write((char*)&iNumCell, sizeof(_uint));
+
+	for (auto& pCell : *pCells)
+	{
+		_float3 vPoints[3];
+		vPoints[0] = pCell->Get_Point(CCell::POINT_A);
+		vPoints[1] = pCell->Get_Point(CCell::POINT_B);
+		vPoints[2] = pCell->Get_Point(CCell::POINT_C);
+		ofs.write((char*)vPoints, sizeof(_float3) * 3);
+
+		ofs.write((char*)pCell->Get_NeighborIndex(), sizeof(_int) * 3);
+	}
+
+	
+	ofs.close();
+
+	return S_OK;
+}
+
+CDataManager::DATA_NAVI CDataManager::Load_Navi(_int iMapID)
+{
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iMapID);
+
+	strcpy_s(cName, "Navi_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Map/Navi/");
+	strcat_s(cPullName, cName);
+
+	std::ifstream ifs(cPullName, ios::in | ios::binary);
+
+	DATA_NAVI NaviData;
+	ZeroMemory(&NaviData, sizeof(DATA_NAVI));
+
+	if (!ifs)
+		return NaviData;
+
+	ifs.read((char*)&NaviData.iID, sizeof(int));
+	ifs.read((char*)&NaviData.iNumCell, sizeof(_uint));
+
+	NaviData.pCellDatas = new DATA_CELL[NaviData.iNumCell];
+
+	for (_uint i = 0; i < NaviData.iNumCell; ++i)
+	{
+		ifs.read((char*)&NaviData.pCellDatas[i].vPoints, sizeof(_float3) * 3);
+		ifs.read((char*)&NaviData.pCellDatas[i].iNeighborIndex, sizeof(_int) * 3);
+	}
+
+	return NaviData;
 }
 
 

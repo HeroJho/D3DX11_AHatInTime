@@ -308,7 +308,7 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 	return IsEnd;
 }
 
-HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex)
+HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 {
 	_float4x4		BoneMatrices[256];
 
@@ -320,7 +320,7 @@ HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex)
 			return E_FAIL;
 	}
 
-	pShader->Begin(0);
+	pShader->Begin(iPassIndex);
 
 	m_Meshes[iMeshIndex]->Render();
 

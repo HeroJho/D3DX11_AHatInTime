@@ -21,27 +21,26 @@ public:
 	_int Get_Index() const {
 		return m_iIndex;
 	}
-	void Set_Index(_int iIndex) {
-		m_iIndex = iIndex;
-	}
 
 	void Set_NeighborIndex(LINE eLine, CCell* pNeighbor) {
+		if (nullptr == pNeighbor)
+		{
+			m_iNeighborIndex[eLine] = -1;
+			return;
+		}
+
 		m_iNeighborIndex[eLine] = pNeighbor->Get_Index();
 	}
-	_int* Get_NeighborIndex() { return m_iNeighborIndex; }
 
-	_int Get_NumNeighbor();
-
-	_float3 Get_Nor() { return m_vNor; }
 
 public:
-	HRESULT Initialize(const _float3* pPoints, _int iIndex);
+	HRESULT Initialize(const _float3* pPoints, _int iIndex, _int* iNeighborIndex);
 	_bool Compare(const _float3& vSourPoint, const _float3& vDestPoint);
 	_bool isIn(_fvector vPosition, _int* pNeighborIndex);
 
 #ifdef _DEBUG
 public:
-	HRESULT Render_Cell();
+	HRESULT Render_Cell(_float fHeight = 0.f);
 #endif // _DEBUG
 
 private:
@@ -56,12 +55,10 @@ private:
 
 #ifdef _DEBUG
 	class CVIBuffer_Cell*	m_pVIBuffer = nullptr;
-	// class CShader*			m_pShader = nullptr;
-	_float3					m_vNor;
 #endif
 
 public:
-	static CCell* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _float3* pPoints, _int iIndex);
+	static CCell* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _float3* pPoints, _int iIndex, _int* iNeighborIndex);
 	virtual void Free() override;
 };
 

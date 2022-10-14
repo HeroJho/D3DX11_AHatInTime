@@ -37,30 +37,6 @@ void CTerrain_Anim::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
-
-
-	if (m_pVIBufferCom->Picking(m_pTransformCom, &m_vMousePickPos))
-	{
-		if (pGameInstance->Mouse_Pressing(DIMK::DIMK_LBUTTON))
-		{
-
-			_float fHegith = CMapManager::Get_Instance()->Get_Height();
-			_float fRad = CMapManager::Get_Instance()->Get_Rad();
-			_float fSharp = CMapManager::Get_Instance()->Get_Sharp();
-
-			m_pVIBufferCom->Make_Tick_Up(fHegith, fRad, fSharp, m_vMousePickPos, fTimeDelta);
-
-		}
-	}
-	else
-		ZeroMemory(&m_vMousePickPos, sizeof(_float3));
-
-
-
-	RELEASE_INSTANCE(CGameInstance);
-
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
@@ -71,20 +47,19 @@ HRESULT CTerrain_Anim::Render()
 		return E_FAIL;
 
 
-	//ID3D11RasterizerState* m_WireFrame;
-	//D3D11_RASTERIZER_DESC temp;
-	//ZeroMemory(&temp, sizeof(D3D11_RASTERIZER_DESC));
-	//temp.FillMode = D3D11_FILL_WIREFRAME;
-	//temp.CullMode = D3D11_CULL_NONE;
-	//temp.DepthClipEnable = true;
-	//m_pDevice->CreateRasterizerState(&temp, &m_WireFrame);
+	ID3D11RasterizerState* m_WireFrame;
+	D3D11_RASTERIZER_DESC temp;
+	ZeroMemory(&temp, sizeof(D3D11_RASTERIZER_DESC));
+	temp.FillMode = D3D11_FILL_WIREFRAME;
+	temp.CullMode = D3D11_CULL_NONE;
+	temp.DepthClipEnable = true;
+	m_pDevice->CreateRasterizerState(&temp, &m_WireFrame);
 
+	m_pDeviceContext->RSSetState(m_WireFrame);
+	Safe_Release(m_WireFrame);
 
 	if (FAILED(SetUp_ShaderResources()))
 		return E_FAIL;
-
-	//m_pDeviceContext->RSSetState(m_WireFrame);
-	//Safe_Release(m_WireFrame);
 
 	if (FAILED(m_pShaderCom->Begin(0)))
 		return E_FAIL;
@@ -92,6 +67,7 @@ HRESULT CTerrain_Anim::Render()
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
+	m_pDeviceContext->RSSetState(nullptr);
 
 	return S_OK;
 }
@@ -121,12 +97,18 @@ HRESULT CTerrain_Anim::Ready_Components()
 
 	CVIBuffer_Map_Terrain::TERRAINDESC TerrainDesc;
 	ZeroMemory(&TerrainDesc, sizeof(CVIBuffer_Map_Terrain::TERRAINDESC));
-	TerrainDesc.iNumVerticesX = 200;
-	TerrainDesc.iNumVerticesY = 200;
+	TerrainDesc.iNumVerticesX = 100;
+	TerrainDesc.iNumVerticesY = 100;
 
 	/* For.Com_VIBuffer */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Map_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom, &TerrainDesc)))
 		return E_FAIL;
+
+
+	/* For.m_pNavigation */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigation)))
+		return E_FAIL;
+
 
 
 	return S_OK;
@@ -144,10 +126,16 @@ HRESULT CTerrain_Anim::SetUp_ShaderResources()
 		return E_FAIL;
 
 
-	if (FAILED(m_pShaderCom->Set_RawValue("g_vMousePosition", &m_vMousePickPos, sizeof(_float3))))
+	if (FAILED(m_pShaderCom->Set_RawValue("g_vMousePosition", &_float3(0.f, 0.f, 0.f), sizeof(_float3))))
 		return E_FAIL;
-	_float fRad = CMapManager::Get_Instance()->Get_Rad();
+	_float fRad = 5.f;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_fRad", &fRad, sizeof(_float))))
+		return E_FAIL;
+	_bool bColor = true;
+	_float4 vColor(0.f, 1.f, 0.f, 1.f);
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bColor", &bColor, sizeof(_bool))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_vColor", &vColor, sizeof(_float4))))
 		return E_FAIL;
 
 
@@ -202,6 +190,7 @@ void CTerrain_Anim::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pNavigation);
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pShaderCom);

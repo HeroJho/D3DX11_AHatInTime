@@ -9,6 +9,7 @@ class CTexture;
 class CRenderer;
 class CTransform;
 class CVIBuffer_Map_Terrain;
+class CNavigation;
 END
 
 BEGIN(Client)
@@ -34,6 +35,7 @@ private:
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
 	CVIBuffer_Map_Terrain*	m_pVIBufferCom = nullptr;
+	CNavigation*			m_pNavigation = nullptr;
 
 private:
 	_float3					m_vMousePickPos;

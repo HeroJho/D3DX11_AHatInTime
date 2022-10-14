@@ -6,6 +6,7 @@
 #include "ToolManager.h"
 
 #include "StaticModel.h"
+#include "Cell.h"
 
 
 IMPLEMENT_SINGLETON(CDataManager)
@@ -288,13 +289,18 @@ HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVE
 
 
 	_matrix PivotMatrix;
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-
 	CModel::TYPE etype = CModel::TYPE_END;
 	if (DATA_ANIM == eTYPE)
+	{
+		PivotMatrix = XMMatrixScaling(0.01f, 0.01, 0.01) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 		etype = CModel::TYPE_ANIM;
+	}
 	else
+	{
+		PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 		etype = CModel::TYPE_NONANIM;
+	}
+
 	// 원본 생성
 	if (bIsBin)
 	{
@@ -400,6 +406,47 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 	Safe_Delete(pData_Map);
 
 	return S_OK;
+}
+
+
+vector<CCell*> CDataManager::Load_Navi(_int iMapID)
+{
+	vector<CCell*> Cells;
+
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iMapID);
+
+	strcpy_s(cName, "Navi_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Map/Navi/");
+	strcat_s(cPullName, cName);
+
+	std::ifstream ifs(cPullName, ios::in | ios::binary);
+
+
+	if (!ifs)
+		return Cells;
+
+	_int iID;
+	_int iINumCell;
+	ifs.read((char*)&iID, sizeof(_int));
+	ifs.read((char*)&iINumCell, sizeof(_uint));
+
+	for (_uint i = 0; i < iINumCell; ++i)
+	{
+		_float3 vPos[3];
+		_int iIndex[3];
+		ifs.read((char*)&vPos, sizeof(_float3) * 3);
+		ifs.read((char*)&iIndex, sizeof(_int) * 3);
+
+
+		CCell* pCell = CCell::Create(m_pDevice, m_pContext, vPos, i, iIndex);
+		
+		Cells.push_back(pCell);
+	}
+
+	return Cells;
 }
 
 

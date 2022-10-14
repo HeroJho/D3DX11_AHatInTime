@@ -132,9 +132,6 @@
     <ClInclude Include="..\Public\UI_Edit.h">
       <Filter>03.UI\Edit</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\DataManager.h">
-      <Filter>96.Managers\DataManager</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\ToolManager.h">
       <Filter>96.Managers\ToolManager</Filter>
     </ClInclude>
@@ -155,6 +152,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\UI_TextLife.h">
       <Filter>03.UI\Health</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\DataManager.h">
+      <Filter>96.Managers\DataManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

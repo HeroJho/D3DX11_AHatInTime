@@ -11,14 +11,13 @@ public:
 	{
 		_int			iCurrentIndex = -1;
 	}NAVIGATIONDESC;
-
 private:
 	CNavigation(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CNavigation(const CNavigation& rhs);
 	virtual ~CNavigation() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype();
+	virtual HRESULT Initialize_Prototype(vector<class CCell*>* Cells);
 	virtual HRESULT Initialize(void* pArg);
 
 public:
@@ -28,7 +27,6 @@ public:
 	_bool isMove(_fvector vPosition);
 	// ¼¿¿¡ ´ê¿´³Ä
 	_bool isGround(_fvector vPosition, _float* OutfCellY);
-
 
 #ifdef _DEBUG
 public:
@@ -40,7 +38,7 @@ private:
 	typedef vector<class CCell*>	CELLS;
 
 	NAVIGATIONDESC					m_NavigationDesc;
-
+	
 
 #ifdef _DEBUG
 	class CShader*			m_pShader = nullptr;
@@ -51,7 +49,7 @@ private:
 	HRESULT Ready_Neighbor();
 
 public:
-	static CNavigation* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CNavigation* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, vector<class CCell*>* Cells);
 	CComponent* Clone(void* pArg = nullptr) override;
 	virtual void Free() override;
 };

@@ -35,7 +35,8 @@ public:
 	_bool Get_ClickVertexMode() { return m_bClickVertexModel; }
 	void Set_ClickVertexMode(_bool bClickVertexMode);
 
-	_uint Get_ClickedCell() { return m_iClickedCell; }
+	_uint Get_ClickedCell() { return m_iClickedCellIndex; }
+	_float3 Get_ClickedCellPos() { return m_vClickedPos; }
 
 public:
 	HRESULT Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -64,7 +65,7 @@ public:
 
 	void Find_CellIndex();
 
-// =============================================
+// ==================FreeVertexMode======================
 
 	void Click_Vertex();
 	void Clear_ClickedVertex();
@@ -81,7 +82,8 @@ private:
 	vector<CCell*>			m_Cells;
 	typedef vector<CCell*>	CELLS;
 
-	_uint m_iClickedCell = 0;
+	_uint		m_iClickedCellIndex = 0;
+	_float3		m_vClickedPos;
 
 	map<_float, _float3*> m_TempCells;
 	vector<_float> m_TempMoveFreeVertax;

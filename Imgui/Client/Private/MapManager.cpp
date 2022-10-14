@@ -5,6 +5,7 @@
 #include "MapManager.h"
 #include "ToolManager.h"
 #include "DataManager.h"
+#include "MeshManager.h"
 
 #include "StaticModel.h"
 
@@ -113,6 +114,7 @@ void CMapManager::Conv_PickedModel_To_Bin()
 void CMapManager::Save_MapData()
 {
 	CDataManager::Get_Instance()->Save_Map(m_iID);
+	CDataManager::Get_Instance()->Save_Navi(m_iID);
 }
 
 void CMapManager::Load_MapData()
