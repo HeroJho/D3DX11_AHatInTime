@@ -44,7 +44,7 @@ HRESULT CTransform::Initialize_Prototype()
 	/* vector -> float : XMStore*/
 	/* float -> vector : XMLoad */
 
-	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());	
+	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 
 	return S_OK;
 }
@@ -126,14 +126,28 @@ void CTransform::Go_Right(_float fTimeDelta)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
+void CTransform::Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta)
+{
+	_vector vPosition = Get_State(CTransform::STATE_POSITION);
+	_vector vDirN = XMVector3Normalize(vDir);
+
+	vPosition += vDir * fSpeed * fTimeDelta;
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+}
+
+
 void CTransform::Set_Scale(_fvector vScaleInfo)
 {
-	Set_State(CTransform::STATE_RIGHT, 
+	if (0.001f > XMVectorGetX(vScaleInfo) || 0.001f > XMVectorGetY(vScaleInfo) || 0.001f > XMVectorGetZ(vScaleInfo))
+		return;
+
+	Set_State(CTransform::STATE_RIGHT,
 		XMVector3Normalize(Get_State(CTransform::STATE_RIGHT)) * XMVectorGetX(vScaleInfo));
-	Set_State(CTransform::STATE_UP, 
+	Set_State(CTransform::STATE_UP,
 		XMVector3Normalize(Get_State(CTransform::STATE_UP)) * XMVectorGetY(vScaleInfo));
-	Set_State(CTransform::STATE_LOOK, 
-		XMVector3Normalize(Get_State(CTransform::STATE_LOOK)) * XMVectorGetZ(vScaleInfo));	
+	Set_State(CTransform::STATE_LOOK,
+		XMVector3Normalize(Get_State(CTransform::STATE_LOOK)) * XMVectorGetZ(vScaleInfo));
 }
 
 _float3 CTransform::Get_Scale()
@@ -147,7 +161,7 @@ _float3 CTransform::Get_Scale()
 void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 {
 	_matrix		RotationMatrix = XMMatrixRotationAxis(vAxis, m_TransformDesc.fRotationPerSec * fTimeDelta);
-	
+
 	Set_State(CTransform::STATE_RIGHT, XMVector3TransformNormal(Get_State(CTransform::STATE_RIGHT), RotationMatrix));
 	Set_State(CTransform::STATE_UP, XMVector3TransformNormal(Get_State(CTransform::STATE_UP), RotationMatrix));
 	Set_State(CTransform::STATE_LOOK, XMVector3TransformNormal(Get_State(CTransform::STATE_LOOK), RotationMatrix));
@@ -215,12 +229,23 @@ void CTransform::Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _flo
 	Set_State(CTransform::STATE_LOOK, XMVector3TransformNormal(Get_State(CTransform::STATE_LOOK), RotationMatrix));
 }
 
-_bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta)
+
+_bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta, _bool bCanSlip)
 {
 	// 이상한 크기의 (0)벡터가 들어올 시에
 	_float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vDestLook)));
 	if (0.01f > fDistance)
 		return false;
+
+	if (!bCanSlip)
+	{
+		_vector vVDestLook = XMVector3Normalize(XMLoadFloat3(&vDestLook));
+		_vector vLook = -1.f * XMVector3Normalize(Get_State(STATE_LOOK));
+		_float vDist = XMVectorGetX(XMVector3Dot(vVDestLook, vLook));
+		if (0.99f < vDist)
+			return false;
+	}
+
 
 	_vector vMyLook = Get_State(STATE_LOOK);
 	_vector vVDestLook = XMLoadFloat3(&vDestLook);
@@ -249,7 +274,6 @@ _bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fD
 	if (0.8f > fSlip)
 	{
 		m_vDest = vDestLook;
-		// Set_Look(XMLoadFloat3(&m_vDest));
 		return true;
 	}
 
@@ -289,7 +313,7 @@ void CTransform::LookAt_ForLandObject(_fvector vAt)
 
 	_float3		vScale = Get_Scale();
 
-	_vector		vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook)) * vScale.x;	
+	_vector		vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook)) * vScale.x;
 
 	vLook = XMVector3Normalize(XMVector3Cross(vRight, XMVectorSet(0.f, 1.f, 0.f, 0.f))) * vScale.z;
 
@@ -314,8 +338,21 @@ void CTransform::MoveTarget_Lend(_fvector vTargetPos, _float fSpeed, _float fTim
 	}
 }
 
+_bool  CTransform::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance)
+{
+	_vector		vPosition = Get_State(CTransform::STATE_POSITION);
+	_vector		vDirection = vTargetPos - vPosition;
 
+	_float		fDistance = XMVectorGetX(XMVector3Length(vDirection));
 
+	if (fDistance < fLimitDistance)
+		return true;
+
+	vPosition += XMVector3Normalize(vDirection) * fSpeed * fTimeDelta;
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+	return false;
+}
 
 void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _float fGravity)
 {
@@ -323,7 +360,7 @@ void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _floa
 	XMStoreFloat3(&vPos, Get_State(CTransform::STATE_POSITION));
 
 	_float fCellY = 0.f;
-	if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY) && (0.01f > m_fVelocity))
+	if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY) && (1.f > m_fVelocity))
 	{
 		m_fGravityAcc = 0.f;
 		m_fVelocity = 0.f;
@@ -338,13 +375,25 @@ void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _floa
 	}
 
 	vPos.y += m_fVelocity * fTimeDelta;
-	
+
 	Set_State(STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
 }
 
 void CTransform::Jump(_float fPower)
 {
 	m_fVelocity += fPower;
+}
+
+void CTransform::DoubleJump(_float fPower)
+{
+	m_fGravityAcc = 0.f;
+	m_fVelocity = fPower;
+}
+
+void CTransform::ResetGravity()
+{
+	m_fGravityAcc = 0.f;
+	m_fVelocity = 0.f;
 }
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)

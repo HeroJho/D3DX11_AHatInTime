@@ -455,7 +455,7 @@ HRESULT CModel::Ready_Materials(const char* pModelFilePath)
 		MATERIALDESC		MaterialDesc;
 		ZeroMemory(&MaterialDesc, sizeof(MATERIALDESC));
 
-		// *
+
 		DATA_HEROMATERIAL		DataMaterialDesc;
 		ZeroMemory(&DataMaterialDesc, sizeof(DATA_HEROMATERIAL));
 
@@ -475,7 +475,7 @@ HRESULT CModel::Ready_Materials(const char* pModelFilePath)
 
 			_splitpath_s(strPath.data, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
-			// *
+	
 			memcpy(&DataMaterialDesc.cNames[j], &szFileName, sizeof(char) * MAX_PATH);
 
 			strcpy_s(szFullPath, pModelFilePath);
@@ -494,7 +494,6 @@ HRESULT CModel::Ready_Materials(const char* pModelFilePath)
 
 		m_Materials.push_back(MaterialDesc);
 
-		// *
 		m_DataMaterials.push_back(DataMaterialDesc);
 	}
 
@@ -828,6 +827,9 @@ HRESULT CModel::Bin_Ready_Materials(const char* pModelFilePath)
 
 		DATA_HEROMATERIAL			pAIMaterial = m_pBin_AIScene->pHeroMaterial[i];
 
+		DATA_HEROMATERIAL		DataMaterialDesc;
+		ZeroMemory(&DataMaterialDesc, sizeof(DATA_HEROMATERIAL));
+
 		for (_uint j = 0; j < AI_TEXTURE_TYPE_MAX; ++j)
 		{
 			if (!strcmp(pAIMaterial.cNames[j], ""))
@@ -845,6 +847,7 @@ HRESULT CModel::Bin_Ready_Materials(const char* pModelFilePath)
 
 			MultiByteToWideChar(CP_ACP, 0, szFullPath, strlen(szFullPath), szWideFullPath, MAX_PATH);
 
+			memcpy(&DataMaterialDesc.cNames[j], &pAIMaterial.cNames[j], sizeof(char) * MAX_PATH);
 
 			MaterialDesc.pTexture[j] = CTexture::Create(m_pDevice, m_pContext, szWideFullPath);
 			if (nullptr == MaterialDesc.pTexture[j])
@@ -852,6 +855,7 @@ HRESULT CModel::Bin_Ready_Materials(const char* pModelFilePath)
 		}
 
 		m_Materials.push_back(MaterialDesc);
+		m_DataMaterials.push_back(DataMaterialDesc);
 	}
 
 	return S_OK;

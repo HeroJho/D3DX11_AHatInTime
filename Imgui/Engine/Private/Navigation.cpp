@@ -27,9 +27,9 @@ HRESULT CNavigation::Initialize_Prototype()
 		return E_FAIL;
 
 
-	for (_uint i = 0; i < 10; ++i)
+	for (_uint i = 0; i < 25; ++i)
 	{
-		for (_uint j = 0; j < 10; ++j)
+		for (_uint j = 0; j < 25; ++j)
 		{
 
 			_float3			vPoints[3];

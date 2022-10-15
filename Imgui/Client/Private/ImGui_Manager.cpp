@@ -931,6 +931,26 @@ void CImGui_Manager::Window_PlayMode()
 	if (ImGui::InputFloat("JUMPRENDING", &fSpeed))
 		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_JUMPLENDING, fSpeed);
 
+	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_RUNJUMPLENDING);
+	if (ImGui::InputFloat("RUNJUMPRENDING", &fSpeed))
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_RUNJUMPLENDING, fSpeed);
+
+	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_DOUBLEJUMP);
+	if (ImGui::InputFloat("DOUBLEJUMP", &fSpeed))
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_DOUBLEJUMP, fSpeed);
+
+	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_SPRINTJUMP);
+	if (ImGui::InputFloat("SPRINTJUMP", &fSpeed))
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_SPRINTJUMP, fSpeed);
+
+	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_SLIDE);
+	if (ImGui::InputFloat("SLIDE", &fSpeed))
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_SLIDE, fSpeed);
+
+	fSpeed = CAnimManager::Get_Instance()->Get_Player_AnimSpeed(CAnimPlayer::STATE_SLIDELENDING);
+	if (ImGui::InputFloat("SLIDERENDING", &fSpeed))
+		CAnimManager::Get_Instance()->Set_Player_AnimSpeed(CAnimPlayer::STATE_SLIDELENDING, fSpeed);
+
 
 	ImGui::Text("======AnimLinear======");
 	ImGui::InputInt("MyIndex", CAnimManager::Get_Instance()->Get_iMyIndex());

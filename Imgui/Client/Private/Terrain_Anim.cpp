@@ -97,8 +97,8 @@ HRESULT CTerrain_Anim::Ready_Components()
 
 	CVIBuffer_Map_Terrain::TERRAINDESC TerrainDesc;
 	ZeroMemory(&TerrainDesc, sizeof(CVIBuffer_Map_Terrain::TERRAINDESC));
-	TerrainDesc.iNumVerticesX = 100;
-	TerrainDesc.iNumVerticesY = 100;
+	TerrainDesc.iNumVerticesX = 200;
+	TerrainDesc.iNumVerticesY = 200;
 
 	/* For.Com_VIBuffer */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Map_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom, &TerrainDesc)))

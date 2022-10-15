@@ -58,6 +58,7 @@ public:
 	void Go_Backward(_float fTimeDelta);
 	void Go_Left(_float fTimeDelta);
 	void Go_Right(_float fTimeDelta);
+	void Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta);
 
 	void Set_Scale(_fvector vScaleInfo);
 	_float3 Get_Scale();
@@ -69,15 +70,19 @@ public:
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2);
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2, _fvector vAxis3, _float fAngle3);
 
-	_bool LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta);
+	_bool LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta, _bool bCanSlip = true);
 	void Set_DestLook();
 
 	void LookAt(_fvector vAt);
 	void LookAt_ForLandObject(_fvector vAt);
 	void MoveTarget_Lend(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, class CNavigation* pNavigation, _float fLimitDistance = 0.1f);
+	_bool Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance = 0.1f);
 
 	void Tick_Gravity(_float fTimeDelta, class CNavigation* pNavigation, _float fGravity = 1.f);
 	void Jump(_float fPower);
+	void DoubleJump(_float fPower);
+	void ResetGravity();
+
 
 private:
 	_float4x4				m_WorldMatrix;

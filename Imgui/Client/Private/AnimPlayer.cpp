@@ -63,7 +63,18 @@ _float CAnimPlayer::Get_AnimSpeed(STATE eState)
 		return m_pModelCom->Get_Anim_TickPerSecond(180);
 	case Client::CAnimPlayer::STATE_JUMPLENDING:
 		return m_pModelCom->Get_Anim_TickPerSecond(103);
+	case Client::CAnimPlayer::STATE_RUNJUMPLENDING:
+		return m_pModelCom->Get_Anim_TickPerSecond(104);
+	case Client::CAnimPlayer::STATE_SPRINTJUMP:
+		return m_pModelCom->Get_Anim_TickPerSecond(106);
+	case Client::CAnimPlayer::STATE_DOUBLEJUMP:
+		return m_pModelCom->Get_Anim_TickPerSecond(92);
+	case Client::CAnimPlayer::STATE_SLIDE:
+		return m_pModelCom->Get_Anim_TickPerSecond(97);
+	case Client::CAnimPlayer::STATE_SLIDELENDING:
+		return m_pModelCom->Get_Anim_TickPerSecond(101);
 	}
+
 }
 
 void CAnimPlayer::Set_AnimSpeed(STATE eState, _float fSpeed)
@@ -84,6 +95,22 @@ void CAnimPlayer::Set_AnimSpeed(STATE eState, _float fSpeed)
 		break;
 	case Client::CAnimPlayer::STATE_JUMPLENDING:
 		m_pModelCom->Set_Anim_TickPerSecond(103, fSpeed);
+		break;
+	case Client::CAnimPlayer::STATE_RUNJUMPLENDING:
+		m_pModelCom->Set_Anim_TickPerSecond(104, fSpeed);
+		break;
+	case Client::CAnimPlayer::STATE_SPRINTJUMP:
+		m_pModelCom->Set_Anim_TickPerSecond(106, fSpeed);
+		break;
+	case Client::CAnimPlayer::STATE_DOUBLEJUMP:
+		m_pModelCom->Set_Anim_TickPerSecond(92, fSpeed);
+		break;
+	case Client::CAnimPlayer::STATE_SLIDE:
+		m_pModelCom->Set_Anim_TickPerSecond(97, fSpeed);
+		break;
+	case Client::CAnimPlayer::STATE_SLIDELENDING:
+		m_pModelCom->Set_Anim_TickPerSecond(101, fSpeed);
+		break;
 	}
 }
 
@@ -115,8 +142,14 @@ void CAnimPlayer::Set_State()
 
 	switch (m_eState)
 	{
-	case Client::CAnimPlayer::STATE_SLEP:
+	case STATE_SLEP:
 		m_fSlepSpeed = 2.f;
+		break;
+	case STATE_SLIDELENDING:
+		m_fSlepSpeed = m_fCulSpeed;
+		break;
+	default:
+		m_fSlepSpeed = 0.f;
 		break;
 	}
 
@@ -162,6 +195,24 @@ void CAnimPlayer::Set_Anim()
 		break;
 	case STATE_JUMPLENDING:
 		m_pModelCom->Set_AnimIndex(103);
+		break;
+	case STATE_RUNJUMP:
+		m_pModelCom->Set_AnimIndex(94);
+		break;
+	case STATE_RUNJUMPLENDING:
+		m_pModelCom->Set_AnimIndex(104);
+		break;
+	case STATE_SPRINTJUMP:
+		m_pModelCom->Set_AnimIndex(106);
+		break;
+	case STATE_DOUBLEJUMP:
+		m_pModelCom->Set_AnimIndex(92);
+		break;
+	case STATE_SLIDE:
+		m_pModelCom->Set_AnimIndex(97);
+		break;
+	case STATE_SLIDELENDING:
+		m_pModelCom->Set_AnimIndex(101);
 		break;
 	case STATE_ATTACK_1:
 		m_pModelCom->Set_AnimIndex(188);
@@ -254,6 +305,7 @@ void CAnimPlayer::Tool_Mode(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 }
 
+
 void CAnimPlayer::Game_Mode(_float fTimeDelta)
 {
 	Anim_Face(fTimeDelta);
@@ -271,8 +323,24 @@ void CAnimPlayer::Game_Mode(_float fTimeDelta)
 		Slep_Tick(fTimeDelta);
 		break;
 	case STATE_JUMP:
-	case STATE_JUMPLENDING :
+	case STATE_RUNJUMP:
 		Jump_Tick(fTimeDelta);
+		break;
+	case STATE_JUMPLENDING :
+	case STATE_RUNJUMPLENDING:
+		Rend_Tick(fTimeDelta);
+		break;
+	case STATE_SPRINTJUMP:
+		SprintJump_Tick(fTimeDelta);
+		break;
+	case STATE_DOUBLEJUMP:
+		DoubleJump_Tick(fTimeDelta);
+		break;
+	case STATE_SLIDE:
+		Slide_Tick(fTimeDelta);
+		break;
+	case STATE_SLIDELENDING:
+		SlideRending_Tick(fTimeDelta);
 		break;
 	case STATE_ATTACK_1:
 	case STATE_ATTACK_2:
@@ -287,6 +355,98 @@ void CAnimPlayer::Game_Mode(_float fTimeDelta)
 	}
 
 }
+
+
+
+void CAnimPlayer::Idle_Tick(_float fTimeDelta)
+{
+	if (STATE_SPRINT == m_ePreState)
+	{
+		m_bImStop = true;
+		m_TickStates.push_back(STATE_SLEP);
+	}
+}
+
+void CAnimPlayer::Move_Tick(_float fTimeDelta)
+{
+	m_TickStates.push_back(STATE_IDLE);
+
+	Move_Input(fTimeDelta);
+
+	// 슬립했냐 안 했냐
+	if (m_pTransformCom->LinearTurn(m_vDestLook, 1.f, 0.3f, fTimeDelta))
+	{
+		m_fSlepSpeed = 2.2f;
+		m_TickStates.push_back(STATE_SLEP);
+	}
+
+}
+
+void CAnimPlayer::Jump_Tick(_float fTimeDelta)
+{
+	m_eJumpState = STATE_IDLE;
+
+	Jump_Input(fTimeDelta);
+
+	m_pTransformCom->LinearTurn(m_vDestLook, 0.5f, 0.3f, fTimeDelta, false);
+}
+
+void CAnimPlayer::DoubleJump_Tick(_float fTimeDelta)
+{
+	m_eJumpState = STATE_IDLE;
+
+	DoubleJump_Input(fTimeDelta);
+
+	m_pTransformCom->LinearTurn(m_vDestLook, 0.5f, 0.3f, fTimeDelta, false);
+}
+
+void CAnimPlayer::SprintJump_Tick(_float fTimeDelta)
+{
+	m_eJumpState = STATE_IDLE;
+
+	SprintJump_Input(fTimeDelta);
+
+	m_pTransformCom->LinearTurn(m_vDestLook, 0.5f, 0.3f, fTimeDelta, false);
+}
+
+void CAnimPlayer::Rend_Tick(_float fTimeDelta)
+{
+	// m_eJumpState = STATE_IDLE;
+
+	Rend_Input(fTimeDelta);
+
+	if (m_pTransformCom->LinearTurn(m_vDestLook, 0.5f, 0.3f, fTimeDelta))
+	{
+		m_fSlepSpeed = 2.2f;
+		m_TickStates.push_back(STATE_SLEP);
+	}
+}
+
+void CAnimPlayer::Slep_Tick(_float fTimeDelta)
+{
+	m_fSlepSpeed -= 6.f * fTimeDelta;
+}
+
+void CAnimPlayer::Slide_Tick(_float fTimeDelta)
+{
+	m_eJumpState = STATE_IDLE;
+
+	Slide_Input(fTimeDelta);
+
+	m_pTransformCom->LinearTurn(m_vDestLook, 0.1f, 0.3f, fTimeDelta, false);
+}
+
+void CAnimPlayer::SlideRending_Tick(_float fTimeDelta)
+{
+	if (0.f < m_fCulSpeed)
+		m_fSlepSpeed -= 3.f * fTimeDelta;
+	else
+		m_fSlepSpeed = 0.f;
+
+	SlideRending_Input(fTimeDelta);
+}
+
+
 
 void CAnimPlayer::Move_Input(_float fTimeDelta)
 {
@@ -318,7 +478,7 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 		{
 			m_TickStates.push_back(STATE_RUN);
 		}
-		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
 		{
 			m_TickStates.push_back(STATE_SPRINT);
 		}
@@ -329,7 +489,6 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 	}
 	else if (pGameInstance->Key_Pressing(DIK_S))
 	{
-		// XMStoreFloat3(&m_vDestLook, -1.f * vLendLook);
 		vTotalLook += -1.f * vLendLook;
 		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
 			vTotalLook += -1.f * vLendLook;
@@ -338,7 +497,7 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 		{
 			m_TickStates.push_back(STATE_RUN);
 		}
-		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
 		{
 			m_TickStates.push_back(STATE_SPRINT);
 		}
@@ -351,7 +510,6 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 
 	if (pGameInstance->Key_Pressing(DIK_A))
 	{
-		// XMStoreFloat3(&m_vDestLook, -1.f*vCamRight);
 		vTotalLook += -1.f * vCamRight;
 		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
 			vTotalLook += -1.f * vCamRight;
@@ -360,7 +518,7 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 		{
 			m_TickStates.push_back(STATE_RUN);
 		}
-		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
 		{
 			m_TickStates.push_back(STATE_SPRINT);
 		}
@@ -371,7 +529,6 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 	}
 	else if (pGameInstance->Key_Pressing(DIK_D))
 	{
-		// XMStoreFloat3(&m_vDestLook, vCamRight);
 		vTotalLook += vCamRight;
 		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
 			vTotalLook += vCamRight;
@@ -380,7 +537,7 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 		{
 			m_TickStates.push_back(STATE_RUN);
 		}
-		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
 		{
 			m_TickStates.push_back(STATE_SPRINT);
 		}
@@ -390,16 +547,31 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 		}
 	}
 
+
+	if (pGameInstance->Key_Down(DIK_SPACE))
+	{
+		m_pTransformCom->Jump(m_fJumpPower);
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_TickStates.push_back(STATE_RUNJUMP);
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_TickStates.push_back(STATE_SPRINTJUMP);
+		}
+		else
+		{
+			m_TickStates.push_back(STATE_JUMP);
+		}
+	}
+
+
 	if (pGameInstance->Mouse_Down(DIMK_LBUTTON))
 	{
 		m_TickStates.push_back(STATE_ATTACK_1);
 	}
 
-	if (pGameInstance->Key_Down(DIK_J))
-	{
-		m_pTransformCom->Jump(m_fJumpPower);
-		m_TickStates.push_back(STATE_JUMP);
-	}
 
 
 
@@ -408,43 +580,6 @@ void CAnimPlayer::Move_Input(_float fTimeDelta)
 
 
 	RELEASE_INSTANCE(CGameInstance);
-}
-
-void CAnimPlayer::Idle_Tick(_float fTimeDelta)
-{
-	if (STATE_SPRINT == m_ePreState)
-	{
-		m_bImStop = true;
-		m_TickStates.push_back(STATE_SLEP);
-	}
-}
-
-void CAnimPlayer::Move_Tick(_float fTimeDelta)
-{
-	m_TickStates.push_back(STATE_IDLE);
-
-	Move_Input(fTimeDelta);
-
-	// 슬립했냐 안 했냐
-	if (m_pTransformCom->LinearTurn(m_vDestLook, 1.f, 0.3f, fTimeDelta))
-	{
-		m_fSlepSpeed = 2.2f;
-		m_TickStates.push_back(STATE_SLEP);
-	}
-
-}
-
-void CAnimPlayer::Jump_Tick(_float fTimeDelta)
-{
-	m_eJumpState = STATE_END;
-
-	Jump_Input(fTimeDelta);
-	m_pTransformCom->LinearTurn(m_vDestLook, 0.5f, 0.3f, fTimeDelta);
-}
-
-void CAnimPlayer::Slep_Tick(_float fTimeDelta)
-{
-	m_fSlepSpeed -= 6.f * fTimeDelta;
 }
 
 void CAnimPlayer::Attack_Input(_float fTimeDelta)
@@ -511,9 +646,9 @@ void CAnimPlayer::Jump_Input(_float fTimeDelta)
 		{
 			m_eJumpState = STATE_RUN;
 		}
-		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
 		{
-			
+			m_eJumpState = STATE_SPRINT;
 		}
 		else
 		{
@@ -531,9 +666,9 @@ void CAnimPlayer::Jump_Input(_float fTimeDelta)
 		{
 			m_eJumpState = STATE_RUN;
 		}
-		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
 		{
-
+			m_eJumpState = STATE_SPRINT;
 		}
 		else
 		{
@@ -553,9 +688,9 @@ void CAnimPlayer::Jump_Input(_float fTimeDelta)
 		{
 			m_eJumpState = STATE_RUN;
 		}
-		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
 		{
-
+			m_eJumpState = STATE_SPRINT;
 		}
 		else
 		{
@@ -573,9 +708,9 @@ void CAnimPlayer::Jump_Input(_float fTimeDelta)
 		{
 			m_eJumpState = STATE_RUN;
 		}
-		else if (pGameInstance->Key_Pressing(DIK_SPACE))
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
 		{
-
+			m_eJumpState = STATE_SPRINT;
 		}
 		else
 		{
@@ -584,13 +719,302 @@ void CAnimPlayer::Jump_Input(_float fTimeDelta)
 	}
 
 
-	//if (pGameInstance->Key_Down(DIK_J))
-	//	m_pTransformCom->Jump(m_fJumpPower);
+	if (pGameInstance->Key_Down(DIK_SPACE))
+	{
+		m_TickStates.push_back(STATE_DOUBLEJUMP);
+		m_pTransformCom->DoubleJump(m_fJumpPower);
+	}
+	else if (pGameInstance->Key_Down(DIK_LCONTROL))
+	{
+		m_TickStates.push_back(STATE_SLIDE);
+		m_pTransformCom->ResetGravity();
+	}
 
 
 	vTotalLook = XMVector3Normalize(vTotalLook);
 	XMStoreFloat3(&m_vDestLook, vTotalLook);
 
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CAnimPlayer::DoubleJump_Input(_float fTimeDelta)
+{
+	SprintJump_Input(fTimeDelta);
+}
+
+void CAnimPlayer::SprintJump_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// WD : 카메라 Lend Look으로 Look
+	// AD : 카메라 Right로 Look
+	_matrix mCamWorld = XMMatrixInverse(nullptr, pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	_vector vCamRight = mCamWorld.r[0];
+	_vector vCamUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	_vector vLendLook = XMVector3Cross(vCamRight, vCamUp);
+
+	vLendLook = XMVector3Normalize(vLendLook);
+	vCamRight = XMVector3Normalize(vCamRight);
+
+
+	_vector vTotalLook = XMLoadFloat3(&m_vDestLook);
+
+	if (pGameInstance->Key_Pressing(DIK_W))
+	{
+		// XMStoreFloat3(&m_vDestLook, vLendLook);
+		vTotalLook += vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vLendLook;
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_eJumpState = STATE_SPRINT;
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+	else if (pGameInstance->Key_Pressing(DIK_S))
+	{
+		// XMStoreFloat3(&m_vDestLook, -1.f * vLendLook);
+		vTotalLook += -1.f * vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vLendLook;
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_eJumpState = STATE_SPRINT;
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+
+
+	if (pGameInstance->Key_Pressing(DIK_A))
+	{
+		// XMStoreFloat3(&m_vDestLook, -1.f*vCamRight);
+		vTotalLook += -1.f * vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vCamRight;
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_eJumpState = STATE_SPRINT;
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		// XMStoreFloat3(&m_vDestLook, vCamRight);
+		vTotalLook += vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vCamRight;
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_eJumpState = STATE_SPRINT;
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+
+
+	vTotalLook = XMVector3Normalize(vTotalLook);
+	XMStoreFloat3(&m_vDestLook, vTotalLook);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CAnimPlayer::Rend_Input(_float fTimeDleta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// WD : 카메라 Lend Look으로 Look
+	// AD : 카메라 Right로 Look
+	_matrix mCamWorld = XMMatrixInverse(nullptr, pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	_vector vCamRight = mCamWorld.r[0];
+	_vector vCamUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	_vector vLendLook = XMVector3Cross(vCamRight, vCamUp);
+
+	vLendLook = XMVector3Normalize(vLendLook);
+	vCamRight = XMVector3Normalize(vCamRight);
+
+
+	_vector vTotalLook = XMLoadFloat3(&m_vDestLook);
+
+	if (pGameInstance->Key_Pressing(DIK_W))
+	{
+		vTotalLook += vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vLendLook;
+
+	}
+	else if (pGameInstance->Key_Pressing(DIK_S))
+	{
+		vTotalLook += -1.f * vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vLendLook;
+
+	}
+
+
+	if (pGameInstance->Key_Pressing(DIK_A))
+	{
+		vTotalLook += -1.f * vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vCamRight;
+
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		vTotalLook += vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vCamRight;
+
+	}
+
+
+	if (pGameInstance->Key_Down(DIK_SPACE))
+	{
+		m_pTransformCom->Jump(m_fJumpPower);
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_TickStates.push_back(STATE_RUNJUMP);
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_TickStates.push_back(STATE_SPRINTJUMP);
+		}
+		else
+		{
+			m_TickStates.push_back(STATE_JUMP);
+		}
+	}
+
+
+	vTotalLook = XMVector3Normalize(vTotalLook);
+	XMStoreFloat3(&m_vDestLook, vTotalLook);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CAnimPlayer::Slide_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Pressing(DIK_W))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_eJumpState = STATE_SPRINT;
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+	else if (pGameInstance->Key_Pressing(DIK_S))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_eJumpState = STATE_SPRINT;
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+
+
+	if (pGameInstance->Key_Pressing(DIK_A))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_eJumpState = STATE_SPRINT;
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			m_eJumpState = STATE_RUN;
+		}
+		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		{
+			m_eJumpState = STATE_SPRINT;
+		}
+		else
+		{
+			m_eJumpState = STATE_WALK;
+		}
+	}
+
+
+	if (pGameInstance->Key_Down(DIK_SPACE))
+	{
+		m_TickStates.push_back(STATE_DOUBLEJUMP);
+		m_pTransformCom->DoubleJump(m_fJumpPower);
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CAnimPlayer::SlideRending_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_SPACE))
+	{
+		m_TickStates.push_back(STATE_DOUBLEJUMP);
+		m_pTransformCom->DoubleJump(m_fJumpPower - 2.f);
+	}
 
 	RELEASE_INSTANCE(CGameInstance);
 }
@@ -642,8 +1066,33 @@ void CAnimPlayer::LateTick(_float fTimeDelta)
 	m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.008f);
 	_float fTemp = 0.f;
 	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp))
-		if (STATE_JUMP == m_eState)
-			m_TickStates.push_back(STATE_JUMPLENDING);
+	{
+		if (STATE_JUMP == m_eState || STATE_RUNJUMP == m_eState || STATE_SPRINTJUMP == m_eState || STATE_DOUBLEJUMP == m_eState)
+		{
+			switch (m_eJumpState)
+			{
+			case STATE_IDLE:
+				m_TickStates.push_back(STATE_JUMPLENDING);
+				break;
+			case STATE_WALK:
+				m_TickStates.push_back(STATE_JUMPLENDING);
+				break;
+			case STATE_RUN:
+				m_TickStates.push_back(STATE_RUNJUMPLENDING);
+				break;
+			case STATE_SPRINT:
+				m_TickStates.push_back(STATE_SPRINT);
+				break;
+			}
+
+		}
+		else if (STATE_SLIDE == m_eState)
+		{
+			m_TickStates.push_back(STATE_SLIDELENDING);
+		}
+
+	}
+
 
 
 
@@ -671,28 +1120,46 @@ void CAnimPlayer::Calcul_State(_float fTimeDelta)
 {
 	if (STATE_WALK == m_eState)
 	{
-		m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta, m_pNavigationCom);
+		m_fCulSpeed = m_fWalkSpeed;
 	}
 	else if (STATE_RUN == m_eState)
 	{
-		m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta, m_pNavigationCom);
+		m_fCulSpeed = m_fRunSpeed;
 	}
 	else if (STATE_SPRINT == m_eState)
 	{
-		m_pTransformCom->Go_Straight(m_fRunSpeed + 2.f, fTimeDelta, m_pNavigationCom);
+		m_fCulSpeed = m_fRunSpeed + 2.f;
 	}
 	else if (STATE_SLEP == m_eState)
 	{
-		m_pTransformCom->Go_Straight(m_fSlepSpeed, fTimeDelta, m_pNavigationCom);
+		m_fCulSpeed = m_fSlepSpeed;
 	}
-	else if ((STATE_JUMP == m_eState || STATE_JUMPLENDING == m_eState) && STATE_END != m_eJumpState)
+	else if (STATE_SLIDELENDING == m_eState)
 	{
-		if(STATE_RUN == m_eJumpState)
-			m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta, m_pNavigationCom);
-		else if(STATE_WALK)
-			m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta, m_pNavigationCom);
+		m_fCulSpeed = m_fSlepSpeed;
+	}
+	else if (STATE_JUMP == m_eState || STATE_JUMPLENDING == m_eState || STATE_RUNJUMP == m_eState || STATE_RUNJUMPLENDING == m_eState || STATE_SPRINTJUMP == m_eState || STATE_DOUBLEJUMP == m_eState || STATE_SLIDE == m_eState)
+	{
+
+		if (STATE_IDLE != m_eJumpState)
+		{
+			if (STATE_WALK == m_eJumpState)
+				m_fCulSpeed = m_fWalkSpeed;
+			else if (STATE_RUN == m_eJumpState)
+				m_fCulSpeed = m_fRunSpeed;
+			else if (STATE_SPRINT == m_eJumpState)
+				m_fCulSpeed = m_fRunSpeed + 2.f;
+
+			if (STATE_SLIDE == m_eState)
+				m_fCulSpeed += 4.f;
+		}
+	}
+	else if(STATE_IDLE == m_eState)
+	{
+		m_fCulSpeed = 0.f;
 	}
 
+	m_pTransformCom->Go_Straight(m_fCulSpeed, fTimeDelta, m_pNavigationCom);
 }
 
 void CAnimPlayer::Check_EndAnim()
@@ -717,6 +1184,9 @@ void CAnimPlayer::Check_EndAnim()
 		break;
 	case STATE_JUMPLENDING:
 		m_TickStates.push_back(STATE_IDLE);
+		break;
+	case STATE_RUNJUMPLENDING:
+		m_TickStates.push_back(STATE_RUN);
 		break;
 	}
 
@@ -919,6 +1389,7 @@ void CAnimPlayer::Free()
 	__super::Free();
 
 
+	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pSockatCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);

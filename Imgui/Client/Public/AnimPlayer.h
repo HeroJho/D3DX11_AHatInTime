@@ -18,7 +18,7 @@ BEGIN(Client)
 class CAnimPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_JUMPLENDING, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_STATU, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_STATU, STATE_END };
 
 
 private:
@@ -47,13 +47,23 @@ private:
 	
 	void Idle_Tick(_float fTimeDelta);
 	void Jump_Tick(_float fTimeDelta);
+	void DoubleJump_Tick(_float fTimeDelta);
+	void SprintJump_Tick(_float fTimeDelta);
+	void Rend_Tick(_float fTimeDelta);
 	void Move_Tick(_float fTimeDelta);
 	void Slep_Tick(_float fTimeDelta);
+	void Slide_Tick(_float fTimeDelta);
+	void SlideRending_Tick(_float fTimeDelta);
 
 	void Move_Input(_float fTimeDelta);
 	void Attack_Input(_float fTimeDelta);
 	void ReadyAttack_Input(_float fTimeDelta);
 	void Jump_Input(_float fTimeDelta);
+	void DoubleJump_Input(_float fTimeDelta);
+	void SprintJump_Input(_float fTimeDelta);
+	void Rend_Input(_float fTimeDleta);
+	void Slide_Input(_float fTimeDelta);
+	void SlideRending_Input(_float fTimeDelta);
 
 	void Calcul_State(_float fTimeDelta);
 
@@ -83,10 +93,11 @@ private:
 	_float				m_fSlepSpeed = 0.f;
 
 	_float				m_fJumpPower = 5.f;
+	STATE				m_eJumpState = STATE_END;
 
 	_bool				m_bImStop = false;
 
-	STATE				m_eJumpState = STATE_END;
+
 
 	// For. FaceAnim
 	_int				m_FaceAnimIndex[2];

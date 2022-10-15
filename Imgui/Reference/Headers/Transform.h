@@ -70,7 +70,7 @@ public:
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2);
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2, _fvector vAxis3, _float fAngle3);
 
-	_bool LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta);
+	_bool LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta, _bool bCanSlip = true);
 	void Set_DestLook();
 
 	void LookAt(_fvector vAt);
@@ -80,6 +80,8 @@ public:
 
 	void Tick_Gravity(_float fTimeDelta, class CNavigation* pNavigation, _float fGravity = 1.f);
 	void Jump(_float fPower);
+	void DoubleJump(_float fPower);
+	void ResetGravity();
 
 
 private:

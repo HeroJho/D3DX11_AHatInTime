@@ -229,12 +229,23 @@ void CTransform::Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _flo
 	Set_State(CTransform::STATE_LOOK, XMVector3TransformNormal(Get_State(CTransform::STATE_LOOK), RotationMatrix));
 }
 
-_bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta)
+
+_bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fDuration, _float fTimeDelta, _bool bCanSlip)
 {
 	// 이상한 크기의 (0)벡터가 들어올 시에
 	_float fDistance = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vDestLook)));
 	if (0.01f > fDistance)
 		return false;
+
+	if (!bCanSlip)
+	{
+		_vector vVDestLook = XMVector3Normalize(XMLoadFloat3(&vDestLook));
+		_vector vLook = -1.f * XMVector3Normalize(Get_State(STATE_LOOK));
+		_float vDist = XMVectorGetX(XMVector3Dot(vVDestLook, vLook));
+		if (0.99f < vDist)
+			return false;
+	}
+
 
 	_vector vMyLook = Get_State(STATE_LOOK);
 	_vector vVDestLook = XMLoadFloat3(&vDestLook);
@@ -263,7 +274,6 @@ _bool CTransform::LinearTurn(_float3 vDestLook, _float fRoationPerSce, _float fD
 	if (0.8f > fSlip)
 	{
 		m_vDest = vDestLook;
-		// Set_Look(XMLoadFloat3(&m_vDest));
 		return true;
 	}
 
@@ -372,6 +382,18 @@ void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _floa
 void CTransform::Jump(_float fPower)
 {
 	m_fVelocity += fPower;
+}
+
+void CTransform::DoubleJump(_float fPower)
+{
+	m_fGravityAcc = 0.f;
+	m_fVelocity = fPower;
+}
+
+void CTransform::ResetGravity()
+{
+	m_fGravityAcc = 0.f;
+	m_fVelocity = 0.f;
 }
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
