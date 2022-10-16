@@ -2,6 +2,13 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+BEGIN(Engine)
+
+class CGameObject;
+
+END
+
+
 BEGIN(Client)
 
 class CMapManager final : public CBase
@@ -11,6 +18,9 @@ public:
 	CMapManager();
 	virtual ~CMapManager() = default;
 
+
+public:
+	void Tick(_float TimeDelta);
 
 	// For. Terrain
 public:
@@ -49,15 +59,19 @@ public:
 	_int Get_ID() { return m_iID; }
 	void Set_ID(_int iID) { m_iID = iID; }
 
+	map<string, class CStaticModel*>* Get_CreatedModels() { return &m_StaticModels; }
+
+	_bool Get_NaviMode() { return m_bNaviMode; }
+	void Set_NaviMode(_bool bNaviMode) { m_bNaviMode = bNaviMode; }
+
 public:
 	void Make_PickedModel();
 	void Delete_Model();
 	void Delete_Model_All();
 	void Add_Model(class CStaticModel* pStaticModel);
 	
-	class CStaticModel* Get_PickedCreatedModel();
 
-	map<string, class CStaticModel*>* Get_CreatedModels() { return &m_StaticModels; }
+	class CStaticModel* Get_PickedCreatedModel();
 
 	class CStaticModel* Find_Model(string sTag);
 
@@ -65,6 +79,12 @@ public:
 
 	void Save_MapData();
 	void Load_MapData();
+
+	void Click_Model();
+	void UnClick_Model();
+	void Move_ClickedModel();
+	void Add_TempClickedModel(_float fMinDis, CGameObject* pObj);
+	void Cul_MinClickedModel();
 
 private:
 	bool GenTag(string* pOut);
@@ -77,11 +97,16 @@ private:
 
 	_int		m_iID = 0;
 
+
+	_bool		m_bNaviMode = false;
+
 	_bool		m_bRendPickingColor = false;
 	_bool		m_bRendCulMode = false;
 
-
-
+	vector<CGameObject*> m_TempClickedObjects;
+	vector<_float>		m_TempClickedDis;
+	string		m_sMinObject;
+	_float3		m_fMinPos;
 
 public:
 	virtual void Free() override;

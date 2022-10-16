@@ -28,6 +28,10 @@ public:
 	// ¼¿¿¡ ´ê¿´³Ä
 	_bool isGround(_fvector vPosition, _float* OutfCellY);
 
+	void Comput_CellCollision(class CGameObject* pGameObject);
+
+	void Check_ColMove(class CCollider* pCollider);
+
 #ifdef _DEBUG
 public:
 	HRESULT Render();
@@ -38,7 +42,6 @@ private:
 	typedef vector<class CCell*>	CELLS;
 
 	NAVIGATIONDESC					m_NavigationDesc;
-	
 
 #ifdef _DEBUG
 	class CShader*			m_pShader = nullptr;

@@ -78,6 +78,8 @@ public:
 	void Move_FreeVectexCube(_float fDis);
 	void Comput_FreeVectexCube();
 
+	void Load_NaviData(_int iMapId);
+
 private:
 	vector<CCell*>			m_Cells;
 	typedef vector<CCell*>	CELLS;

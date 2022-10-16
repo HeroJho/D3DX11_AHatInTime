@@ -45,6 +45,10 @@ HRESULT CStaticModel::Initialize(void * pArg)
 	m_vAxis = Desc->vAngle;
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_vAxis.x, XMVectorSet(0.f, 1.f, 0.f, 0.f), m_vAxis.y, XMVectorSet(0.f, 0.f, 1.f, 0.f), m_vAxis.z);
 
+
+
+	m_pNavigationCom->Comput_CellCollision(this);
+
 	return S_OK;
 }
 
@@ -60,7 +64,13 @@ void CStaticModel::LateTick(_float fTimeDelta)
 
 	m_pModelCom->Play_Animation(fTimeDelta);
 
+	Tick_Col(m_pTransformCom->Get_WorldMatrix());
+
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 HRESULT CStaticModel::Render()
@@ -99,6 +109,9 @@ HRESULT CStaticModel::Render()
 			return E_FAIL;
 	}
 
+
+	Render_Col();
+
 	return S_OK;
 }
 
@@ -119,6 +132,37 @@ HRESULT CStaticModel::Ready_Components()
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
+
+
+	/* For.Com_Collider */
+	CCollider::COLLIDERDESC ColDesc;
+	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
+
+	//ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 3.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
+	//	return E_FAIL;
+	
+	ColDesc.vCenter = _float3(0.f, 3.f, 0.f);
+	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	ColDesc.vSize = _float3(1.f, 6.f, 1.f);
+	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+		return E_FAIL;
+
+	//ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+	//	return E_FAIL;
+
+
+
+
+	/* For.Com_Navigation */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -154,6 +198,7 @@ void CStaticModel::Free()
 	__super::Free();
 
 
+	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);

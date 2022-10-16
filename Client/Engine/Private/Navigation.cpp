@@ -3,6 +3,10 @@
 #include "Shader.h"
 #include "PipeLine.h"
 
+#include "OBB.h"
+#include "GameObject.h"
+#include "Transform.h"
+
 CNavigation::CNavigation(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -77,11 +81,15 @@ _bool CNavigation::isMove(_fvector vPosition)
 {
 	_int	iNeighborIndex = -1;
 
+
 	/* 현재 쎌 안에서 움직였다. */
 	/* 나간방향에 이웃이 있다면. 이웃의 인ㄷ게스를 받아오고.
 	이웃이 없다면 안채워온다. */
 	if (true == m_Cells[m_NavigationDesc.iCurrentIndex]->isIn(vPosition, &iNeighborIndex))
+	{
 		return true;
+	}
+
 
 	/* 현재 셀을 나갔다. */
 	else
@@ -97,8 +105,8 @@ _bool CNavigation::isMove(_fvector vPosition)
 				if (true == m_Cells[iNeighborIndex]->isIn(vPosition, &iNeighborIndex))
 				{
 					/* 커런트 인덱스를 이웃의 인덱스로 바꿔준다. */
-					m_NavigationDesc.iCurrentIndex = iNeighborIndex;
 
+					m_NavigationDesc.iCurrentIndex = iNeighborIndex;
 					return true;
 				}
 			}
@@ -108,8 +116,6 @@ _bool CNavigation::isMove(_fvector vPosition)
 		/* 나간방향에 이웃이 없었다면. */
 		else
 			return false;
-
-
 	}
 
 
@@ -129,6 +135,34 @@ _bool CNavigation::isGround(_fvector vPosition, _float* OutfCellY)
 	return false;
 }
 
+void CNavigation::Comput_CellCollision(CGameObject* pGameObject)
+{
+	_matrix TransformMatrix = ((CTransform*)pGameObject->Get_ComponentPtr(TEXT("Com_Transform")))->Get_WorldMatrix();
+	COBB* pObb = (COBB*)pGameObject->Get_Colliders().front();
+
+	for (auto& pCell : m_Cells)
+	{
+		_vector vA = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_A)), 1.f);
+		_vector vB = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_B)), 1.f);
+		_vector vC = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_C)), 1.f);
+
+		// pCell->Set_Color(_float4(0.f, 1.f, 0.f, 1.f));
+
+		if (pObb->Collision_Cell(vA, vB, vC, TransformMatrix))
+		{
+			pCell->Set_Color(_float4(1.f, 0.f, 0.f, 1.f));
+			pCell->Add_Collider(pGameObject);
+		}
+	}
+}
+
+void CNavigation::Check_ColMove(CCollider* pCollider)
+{
+	if (!m_Cells[m_NavigationDesc.iCurrentIndex]->isColMove(pCollider))
+		return false;
+
+}
+
 #ifdef _DEBUG
 
 HRESULT CNavigation::Render()
@@ -137,8 +171,6 @@ HRESULT CNavigation::Render()
 
 	_float4x4			WorldMatrix;
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
-
-	/*WorldMatrix.m[1][3] = fHeight;*/
 
 	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
 		return E_FAIL;
@@ -149,14 +181,13 @@ HRESULT CNavigation::Render()
 	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &pPipeLine->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-
-	if (FAILED(m_pShader->Set_RawValue("g_vColor", &_float4(0.f, 1.f, 0.f, 1.f), sizeof(_float4))))
-		return E_FAIL;
+	//if (FAILED(m_pShader->Set_RawValue("g_vColor", &_float4(0.f, 1.f, 0.f, 1.f), sizeof(_float4))))
+	//	return E_FAIL;
 
 	RELEASE_INSTANCE(CPipeLine);
 
-	m_pShader->Begin(0);
 
+	// m_pShader->Begin(0);
 
 
 	if (-1 == m_NavigationDesc.iCurrentIndex)
@@ -164,16 +195,18 @@ HRESULT CNavigation::Render()
 		for (auto& pCell : m_Cells)
 		{
 			if (nullptr != pCell)
+			{
+				if (FAILED(m_pShader->Set_RawValue("g_vColor", &pCell->Get_Color(), sizeof(_float4))))
+					return E_FAIL;
+
+				m_pShader->Begin(0);
+
 				pCell->Render_Cell();
+			}
+
 		}
 	}
-	else
-	{
-		if (FAILED(m_pShader->Set_RawValue("g_vColor", &_float4(1.f, 0.f, 0.f, 1.f), sizeof(_float4))))
-			return E_FAIL;
 
-		m_Cells[m_NavigationDesc.iCurrentIndex]->Render_Cell(0.05f);
-	}
 
 
 

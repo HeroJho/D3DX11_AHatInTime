@@ -2,7 +2,6 @@
 #include "..\Public\MapManager.h"
 
 #include "GameInstance.h"
-#include "MapManager.h"
 #include "ToolManager.h"
 #include "DataManager.h"
 #include "MeshManager.h"
@@ -21,6 +20,23 @@ CMapManager::CMapManager()
 
 
 
+
+void CMapManager::Tick(_float TimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	
+	if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+	{
+		if (pGameInstance->Mouse_Pressing(DIMK_LBUTTON))
+			Click_Model();
+		else if (pGameInstance->Mouse_Pressing(DIMK_WHEEL))
+			Move_ClickedModel();
+		else if (pGameInstance->Mouse_Pressing(DIMK_RBUTTON))
+			UnClick_Model();
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+}
 
 void CMapManager::Make_PickedModel()
 {
@@ -49,8 +65,13 @@ void CMapManager::Delete_Model()
 	if (nullptr == pTemp)
 		return;
 
+	if (m_sPickedCreatedString == m_sMinObject)
+		m_sMinObject == "";
+
 	pTemp->Set_Dead();
 	m_StaticModels.erase(m_sPickedCreatedString);
+
+	m_sPickedCreatedString = "";
 }
 
 void CMapManager::Delete_Model_All()
@@ -71,6 +92,8 @@ void CMapManager::Add_Model(CStaticModel * pStaticModel)
 	pStaticModel->Set_ModelNum(sTag);
 	m_StaticModels.emplace(sTag, pStaticModel);
 }
+
+
 
 CStaticModel * CMapManager::Get_PickedCreatedModel()
 {
@@ -150,7 +173,88 @@ void CMapManager::Load_MapData()
 
 	}
 
+	CMeshManager::Get_Instance()->Load_NaviData(m_iID);
 }
+
+
+
+
+void CMapManager::Click_Model()
+{
+	if ("" != m_sMinObject)
+	{
+		m_sPickedCreatedString = m_sMinObject;
+	}
+}
+
+void CMapManager::UnClick_Model()
+{
+	m_sPickedCreatedString = "";
+	m_sMinObject = "";
+	ZeroMemory(&m_fMinPos, sizeof(_float3));
+}
+
+void CMapManager::Move_ClickedModel()
+{
+	CStaticModel* pModel = Get_PickedCreatedModel();
+	if (nullptr == pModel)
+		return;
+
+	CTransform* pTran = (CTransform*)pModel->Get_ComponentPtr(TEXT("Com_Transform"));
+	pTran->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&m_fMinPos), 1.f));
+}
+
+
+
+
+
+void CMapManager::Add_TempClickedModel(_float fMinDis, CGameObject* pObj)
+{
+	m_TempClickedDis.push_back(fMinDis);
+	m_TempClickedObjects.push_back(pObj);
+}
+
+void CMapManager::Cul_MinClickedModel()
+{
+
+	if (m_TempClickedObjects.empty())
+		return;
+
+	_float fMinDis = FLT_MAX_EXP;
+	CGameObject* pMinObj = nullptr;
+
+	for (_uint i = 0; i < m_TempClickedDis.size(); ++i)
+	{
+		if (fMinDis > m_TempClickedDis[i])
+		{
+			fMinDis = m_TempClickedDis[i];
+			pMinObj = m_TempClickedObjects[i];
+		}
+	}
+	m_TempClickedObjects.clear();
+	m_TempClickedDis.clear();
+
+
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_float3 vDir = pGameInstance->Get_MouseDir();
+	_float3 vMousePos = pGameInstance->Get_MousePos();
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	_float3 vPos;
+	XMStoreFloat3(&vPos, XMLoadFloat3(&vMousePos) + fMinDis * XMVector3Normalize(XMLoadFloat3(&vDir)));
+
+	char cTemp[MAX_PATH];
+	
+	m_sMinObject = ((CStaticModel*)pMinObj)->Get_ModelNum();
+	m_fMinPos = vPos;
+
+}
+
+
+
 
 
 bool CMapManager::GenTag(string* pOut)

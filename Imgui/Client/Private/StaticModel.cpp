@@ -4,6 +4,7 @@
 
 #include "MapManager.h"
 #include "MeshManager.h"
+#include "ToolManager.h"
 
 CStaticModel::CStaticModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -81,43 +82,79 @@ void CStaticModel::Tick(_float fTimeDelta)
 	
 	if (CMeshManager::Get_Instance()->Get_ClickVertexMode())
 	{
-		if (pGameInstance->Mouse_Pressing(DIMK_WHEEL) && pGameInstance->Mouse_Pressing(DIMK_LBUTTON))
+
+		if (CMeshManager::Get_Instance()->Get_ClickVertexMode())
 		{
-			if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+
+			if (pGameInstance->Mouse_Pressing(DIMK_WHEEL) && pGameInstance->Mouse_Pressing(DIMK_LBUTTON))
 			{
-				CMeshManager::Get_Instance()->Move_FreeVectexCube(fMinDis);
+				if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+				{
+					CMeshManager::Get_Instance()->Move_FreeVectexCube(fMinDis);
+				}
 			}
+
+			RELEASE_INSTANCE(CGameInstance);
+			return;
+
 		}
 
-
-		RELEASE_INSTANCE(CGameInstance);
-		return;
-	}
-
-
-	if (pGameInstance->Key_Down(DIK_SPACE))
-	{
-		if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
-		{
-			CMeshManager::Get_Instance()->Add_Cell(fMinDis, vPoss);
-		}
-	}
-
-	if (pGameInstance->Key_Pressing(DIK_SPACE))
-	{
-		m_fSpaceTimeAcc += fTimeDelta;
-		if (1.f < m_fSpaceTimeAcc)
+		if (pGameInstance->Key_Down(DIK_SPACE))
 		{
 			if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
 			{
 				CMeshManager::Get_Instance()->Add_Cell(fMinDis, vPoss);
 			}
 		}
+
+		if (pGameInstance->Key_Pressing(DIK_SPACE))
+		{
+			m_fSpaceTimeAcc += fTimeDelta;
+			if (1.f < m_fSpaceTimeAcc)
+			{
+				if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+				{
+					CMeshManager::Get_Instance()->Add_Cell(fMinDis, vPoss);
+				}
+			}
+		}
+		else
+		{
+			m_fSpaceTimeAcc = 0.f;
+		}
+
+
 	}
 	else
 	{
-		m_fSpaceTimeAcc = 0.f;
+
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		{
+			if (pGameInstance->Mouse_Pressing(DIMK_WHEEL))
+			{
+				if (m_sModelNum == CMapManager::Get_Instance()->Get_PickedCreatedString())
+				{
+					RELEASE_INSTANCE(CGameInstance);
+					return;
+				}
+			}
+
+			if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+			{
+				CMapManager::Get_Instance()->Add_TempClickedModel(fMinDis, this);
+			}
+		}
+
+		RELEASE_INSTANCE(CGameInstance);
+		return;
+
+
+
 	}
+
+
+
+
 
 	RELEASE_INSTANCE(CGameInstance);
 }

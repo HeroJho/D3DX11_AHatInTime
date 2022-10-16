@@ -45,7 +45,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_vDestLook = _float3{ 0.f, 0.f, 1.f };
 	m_pTransformCom->Set_Look(XMLoadFloat3(&m_vDestLook));
 	m_pTransformCom->Set_DestLook();
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(87.42f, 0.f, 3.75f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(68.76, 12.f, -123.f, 1.f));
 
 	m_fCulSpeed = m_fWalkSpeed;
 
@@ -80,7 +80,7 @@ void CPlayer::Set_State()
 
 
 
-	// 애니메이션이 바뀔때 거쳐야하는 부분
+	// 애니메이션이 바뀔때 거쳐야하는 부분p
 	switch (m_eState)
 	{
 	case STATE_SLEP:
@@ -984,17 +984,20 @@ void CPlayer::LateTick(_float fTimeDelta)
 
 
 	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
-
-
 	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
+
 	Tick_Col(m_pTransformCom->Get_WorldMatrix());
+
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PLAYER, this);
 	RELEASE_INSTANCE(CGameInstance);
+
+	// TEST
+
 }
 
 void CPlayer::Calcul_State(_float fTimeDelta)
@@ -1040,7 +1043,7 @@ void CPlayer::Calcul_State(_float fTimeDelta)
 		m_fCulSpeed = 0.f;
 	}
 
-	m_pTransformCom->Go_Straight(m_fCulSpeed, fTimeDelta, m_pNavigationCom);
+	m_pTransformCom->Go_Straight(m_fCulSpeed, fTimeDelta, m_pNavigationCom, m_Colliders.front());
 }
 
 void CPlayer::Check_EndAnim()
@@ -1221,17 +1224,17 @@ HRESULT CPlayer::Ready_Components()
 	if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
 		return E_FAIL;
 
-	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-		return E_FAIL;
+	//ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+	//	return E_FAIL;
 
-	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
-		return E_FAIL;
+	//ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+	//	return E_FAIL;
 
 
 
@@ -1239,7 +1242,7 @@ HRESULT CPlayer::Ready_Components()
 	/* For.Com_Navigation */
 	CNavigation::NAVIGATIONDESC NaviDesc;
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
-	NaviDesc.iCurrentIndex = 3806;
+	NaviDesc.iCurrentIndex = 2255;
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 		return E_FAIL;
 	

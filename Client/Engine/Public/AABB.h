@@ -20,7 +20,7 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype(CCollider::TYPE eColliderType);
 	virtual HRESULT Initialize(void* pArg);
-	virtual void Update(_fmatrix TransformMatrix);
+	virtual void Update(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr);
 	virtual _bool Collision(CCollider* pTargetCollider);
 
 #ifdef _DEBUG

@@ -24,9 +24,11 @@ public:
 	// 나의 셀에 대해 y값을 얻어온다
 	_float Compute_Height(_fvector  vPos);
 	// 이동 가능하냐
-	_bool isMove(_fvector vPosition);
+	_bool isMove(_fvector vPosition, class CCollider* pCollider);
 	// 셀에 닿였냐
 	_bool isGround(_fvector vPosition, _float* OutfCellY);
+
+	void Comput_CellCollision(class CGameObject* pGameObject);
 
 #ifdef _DEBUG
 public:

@@ -1,6 +1,7 @@
 #include "..\Public\Transform.h"
 
 #include "Navigation.h"
+#include "Collider.h"
 
 CTransform::CTransform(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CComponent(pDevice, pContext)
@@ -69,7 +70,7 @@ void CTransform::Go_Straight(_float fTimeDelta)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Straight(_float fSpeedPerSec, _float fTimeDelta, class CNavigation* pNavigation)
+void CTransform::Go_Straight(_float fSpeedPerSec, _float fTimeDelta, CNavigation* pNavigation, CCollider* pCollider)
 {
 	_vector		vPosition = Get_State(CTransform::STATE_POSITION);
 	_vector		vLook = Get_State(CTransform::STATE_LOOK);
@@ -83,14 +84,9 @@ void CTransform::Go_Straight(_float fSpeedPerSec, _float fTimeDelta, class CNavi
 	if (nullptr != pNavigation)
 		isMove = pNavigation->isMove(vPosition);
 
+
 	if (true == isMove)
 	{
-		if (nullptr != pNavigation)
-		{
-			//_float fY = pNavigation->Compute_Height(vPosition);
-			//if(fY > XMVectorGetY(vPosition))
-			//	vPosition = XMVectorSetY(vPosition, fY);
-		}
 		Set_State(CTransform::STATE_POSITION, vPosition);
 	}
 

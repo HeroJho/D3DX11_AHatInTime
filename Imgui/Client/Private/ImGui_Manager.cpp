@@ -249,12 +249,20 @@ void CImGui_Manager::Render_MapTool()
 	
 	Window_Model();
 
-	Window_CreatedModel();
+	if (CMapManager::Get_Instance()->Get_NaviMode())
+	{
+		Window_Navi();
+		if (nullptr != CMeshManager::Get_Instance()->Get_MultiThread())
+			Window_LoadingReadyNeighbor();
+	}
+	else
+	{
+		Window_CreatedModel();
+		Window_Transform();
+	}
 
-	Window_Transform();
 
-	if(nullptr != CMeshManager::Get_Instance()->Get_MultiThread())
-		Window_LoadingReadyNeighbor();
+
 
 
 }
@@ -612,7 +620,9 @@ void CImGui_Manager::Window_Model()
 	if(ImGui::Button("Create"))
 		CMapManager::Get_Instance()->Make_PickedModel();
 
-
+	_bool bNaviMode = CMapManager::Get_Instance()->Get_NaviMode();
+	if (ImGui::Checkbox("NaviMode", &bNaviMode))
+		CMapManager::Get_Instance()->Set_NaviMode(bNaviMode);
 
 
 	ImGui::End();
@@ -684,7 +694,30 @@ void CImGui_Manager::Window_CreatedModel()
 		
 
 
-	ImGui::Text("===============Navigation==============");
+	ImGui::End();
+}
+
+void CImGui_Manager::Window_Transform()
+{
+
+	CStaticModel* pPickedModel = CMapManager::Get_Instance()->Get_PickedCreatedModel();
+
+	if (nullptr == pPickedModel)
+		return;
+
+	CTransform* pTransform = (CTransform*)pPickedModel->Get_ComponentPtr(TEXT("Com_Transform"));
+	_float3* vAixs = pPickedModel->Get_Axis();
+	Window_Transform(pTransform, vAixs);
+
+
+}
+
+void CImGui_Manager::Window_Navi()
+{
+	ImGui::Begin("Navi Tool");
+
+
+
 	ImGui::PushItemWidth(30.f);
 
 	_float fCosRatio = CMeshManager::Get_Instance()->Get_CosRatio();
@@ -716,22 +749,9 @@ void CImGui_Manager::Window_CreatedModel()
 	_float3 vClickedCellPos = CMeshManager::Get_Instance()->Get_ClickedCellPos();
 	ImGui::Text("CllickedCellos: %.2f/%.2f/%.2f", vClickedCellPos.x, vClickedCellPos.y, vClickedCellPos.z);
 
+
+
 	ImGui::End();
-}
-
-void CImGui_Manager::Window_Transform()
-{
-
-	CStaticModel* pPickedModel = CMapManager::Get_Instance()->Get_PickedCreatedModel();
-
-	if (nullptr == pPickedModel)
-		return;
-
-	CTransform* pTransform = (CTransform*)pPickedModel->Get_ComponentPtr(TEXT("Com_Transform"));
-	_float3* vAixs = pPickedModel->Get_Axis();
-	Window_Transform(pTransform, vAixs);
-
-
 }
 
 void CImGui_Manager::Window_LoadingReadyNeighbor()

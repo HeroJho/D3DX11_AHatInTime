@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "Camera_Free.h"
 #include "MeshManager.h"
+#include "MapManager.h"
 
 CLevel_MapTool::CLevel_MapTool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -61,7 +62,10 @@ void CLevel_MapTool::Tick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	CMeshManager::Get_Instance()->Tick(fTimeDelta);
+	if(CMapManager::Get_Instance()->Get_NaviMode())
+		CMeshManager::Get_Instance()->Tick(fTimeDelta);
+	else
+		CMapManager::Get_Instance()->Tick(fTimeDelta);
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -74,8 +78,16 @@ HRESULT CLevel_MapTool::Render()
 
 	SetWindowText(g_hWnd, TEXT("¸ÊÅø ·¹º§ÀÓ"));
 
-	CMeshManager::Get_Instance()->Comput_Cell();
-	CMeshManager::Get_Instance()->Comput_FreeVectexCube();
+	if (CMapManager::Get_Instance()->Get_NaviMode())
+	{
+		CMeshManager::Get_Instance()->Comput_Cell();
+		CMeshManager::Get_Instance()->Comput_FreeVectexCube();
+	}
+	else
+	{
+		CMapManager::Get_Instance()->Cul_MinClickedModel();
+	}
+
 	CMeshManager::Get_Instance()->Render();
 
 	return S_OK;

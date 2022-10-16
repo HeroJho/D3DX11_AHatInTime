@@ -9,6 +9,7 @@ class CTexture;
 class CRenderer;
 class CTransform;
 class CModel;
+class CNavigation;
 END
 
 BEGIN(Client)
@@ -43,7 +44,7 @@ private:
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
 	CModel*					m_pModelCom = nullptr;
-
+	CNavigation*			m_pNavigationCom = nullptr;
 
 private:
 	TCHAR					m_cModelTag[MAX_PATH];

@@ -54,7 +54,7 @@ public:
 
 public:
 	void Go_Straight(_float fTimeDelta);
-	void Go_Straight(_float fSpeedPerSec, _float fTimeDelta, class CNavigation* pNavigation = nullptr);
+	void Go_Straight(_float fSpeedPerSec, _float fTimeDelta, class CNavigation* pNavigation = nullptr, class CCollider* pCollider = nullptr);
 	void Go_Backward(_float fTimeDelta);
 	void Go_Left(_float fTimeDelta);
 	void Go_Right(_float fTimeDelta);
@@ -89,6 +89,7 @@ private:
 	TRANSFORMDESC			m_TransformDesc;
 	_float					m_fTimeAcc = 0.f;
 	_float3					m_vDest;
+
 
 	//====== Gravity ======
 	_float					m_fGravity = 10.f;

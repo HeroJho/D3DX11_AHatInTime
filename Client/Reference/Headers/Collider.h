@@ -23,6 +23,7 @@ protected:
 	CCollider(const CCollider& rhs);
 	virtual ~CCollider() = default;
 
+
 public:
 	TYPE Get_ColliderType() const {
 		return m_eColliderType;

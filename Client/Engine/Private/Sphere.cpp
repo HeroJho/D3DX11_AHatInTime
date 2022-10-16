@@ -36,10 +36,17 @@ HRESULT CSphere::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CSphere::Update(_fmatrix TransformMatrix)
+void CSphere::Update(_fmatrix TransformMatrix, CNavigation* pNavi = nullptr)
 {
 	m_isColl = false;
 	m_pOriginal_Sphere->Transform(*m_pSphere, TransformMatrix);
+
+	if (nullptr != pNavi)
+	{
+		// 네비에 내 셀의 충돌체들을 가져와서 검사한다.
+
+		// 충돌했다면 내 포스와 충돌체의 포스를 빼서 미는 방향을 구한다.
+	}
 }
 
 _bool CSphere::Collision(CCollider * pTargetCollider)

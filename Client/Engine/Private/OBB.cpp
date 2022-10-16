@@ -30,7 +30,7 @@ HRESULT COBB::Initialize(void * pArg)
 		return E_FAIL;
 
 	/* 복제될때 셋팅하고자하는 상태로 갱신한다. */
-	m_pOriginal_OBB = new BoundingOrientedBox(m_ColliderDesc.vCenter, _float3(m_ColliderDesc.vSize.x * 0.5f,
+	m_pOriginal_OBB = new BoundingOrientedBox(_float3(0.f, 0.f, 0.f), _float3(m_ColliderDesc.vSize.x * 0.5f,
 		m_ColliderDesc.vSize.y * 0.5f,
 		m_ColliderDesc.vSize.z * 0.5f), _float4(0.f, 0.f, 0.f, 1.f));
 
@@ -40,16 +40,20 @@ HRESULT COBB::Initialize(void * pArg)
 		XMMatrixRotationZ(m_ColliderDesc.vRotation.z);
 
 	m_pOriginal_OBB->Transform(*m_pOriginal_OBB, RotationMatrix);
+	m_pOriginal_OBB->Center = m_ColliderDesc.vCenter;
 
 	m_pOBB = new BoundingOrientedBox(*m_pOriginal_OBB);
 
 	return S_OK;
 }
 
-void COBB::Update(_fmatrix TransformMatrix)
+void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi = nullptr)
 {
 	m_isColl = false;
 	m_pOriginal_OBB->Transform(*m_pOBB, TransformMatrix);
+	
+
+
 }
 
 _bool COBB::Collision(CCollider * pTargetCollider)
@@ -80,6 +84,39 @@ _bool COBB::Collision(CCollider * pTargetCollider)
 		pTargetCollider->SetbCol();
 
 	return bIsColl;
+}
+
+_bool COBB::Collision_Cell(_fvector vA, _fvector vB, _fvector vC, _fmatrix TransformMatrix)
+{
+	_vector vZeroA = XMVectorSetY(vA, 0.f);
+	_vector vZeroB = XMVectorSetY(vB, 0.f);
+	_vector vZeroC = XMVectorSetY(vC, 0.f);
+
+
+	_matrix mZeroMatrix = TransformMatrix;
+	mZeroMatrix.r[3] = XMVectorSetY(mZeroMatrix.r[3], 0.f);
+
+
+	_float3 vCenterTemp = m_pOriginal_OBB->Center;
+	_float4 vAngleTemp = m_pOriginal_OBB->Orientation;
+
+	 m_pOriginal_OBB->Center = _float3(vCenterTemp.x, 0.f, vCenterTemp.z);
+	/* 회전에 대한 상태. */
+	_matrix		RotationMatrix = XMMatrixRotationX(m_ColliderDesc.vRotation.x) *
+		XMMatrixRotationY(m_ColliderDesc.vRotation.y) *
+		XMMatrixRotationZ(m_ColliderDesc.vRotation.z);
+
+	RotationMatrix = XMMatrixInverse(nullptr, RotationMatrix);
+	m_pOriginal_OBB->Transform(*m_pOriginal_OBB, RotationMatrix);
+
+
+
+	m_pOriginal_OBB->Transform(*m_pOBB, mZeroMatrix);
+
+	 m_pOriginal_OBB->Center = vCenterTemp;
+	 m_pOriginal_OBB->Orientation = vAngleTemp;
+
+	return m_pOBB->Intersects(vZeroA, vZeroB, vZeroC);
 }
 
 HRESULT COBB::Render()

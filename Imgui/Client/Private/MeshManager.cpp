@@ -7,6 +7,7 @@
 #include "StaticModel.h"
 #include "MultiThread.h"
 #include "ClickedVertexCube.h"
+#include "DataManager.h"
 
 
 IMPLEMENT_SINGLETON(CMeshManager)
@@ -570,6 +571,21 @@ void CMeshManager::Comput_FreeVectexCube()
 		m_vClickedPos = vPos;
 	}
 
+}
+
+void CMeshManager::Load_NaviData(_int iMapId)
+{
+	Clear_Cells();
+
+	CDataManager::DATA_NAVI NaviData = CDataManager::Get_Instance()->Load_Navi(iMapId);
+
+	for (_uint i = 0; i < NaviData.iNumCell; ++i)
+	{
+		CCell* pCell = CCell::Create(m_pDevice, m_pContext, NaviData.pCellDatas[i].vPoints, m_Cells.size());
+		m_Cells.push_back(pCell);
+	}
+
+	Safe_Delete_Array(NaviData.pCellDatas);
 }
 
 

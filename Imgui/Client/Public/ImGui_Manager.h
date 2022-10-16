@@ -86,6 +86,7 @@ private:
 	void Window_CreatedModel();
 	void Window_Transform();
 
+	void Window_Navi();
 	void Window_LoadingReadyNeighbor();
 
 	// FOR. AnimTool

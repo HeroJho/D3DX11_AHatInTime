@@ -23,6 +23,7 @@ protected:
 	CCollider(const CCollider& rhs);
 	virtual ~CCollider() = default;
 
+
 public:
 	TYPE Get_ColliderType() const {
 		return m_eColliderType;
@@ -33,7 +34,7 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eColliderType);
 	virtual HRESULT Initialize(void* pArg);
-	virtual void Update(_fmatrix TransformMatrix) = 0;
+	virtual void Update(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr) = 0;
 	virtual _bool Collision(CCollider* pTargetCollider) = 0;
 
 

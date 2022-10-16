@@ -34,7 +34,7 @@ public:
 	TCHAR* Get_ModelTag() { return m_cModelTag; }
 
 	void Set_ModelNum(string sModelNum) { m_sModelNum = sModelNum; }
-
+	string Get_ModelNum() { return m_sModelNum; }
 
 	_uint Get_NumMesh();
 	_uint Get_Mesh_NumPrimitives(_uint iIndex);

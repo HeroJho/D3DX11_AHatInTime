@@ -32,15 +32,20 @@ public:
 		m_iNeighborIndex[eLine] = pNeighbor->Get_Index();
 	}
 
+	_float4 Get_Color() { return m_vCellColor; }
+	void Set_Color(_float4 vCellColor) { m_vCellColor = vCellColor; }
+	void Add_Collider(class CGameObject* pGameObject) { m_Colliders.push_back(pGameObject); }
+
 
 public:
 	HRESULT Initialize(const _float3* pPoints, _int iIndex, _int* iNeighborIndex);
 	_bool Compare(const _float3& vSourPoint, const _float3& vDestPoint);
 	_bool isIn(_fvector vPosition, _int* pNeighborIndex);
+	_bool isColMove(class CCollider* pCollider);
 
 #ifdef _DEBUG
 public:
-	HRESULT Render_Cell(_float fHeight = 0.f);
+	HRESULT Render_Cell();
 #endif // _DEBUG
 
 private:
@@ -53,8 +58,11 @@ private:
 
 	_int					m_iNeighborIndex[LINE_END] = { -1, -1, -1 };
 
+	vector<class CGameObject*> m_Colliders;
+
 #ifdef _DEBUG
 	class CVIBuffer_Cell*	m_pVIBuffer = nullptr;
+	_float4					m_vCellColor = { 0.f, 1.f, 0.f, 1.f };
 #endif
 
 public:

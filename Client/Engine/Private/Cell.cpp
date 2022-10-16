@@ -3,6 +3,9 @@
 #include "Shader.h"
 #include "PipeLine.h"
 
+#include "GameObject.h"
+#include "Collider.h"
+
 CCell::CCell(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
@@ -90,8 +93,19 @@ _bool CCell::isIn(_fvector vPosition, _int * pNeighborIndex)
 	return true;
 }
 
+_bool CCell::isColMove(CCollider * pCollider)
+{
+	for (auto& pCol : m_Colliders)
+	{
+		if (pCollider->Collision(pCol->Get_Colliders().front()))
+			return false;
+	}
+
+	return true;
+}
+
 #ifdef _DEBUG
-HRESULT CCell::Render_Cell(_float fHeight)
+HRESULT CCell::Render_Cell()
 {
 	m_pVIBuffer->Render();
 
