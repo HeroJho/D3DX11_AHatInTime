@@ -52,6 +52,11 @@ HRESULT CNavigation::Initialize(void * pArg)
 	return S_OK;
 }
 
+const vector<class CGameObject*>* CNavigation::Get_CurCellColliders()
+{
+	return m_Cells[m_NavigationDesc.iCurrentIndex]->Get_Colliders();
+}
+
 _float CNavigation::Compute_Height(_fvector vPos)
 {
 	CCell* pCell = m_Cells[m_NavigationDesc.iCurrentIndex];
@@ -138,6 +143,10 @@ _bool CNavigation::isGround(_fvector vPosition, _float* OutfCellY)
 void CNavigation::Comput_CellCollision(CGameObject* pGameObject)
 {
 	_matrix TransformMatrix = ((CTransform*)pGameObject->Get_ComponentPtr(TEXT("Com_Transform")))->Get_WorldMatrix();
+	
+	if (pGameObject->Get_Colliders().empty())
+		return;
+	
 	COBB* pObb = (COBB*)pGameObject->Get_Colliders().front();
 
 	for (auto& pCell : m_Cells)
@@ -156,12 +165,6 @@ void CNavigation::Comput_CellCollision(CGameObject* pGameObject)
 	}
 }
 
-void CNavigation::Check_ColMove(CCollider* pCollider)
-{
-	if (!m_Cells[m_NavigationDesc.iCurrentIndex]->isColMove(pCollider))
-		return false;
-
-}
 
 #ifdef _DEBUG
 

@@ -27,6 +27,18 @@ CComponent * CGameObject::Get_ComponentPtr(const _tchar * pComponentTag)
 	return pComponent;	
 }
 
+COBB * CGameObject::Get_StaticOBB()
+{
+	if (m_Colliders.empty())
+		return nullptr;
+
+	CCollider* pCol = m_Colliders.front();
+	if (CCollider::TYPE_OBB != pCol->Get_ColliderType())
+		return nullptr;
+
+	return (COBB*)pCol;
+}
+
 HRESULT CGameObject::Initialize_Prototype()
 {
 	return S_OK;
@@ -50,10 +62,10 @@ HRESULT CGameObject::Render()
 	return S_OK;
 }
 
-void CGameObject::Tick_Col(_fmatrix TransformMatrix)
+void CGameObject::Tick_Col(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran)
 {
 	for (auto& pCollider : m_Colliders)
-		pCollider->Update(TransformMatrix);
+		pCollider->Update(TransformMatrix, pNavi, pTran);
 }
 
 void CGameObject::Render_Col()

@@ -127,6 +127,12 @@
     <ClCompile Include="..\private\VIBuffer_Cell.cpp">
       <Filter>03.Components\02.VIBuffer\Cell</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Model_Instance.cpp">
+      <Filter>03.Components\02.VIBuffer\Instancing\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MeshContainer_Instance.cpp">
+      <Filter>03.Components\02.VIBuffer\Instancing\Model\MeshContainer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -270,6 +276,12 @@
     <ClInclude Include="..\public\VIBuffer_Cell.h">
       <Filter>03.Components\02.VIBuffer\Cell</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Model_Instance.h">
+      <Filter>03.Components\02.VIBuffer\Instancing\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MeshContainer_Instance.h">
+      <Filter>03.Components\02.VIBuffer\Instancing\Model\MeshContainer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="99.Defines">
@@ -412,6 +424,15 @@
     </Filter>
     <Filter Include="03.Components\02.VIBuffer\Cell">
       <UniqueIdentifier>{fb18379e-0cfa-4487-99d9-05ecc3adaac1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Instancing">
+      <UniqueIdentifier>{a0b4eea7-e7c0-4692-a5e2-3e33b303439f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Instancing\Model">
+      <UniqueIdentifier>{5efd03de-79a7-4f20-a843-9c986b730627}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\02.VIBuffer\Instancing\Model\MeshContainer">
+      <UniqueIdentifier>{7629bd0e-4636-42e2-9917-7f9e76f54500}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

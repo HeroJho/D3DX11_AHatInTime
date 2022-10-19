@@ -52,6 +52,16 @@ void CMainApp::Tick(_float fTimeDelta)
 		return ;
 
 #ifdef _DEBUG
+
+	if (m_pGameInstance->Key_Down(DIK_F11))
+	{
+		if (CToolManager::Get_Instance()->Get_Debug())
+			CToolManager::Get_Instance()->Set_Debug(false);
+		else
+			CToolManager::Get_Instance()->Set_Debug(true);
+	}
+		
+
 	m_fTimeAcc += fTimeDelta;
 #endif // _DEBUG
 
@@ -85,7 +95,7 @@ HRESULT CMainApp::Render()
 		m_fTimeAcc = 0.f;
 	}
 
-	// SetWindowText(g_hWnd, m_szFPS);
+	 SetWindowText(g_hWnd, m_szFPS);
 #endif // _DEBUG
 
 	

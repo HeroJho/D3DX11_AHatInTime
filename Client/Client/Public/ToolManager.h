@@ -14,6 +14,11 @@ public:
 public:
 	HRESULT Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 
+
+public:
+	_bool Get_Debug() { return m_bDebug; }
+	void Set_Debug(_bool bDebug) { m_bDebug = bDebug; }
+
 public:
 	HRESULT Change_Level(LEVEL eLevel);
 
@@ -41,6 +46,10 @@ private:
 private:
 	list<_tchar*> m_ManagedTChar;
 	list<char*> m_ManagedChar;
+
+
+
+	_bool m_bDebug = false;
 
 public:
 	virtual void Free() override;

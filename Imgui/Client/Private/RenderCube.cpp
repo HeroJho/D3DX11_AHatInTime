@@ -89,7 +89,7 @@ _float3 CRenderCube::Get_Pos()
 
 HRESULT CRenderCube::Set_RenderState()
 {
-	if (nullptr == m_pDevice || nullptr == m_pDeviceContext)
+	if (nullptr == m_pDevice || nullptr == m_pContext)
 		return E_FAIL;
 
 	//m_pGraphic_Device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);

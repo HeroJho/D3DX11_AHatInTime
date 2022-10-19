@@ -2,6 +2,7 @@
 #include "..\Public\StaticModel.h"
 #include "GameInstance.h"
 
+#include "ToolManager.h"
 
 
 CStaticModel::CStaticModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -33,19 +34,14 @@ HRESULT CStaticModel::Initialize(void * pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&Desc->vPos), 1.f));
+	
+	_vector vAngle = XMLoadFloat3(&Desc->vAngle);
+	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMVectorGetX(vAngle),
+		XMVectorSet(0.f, 1.f, 0.f, 0.f), XMVectorGetY(vAngle),
+		XMVectorSet(0.f, 0.f, 1.f, 0.f), XMVectorGetZ(vAngle));
 
-	_vector vPos = XMLoadFloat3(&Desc->vPos);
-	vPos = XMVectorSetW(vPos, 1.f);
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
-
-	_vector vScale = XMLoadFloat3(&Desc->vScale);
-	vScale = XMVectorSetW(vScale, 1.f);
-	m_pTransformCom->Set_Scale(vScale);
-
-	m_vAxis = Desc->vAngle;
-	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_vAxis.x, XMVectorSet(0.f, 1.f, 0.f, 0.f), m_vAxis.y, XMVectorSet(0.f, 0.f, 1.f, 0.f), m_vAxis.z);
-
-
+	m_pTransformCom->Set_Scale(XMLoadFloat3(&Desc->vScale));
 
 	m_pNavigationCom->Comput_CellCollision(this);
 
@@ -54,61 +50,22 @@ HRESULT CStaticModel::Initialize(void * pArg)
 
 void CStaticModel::Tick(_float fTimeDelta)
 {
-
+	Tick_Col(m_pTransformCom->Get_WorldMatrix());
 }
 
 void CStaticModel::LateTick(_float fTimeDelta)
 {
+	
+		
+
 	if (nullptr == m_pRendererCom)
 		return;
-
-	m_pModelCom->Play_Animation(fTimeDelta);
-
-	Tick_Col(m_pTransformCom->Get_WorldMatrix());
-
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
-	RELEASE_INSTANCE(CGameInstance);
+	if (CToolManager::Get_Instance()->Get_Debug())
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
 HRESULT CStaticModel::Render()
 {
-	if (nullptr == m_pModelCom ||
-		nullptr == m_pShaderCom)
-		return E_FAIL;
-
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
-
-	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-
-
-
-	RELEASE_INSTANCE(CGameInstance);
-
-
-
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-		/*if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-		return E_FAIL;*/
-
-
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
-			return E_FAIL;
-	}
-
 
 	Render_Col();
 
@@ -125,12 +82,9 @@ HRESULT CStaticModel::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
 
-	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
-		return E_FAIL;
 
-	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	/* For.Com_Navigation */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
 		return E_FAIL;
 
 
@@ -138,30 +92,38 @@ HRESULT CStaticModel::Ready_Components()
 	CCollider::COLLIDERDESC ColDesc;
 	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
 
-	//ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
-	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	//ColDesc.vSize = _float3(1.f, 3.f, 1.f);
-	//if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
-	//	return E_FAIL;
-	
-	ColDesc.vCenter = _float3(0.f, 3.f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 6.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-		return E_FAIL;
 
-	//ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
-	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	//if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
-	//	return E_FAIL;
+	if (!lstrcmp(TEXT("Tree3"), m_cModelTag))
+	{
 
+		ColDesc.vCenter = _float3(0.f, 5.f, 0.f);
+		ColDesc.vSize = _float3(1.f, 10.f, 0.5f);
+		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 
+		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+			return E_FAIL;
+	}
+	else if (!lstrcmp(TEXT("Ori_Hat"), m_cModelTag))
+	{
 
+		ColDesc.vCenter = _float3(0.f, 0.1f, 0.f);
+		ColDesc.vSize = _float3(0.3f, 0.05f, 0.3f);
+		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 
-	/* For.Com_Navigation */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
-		return E_FAIL;
+		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+			return E_FAIL;
+	}
+	else if (!lstrcmp(TEXT("HatGirl"), m_cModelTag))
+	{
+
+		ColDesc.vCenter = _float3(0.f, 0.25f, 0.f);
+		ColDesc.vSize = _float3(0.3f, 1.f, 0.2f);
+		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+
+		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+			return E_FAIL;
+	}
+
 
 
 	return S_OK;
@@ -197,10 +159,7 @@ void CStaticModel::Free()
 {
 	__super::Free();
 
-
 	Safe_Release(m_pNavigationCom);
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
 }

@@ -41,7 +41,6 @@ public:
 private:
 	void Set_State();
 	void Set_Anim();
-	void Check_EndAnim();
 
 	void Anim_Face(_float fTimeDelta);
 
@@ -65,7 +64,10 @@ private:
 	void Slide_Input(_float fTimeDelta);
 	void SlideRending_Input(_float fTimeDelta);
 
+
+	void Check_EndAnim();
 	void Calcul_State(_float fTimeDelta);
+
 
 	HRESULT Choose_Pass(_int iIndex);
 private:
@@ -87,7 +89,6 @@ private:
 
 
 	_float3				m_vDestLook;
-	_float				m_fCulSpeed = 0.f;
 	_float				m_fWalkSpeed = 0.f;
 	_float				m_fRunSpeed = 0.f;
 	_float				m_fTurnSpeed = 0.f;

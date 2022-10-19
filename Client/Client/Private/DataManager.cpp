@@ -6,6 +6,7 @@
 #include "ToolManager.h"
 
 #include "StaticModel.h"
+#include "StaticModel_Instance.h"
 #include "Cell.h"
 
 
@@ -314,6 +315,7 @@ HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVE
 	}
 	else
 	{
+
 		if (FAILED(pGameInstance->Add_Prototype(eLEVEL, pModelName,
 			CModel::Create(m_pDevice, m_pContext, etype, tPath, tFileName, PivotMatrix))))
 		{
@@ -321,6 +323,7 @@ HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVE
 			RELEASE_INSTANCE(CGameInstance);
 			return E_FAIL;
 		}
+
 	}
 
 
@@ -377,9 +380,11 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+
 	for (_int i = 0; i < pData_Map->iNumObj; ++i)
 	{
 		CDataManager::DATA_MAP_OBJ DataObj = pData_Map->pObjDatas[i];
+
 
 		CStaticModel::STATICMODELDESC Desc;
 		ZeroMemory(&Desc, sizeof(CStaticModel::STATICMODELDESC));
@@ -390,12 +395,40 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		Desc.vAngle = DataObj.vAngle;
 		Desc.vScale = DataObj.vScale;
 
-
-		if (pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), eLEVEL, TEXT("Layer_Model"), &Desc))
+		// 콜라이더
+		if (pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel_Instance"), eLEVEL, TEXT("Layer_Model"), &Desc))
 		{
 			RELEASE_INSTANCE(CGameInstance);
 			return E_FAIL;
 		}
+
+	}
+
+
+	// VTXINSTANCE* pInstanceInfos = new VTXINSTANCE[pData_Map->iNumObj];
+
+	//_matrix mScale	= XMMatrixScaling(DataObj.vScale.x, DataObj.vScale.y, DataObj.vScale.z);
+	//_matrix mAngle	= XMMatrixRotationX(DataObj.vAngle.x) * XMMatrixRotationY(DataObj.vAngle.y) * XMMatrixRotationZ(DataObj.vAngle.z);
+	//_matrix mPos	= XMMatrixTranslation(DataObj.vPos.x, DataObj.vPos.y, DataObj.vPos.z);
+
+	//_matrix mInstanceLocal = mScale * mAngle * mPos;
+
+	//XMStoreFloat4(&pInstanceInfos[i].vRight		, mInstanceLocal.r[0]);
+	//XMStoreFloat4(&pInstanceInfos[i].vUp			, mInstanceLocal.r[1]);
+	//XMStoreFloat4(&pInstanceInfos[i].vLook		, mInstanceLocal.r[2]);
+	//XMStoreFloat4(&pInstanceInfos[i].vPosition	, mInstanceLocal.r[3]);
+
+
+
+	CStaticModel_Instance::STATICMODELDESC Desc;
+	ZeroMemory(&Desc, sizeof(CStaticModel_Instance::STATICMODELDESC));
+	Desc.cModelTag;
+	Desc.iNumInstance;
+	Desc.pLocalInfos;
+	if (pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel_Instance"), eLEVEL, TEXT("Layer_Model"), &Desc))
+	{
+		RELEASE_INSTANCE(CGameInstance);
+		return E_FAIL;
 	}
 
 	RELEASE_INSTANCE(CGameInstance);

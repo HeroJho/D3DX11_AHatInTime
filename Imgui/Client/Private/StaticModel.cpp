@@ -165,6 +165,9 @@ void CStaticModel::LateTick(_float fTimeDelta)
 		return;
 
 	m_pModelCom->Play_Animation(fTimeDelta);
+	
+	if (CMapManager::Get_Instance()->Get_ColMode())
+		Tick_Col(m_pTransformCom->Get_WorldMatrix());
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
@@ -207,7 +210,7 @@ HRESULT CStaticModel::Render()
 		temp.DepthClipEnable = true;
 		m_pDevice->CreateRasterizerState(&temp, &m_WireFrame);
 
-		m_pDeviceContext->RSSetState(m_WireFrame);
+		m_pContext->RSSetState(m_WireFrame);
 		Safe_Release(m_WireFrame);
 	}
 
@@ -229,10 +232,44 @@ HRESULT CStaticModel::Render()
 	}
 
 
-	m_pDeviceContext->RSSetState(nullptr);
+	m_pContext->RSSetState(nullptr);
 
+	if(CMapManager::Get_Instance()->Get_ColMode())
+		Render_Col();
 
 	return S_OK;
+}
+
+_bool CStaticModel::Check_Model()
+{
+	string sModelName = CMapManager::Get_Instance()->Get_PickedString();
+	char cTemp[MAX_PATH];
+	ZeroMemory(cTemp, sizeof(char) * MAX_PATH);
+	CToolManager::Get_Instance()->TCtoC(m_cModelTag, cTemp);
+
+
+	if (strcmp(cTemp, sModelName.data()))
+		return false;
+
+	return true;
+}
+
+void CStaticModel::Get_ColInfo(_uint iIndex)
+{
+	if (!Check_Model())
+		return;
+
+	CCollider::COLLIDERDESC Desc =  CGameObject::Get_ColInfo(iIndex);
+	CMapManager::Get_Instance()->Set_ColDesc(Desc);
+}
+
+void CStaticModel::Edit_Col(_uint iIndex)
+{
+	if (!Check_Model())
+		return;
+
+	CCollider::COLLIDERDESC Desc = CMapManager::Get_Instance()->Get_ColDesc();
+	CGameObject::Edit_Col(iIndex, Desc);
 }
 
 HRESULT CStaticModel::Ready_Components()
@@ -251,6 +288,13 @@ HRESULT CStaticModel::Ready_Components()
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	CCollider::COLLIDERDESC ColDesc;
+	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 
 	return S_OK;

@@ -15,7 +15,7 @@ CCamera::CCamera(const CCamera & rhs, CTransform::TRANSFORMDESC* pArg)
 
 HRESULT CCamera::Initialize_Prototype()
 {
-	m_pTransformCom = CTransform::Create(m_pDevice, m_pDeviceContext);
+	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext);
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;
 

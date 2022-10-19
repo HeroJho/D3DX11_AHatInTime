@@ -14,6 +14,7 @@ IMPLEMENT_SINGLETON(CMapManager)
 
 CMapManager::CMapManager()
 {
+	ZeroMemory(&m_ColDesc, sizeof(CCollider::COLLIDERDESC));
 }
 
 
@@ -280,6 +281,23 @@ bool CMapManager::GenTag(string* pOut)
 
 
 
+
+void CMapManager::Set_ColDesc(CCollider::COLLIDERDESC Desc)
+{
+	m_ColDesc = Desc;
+	for (auto& Pair : m_StaticModels)
+	{
+		Pair.second->Edit_Col(m_iColIndex);
+	}
+}
+
+void CMapManager::Find_ClickedColInfo()
+{
+	for (auto& Pair : m_StaticModels)
+	{
+		Pair.second->Get_ColInfo(m_iColIndex);
+	}
+}
 
 void CMapManager::Free()
 {

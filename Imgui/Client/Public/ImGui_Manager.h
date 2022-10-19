@@ -89,6 +89,8 @@ private:
 	void Window_Navi();
 	void Window_LoadingReadyNeighbor();
 
+	void Window_Col();
+
 	// FOR. AnimTool
 	void Window_AnimModleList();
 	void Window_IsDelete();

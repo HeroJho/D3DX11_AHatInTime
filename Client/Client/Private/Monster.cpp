@@ -27,7 +27,8 @@ HRESULT CMonster::Initialize(void * pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(88.f, 0.f, 3.75f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(86.5f, 5.f, 3.87f, 1.f));
+	m_pTransformCom->Set_CurSpeed(1.f);
 
 	Set_State(MONSTER_CHASE);
 
@@ -105,10 +106,13 @@ void CMonster::Tick_Idle(_float fTimeDelta)
 
 void CMonster::Tick_Move(_float fTimeDelta)
 {
+	m_pTransformCom->Set_CurSpeed(1.f);
 }
 
 void CMonster::Tick_Chase(_float fTimeDelta)
 {
+	m_pTransformCom->Set_CurSpeed(1.f);
+
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	CGameObject* pPlayer = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
@@ -122,7 +126,7 @@ void CMonster::Tick_Chase(_float fTimeDelta)
 	_vector vLookPos = pTran->Get_State(CTransform::STATE_POSITION);
 
 
-	m_pTransformCom->MoveTarget_Lend(vLookPos, 1.f, fTimeDelta, m_pNavigationCom, 1.f);
+	m_pTransformCom->MoveTarget_Lend(vLookPos, m_pTransformCom->Get_CurSpeed(), fTimeDelta, m_pNavigationCom, 1.f);
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -146,7 +150,8 @@ void CMonster::LateTick(_float fTimeDelta)
 
 	m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom);
 
-	Tick_Col(m_pTransformCom->Get_WorldMatrix());
+	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
+	Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom);
 
 	m_pModelCom->Play_Animation(fTimeDelta);
 
@@ -237,16 +242,16 @@ HRESULT CMonster::Ready_Components()
 	CCollider::COLLIDERDESC ColDesc;
 	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
+	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
+	ColDesc.vSize = _float3(0.3f, 1.f, 0.3f);
+	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 
 	ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+	if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
 		return E_FAIL;
 
 	ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
@@ -260,7 +265,7 @@ HRESULT CMonster::Ready_Components()
 	/* For.Com_Navigation */
 	CNavigation::NAVIGATIONDESC NaviDesc;
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
-	NaviDesc.iCurrentIndex = 3806;
+	NaviDesc.iCurrentIndex = 6441;
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 		return E_FAIL;
 

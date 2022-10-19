@@ -18,6 +18,7 @@
 #include "AnimModel.h"
 #include "Player.h"
 #include "MultiThread.h"
+#include "Collider.h"
 
 #include "Transform.h"
 
@@ -262,6 +263,10 @@ void CImGui_Manager::Render_MapTool()
 	}
 
 
+	if (CMapManager::Get_Instance()->Get_ColMode())
+	{
+		Window_Col();
+	}
 
 
 
@@ -606,8 +611,14 @@ void CImGui_Manager::Window_Model()
 			bool isSelected = CMapManager::Get_Instance()->Get_PickedString() == sModelName;
 			vSize= { 100.f, 10.f };
 			if (ImGui::Selectable(sModelName.data(), isSelected, 0, vSize))
+			{
 				CMapManager::Get_Instance()->Set_PickedString(sModelName);
-			 
+
+				if (CMapManager::Get_Instance()->Get_ColMode())
+					CMapManager::Get_Instance()->Find_ClickedColInfo();
+
+			}
+
 
 
 			if (isSelected)
@@ -624,6 +635,9 @@ void CImGui_Manager::Window_Model()
 	if (ImGui::Checkbox("NaviMode", &bNaviMode))
 		CMapManager::Get_Instance()->Set_NaviMode(bNaviMode);
 
+	_bool bColMode = CMapManager::Get_Instance()->Get_ColMode();
+	if (ImGui::Checkbox("ColMode", &bColMode))
+		CMapManager::Get_Instance()->Set_ColMode(bColMode);
 
 	ImGui::End();
 }
@@ -767,6 +781,37 @@ void CImGui_Manager::Window_LoadingReadyNeighbor()
 
 	ImGui::End();
 
+}
+
+void CImGui_Manager::Window_Col()
+{
+	ImGui::Begin("Collider Tool");
+
+	CCollider::COLLIDERDESC ColDesc = CMapManager::Get_Instance()->Get_ColDesc();
+
+	_float3			vCenter = ColDesc.vCenter;
+	if (ImGui::InputFloat3("vCenter", (_float*)&vCenter))
+	{
+		ColDesc.vCenter = vCenter;
+		CMapManager::Get_Instance()->Set_ColDesc(ColDesc);
+	}
+
+	_float3			vSize = ColDesc.vSize;
+	if (ImGui::InputFloat3("vSize", (_float*)&vSize))
+	{
+		ColDesc.vSize = vSize;
+		CMapManager::Get_Instance()->Set_ColDesc(ColDesc);
+	}
+
+	_float3			vRotation = ColDesc.vRotation;
+	if (ImGui::InputFloat3("vRotation", (_float*)&vRotation))
+	{
+		ColDesc.vRotation = vRotation;
+		CMapManager::Get_Instance()->Set_ColDesc(ColDesc);
+	}
+
+
+	ImGui::End();
 }
 
 void CImGui_Manager::Window_AnimModleList()

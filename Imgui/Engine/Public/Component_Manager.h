@@ -15,6 +15,10 @@
 
 #include "Navigation.h"
 
+#include "AABB.h"
+#include "OBB.h"
+#include "Sphere.h"
+
 
 BEGIN(Engine)
 

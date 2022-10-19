@@ -48,6 +48,11 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+public:
+	_bool Check_Model();
+	void Get_ColInfo(_uint iIndex);
+	void Edit_Col(_uint iIndex);
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;

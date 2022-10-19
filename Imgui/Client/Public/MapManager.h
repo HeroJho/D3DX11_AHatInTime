@@ -1,6 +1,7 @@
 #pragma once
 #include "Client_Defines.h"
 #include "Base.h"
+#include "Collider.h"
 
 BEGIN(Engine)
 
@@ -107,6 +108,26 @@ private:
 	vector<_float>		m_TempClickedDis;
 	string		m_sMinObject;
 	_float3		m_fMinPos;
+
+
+
+	// For. Col
+public:
+	CCollider::COLLIDERDESC Get_ColDesc() { return m_ColDesc; }
+	void Set_ColDesc(CCollider::COLLIDERDESC Desc); 
+
+	_bool Get_ColMode() { return m_bColMode; }
+	void Set_ColMode(_bool bColMode) { m_bColMode = bColMode; }
+
+	void Find_ClickedColInfo();
+
+private:
+	CCollider::COLLIDERDESC m_ColDesc;
+	_bool m_bColMode = false;
+	_uint m_iColIndex = 0;
+
+
+
 
 public:
 	virtual void Free() override;

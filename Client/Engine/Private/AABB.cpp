@@ -42,7 +42,7 @@ HRESULT CAABB::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CAABB::Update(_fmatrix TransformMatrix, CNavigation* pNavi = nullptr)
+void CAABB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran)
 {
 	m_isColl = false;
 	m_pOriginal_AABB->Transform(*m_pAABB, Remove_Rotation(TransformMatrix));

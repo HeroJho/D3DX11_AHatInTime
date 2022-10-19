@@ -21,6 +21,10 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 
 public:
+	const vector<class CGameObject*>* Get_CurCellColliders(); 
+
+
+public:
 	// 나의 셀에 대해 y값을 얻어온다
 	_float Compute_Height(_fvector  vPos);
 	// 이동 가능하냐
@@ -30,7 +34,6 @@ public:
 
 	void Comput_CellCollision(class CGameObject* pGameObject);
 
-	void Check_ColMove(class CCollider* pCollider);
 
 #ifdef _DEBUG
 public:

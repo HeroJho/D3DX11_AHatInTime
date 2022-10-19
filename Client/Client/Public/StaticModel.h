@@ -4,11 +4,8 @@
 #include "GameObject.h"
 
 BEGIN(Engine)
-class CShader;
-class CTexture;
 class CRenderer;
 class CTransform;
-class CModel;
 class CNavigation;
 END
 
@@ -40,10 +37,8 @@ public:
 	virtual HRESULT Render();
 
 private:
-	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
-	CModel*					m_pModelCom = nullptr;
 	CNavigation*			m_pNavigationCom = nullptr;
 
 private:

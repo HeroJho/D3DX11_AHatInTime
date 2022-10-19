@@ -93,17 +93,6 @@ _bool CCell::isIn(_fvector vPosition, _int * pNeighborIndex)
 	return true;
 }
 
-_bool CCell::isColMove(CCollider * pCollider)
-{
-	for (auto& pCol : m_Colliders)
-	{
-		if (pCollider->Collision(pCol->Get_Colliders().front()))
-			return false;
-	}
-
-	return true;
-}
-
 #ifdef _DEBUG
 HRESULT CCell::Render_Cell()
 {

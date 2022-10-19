@@ -89,7 +89,7 @@ HRESULT CMonster::Render()
 
 HRESULT CMonster::Set_RenderState()
 {
-	if (nullptr == m_pDevice || nullptr == m_pDeviceContext)
+	if (nullptr == m_pDevice || nullptr == m_pContext)
 		return E_FAIL;
 
 	//m_pGraphic_Device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);	

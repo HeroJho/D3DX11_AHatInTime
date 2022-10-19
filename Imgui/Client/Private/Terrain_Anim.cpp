@@ -55,7 +55,7 @@ HRESULT CTerrain_Anim::Render()
 	temp.DepthClipEnable = true;
 	m_pDevice->CreateRasterizerState(&temp, &m_WireFrame);
 
-	m_pDeviceContext->RSSetState(m_WireFrame);
+	m_pContext->RSSetState(m_WireFrame);
 	Safe_Release(m_WireFrame);
 
 	if (FAILED(SetUp_ShaderResources()))
@@ -67,7 +67,7 @@ HRESULT CTerrain_Anim::Render()
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
-	m_pDeviceContext->RSSetState(nullptr);
+	m_pContext->RSSetState(nullptr);
 
 	return S_OK;
 }

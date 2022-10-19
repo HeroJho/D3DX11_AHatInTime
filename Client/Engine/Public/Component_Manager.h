@@ -11,9 +11,9 @@
 #include "Navigation.h"
 #include "VIBuffer_Cell.h"
 #include "VIBuffer_Rect.h"
+#include "Model_Instance.h"
 #include "VIBuffer_Terrain.h"
 #include "VIBuffer_Map_Terrain.h"
-
 
 
 

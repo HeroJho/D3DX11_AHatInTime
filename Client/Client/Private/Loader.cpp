@@ -12,10 +12,13 @@
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
 #include "StaticModel.h"
+#include "StaticModel_Instance.h"
 #include "Ori_Hat.h"
 #include "Umbrella.h"
 #include "UI_Health.h"
 #include "UI_TextLife.h"
+
+#include "TestMonster.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -157,6 +160,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_StaticModel"),
 		CStaticModel::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* 	Prototype_GameObject_StaticModel_Instance*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_StaticModel_Instance"),
+		CStaticModel_Instance::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 	/* For.Prototype_GameObject_Ori_Hat*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ori_Hat"),
@@ -168,8 +176,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CUmbrella::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-
-
 	/* For.Prototype_UI_Health*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Health"),
 		CUI_Health::Create(m_pDevice, m_pContext))))
@@ -180,6 +186,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 
+
+	/* For.Prototype_GameObject_TestMonster*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_TestMonster"),
+		CTestMonster::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
@@ -217,9 +228,17 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* 모델를 로드한다. */
 
 	/* For.Prototype_Component_VIBuffer_Terrain */
-
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Map_Terrain"),
 		CVIBuffer_Map_Terrain::Create(m_pDevice, m_pContext, 100, 100))))
+		return E_FAIL;
+
+
+	/* For.Prototype_Component_VIBuffer_TestInstance */
+	DATA_HEROSCENE* Scene = new DATA_HEROSCENE;
+	ZeroMemory(Scene, sizeof(DATA_HEROSCENE));
+	CDataManager::Get_Instance()->ReadSceneData("Tree3", Scene, CDataManager::DATA_NOEANIM);
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_TestInstance"),
+		CModel_Instance::Bin_Create(m_pDevice, m_pContext, Scene, "../Bin/Resources/Meshes/NonAnim/Tree3/", "Tree3.fbx", 5))))
 		return E_FAIL;
 
 
@@ -255,6 +274,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimModel.hlsl"), VTXANIMMODEL_DECLARATION::Elements, VTXANIMMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Shader_Model_Instance */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model_Instance"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxModel_Instance.hlsl"), VTXMODELINSTANCE_DECLARATION::Elements, VTXMODELINSTANCE_DECLARATION::iNumElements))))
+		return E_FAIL;
 
 
 

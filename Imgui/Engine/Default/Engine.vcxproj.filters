@@ -136,6 +136,21 @@
     <Filter Include="03.Components\02.VIBuffer\Cell">
       <UniqueIdentifier>{663c6a2f-4f0a-415f-bca3-612fde9a13d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Components\09.Collider">
+      <UniqueIdentifier>{4cce17ba-cc68-4c0e-bf9e-2ff1dbd8fb7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\09.Collider\00.DebugDraw">
+      <UniqueIdentifier>{0ba1748d-acc1-4103-ac91-63b18d33e6ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\09.Collider\AABB">
+      <UniqueIdentifier>{ccf8d80b-d6a1-4d80-83db-0834008bb54e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\09.Collider\OBB">
+      <UniqueIdentifier>{c8c0cb7e-4fb1-4c2f-846d-dee6d10c3b45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\09.Collider\Sphere">
+      <UniqueIdentifier>{01b2a1bf-b679-428c-9ecc-dfa22e59db6a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -270,6 +285,21 @@
     <ClInclude Include="..\public\VIBuffer_Cell.h">
       <Filter>03.Components\02.VIBuffer\Cell</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Collider.h">
+      <Filter>03.Components\09.Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\OBB.h">
+      <Filter>03.Components\09.Collider\OBB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Sphere.h">
+      <Filter>03.Components\09.Collider\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\AABB.h">
+      <Filter>03.Components\09.Collider\AABB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\DebugDraw.h">
+      <Filter>03.Components\09.Collider\00.DebugDraw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -388,6 +418,21 @@
     </ClCompile>
     <ClCompile Include="..\private\VIBuffer_Cell.cpp">
       <Filter>03.Components\02.VIBuffer\Cell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Collider.cpp">
+      <Filter>03.Components\09.Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\OBB.cpp">
+      <Filter>03.Components\09.Collider\OBB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Sphere.cpp">
+      <Filter>03.Components\09.Collider\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\AABB.cpp">
+      <Filter>03.Components\09.Collider\AABB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\DebugDraw.cpp">
+      <Filter>03.Components\09.Collider\00.DebugDraw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

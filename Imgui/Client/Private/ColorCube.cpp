@@ -97,7 +97,7 @@ _bool CColorCube::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _f
 
 HRESULT CColorCube::Set_RenderState()
 {
-	if (nullptr == m_pDevice || nullptr == m_pDeviceContext)
+	if (nullptr == m_pDevice || nullptr == m_pContext)
 		return E_FAIL;
 
 	//m_pGraphic_Device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);

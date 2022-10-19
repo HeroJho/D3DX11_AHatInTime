@@ -34,14 +34,14 @@ public:
 
 	_float4 Get_Color() { return m_vCellColor; }
 	void Set_Color(_float4 vCellColor) { m_vCellColor = vCellColor; }
-	void Add_Collider(class CGameObject* pGameObject) { m_Colliders.push_back(pGameObject); }
 
+	void Add_Collider(class CGameObject* pGameObject) { m_Colliders.push_back(pGameObject); }
+	const vector<class CGameObject*>* Get_Colliders() { return &m_Colliders; }
 
 public:
 	HRESULT Initialize(const _float3* pPoints, _int iIndex, _int* iNeighborIndex);
 	_bool Compare(const _float3& vSourPoint, const _float3& vDestPoint);
 	_bool isIn(_fvector vPosition, _int* pNeighborIndex);
-	_bool isColMove(class CCollider* pCollider);
 
 #ifdef _DEBUG
 public:

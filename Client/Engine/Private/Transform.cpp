@@ -38,6 +38,12 @@ void CTransform::Set_Look(_fvector vLook)
 	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLook) * vScale.z);
 }
 
+void CTransform::Set_CurSpeed(_float fCulSpeed, _bool bLimit)
+{
+	m_fCulSpeed = fCulSpeed;
+	if (0.f > m_fCulSpeed && bLimit)
+		m_fCulSpeed = 0.f;
+}
 
 
 HRESULT CTransform::Initialize_Prototype()
@@ -70,7 +76,7 @@ void CTransform::Go_Straight(_float fTimeDelta)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Straight(_float fSpeedPerSec, _float fTimeDelta, CNavigation* pNavigation, CCollider* pCollider)
+void CTransform::Go_Straight(_float fSpeedPerSec, _float fTimeDelta, CNavigation* pNavigation)
 {
 	_vector		vPosition = Get_State(CTransform::STATE_POSITION);
 	_vector		vLook = Get_State(CTransform::STATE_LOOK);
@@ -87,7 +93,8 @@ void CTransform::Go_Straight(_float fSpeedPerSec, _float fTimeDelta, CNavigation
 
 	if (true == isMove)
 	{
-		Set_State(CTransform::STATE_POSITION, vPosition);
+		XMStoreFloat3(&m_vPrePos, Get_State(STATE_POSITION));
+		Set_State(STATE_POSITION, vPosition);
 	}
 
 }
@@ -350,6 +357,19 @@ _bool  CTransform::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _
 	return false;
 }
 
+void CTransform::Push_Dir(_fvector vDir, _float fDis, CNavigation* pNavigation)
+{
+	_vector vPosition = Get_State(CTransform::STATE_POSITION);
+
+	vPosition += vDir*fDis;
+
+	// CurCell 다시 설정
+	if (nullptr != pNavigation)
+		pNavigation->isMove(vPosition);
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+}
+
 void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _float fGravity)
 {
 	_float3 vPos;
@@ -372,6 +392,7 @@ void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _floa
 
 	vPos.y += m_fVelocity * fTimeDelta;
 
+	m_vPrePos.y += vPos.y;
 	Set_State(STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
 }
 
@@ -390,7 +411,9 @@ void CTransform::ResetGravity()
 {
 	m_fGravityAcc = 0.f;
 	m_fVelocity = 0.f;
+	// m_fCulSpeed = 0.f;
 }
+
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {

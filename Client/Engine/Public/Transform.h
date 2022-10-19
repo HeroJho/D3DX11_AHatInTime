@@ -48,13 +48,20 @@ public:
 
 	void Set_Look(_fvector vLook);
 
+	_float3 Get_PrePos() { return m_vPrePos; }
+	_float Get_GravityAcc() { return m_fGravityAcc; }
+	_float Get_Velocity() { return m_fVelocity; }
+
+	_float Get_CurSpeed() { return m_fCulSpeed; }
+	void Set_CurSpeed(_float fCulSpeed, _bool bLimit = true);
+
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 
 public:
 	void Go_Straight(_float fTimeDelta);
-	void Go_Straight(_float fSpeedPerSec, _float fTimeDelta, class CNavigation* pNavigation = nullptr, class CCollider* pCollider = nullptr);
+	void Go_Straight(_float fSpeedPerSec, _float fTimeDelta, class CNavigation* pNavigation = nullptr);
 	void Go_Backward(_float fTimeDelta);
 	void Go_Left(_float fTimeDelta);
 	void Go_Right(_float fTimeDelta);
@@ -78,6 +85,8 @@ public:
 	void MoveTarget_Lend(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, class CNavigation* pNavigation, _float fLimitDistance = 0.1f);
 	_bool Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance = 0.1f);
 
+	void Push_Dir(_fvector vDir, _float fDis, class CNavigation* pNavigation = nullptr);
+
 	void Tick_Gravity(_float fTimeDelta, class CNavigation* pNavigation, _float fGravity = 1.f);
 	void Jump(_float fPower);
 	void DoubleJump(_float fPower);
@@ -90,12 +99,14 @@ private:
 	_float					m_fTimeAcc = 0.f;
 	_float3					m_vDest;
 
+	_float3					m_vPrePos;
+
 
 	//====== Gravity ======
 	_float					m_fGravity = 10.f;
 	_float					m_fGravityAcc = 0.f;
 	_float					m_fVelocity = 0.f;
-
+	_float					m_fCulSpeed = 0.f;
 
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

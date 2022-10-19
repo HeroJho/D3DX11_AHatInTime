@@ -19,6 +19,7 @@ public:
 	}
 
 	list<CCollider*> Get_Colliders() { return m_Colliders; }
+	class COBB* Get_StaticOBB();
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -29,7 +30,7 @@ public:
 
 	virtual void OnCollision(CGameObject* pOther) {};
 	
-	void Tick_Col(_fmatrix TransformMatrix);
+	void Tick_Col(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr);
 	void Render_Col();
 
 public:

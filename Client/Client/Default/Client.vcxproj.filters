@@ -76,6 +76,9 @@
     <Filter Include="03.UI\Health">
       <UniqueIdentifier>{a14786f4-1821-40ab-b9ae-1c59f54cafc7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\StaticModel\StaticModel_Insatnce">
+      <UniqueIdentifier>{7d9d8c01-b763-4b56-afa3-dbc993a79bcf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -156,6 +159,12 @@
     <ClInclude Include="..\public\DataManager.h">
       <Filter>96.Managers\DataManager</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\TestMonster.h">
+      <Filter>02.GameObjects\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\StaticModel_Instance.h">
+      <Filter>02.GameObjects\StaticModel\StaticModel_Insatnce</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -224,6 +233,12 @@
     <ClCompile Include="..\Private\UI_TextLife.cpp">
       <Filter>03.UI\Health</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\TestMonster.cpp">
+      <Filter>02.GameObjects\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\StaticModel_Instance.cpp">
+      <Filter>02.GameObjects\StaticModel\StaticModel_Insatnce</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -249,6 +264,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimModel.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel_Instance.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>
