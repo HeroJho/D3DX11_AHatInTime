@@ -67,6 +67,7 @@ public:
 
 public:
 	void Make_PickedModel();
+	void Make_PickedModel_Pos(_fvector vPos);
 	void Delete_Model();
 	void Delete_Model_All();
 	void Add_Model(class CStaticModel* pStaticModel);
@@ -86,6 +87,19 @@ public:
 	void Move_ClickedModel();
 	void Add_TempClickedModel(_float fMinDis, CGameObject* pObj);
 	void Cul_MinClickedModel();
+
+	void AutoGen_ClickedModel();
+
+	void Add_CulList(string sName);
+	_bool Check_CulList(TCHAR* sName);
+	void Reset_CulLIst();
+
+	_bool* Get_CulBool(_uint iIndex);
+
+	_bool CullingMouse(_fvector vPos);
+	void Set_SubConPos(_fvector vPos) { XMStoreFloat3(&m_vSubConPos, vPos); }
+	_bool Get_MouseCul() { return m_bMouseCul; }
+	void Set_MouseCul(_bool bMouseCul) { m_bMouseCul = bMouseCul; }
 
 private:
 	bool GenTag(string* pOut);
@@ -109,7 +123,10 @@ private:
 	string		m_sMinObject;
 	_float3		m_fMinPos;
 
-
+	list<string> m_CullList;
+	_bool m_CullBoolList[100];
+	_float3 m_vSubConPos;
+	_bool m_bMouseCul = false;
 
 	// For. Col
 public:
@@ -125,8 +142,6 @@ private:
 	CCollider::COLLIDERDESC m_ColDesc;
 	_bool m_bColMode = false;
 	_uint m_iColIndex = 0;
-
-
 
 
 public:

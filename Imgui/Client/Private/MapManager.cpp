@@ -7,7 +7,7 @@
 #include "MeshManager.h"
 
 #include "StaticModel.h"
-
+#include "Cell.h"
 
 
 IMPLEMENT_SINGLETON(CMapManager)
@@ -15,6 +15,11 @@ IMPLEMENT_SINGLETON(CMapManager)
 CMapManager::CMapManager()
 {
 	ZeroMemory(&m_ColDesc, sizeof(CCollider::COLLIDERDESC));
+	ZeroMemory(&m_vSubConPos, sizeof(_float3));
+
+	for (_uint i = 0; i < 100; ++i)
+		m_CullBoolList[i] = false;
+
 }
 
 
@@ -51,6 +56,28 @@ void CMapManager::Make_PickedModel()
 	string sTemp = CMapManager::Get_Instance()->Get_PickedString();
 	CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
 	Desc.vScale = _float3(1.f, 1.f, 1.f);
+	CGameObject* pObj = nullptr;
+	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), LEVEL_MAPTOOL, TEXT("Layer_Model"), &pObj, &Desc);
+
+	Add_Model((CStaticModel*)pObj);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CMapManager::Make_PickedModel_Pos(_fvector vPos)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+
+	CStaticModel::STATICMODELDESC Desc;
+	ZeroMemory(&Desc, sizeof(CStaticModel::STATICMODELDESC));
+
+	string sTemp = CMapManager::Get_Instance()->Get_PickedString();
+	CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
+	Desc.vScale = _float3(1.f, 1.f, 1.f);
+	XMStoreFloat3(&Desc.vPos, vPos);
 	CGameObject* pObj = nullptr;
 	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), LEVEL_MAPTOOL, TEXT("Layer_Model"), &pObj, &Desc);
 
@@ -254,6 +281,67 @@ void CMapManager::Cul_MinClickedModel()
 
 }
 
+void CMapManager::AutoGen_ClickedModel()
+{
+	vector<CCell*>* pCells = CMeshManager::Get_Instance()->Get_Cells();
+
+	_uint iCount = 0;
+
+	for (_uint i = 1000; i < 4000; i+= 4)
+	{
+		_vector vPos;
+		_vector fA = XMLoadFloat3(&(*pCells)[i]->Get_Point(CCell::POINT_A));
+		_vector fB = XMLoadFloat3(&(*pCells)[i]->Get_Point(CCell::POINT_B));
+		_vector fC = XMLoadFloat3(&(*pCells)[i]->Get_Point(CCell::POINT_C));
+
+		vPos = (fA + fB + fC) / 3.f;
+
+		Make_PickedModel_Pos(vPos);
+	}
+
+}
+
+void CMapManager::Add_CulList(string czName)
+{
+	m_CullList.push_back(czName);
+}
+
+_bool CMapManager::Check_CulList(TCHAR* czName)
+{
+	for (auto& Cull : m_CullList)
+	{
+		TCHAR szTemp[MAX_PATH];
+		CToolManager::Get_Instance()->CtoTC(Cull.data(), szTemp);
+
+		if (!lstrcmp(czName, szTemp))
+			return true;
+	}
+
+	return false;
+}
+
+void CMapManager::Reset_CulLIst()
+{
+	m_CullList.clear();
+}
+
+_bool* CMapManager::Get_CulBool(_uint iIndex)
+{
+	return &m_CullBoolList[iIndex];
+}
+
+_bool CMapManager::CullingMouse(_fvector vPos)
+{
+	// 서브콘의 마우스 클릭 위치를 가져온다.
+	_vector vSubCon = XMLoadFloat3(&m_vSubConPos);
+	_vector vVPos = XMVectorSetY(vPos, XMVectorGetY(vSubCon));
+	_float fDis = XMVectorGetX(XMVector3Length(vSubCon - vVPos));
+
+	if (10.f > fDis)
+		return true;
+
+	return false;
+}
 
 
 
@@ -262,7 +350,7 @@ bool CMapManager::GenTag(string* pOut)
 {
 	int iGenNum = 0;
 	string sTemp;
-	while (iGenNum < 500)
+	while (iGenNum < 5000)
 	{
 		sTemp = "Model_" + std::to_string(iGenNum);
 

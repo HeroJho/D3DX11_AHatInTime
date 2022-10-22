@@ -115,6 +115,16 @@ private:
 	_float m_fLimitRatio = 0.f;
 
 
+	// For. AnimTestMode
+public:
+	void Set_AnimTestMode(_bool bAnimTestMode) { m_bAnimTestMode = bAnimTestMode; }
+	_bool Get_AnimTestMode() { return m_bAnimTestMode; }
+
+	void Set_StartAnimIndex(_uint iStartAnimIndex) { m_pPlayer->Set_StartAnimIndex(iStartAnimIndex); }
+	_uint Get_StartAnimIndex() { return m_pPlayer->Get_StartAnimIndex(); }
+	void Set_EndAnimIndex(_uint iEndAnimIndex) { m_pPlayer->Set_EndAnimIndex(iEndAnimIndex); }
+	_uint Get_EndAnimIndex() { return m_pPlayer->Get_EndAnimIndex(); }
+
 
 
 	// For. Static
@@ -129,6 +139,7 @@ public:
 	_bool Get_GameMode() { return m_bCamGameModel; }
 
 
+
 private:
 	class CAnimModel*			m_pAnimModel = nullptr;
 	class CAnimPlayer*				m_pPlayer = nullptr;
@@ -137,6 +148,7 @@ private:
 	string				m_sPickedString;
 
 	_bool				m_bPlayMode = false;
+	_bool				m_bAnimTestMode = false;
 
 	class CCamera_Free* m_pCam = nullptr;
 	_bool				m_bCamGameModel = false;

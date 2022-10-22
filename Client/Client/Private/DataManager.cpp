@@ -5,7 +5,7 @@
 
 #include "ToolManager.h"
 
-#include "StaticModel.h"
+#include "StaticModel_Col.h"
 #include "StaticModel_Instance.h"
 #include "Cell.h"
 
@@ -378,58 +378,147 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 
 
+
+
+
+
+
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	map<string, list<_float4x4>> TempMap;
 
 	for (_int i = 0; i < pData_Map->iNumObj; ++i)
 	{
 		CDataManager::DATA_MAP_OBJ DataObj = pData_Map->pObjDatas[i];
 
 
-		CStaticModel::STATICMODELDESC Desc;
-		ZeroMemory(&Desc, sizeof(CStaticModel::STATICMODELDESC));
+		CStaticModel_Col::STATICMODELDESC Desc;
+		ZeroMemory(&Desc, sizeof(CStaticModel_Col::STATICMODELDESC));
 
 		string sTemp = DataObj.cName;
+
+
 		CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
 		Desc.vPos = DataObj.vPos;
 		Desc.vAngle = DataObj.vAngle;
 		Desc.vScale = DataObj.vScale;
 
 		// 콜라이더
-		if (pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel_Instance"), eLEVEL, TEXT("Layer_Model"), &Desc))
+		if (pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), eLEVEL, TEXT("Layer_Model"), &Desc))
 		{
 			RELEASE_INSTANCE(CGameInstance);
 			return E_FAIL;
 		}
 
+
+
+		// Instancing
+		auto& iter = TempMap.find(sTemp);
+		if (iter == TempMap.end()) // 태그가 없다면 
+		{
+			list<_float4x4> flist;
+
+			_matrix mScale = XMMatrixScaling(DataObj.vScale.x, DataObj.vScale.y, DataObj.vScale.z);
+			_matrix mAngle = XMMatrixRotationX(XMConvertToRadians(DataObj.vAngle.x)) * XMMatrixRotationY(XMConvertToRadians(DataObj.vAngle.y)) * XMMatrixRotationZ(XMConvertToRadians(DataObj.vAngle.z));
+			//_matrix mAngle = XMMatrixRotationX(DataObj.vAngle.x) * XMMatrixRotationY(DataObj.vAngle.y) * XMMatrixRotationZ(DataObj.vAngle.z);
+			_matrix mPos = XMMatrixTranslation(DataObj.vPos.x, DataObj.vPos.y, DataObj.vPos.z);
+
+			_matrix mInstanceLocal = mScale * mAngle * mPos;
+			_float4x4 mStoreLocal;
+			XMStoreFloat4x4(&mStoreLocal, mInstanceLocal);
+
+			flist.push_back(mStoreLocal);
+
+
+			TempMap.insert({ sTemp, flist });
+		}
+		else
+		{
+			_matrix mScale	= XMMatrixScaling(DataObj.vScale.x, DataObj.vScale.y, DataObj.vScale.z);
+			_matrix mAngle = XMMatrixRotationX(XMConvertToRadians(DataObj.vAngle.x)) * XMMatrixRotationY(XMConvertToRadians(DataObj.vAngle.y)) * XMMatrixRotationZ(XMConvertToRadians(DataObj.vAngle.z));
+			//_matrix mAngle = XMMatrixRotationX(DataObj.vAngle.x) * XMMatrixRotationY(DataObj.vAngle.y) * XMMatrixRotationZ(DataObj.vAngle.z);
+			_matrix mPos	= XMMatrixTranslation(DataObj.vPos.x, DataObj.vPos.y, DataObj.vPos.z);
+
+			_matrix mInstanceLocal = mScale * mAngle * mPos;
+			_float4x4 mStoreLocal;
+			XMStoreFloat4x4(&mStoreLocal, mInstanceLocal);
+
+
+			(*iter).second.push_back(mStoreLocal);
+		}
+
 	}
 
-
-	// VTXINSTANCE* pInstanceInfos = new VTXINSTANCE[pData_Map->iNumObj];
-
-	//_matrix mScale	= XMMatrixScaling(DataObj.vScale.x, DataObj.vScale.y, DataObj.vScale.z);
-	//_matrix mAngle	= XMMatrixRotationX(DataObj.vAngle.x) * XMMatrixRotationY(DataObj.vAngle.y) * XMMatrixRotationZ(DataObj.vAngle.z);
-	//_matrix mPos	= XMMatrixTranslation(DataObj.vPos.x, DataObj.vPos.y, DataObj.vPos.z);
-
-	//_matrix mInstanceLocal = mScale * mAngle * mPos;
-
-	//XMStoreFloat4(&pInstanceInfos[i].vRight		, mInstanceLocal.r[0]);
-	//XMStoreFloat4(&pInstanceInfos[i].vUp			, mInstanceLocal.r[1]);
-	//XMStoreFloat4(&pInstanceInfos[i].vLook		, mInstanceLocal.r[2]);
-	//XMStoreFloat4(&pInstanceInfos[i].vPosition	, mInstanceLocal.r[3]);
-
-
-
-	CStaticModel_Instance::STATICMODELDESC Desc;
-	ZeroMemory(&Desc, sizeof(CStaticModel_Instance::STATICMODELDESC));
-	Desc.cModelTag;
-	Desc.iNumInstance;
-	Desc.pLocalInfos;
-	if (pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel_Instance"), eLEVEL, TEXT("Layer_Model"), &Desc))
+	// Instancing
+	for (auto& Pair : TempMap)
 	{
-		RELEASE_INSTANCE(CGameInstance);
-		return E_FAIL;
+
+		CModel_Instance::STATICMODELDESC Desc;
+		ZeroMemory(&Desc, sizeof(CStaticModel_Instance::STATICMODELDESC));
+
+		TCHAR szTemp[MAX_PATH];
+		string sFileName = Pair.first + "_Instance";
+		CToolManager::Get_Instance()->CtoTC(sFileName.data(), szTemp);
+		memcpy(Desc.cModelTag, szTemp, sizeof(TCHAR) * MAX_PATH);
+		Desc.iNumInstance = Pair.second.size();
+
+		Desc.pLocalInfos = new VTXINSTANCE[Pair.second.size()];
+
+		_uint iIndex = 0;
+		for (auto& mLocal : Pair.second)
+		{
+			memcpy(&Desc.pLocalInfos[iIndex].vRight,	&mLocal.m[0][0], sizeof(_float4));
+			memcpy(&Desc.pLocalInfos[iIndex].vUp,		&mLocal.m[1][0], sizeof(_float4));
+			memcpy(&Desc.pLocalInfos[iIndex].vLook,		&mLocal.m[2][0], sizeof(_float4));
+			memcpy(&Desc.pLocalInfos[iIndex].vPosition, &mLocal.m[3][0], sizeof(_float4));
+
+			++iIndex;
+		}
+
+
+
+
+		// 원본 생성
+		string sFilePath = "../Bin/Resources/Meshes/NonAnim/" + Pair.first + "/";
+		string sFileNameFBX = Pair.first + ".fbx";
+
+		char cTempName[MAX_PATH];
+		strcpy(cTempName, Pair.first.data());
+
+		DATA_HEROSCENE* Scene = new DATA_HEROSCENE;
+
+		ZeroMemory(Scene, sizeof(DATA_HEROSCENE));
+		ReadSceneData(cTempName, Scene, CDataManager::DATA_NOEANIM);
+
+
+		TCHAR* pTag = CToolManager::Get_Instance()->Get_ManagedTChar();
+		memcpy(pTag, Desc.cModelTag, sizeof(TCHAR) * MAX_PATH);
+
+
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, pTag,
+			CModel_Instance::Bin_Create(m_pDevice, m_pContext, Scene, sFilePath.data(), sFileNameFBX.data(), Desc.iNumInstance, Desc.pLocalInfos))))
+		{
+			RELEASE_INSTANCE(CGameInstance);
+			return E_FAIL;
+		}
+
+
+		// 바로 생성
+		CStaticModel_Instance::STATICMODELDESC ModelInsDesc;
+		memcpy(ModelInsDesc.cModelTag, Desc.cModelTag, sizeof(TCHAR) * MAX_PATH);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel_Instance"), eLEVEL, TEXT("Layer_Model"), &ModelInsDesc)))
+		{
+			RELEASE_INSTANCE(CGameInstance);
+			return E_FAIL;
+		}
+
+
+
+
+		Safe_Delete_Array(Desc.pLocalInfos);
 	}
+
+
 
 	RELEASE_INSTANCE(CGameInstance);
 

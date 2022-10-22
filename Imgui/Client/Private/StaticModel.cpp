@@ -80,32 +80,9 @@ void CStaticModel::Tick(_float fTimeDelta)
 	_float3 vPoss[3];
 	_float fMinDis = 0.f;
 	
-	if (CMeshManager::Get_Instance()->Get_ClickVertexMode())
+
+	if (!CMeshManager::Get_Instance()->Get_ClickVertexMode())
 	{
-
-		if (CMeshManager::Get_Instance()->Get_ClickVertexMode())
-		{
-
-			if (pGameInstance->Mouse_Pressing(DIMK_WHEEL) && pGameInstance->Mouse_Pressing(DIMK_LBUTTON))
-			{
-				if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
-				{
-					CMeshManager::Get_Instance()->Move_FreeVectexCube(fMinDis);
-				}
-			}
-
-			RELEASE_INSTANCE(CGameInstance);
-			return;
-
-		}
-
-		if (pGameInstance->Key_Down(DIK_SPACE))
-		{
-			if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
-			{
-				CMeshManager::Get_Instance()->Add_Cell(fMinDis, vPoss);
-			}
-		}
 
 		if (pGameInstance->Key_Pressing(DIK_SPACE))
 		{
@@ -123,34 +100,83 @@ void CStaticModel::Tick(_float fTimeDelta)
 			m_fSpaceTimeAcc = 0.f;
 		}
 
-
-	}
-	else
-	{
-
-		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		if (pGameInstance->Key_Down(DIK_SPACE))
 		{
-			if (pGameInstance->Mouse_Pressing(DIMK_WHEEL))
-			{
-				if (m_sModelNum == CMapManager::Get_Instance()->Get_PickedCreatedString())
-				{
-					RELEASE_INSTANCE(CGameInstance);
-					return;
-				}
-			}
-
 			if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
 			{
-				CMapManager::Get_Instance()->Add_TempClickedModel(fMinDis, this);
+				CMeshManager::Get_Instance()->Add_Cell(fMinDis, vPoss);
 			}
 		}
 
-		RELEASE_INSTANCE(CGameInstance);
-		return;
-
-
-
 	}
+
+
+
+	if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+	{
+		if (pGameInstance->Mouse_Pressing(DIMK_WHEEL))
+		{
+			if (m_sModelNum == CMapManager::Get_Instance()->Get_PickedCreatedString())
+			{
+				RELEASE_INSTANCE(CGameInstance);
+				return;
+			}
+		}
+
+		if (CMapManager::Get_Instance()->Check_CulList(m_cModelTag))
+		{
+
+			if (!lstrcmp(TEXT("SubCon"), m_cModelTag) && m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+			{
+				
+				_vector vMouseDir = XMVector3Normalize(XMLoadFloat3(&CGameInstance::Get_Instance()->Get_MouseDir()));
+				_vector vMousePos = XMLoadFloat3(&CGameInstance::Get_Instance()->Get_MousePos());
+				CMapManager::Get_Instance()->Set_SubConPos(vMousePos + vMouseDir * fMinDis);
+				
+				if (!CMeshManager::Get_Instance()->Get_ClickVertexMode()
+					&& CMapManager::Get_Instance()->Get_MouseCul())
+				{
+					CMapManager::Get_Instance()->Add_TempClickedModel(fMinDis, this);
+				}
+				else
+					CMeshManager::Get_Instance()->Move_FreeVectexCube(fMinDis);
+
+			}
+
+
+			if (CMapManager::Get_Instance()->Get_MouseCul())
+			{
+				if (CMapManager::Get_Instance()->CullingMouse(m_pTransformCom->Get_State(CTransform::STATE_POSITION)) 
+					&& m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+				{
+
+					if (!CMeshManager::Get_Instance()->Get_ClickVertexMode())
+						CMapManager::Get_Instance()->Add_TempClickedModel(fMinDis, this);
+					else
+						CMeshManager::Get_Instance()->Move_FreeVectexCube(fMinDis);
+				}
+			}
+			else
+			{
+				if (m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+				{
+
+					if (!CMeshManager::Get_Instance()->Get_ClickVertexMode())
+						CMapManager::Get_Instance()->Add_TempClickedModel(fMinDis, this);
+					else
+						CMeshManager::Get_Instance()->Move_FreeVectexCube(fMinDis);
+				}
+			}
+
+	
+		}
+			
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+	return;
+
+
 
 
 
@@ -169,7 +195,14 @@ void CStaticModel::LateTick(_float fTimeDelta)
 	if (CMapManager::Get_Instance()->Get_ColMode())
 		Tick_Col(m_pTransformCom->Get_WorldMatrix());
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+
+
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
+	RELEASE_INSTANCE(CGameInstance);
+
+	if (true == isDraw || !lstrcmp(m_cModelTag, TEXT("SubCon")))
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
 HRESULT CStaticModel::Render()

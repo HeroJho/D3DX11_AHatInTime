@@ -49,6 +49,11 @@ HRESULT CAnimPlayer::Initialize(void * pArg)
 
 #pragma region GET_SET
 
+void CAnimPlayer::Set_AnimIndex(_uint iIndex)
+{
+	m_pModelCom->Set_AnimIndex(iIndex);
+}
+
 _float CAnimPlayer::Get_AnimSpeed(STATE eState)
 {
 	switch (eState)
@@ -250,7 +255,13 @@ void CAnimPlayer::Tick(_float fTimeDelta)
 	if (CAnimManager::Get_Instance()->Get_GameMode())
 		Game_Mode(fTimeDelta);
 	else
-		Tool_Mode(fTimeDelta);
+	{
+		if(!CAnimManager::Get_Instance()->Get_AnimTestMode())
+			Tool_Mode(fTimeDelta);
+		else
+			AnimTest_Mode(fTimeDelta);
+	}
+
 
 
 
@@ -303,6 +314,27 @@ void CAnimPlayer::Tool_Mode(_float fTimeDelta)
 
 
 	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CAnimPlayer::AnimTest_Mode(_float fTimeDelta)
+{
+
+
+
+}
+
+void CAnimPlayer::AnimTest_AnimEndEvent()
+{
+
+	if (m_pModelCom->Get_CurAnimIndex() ==  m_iStartAnimIndex)
+	{
+		m_pModelCom->Set_AnimIndex(m_iEndAnimIndex);
+	}
+	else if(m_pModelCom->Get_CurAnimIndex() == m_iEndAnimIndex)
+	{
+		m_pModelCom->Set_AnimIndex(m_iStartAnimIndex);
+	}
+
 }
 
 
@@ -1063,55 +1095,69 @@ void CAnimPlayer::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.008f);
-	_float fTemp = 0.f;
-	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp))
+
+	if (CAnimManager::Get_Instance()->Get_AnimTestMode())
 	{
-		if (STATE_JUMP == m_eState || STATE_RUNJUMP == m_eState || STATE_SPRINTJUMP == m_eState || STATE_DOUBLEJUMP == m_eState)
+		// 애니메이션 END 이벤트
+		if (m_pModelCom->Play_Animation(fTimeDelta))
+			AnimTest_AnimEndEvent();
+
+
+	}
+	else
+	{
+		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.008f);
+		_float fTemp = 0.f;
+		if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp))
 		{
-			switch (m_eJumpState)
+			if (STATE_JUMP == m_eState || STATE_RUNJUMP == m_eState || STATE_SPRINTJUMP == m_eState || STATE_DOUBLEJUMP == m_eState)
 			{
-			case STATE_IDLE:
-				m_TickStates.push_back(STATE_JUMPLENDING);
-				break;
-			case STATE_WALK:
-				m_TickStates.push_back(STATE_JUMPLENDING);
-				break;
-			case STATE_RUN:
-				m_TickStates.push_back(STATE_RUNJUMPLENDING);
-				break;
-			case STATE_SPRINT:
-				m_TickStates.push_back(STATE_SPRINT);
-				break;
+				switch (m_eJumpState)
+				{
+				case STATE_IDLE:
+					m_TickStates.push_back(STATE_JUMPLENDING);
+					break;
+				case STATE_WALK:
+					m_TickStates.push_back(STATE_JUMPLENDING);
+					break;
+				case STATE_RUN:
+					m_TickStates.push_back(STATE_RUNJUMPLENDING);
+					break;
+				case STATE_SPRINT:
+					m_TickStates.push_back(STATE_SPRINT);
+					break;
+				}
+
+			}
+			else if (STATE_SLIDE == m_eState)
+			{
+				m_TickStates.push_back(STATE_SLIDELENDING);
 			}
 
 		}
-		else if (STATE_SLIDE == m_eState)
-		{
-			m_TickStates.push_back(STATE_SLIDELENDING);
-		}
 
+
+
+
+		// NOTE : Tick으로 올리면 Trun할 때 문제 생김
+		// 상태 갱신
+		Set_State();
+		// 이동 갱신
+		Calcul_State(fTimeDelta);
+
+
+		// 애니메이션 END 이벤트
+		if (m_pModelCom->Play_Animation(fTimeDelta))
+			Check_EndAnim();
+
+
+		m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
+
+
+		m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 	}
 
 
-
-
-	// NOTE : Tick으로 올리면 Trun할 때 문제 생김
-	// 상태 갱신
-	Set_State();
-	// 이동 갱신
-	Calcul_State(fTimeDelta);
-
-
-	// 애니메이션 END 이벤트
-	if (m_pModelCom->Play_Animation(fTimeDelta))
-		Check_EndAnim();
-
-
-	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
-
-
-	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }

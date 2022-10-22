@@ -603,9 +603,12 @@ void CImGui_Manager::Window_Model()
 
 	const list<string>* FileNames = CDataManager::Get_Instance()->Get_NonAnimFileNames();
 	
+	CMapManager::Get_Instance()->Reset_CulLIst();
+
 	ImVec2 vSize{ 150.f, 200.f };
 	if (ImGui::BeginListBox("Models", vSize))
 	{
+		int iCount = 0;
 		for (auto& sModelName : *FileNames)
 		{
 			bool isSelected = CMapManager::Get_Instance()->Get_PickedString() == sModelName;
@@ -616,9 +619,28 @@ void CImGui_Manager::Window_Model()
 
 				if (CMapManager::Get_Instance()->Get_ColMode())
 					CMapManager::Get_Instance()->Find_ClickedColInfo();
-
 			}
 
+
+			ImGui::SameLine();
+			ImVec4 vColor;
+			if (*(CMapManager::Get_Instance()->Get_CulBool(iCount)))
+				vColor = { 0.f, 1.f, 0.f, 1.f };
+			else
+				vColor = { 0.f, 0.f, 0.f, 1.f };
+
+			string sCulName = "Culling_" + sModelName;
+			if (ImGui::ColorButton(sCulName.data(), vColor, 0, vSize))
+			{
+				if (!(*CMapManager::Get_Instance()->Get_CulBool(iCount)))
+					*CMapManager::Get_Instance()->Get_CulBool(iCount) = true;
+				else
+					*CMapManager::Get_Instance()->Get_CulBool(iCount) = false;
+			}
+
+			if (*(CMapManager::Get_Instance()->Get_CulBool(iCount)))
+				CMapManager::Get_Instance()->Add_CulList(sModelName);
+			++iCount;
 
 
 			if (isSelected)
@@ -630,6 +652,11 @@ void CImGui_Manager::Window_Model()
 
 	if(ImGui::Button("Create"))
 		CMapManager::Get_Instance()->Make_PickedModel();
+	ImGui::SameLine();
+	_bool bMouseCul = CMapManager::Get_Instance()->Get_MouseCul();
+	if (ImGui::Checkbox("Mouse Culling", &bMouseCul))
+		CMapManager::Get_Instance()->Set_MouseCul(bMouseCul);
+
 
 	_bool bNaviMode = CMapManager::Get_Instance()->Get_NaviMode();
 	if (ImGui::Checkbox("NaviMode", &bNaviMode))
@@ -679,6 +706,9 @@ void CImGui_Manager::Window_CreatedModel()
 
 	if (ImGui::Button("Delete"))
 		CMapManager::Get_Instance()->Delete_Model();
+	ImGui::SameLine();
+	if (ImGui::Button("Delete_ALL"))
+		CMapManager::Get_Instance()->Delete_Model_All();
 	
 	_bool bRendPickingColor = CMapManager::Get_Instance()->Get_RendPickingColor();
 	if (ImGui::Checkbox("Rend_PickingColor", &bRendPickingColor))
@@ -690,6 +720,9 @@ void CImGui_Manager::Window_CreatedModel()
 
 	if (ImGui::Button("Convert To Bin"))
 		CMapManager::Get_Instance()->Conv_PickedModel_To_Bin();
+
+	if (ImGui::Button("AutoGen"))
+		CMapManager::Get_Instance()->AutoGen_ClickedModel();
 
 
 	ImGui::PushItemWidth(25.f);
@@ -970,7 +1003,23 @@ void CImGui_Manager::Window_PlayMode()
 	}
 	_bool bGameMode = CAnimManager::Get_Instance()->Get_GameMode();
 	if (ImGui::Checkbox("GameMode", &bGameMode))
+	{
 		CAnimManager::Get_Instance()->Set_GameMode(bGameMode);
+	}
+	
+	if (!bGameMode)
+	{
+		_bool bAnimTestMode = CAnimManager::Get_Instance()->Get_AnimTestMode();
+		if (ImGui::Checkbox("AnimTestMode", &bAnimTestMode))
+			CAnimManager::Get_Instance()->Set_AnimTestMode(bAnimTestMode);
+
+		if(bAnimTestMode)
+			Window_AnimTestMode();
+	}
+
+
+		
+	
 
 
 
@@ -1073,6 +1122,29 @@ void CImGui_Manager::Window_PlayMode()
 
 
 	ImGui::PopItemWidth();
+
+	ImGui::End();
+
+}
+
+void CImGui_Manager::Window_AnimTestMode()
+{
+	ImGui::Begin("AnimTestMode");
+
+	_int iStartAnimIndex = CAnimManager::Get_Instance()->Get_StartAnimIndex();
+	if (ImGui::InputInt("Start Index: ", &iStartAnimIndex))
+	{
+		CAnimManager::Get_Instance()->Set_StartAnimIndex(iStartAnimIndex);
+		CAnimManager::Get_Instance()->Get_PlayerModel()->Set_AnimIndex(iStartAnimIndex);
+	}
+
+	_int iEndAnimIndex = CAnimManager::Get_Instance()->Get_EndAnimIndex();
+	if (ImGui::InputInt("End Index: ", &iEndAnimIndex))
+	{
+		CAnimManager::Get_Instance()->Set_EndAnimIndex(iEndAnimIndex);
+		CAnimManager::Get_Instance()->Get_PlayerModel()->Set_AnimIndex(iStartAnimIndex);
+	}
+
 
 	ImGui::End();
 

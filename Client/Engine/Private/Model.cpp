@@ -699,6 +699,7 @@ void CModel::Set_CurAnim_Loop(_bool bLoop)
 
 HRESULT CModel::Bin_Initialize_Prototype(DATA_HEROSCENE* pScene, TYPE eType, const char* pModelFilePath, const char * pModelFileName, _fmatrix PivotMatrix)
 {
+ 
 	m_bIsBin = true;
 
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
@@ -731,6 +732,7 @@ HRESULT CModel::Bin_Ready_MeshContainers(_fmatrix PivotMatrix)
 
 	for (_uint i = 0; i < m_iNumMeshes; ++i)
 	{
+
 		CMeshContainer*		pMeshContainer = CMeshContainer::Bin_Create(m_pDevice, m_pContext, m_eModelType, &m_pBin_AIScene->pHeroMesh[i], this, PivotMatrix);
 		if (nullptr == pMeshContainer)
 			return E_FAIL;

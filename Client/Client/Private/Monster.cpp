@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\Public\Monster.h"
 #include "GameInstance.h"
+#include  "ToolManager.h"
 
 CMonster::CMonster(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -27,7 +28,9 @@ HRESULT CMonster::Initialize(void * pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(86.5f, 5.f, 3.87f, 1.f));
+	m_sTag = "Tag_Monster";
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-37.75, 12.34, 157.85, 1.f));
 	m_pTransformCom->Set_CurSpeed(1.f);
 
 	Set_State(MONSTER_CHASE);
@@ -43,7 +46,18 @@ HRESULT CMonster::Initialize(void * pArg)
 
 void CMonster::Set_State(MONSTER_STATE eState)
 {
+	m_ePreState = m_eState;
 	m_eState = eState;
+
+
+	if (m_ePreState != m_eState)
+	{
+		switch (m_eState)
+		{
+		case Client::CMonster::MONSTER_ATTACKED:
+			break;
+		}
+	}
 
 	Set_Anim();
 }
@@ -134,6 +148,60 @@ void CMonster::Tick_Chase(_float fTimeDelta)
 
 void CMonster::Tick_Attacked(_float fTimeDelta)
 {
+	
+
+
+
+	m_fAttackedTimeAcc += fTimeDelta;
+	if (1.5f < m_fAttackedTimeAcc)
+	{
+		Set_State(MONSTER_CHASE);
+		m_pTransformCom->Set_OriScale();
+		m_fAttackedTimeAcc = 0.f;
+		m_fAttackedAnimAcc = 0.f;
+		m_fMaxYAcc = m_fMaxY;
+		m_fMinYAcc = m_fMinY;
+		m_bAttackedUpDown = false;
+		return;
+	}
+
+	_vector vScale = XMLoadFloat3(&m_pTransformCom->Get_Scale());
+	_float fRatio_Y = XMVectorGetY(vScale) / m_pTransformCom->Get_OriScale().y;
+
+	
+	if(m_fMaxYAcc < fRatio_Y && !m_bAttackedUpDown)
+	{
+		m_bAttackedUpDown = true;
+		m_fMaxYAcc -= 0.1f;
+	}
+	else if (m_fMinYAcc > fRatio_Y && m_bAttackedUpDown)
+	{
+		m_bAttackedUpDown = false;
+		m_fMinYAcc += 0.1f;
+	}
+
+
+
+	if (m_bAttackedUpDown)
+	{
+		m_fAttackedAnimAcc = fTimeDelta * m_fMaxYAcc * 8.f;
+		vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) - m_fAttackedAnimAcc);
+		vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) + m_fAttackedAnimAcc * 0.5f);
+		vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) + m_fAttackedAnimAcc * 0.5f);
+		m_pTransformCom->Set_Scale(vScale);
+	}
+	else
+	{
+		m_fAttackedAnimAcc = fTimeDelta * m_fMinYAcc * 8.f;
+		vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) + m_fAttackedAnimAcc);
+		vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) - m_fAttackedAnimAcc * 0.5f);
+		vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) - m_fAttackedAnimAcc * 0.5f);
+		m_pTransformCom->Set_Scale(vScale);
+	}
+
+
+
+
 }
 
 void CMonster::Tick_Die(_float fTimeDelta)
@@ -151,7 +219,8 @@ void CMonster::LateTick(_float fTimeDelta)
 	m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom);
 
 	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
-	Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom);
+	_matrix mWorld = m_pTransformCom->Get_OriScaleWorldMatrix();
+	Tick_Col(mWorld, m_pNavigationCom, m_pTransformCom);
 
 	m_pModelCom->Play_Animation(fTimeDelta);
 
@@ -193,7 +262,8 @@ HRESULT CMonster::Render()
 	}	
 
 
-	Render_Col();
+	if(CToolManager::Get_Instance()->Get_Debug())
+		Render_Col();
 
 
 	return S_OK;
@@ -202,7 +272,32 @@ HRESULT CMonster::Render()
 void CMonster::OnCollision(CGameObject * pOther)
 {
 
-	int i = 0;
+	Set_State(MONSTER_ATTACKED);
+	m_pTransformCom->Set_OriScale();
+	m_fAttackedTimeAcc = 0.f;
+	m_fAttackedAnimAcc = 0.f;
+	m_bAttackedUpDown = false;
+	m_fMaxYAcc = m_fMaxY;
+	m_fMinYAcc = m_fMinY;
+
+
+	_vector vScale = XMLoadFloat3(&m_pTransformCom->Get_Scale());
+
+	vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) + XMVectorGetY(vScale) * (m_fMaxY - 0.1f));
+	if (0.1f > XMVectorGetY(vScale))
+		vScale = XMVectorSetY(vScale, m_fMinY);
+
+	vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) - XMVectorGetX(vScale) * (m_fMaxY - 0.1f));
+	if (0.1f > XMVectorGetX(vScale))
+		vScale = XMVectorSetX(vScale, m_fMinY);
+
+	vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) - XMVectorGetZ(vScale) * (m_fMaxY - 0.1f));
+	if (0.1f > XMVectorGetZ(vScale))
+		vScale = XMVectorSetZ(vScale, m_fMinY);
+
+	m_pTransformCom->Set_Scale(vScale);
+
+
 }
 
 
@@ -245,27 +340,28 @@ HRESULT CMonster::Ready_Components()
 	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	ColDesc.vSize = _float3(0.3f, 1.f, 0.3f);
+	ColDesc.bIsStatic = true;
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 
-	ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
-		return E_FAIL;
+	//ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
+	//	return E_FAIL;
 
-	ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
-		return E_FAIL;
+	//ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+	//	return E_FAIL;
 
 
 
 	/* For.Com_Navigation */
 	CNavigation::NAVIGATIONDESC NaviDesc;
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
-	NaviDesc.iCurrentIndex = 6441;
+	NaviDesc.iCurrentIndex = 13444;
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 		return E_FAIL;
 
@@ -312,6 +408,7 @@ CGameObject * CMonster::Clone(void * pArg)
 void CMonster::Free()
 {
 	__super::Free();
+
 
 	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pModelCom);

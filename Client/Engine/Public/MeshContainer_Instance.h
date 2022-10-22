@@ -62,6 +62,7 @@ private:
 
 	// For. Instance
 	_uint					m_iNumInstance = 0;
+	_uint					m_iNumRealPrimitives = 0;
 	_uint					m_iInstanceStride = 0;
 	ID3D11Buffer*			m_pVBInstance = nullptr;
 

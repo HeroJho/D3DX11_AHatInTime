@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "GameObject.h"
 
+
 BEGIN(Engine)
 class CShader;
 class CTexture;
@@ -42,6 +43,10 @@ public:
 private:
 	TCHAR					m_cModelTag[MAX_PATH];
 	_float3					m_vAxis;
+
+	_float					m_fAttackTimeAcc = 0.f;
+	_bool					m_bCanAttack = false;
+
 
 private:
 	HRESULT Ready_Components();

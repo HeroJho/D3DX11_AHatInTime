@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "..\Public\Umbrella.h"
 #include "GameInstance.h"
+#include "Player.h"
+#include "ToolManager.h"
 
 CUmbrella::CUmbrella(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -29,6 +31,12 @@ HRESULT CUmbrella::Initialize(void * pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (nullptr != Desc->pOwner)
+	{
+		m_pOwner = Desc->pOwner;
+		//Safe_AddRef(m_pOwner);
+	}
+
 
 	m_pTransformCom->Set_Scale(XMLoadFloat3(&Desc->vScale));
 
@@ -41,11 +49,39 @@ HRESULT CUmbrella::Initialize(void * pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 
 
+
+
 	return S_OK;
 }
 
 void CUmbrella::Tick(_float fTimeDelta)
 {
+	CPlayer* pPlayer = ((CPlayer*)m_pOwner);
+	CPlayer::STATE ePlayerCurState = pPlayer->Get_State();
+
+	if (CPlayer::STATE_READYATTACK == ePlayerCurState)
+	{
+		m_fAttackTimeAcc = 0.f;
+		m_bCanAttack = false;
+	}
+
+	if (CPlayer::STATE_ATTACK_1 == ePlayerCurState ||
+		CPlayer::STATE_ATTACK_2 == ePlayerCurState ||
+		CPlayer::STATE_ATTACK_3 == ePlayerCurState )
+	{
+		m_fAttackTimeAcc += fTimeDelta;
+	}
+	else
+	{
+		m_fAttackTimeAcc = 0.f;
+		m_bCanAttack = false;
+	}
+
+
+	if (0.05f < m_fAttackTimeAcc && 0.2f > m_fAttackTimeAcc)
+	{
+		m_bCanAttack = true;
+	}
 
 }
 
@@ -54,7 +90,18 @@ void CUmbrella::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
+	_matrix		WorldMatrix = m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix();
+	Tick_Col(WorldMatrix);
+
+
+	if (m_bCanAttack)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_SWORD, this);
+		RELEASE_INSTANCE(CGameInstance);
+		m_bCanAttack = false;
+	}
 }
 
 HRESULT CUmbrella::Render()
@@ -90,6 +137,9 @@ HRESULT CUmbrella::Render()
 		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
 			return E_FAIL;
 	}
+
+	if (CToolManager::Get_Instance()->Get_Debug())
+		Render_Col();
 
 	return S_OK;
 }
@@ -128,6 +178,31 @@ HRESULT CUmbrella::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Umbrella"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
+
+
+	/* For.Com_Collider */
+	CCollider::COLLIDERDESC ColDesc;
+	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
+
+	ColDesc.vCenter = _float3(0.f, 0.4f, 0.f);
+	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	ColDesc.vSize = _float3(0.3f, 0.8f, 0.3f);
+	ColDesc.bIsStatic = false;
+	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+		return E_FAIL;
+
+	//ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
+	//	return E_FAIL;
+
+	//ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+	//	return E_FAIL;
+
 	return S_OK;
 }
 
@@ -161,6 +236,8 @@ void CUmbrella::Free()
 {
 	__super::Free();
 
+
+	// Safe_Release(m_pOwner);
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);

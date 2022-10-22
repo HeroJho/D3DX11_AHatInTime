@@ -79,6 +79,15 @@
     <Filter Include="02.GameObjects\StaticModel\StaticModel_Insatnce">
       <UniqueIdentifier>{7d9d8c01-b763-4b56-afa3-dbc993a79bcf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\RollingBarrel">
+      <UniqueIdentifier>{aa701a76-7461-4deb-a2e3-2f963258b9ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\RectBarrel">
+      <UniqueIdentifier>{69a0396d-51e4-4ac7-a379-72e00e34162c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\StaticModel\StaticModel_Col">
+      <UniqueIdentifier>{ff58f263-3ecc-453e-8155-f7bf9fe5049e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -141,9 +150,6 @@
     <ClInclude Include="..\Public\UIManager.h">
       <Filter>96.Managers\UIManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\StaticModel.h">
-      <Filter>02.GameObjects\StaticModel</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Ori_Hat.h">
       <Filter>02.GameObjects\Parts\Ori_Hat</Filter>
     </ClInclude>
@@ -159,11 +165,20 @@
     <ClInclude Include="..\public\DataManager.h">
       <Filter>96.Managers\DataManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\TestMonster.h">
-      <Filter>02.GameObjects\Monster</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\StaticModel_Instance.h">
       <Filter>02.GameObjects\StaticModel\StaticModel_Insatnce</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Test.h">
+      <Filter>02.GameObjects\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\RollingBarrel.h">
+      <Filter>02.GameObjects\RollingBarrel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\RectBarrel.h">
+      <Filter>02.GameObjects\RectBarrel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\StaticModel_Col.h">
+      <Filter>02.GameObjects\StaticModel\StaticModel_Col</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -218,9 +233,6 @@
     <ClCompile Include="..\Private\UIManager.cpp">
       <Filter>96.Managers\UIManager</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\StaticModel.cpp">
-      <Filter>02.GameObjects\StaticModel</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Ori_Hat.cpp">
       <Filter>02.GameObjects\Parts\Ori_Hat</Filter>
     </ClCompile>
@@ -233,11 +245,20 @@
     <ClCompile Include="..\Private\UI_TextLife.cpp">
       <Filter>03.UI\Health</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\TestMonster.cpp">
-      <Filter>02.GameObjects\Monster</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\StaticModel_Instance.cpp">
       <Filter>02.GameObjects\StaticModel\StaticModel_Insatnce</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Test.cpp">
+      <Filter>02.GameObjects\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\RollingBarrel.cpp">
+      <Filter>02.GameObjects\RollingBarrel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\RectBarrel.cpp">
+      <Filter>02.GameObjects\RectBarrel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\StaticModel_Col.cpp">
+      <Filter>02.GameObjects\StaticModel\StaticModel_Col</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,15 @@ BEGIN(Engine)
 
 class ENGINE_DLL CModel_Instance final : public CComponent
 {
+public:
+	typedef struct tagStaticModelDesc
+	{
+		TCHAR		cModelTag[MAX_PATH];
+		_uint		iNumInstance;
+		VTXINSTANCE* pLocalInfos;
+
+	}STATICMODELDESC;
+
 private:
 	CModel_Instance(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CModel_Instance(const CModel_Instance& rhs);

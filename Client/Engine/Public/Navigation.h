@@ -20,9 +20,13 @@ public:
 	virtual HRESULT Initialize_Prototype(vector<class CCell*>* Cells);
 	virtual HRESULT Initialize(void* pArg);
 
+
+public:
+	void Ready_CellCollision(class CGameObject* pGameObject);
+
 public:
 	const vector<class CGameObject*>* Get_CurCellColliders(); 
-
+	_bool Get_GroundCell(_float3* pPoss, class CTransform* pTran);
 
 public:
 	// 나의 셀에 대해 y값을 얻어온다
@@ -32,7 +36,7 @@ public:
 	// 셀에 닿였냐
 	_bool isGround(_fvector vPosition, _float* OutfCellY);
 
-	void Comput_CellCollision(class CGameObject* pGameObject);
+
 
 
 #ifdef _DEBUG
@@ -49,6 +53,7 @@ private:
 #ifdef _DEBUG
 	class CShader*			m_pShader = nullptr;
 #endif // _DEBUG
+
 
 
 private:

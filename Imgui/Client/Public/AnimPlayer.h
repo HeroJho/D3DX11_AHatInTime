@@ -129,18 +129,32 @@ public:
 public:
 	virtual _float3* Get_Axis() override { return &m_vAxis; };
 
+	void		Set_AnimIndex(_uint iIndex);
+
 	_float		Get_AnimSpeed(STATE eState);
 	void		Set_AnimSpeed(STATE eState, _float fSpeed);
 
 	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
 	void Reset_AnimLinearData();
 
+	void Set_StartAnimIndex(_uint iStartAnimIndex) { m_iStartAnimIndex = iStartAnimIndex; }
+	_uint Get_StartAnimIndex() { return m_iStartAnimIndex; }
+	void Set_EndAnimIndex(_uint iEndAnimIndex) { m_iEndAnimIndex = iEndAnimIndex; }
+	_uint Get_EndAnimIndex() { return m_iEndAnimIndex; }
+
 private:
 	void Tool_Mode(_float fTimeDelta);
+
+	void AnimTest_Mode(_float fTimeDelta);
+	void AnimTest_AnimEndEvent();
 
 private:
 	_float3				m_vAxis;
 	_bool				m_bStatu = false;
+
+
+	_uint				m_iStartAnimIndex = 0;
+	_uint				m_iEndAnimIndex = 0;
 
 };
 

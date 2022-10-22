@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 
 #include "DataManager.h"
+#include "ToolManager.h"
 
 #include "Camera_Free.h"
 
@@ -28,6 +29,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_sTag = "Tag_Player";
+
 	list<ANIM_LINEAR_DATA> LinearDatas = CDataManager::Get_Instance()->Load_Anim("HatGirl");
 
 	for (auto& Data : LinearDatas)
@@ -45,7 +48,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_vDestLook = _float3{ 0.f, 0.f, 1.f };
 	m_pTransformCom->Set_Look(XMLoadFloat3(&m_vDestLook));
 	m_pTransformCom->Set_DestLook();
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(86.94f, 5.f, 3.87f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-38.75, 12.34, 157.85, 1.f));
 
 	m_pTransformCom->Set_CurSpeed(m_fWalkSpeed);
 
@@ -82,21 +85,30 @@ void CPlayer::Set_State()
 
 
 	// 애니메이션이 바뀔때 거쳐야하는 부분p
-	switch (m_eState)
+	if (m_ePreState != m_eState)
 	{
-	case STATE_SLEP:
-		m_fSlepSpeed = 2.f;
-		break;
-	case STATE_SLIDE:
-		m_pTransformCom->Set_CurSpeed(m_pTransformCom->Get_CurSpeed() + 4.f);
-		break;
-	case STATE_SLIDELENDING:
-		m_fSlepSpeed = m_pTransformCom->Get_CurSpeed();
-		break;
-	default:
-		m_fSlepSpeed = 0.f;
-		break;
+		switch (m_eState)
+		{
+		case STATE_SLEP:
+			m_fSlepSpeed = 2.f;
+			break;
+		case STATE_SLIDE:
+			m_pTransformCom->Set_CurSpeed(m_pTransformCom->Get_CurSpeed() + 4.f);
+			break;
+		case STATE_SLIDELENDING:
+			m_fSlepSpeed = m_pTransformCom->Get_CurSpeed();
+			break;
+		case STATE_HILLDOWN:
+			m_fHillDownTimeAcc = 0.f;
+			m_fHillUpTimeAcc = 0.f;
+			break;
+		default:
+			m_fSlepSpeed = 0.f;
+			break;
+		}
 	}
+
+
 
 
 
@@ -171,8 +183,8 @@ void CPlayer::Set_Anim()
 	case STATE_SLEP:
 		m_pModelCom->Set_AnimIndex(180);
 		break;
-	case STATE_STATU:
-		m_pModelCom->Set_AnimIndex(204);
+	case STATE_HILLDOWN:
+		m_pModelCom->Set_AnimIndex(53);
 		break;
 	}
 }
@@ -232,6 +244,9 @@ void CPlayer::Tick(_float fTimeDelta)
 		break;
 	case STATE_READYATTACK:
 		ReadyAttack_Input(fTimeDelta);
+		break;
+	case STATE_HILLDOWN:
+		HillDown_Tick(fTimeDelta);
 		break;
 	}
 }
@@ -323,6 +338,71 @@ void CPlayer::SlideRending_Tick(_float fTimeDelta)
 		m_fSlepSpeed = 0.f;
 
 	SlideRending_Input(fTimeDelta);
+}
+
+void CPlayer::HillDown_Tick(_float fTimeDelta)
+{
+	// 실시간으로 면의 정보를 가져와야한다.
+	_float3 vPoss[3];
+	ZeroMemory(&vPoss, sizeof(_float3) * 3);
+	
+	// 셀 없다
+	if (!m_pNavigationCom->Get_GroundCell(vPoss, m_pTransformCom))
+	{
+		memcpy(vPoss, Get_StaticOBB()->Get_HillPoss(), sizeof(_float3) * 3);
+		_vector vA = XMLoadFloat3(&vPoss[0]);
+		_vector vB = XMLoadFloat3(&vPoss[1]);
+		_vector vC = XMLoadFloat3(&vPoss[2]);
+
+		if (0.001f > fabs(XMVectorGetX(XMVector3Length(vA)) - XMVectorGetX(XMVector3Length(vB))))
+		{// 면 없다
+
+			// 낙하?
+			return;
+		}
+	}
+
+	_vector vPlan;
+	vPlan = XMPlaneFromPoints(XMLoadFloat3(&vPoss[0]), XMLoadFloat3(&vPoss[1]), XMLoadFloat3(&vPoss[2]));
+	vPlan = XMVectorSetW(XMVector3Normalize(vPlan), 0.f);
+
+
+	// 면을 탄다
+	_vector vY = XMVectorSet(0.f, 2.f, 0.f, 0.f); // 빛
+	_float vDot = XMVectorGetX(XMVector3Dot(vPlan, vY));
+	_vector vNorPlan = vPlan * vDot;
+	_vector vSlide = vNorPlan - vY;
+
+
+	// 드러눕기
+	m_fHillDownTimeAcc += fTimeDelta;
+	if (2.7f < m_fHillDownTimeAcc)
+	{
+		// 면의 노말 벡터를 내 업 벡터로 맞춘다.
+
+		m_pTransformCom->Set_Up(vPlan);
+	}
+
+
+
+	m_fHillDownSpeed += fTimeDelta * 0.1f;
+	m_pTransformCom->Go_Dir(vSlide, m_fHillDownSpeed, fTimeDelta);
+
+	// 만약에 vDot 값이 1.99가 넘어간다면 평평한 곳에 왔다는 것
+	// 잠깐 누워있다가 스페이스바로 Idle 복귀 가능
+	if (1.8f < vDot)
+	{
+		m_fHillDownSpeed -= fTimeDelta * 0.01f;
+
+		if (0.f > m_fHillDownSpeed)
+			m_fHillDownSpeed = 0.0f;
+
+		m_fHillUpTimeAcc += fTimeDelta;
+
+		if(1.f < m_fHillUpTimeAcc)
+			HillDown_Input(fTimeDelta);
+	}
+
 }
 
 
@@ -867,6 +947,22 @@ void CPlayer::SlideRending_Input(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 }
 
+void CPlayer::HillDown_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_SPACE))
+	{
+		m_pTransformCom->Jump(m_fJumpPower - 2.f);
+		m_TickStates.push_back(STATE_DOUBLEJUMP);
+
+		m_fHillDownTimeAcc = 0.f;
+		m_fHillUpTimeAcc = 0.f;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
 
 
 
@@ -914,9 +1010,16 @@ void CPlayer::LateTick(_float fTimeDelta)
 	// 중력 적용
 	m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.008f);
 
+	// 이동 갱신
+	Calcul_State(fTimeDelta);
+
+	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
+	Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom);
+
+
 	// 착지 했다면
 	_float fTemp = 0.f;
-	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp) || COBB::COL_ON == Get_StaticOBB()->Get_ColState())
+	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp) || COBB::COL_ON == Get_StaticOBB()->Get_ColState() || COBB::COL_SLIDE == Get_StaticOBB()->Get_ColState())
 	{
 		if (STATE_JUMP == m_eState || STATE_RUNJUMP == m_eState || STATE_SPRINTJUMP == m_eState || STATE_DOUBLEJUMP == m_eState)
 		{
@@ -946,17 +1049,16 @@ void CPlayer::LateTick(_float fTimeDelta)
 			m_TickStates.push_back(STATE_SLIDELENDING);
 		}
 
+		if (COBB::COL_SLIDE == Get_StaticOBB()->Get_ColState())
+		{
+			m_TickStates.push_back(STATE_HILLDOWN);
+		}
+
 	}
 
 
 	// 상태 갱신
 	Set_State();
-
-	// 이동 갱신
-	Calcul_State(fTimeDelta);
-
-	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
-	Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom);
 
 
 	// 애니메이션 END 이벤트
@@ -1017,6 +1119,10 @@ void CPlayer::Calcul_State(_float fTimeDelta)
 		m_pTransformCom->Set_CurSpeed(0.f);
 	}
 	else if (STATE_ATTACK_1 == m_eState || STATE_ATTACK_2 == m_eState || STATE_ATTACK_3 == m_eState)
+	{
+		m_pTransformCom->Set_CurSpeed(0.f);
+	}
+	else if (STATE_HILLDOWN == m_eState)
 	{
 		m_pTransformCom->Set_CurSpeed(0.f);
 	}
@@ -1093,7 +1199,8 @@ HRESULT CPlayer::Render()
 	}
 
 
-	Render_Col();
+	if(CToolManager::Get_Instance()->Get_Debug())
+		Render_Col();
 
 
 	return S_OK;
@@ -1181,14 +1288,14 @@ HRESULT CPlayer::Ready_Components()
 	PartsDesc.vPos =	_float3(0.f, 0.f, -0.63f);
 	PartsDesc.vScale =	_float3(1.f, 1.f, 1.f);
 	PartsDesc.vRot =	_float3(-90.f, 0, 0);
+	PartsDesc.pOwner = this;
 	m_pSockatCom->Add_Sockat("bip_hat01", m_pModelCom, TEXT("Prototype_GameObject_Ori_Hat"), PartsDesc);
 
 	PartsDesc.vPos = _float3(-0.28f, 0.11f, -0.41f);
 	PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 	PartsDesc.vRot = _float3(0.f, 0.f, 178.f);
+	PartsDesc.pOwner = this;
 	m_pSockatCom->Add_Sockat("bip_ItemPalmR01", m_pModelCom, TEXT("Prototype_GameObject_Umbrella"), PartsDesc);
-
-
 
 
 
@@ -1196,23 +1303,24 @@ HRESULT CPlayer::Ready_Components()
 	CCollider::COLLIDERDESC ColDesc;
 	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
+	ColDesc.vCenter = _float3(0.f, 0.4f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(0.3f, 1.f, 0.3f);
+	ColDesc.vSize = _float3(0.3f, 0.8f, 0.3f);
+	ColDesc.bIsStatic = true;
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 
-	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
-		return E_FAIL;
+	//ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
+	//	return E_FAIL;
 
-	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
-		return E_FAIL;
+	//ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
+	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+	//	return E_FAIL;
 
 
 
@@ -1220,7 +1328,7 @@ HRESULT CPlayer::Ready_Components()
 	/* For.Com_Navigation */
 	CNavigation::NAVIGATIONDESC NaviDesc;
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
-	NaviDesc.iCurrentIndex = 6441;
+	NaviDesc.iCurrentIndex = 13444;
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 		return E_FAIL;
 	
@@ -1242,7 +1350,8 @@ HRESULT CPlayer::Ready_Components()
 
 void CPlayer::OnCollision(CGameObject * pOther)
 {
-	int i = 0;
+	if("Tag_Barrel" == pOther->Get_Tag())
+		Get_StaticOBB()->Compute_Pigi(pOther, m_pNavigationCom, m_pTransformCom);
 }
 
 

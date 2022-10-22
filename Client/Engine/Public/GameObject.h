@@ -18,8 +18,13 @@ public:
 		return m_fCamDistance;
 	}
 
+	string Get_Tag() { return m_sTag; }
+
 	list<CCollider*> Get_Colliders() { return m_Colliders; }
 	class COBB* Get_StaticOBB();
+
+	CGameObject* Get_Owner() { return m_pOwner; }
+	void		Set_Owner(CGameObject* pOwner) { m_pOwner = pOwner;	}
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -51,6 +56,8 @@ protected: /* 객체에게 추가된 컴포넌트들을 키로 분류하여 보관한다. */
 
 
 protected:
+	string			m_sTag = "";
+	CGameObject*	m_pOwner = nullptr;
 	_float				m_fCamDistance = 0.f;
 
 protected:

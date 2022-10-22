@@ -37,7 +37,7 @@ private:
 	/* 이 애니메이션을 구동하기위해 사용되는 뼈의 갯수. */
 	_uint						m_iNumChannels = 0;
 	vector<class CChannel*>		m_Channels;
-	_bool						m_bLoop = true;
+	_bool						m_bLoop = false;
 
 	/* 애니메이션 재생하는데 걸리는 전체시간. */
 	_float						m_fDuration = 0.f;

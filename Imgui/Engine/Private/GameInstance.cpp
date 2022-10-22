@@ -12,8 +12,10 @@ CGameInstance::CGameInstance()
 	, m_pPicking(CPicking::Get_Instance())
 	, m_pPipeLine(CPipeLine::Get_Instance())
 	, m_pLight_Manager(CLight_Manager::Get_Instance())
+	, m_pFrustum(CFrustum::Get_Instance())
 
 {
+	Safe_AddRef(m_pFrustum);
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
 	Safe_AddRef(m_pPicking);
@@ -51,6 +53,9 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevel, HINSTANCE hInst, const
 	if (FAILED(m_pComponent_Manager->Reserve_Container(iNumLevel)))
 		return E_FAIL;
 
+	if (FAILED(m_pFrustum->Initialize()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -66,6 +71,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pObject_Manager->Tick(fTimeDelta);
 
 	m_pPipeLine->Update();
+
+	m_pFrustum->Tick();
 
 	m_pPicking->Tick();
 
@@ -372,6 +379,14 @@ _float4 CGameInstance::Get_CamPosition()
 	return m_pPipeLine->Get_CamPosition();
 }
 
+_bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius)
+{
+	if (nullptr == m_pFrustum)
+		return false;
+
+	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRadius);
+}
+
 void CGameInstance::Release_Engine()
 {
 	CGameInstance::Get_Instance()->Destroy_Instance();
@@ -390,6 +405,8 @@ void CGameInstance::Release_Engine()
 	
 	CLight_Manager::Get_Instance()->Destroy_Instance();
 
+	CFrustum::Get_Instance()->Destroy_Instance();
+
 	CInput_Device::Get_Instance()->Destroy_Instance();	
 	
 	CGraphic_Device::Get_Instance()->Destroy_Instance();
@@ -397,6 +414,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pFrustum);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pPicking);

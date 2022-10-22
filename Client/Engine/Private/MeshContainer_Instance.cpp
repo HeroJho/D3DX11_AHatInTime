@@ -17,6 +17,7 @@ CMeshContainer_Instance::CMeshContainer_Instance(const CMeshContainer_Instance &
 	, m_pVBInstance(rhs.m_pVBInstance)
 	, m_iNumInstance(rhs.m_iNumInstance)
 	, m_iInstanceStride(rhs.m_iInstanceStride)
+	, m_iNumRealPrimitives(rhs.m_iNumRealPrimitives)
 {
 
 	strcpy_s(m_szName, rhs.m_szName);
@@ -101,10 +102,9 @@ HRESULT CMeshContainer_Instance::Initialize_Prototype(const aiMesh * pAIMesh, CM
 	VTXINSTANCE*		pInstanceVtx = new VTXINSTANCE[iNumInstance];
 	ZeroMemory(pInstanceVtx, sizeof(VTXINSTANCE) * iNumInstance);
 
-	for (_uint i = 0; i < iNumInstance; ++i)
-	{
-		memcpy(&pInstanceVtx[0], &pInstanceInfo[0], sizeof(VTXINSTANCE));
-	}
+
+	memcpy(pInstanceVtx, pInstanceInfo, sizeof(VTXINSTANCE) * iNumInstance);
+
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pInstanceVtx;
@@ -113,7 +113,6 @@ HRESULT CMeshContainer_Instance::Initialize_Prototype(const aiMesh * pAIMesh, CM
 		return E_FAIL;
 
 	Safe_Delete_Array(pInstanceVtx);
-	Safe_Delete_Array(pInstanceInfo);
 
 
 #pragma endregion
@@ -141,6 +140,7 @@ HRESULT CMeshContainer_Instance::Bin_Initialize_Prototype(DATA_HEROMETH* pAIMesh
 #pragma endregion
 
 #pragma region INDEXBUFFER
+	m_iNumRealPrimitives = pAIMesh->iNumPrimitives;
 	m_iNumPrimitives = pAIMesh->iNumPrimitives * iNumInstance;
 	m_iIndexSizeofPrimitive = sizeof(FACEINDICES32);
 	m_iNumIndicesofPrimitive = 3;
@@ -198,10 +198,9 @@ HRESULT CMeshContainer_Instance::Bin_Initialize_Prototype(DATA_HEROMETH* pAIMesh
 	VTXINSTANCE*		pInstanceVtx = new VTXINSTANCE[iNumInstance];
 	ZeroMemory(pInstanceVtx, sizeof(VTXINSTANCE) * iNumInstance);
 
-	for (_uint i = 0; i < iNumInstance; ++i)
-	{
-		memcpy(&pInstanceVtx[0], &pInstanceInfo[0], sizeof(VTXINSTANCE));
-	}
+
+	memcpy(pInstanceVtx, pInstanceInfo, sizeof(VTXINSTANCE) * iNumInstance);
+
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pInstanceVtx;
@@ -210,8 +209,6 @@ HRESULT CMeshContainer_Instance::Bin_Initialize_Prototype(DATA_HEROMETH* pAIMesh
 		return E_FAIL;
 
 	Safe_Delete_Array(pInstanceVtx);
-	Safe_Delete_Array(pInstanceInfo);
-
 
 #pragma endregion
 
@@ -257,7 +254,7 @@ HRESULT CMeshContainer_Instance::Render()
 
 	m_pContext->IASetPrimitiveTopology(m_eTopology);
 
-	m_pContext->DrawIndexedInstanced(m_iNumPrimitives * 3, m_iNumInstance, 0, 0, 0);
+	m_pContext->DrawIndexedInstanced(m_iNumRealPrimitives * 3, m_iNumInstance, 0, 0, 0);
 	
 	return S_OK;
 }

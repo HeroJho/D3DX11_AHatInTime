@@ -376,7 +376,7 @@ HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVE
 	// 원본 생성
 	if (bIsBin)
 	{
-		PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+		PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f);
 		if (FAILED(pGameInstance->Add_Prototype(eLEVEL, pModelName,
 			CModel::Bin_Create(m_pDevice, m_pContext, Scene, etype, tPath, tFileName, PivotMatrix))))
 		{
@@ -387,7 +387,7 @@ HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVE
 	}
 	else
 	{
-		PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+		PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 		if (FAILED(pGameInstance->Add_Prototype(eLEVEL, pModelName,
 			CModel::Create(m_pDevice, m_pContext, etype, tPath, tFileName, PivotMatrix))))
 		{

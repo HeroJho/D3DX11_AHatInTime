@@ -57,6 +57,22 @@ const vector<class CGameObject*>* CNavigation::Get_CurCellColliders()
 	return m_Cells[m_NavigationDesc.iCurrentIndex]->Get_Colliders();
 }
 
+_bool CNavigation::Get_GroundCell(_float3 * pPoss, CTransform* pTran)
+{
+	_float fTempY = 0.f;
+	if (isGround(pTran->Get_State(CTransform::STATE_POSITION), &fTempY))
+	{
+		CCell* pCell = m_Cells[m_NavigationDesc.iCurrentIndex];
+
+		pPoss[0] = pCell->Get_Point(CCell::POINT_A);
+		pPoss[1] = pCell->Get_Point(CCell::POINT_B);
+		pPoss[2] = pCell->Get_Point(CCell::POINT_C);
+
+		return true;
+	}
+	return false;
+}
+
 _float CNavigation::Compute_Height(_fvector vPos)
 {
 	CCell* pCell = m_Cells[m_NavigationDesc.iCurrentIndex];
@@ -140,12 +156,12 @@ _bool CNavigation::isGround(_fvector vPosition, _float* OutfCellY)
 	return false;
 }
 
-void CNavigation::Comput_CellCollision(CGameObject* pGameObject)
+void CNavigation::Ready_CellCollision(CGameObject* pGameObject)
 {
-	_matrix TransformMatrix = ((CTransform*)pGameObject->Get_ComponentPtr(TEXT("Com_Transform")))->Get_WorldMatrix();
-	
 	if (pGameObject->Get_Colliders().empty())
 		return;
+
+	_matrix TransformMatrix = ((CTransform*)pGameObject->Get_ComponentPtr(TEXT("Com_Transform")))->Get_WorldMatrix();
 	
 	COBB* pObb = (COBB*)pGameObject->Get_Colliders().front();
 
@@ -155,7 +171,6 @@ void CNavigation::Comput_CellCollision(CGameObject* pGameObject)
 		_vector vB = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_B)), 1.f);
 		_vector vC = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_C)), 1.f);
 
-		// pCell->Set_Color(_float4(0.f, 1.f, 0.f, 1.f));
 
 		if (pObb->Collision_Cell(vA, vB, vC, TransformMatrix))
 		{

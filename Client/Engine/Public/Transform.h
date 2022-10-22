@@ -30,6 +30,8 @@ public:
 		return XMLoadFloat4x4(&m_WorldMatrix);
 	}
 
+	_matrix Get_OriScaleWorldMatrix();
+
 	_float4x4 Get_WorldFloat4x4() const {
 		return m_WorldMatrix;
 	}
@@ -47,6 +49,7 @@ public:
 	void Set_State(STATE eState, _fvector vState);
 
 	void Set_Look(_fvector vLook);
+	void Set_Up(_fvector vUp);
 
 	_float3 Get_PrePos() { return m_vPrePos; }
 	_float Get_GravityAcc() { return m_fGravityAcc; }
@@ -54,6 +57,12 @@ public:
 
 	_float Get_CurSpeed() { return m_fCulSpeed; }
 	void Set_CurSpeed(_float fCulSpeed, _bool bLimit = true);
+
+	void Set_Scale(_fvector vScaleInfo);
+	_float3 Get_Scale();
+	
+	void Set_OriScale() { Set_Scale(XMLoadFloat3(&m_vOriScale)); }
+	_float3 Get_OriScale() { return m_vOriScale; }
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -65,10 +74,7 @@ public:
 	void Go_Backward(_float fTimeDelta);
 	void Go_Left(_float fTimeDelta);
 	void Go_Right(_float fTimeDelta);
-	void Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta);
-
-	void Set_Scale(_fvector vScaleInfo);
-	_float3 Get_Scale();
+	void Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta, class CNavigation* pNavigation = nullptr);
 
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void Turn(_fvector vAxis, _float fRotationPerSce, _float fTimeDelta);
@@ -100,6 +106,9 @@ private:
 	_float3					m_vDest;
 
 	_float3					m_vPrePos;
+
+
+	_float3					m_vOriScale;
 
 
 	//====== Gravity ======

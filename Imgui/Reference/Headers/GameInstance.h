@@ -9,6 +9,7 @@
 #include "PipeLine.h"
 #include "Light_Manager.h"
 #include "Picking.h"
+#include "Frustum.h"
 
 /* 클라이언트로 보여주기위한 가장 대표적인 클래스이다. */
 /* 각종 매니져클래스들의 주요함수를 클라로 보여준다.  */
@@ -86,6 +87,9 @@ public: /* For.PipeLine */
 	_float4x4 Get_TransformFloat4x4_TP(CPipeLine::TRANSFORMSTATE eTransformState) const;
 	_float4 Get_CamPosition();
 
+public: /* For.Frustum */
+	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius = 0.f);
+
 
 private:
 	CGraphic_Device*				m_pGraphic_Device = nullptr;
@@ -97,7 +101,7 @@ private:
 	CPicking*						m_pPicking = nullptr;
 	CPipeLine*						m_pPipeLine = nullptr;
 	CLight_Manager*					m_pLight_Manager = nullptr;
-
+	CFrustum*						m_pFrustum = nullptr;
 
 
 public:

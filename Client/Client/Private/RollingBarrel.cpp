@@ -1,13 +1,13 @@
 #include "stdafx.h"
-#include "..\Public\TestMonster.h"
+#include "..\Public\RollingBarrel.h"
 #include "GameInstance.h"
 
-CTestMonster::CTestMonster(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CRollingBarrel::CRollingBarrel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CTestMonster::CTestMonster(const CTestMonster & rhs)
+CRollingBarrel::CRollingBarrel(const CRollingBarrel & rhs)
 	: CGameObject(rhs)
 {
 }
@@ -17,17 +17,20 @@ CTestMonster::CTestMonster(const CTestMonster & rhs)
 
 
 
-HRESULT CTestMonster::Initialize_Prototype()
+HRESULT CRollingBarrel::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CTestMonster::Initialize(void * pArg)
+HRESULT CRollingBarrel::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+	m_sTag = "Tag_Barrel";
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-35.75, 13.f, 157.85, 1.f));
+	m_pTransformCom->Set_CurSpeed(1.f);
 
 	return S_OK;
 }
@@ -36,18 +39,25 @@ HRESULT CTestMonster::Initialize(void * pArg)
 
 
 
-void CTestMonster::Tick(_float fTimeDelta)
+
+
+
+
+
+void CRollingBarrel::Tick(_float fTimeDelta)
 {
-
-
+	m_pTransformCom->Turn(XMVectorSet(0.f, 0.f, 1.f, 0.f), 0.1f, fTimeDelta);
 }
 
 
-void CTestMonster::LateTick(_float fTimeDelta)
+
+void CRollingBarrel::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
 
+
+	Tick_Col(m_pTransformCom->Get_WorldMatrix(), nullptr, nullptr);
 
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
@@ -57,7 +67,7 @@ void CTestMonster::LateTick(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 }
 
-HRESULT CTestMonster::Render()
+HRESULT CRollingBarrel::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -94,6 +104,11 @@ HRESULT CTestMonster::Render()
 	return S_OK;
 }
 
+void CRollingBarrel::OnCollision(CGameObject * pOther)
+{
+
+	int i = 0;
+}
 
 
 
@@ -106,7 +121,9 @@ HRESULT CTestMonster::Render()
 
 
 
-HRESULT CTestMonster::Ready_Components()
+
+
+HRESULT CRollingBarrel::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -117,11 +134,11 @@ HRESULT CTestMonster::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model_Instance"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_TestInstance"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Mad_Crow"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 
@@ -130,32 +147,24 @@ HRESULT CTestMonster::Ready_Components()
 	CCollider::COLLIDERDESC ColDesc;
 	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(0.3f, 1.f, 0.3f);
-	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-		return E_FAIL;
 
-	ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
-		return E_FAIL;
+	_float fAngle = 0.f;
+	for (_uint i = 0; i < 8; ++i)
+	{
+		_matrix mRot = XMMatrixRotationAxis(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fAngle));
+		_vector vOriDir = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+		_vector vCurDir = XMVector3TransformNormal(vOriDir, mRot);
 
-	ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
-		return E_FAIL;
+		XMStoreFloat3(&ColDesc.vCenter, vCurDir);
+		ColDesc.vRotation = _float3(0.f, 0.f, fAngle + 90.f);
+		ColDesc.vSize = _float3(1.f, 0.5f, 3.f);
+		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+			return E_FAIL;
 
+		fAngle += 360.f / 8.f;
+	}
 
 
-	/* For.Com_Navigation */
-	CNavigation::NAVIGATIONDESC NaviDesc;
-	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
-	NaviDesc.iCurrentIndex = 6441;
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
-		return E_FAIL;
 
 
 
@@ -171,37 +180,36 @@ HRESULT CTestMonster::Ready_Components()
 
 
 
-CTestMonster * CTestMonster::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CRollingBarrel * CRollingBarrel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CTestMonster*		pInstance = new CTestMonster(pDevice, pContext);
+	CRollingBarrel*		pInstance = new CRollingBarrel(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CTestMonster"));
+		MSG_BOX(TEXT("Failed To Created : CRollingBarrel"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CTestMonster::Clone(void * pArg)
+CGameObject * CRollingBarrel::Clone(void * pArg)
 {
-	CTestMonster*		pInstance = new CTestMonster(*this);
+	CRollingBarrel*		pInstance = new CRollingBarrel(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CTestMonster"));
+		MSG_BOX(TEXT("Failed To Cloned : CRollingBarrel"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CTestMonster::Free()
+void CRollingBarrel::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);

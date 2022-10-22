@@ -55,7 +55,16 @@ private:
 
 private:
 	MONSTER_STATE			m_eState = MONSTER_IDLE;
+	MONSTER_STATE			m_ePreState = MONSTER_IDLE;
 
+	// For. Attacked Anim
+	_float					m_fAttackedTimeAcc = 0.f;
+	_float					m_fAttackedAnimAcc = 0.f;
+	_bool					m_bAttackedUpDown = false;
+	_float					m_fMaxY = 1.7f;
+	_float					m_fMinY = 0.4f;
+	_float					m_fMaxYAcc = 0.f;
+	_float					m_fMinYAcc = 0.f;
 
 
 public:

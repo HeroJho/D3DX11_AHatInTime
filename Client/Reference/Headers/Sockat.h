@@ -13,9 +13,10 @@ public:
 	}SOCATDESC;
 	typedef struct tagPartsDsc
 	{
-		_float3			vPos;
-		_float3			vRot;
-		_float3			vScale;
+		_float3				vPos;
+		_float3				vRot;
+		_float3				vScale;
+		class CGameObject*	pOwner = nullptr;
 	}PARTSDESC;
 
 private:

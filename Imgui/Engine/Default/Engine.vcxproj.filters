@@ -151,6 +151,9 @@
     <Filter Include="03.Components\09.Collider\Sphere">
       <UniqueIdentifier>{01b2a1bf-b679-428c-9ecc-dfa22e59db6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Utility\Frustum">
+      <UniqueIdentifier>{012388fd-f328-4f15-a295-e564a01557e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -300,6 +303,9 @@
     <ClInclude Include="..\public\DebugDraw.h">
       <Filter>03.Components\09.Collider\00.DebugDraw</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Frustum.h">
+      <Filter>04.Utility\Frustum</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -433,6 +439,9 @@
     </ClCompile>
     <ClCompile Include="..\private\DebugDraw.cpp">
       <Filter>03.Components\09.Collider\00.DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Frustum.cpp">
+      <Filter>04.Utility\Frustum</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

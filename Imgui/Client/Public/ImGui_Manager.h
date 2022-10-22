@@ -96,6 +96,7 @@ private:
 	void Window_IsDelete();
 	void Window_AnimEditor();
 	void Window_PlayMode();
+	void Window_AnimTestMode();
 
 	// FOR. Part
 	void Window_Part();

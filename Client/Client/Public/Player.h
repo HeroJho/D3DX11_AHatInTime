@@ -18,7 +18,7 @@ BEGIN(Client)
 class CPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_STATU, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_HILLDOWN, STATE_END };
 
 private:
 	CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -37,6 +37,9 @@ public:
 public:
 	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
 
+	STATE Get_State() { return m_eState; }
+	STATE Get_PreState() { return m_ePreState; }
+
 
 private:
 	void Set_State();
@@ -53,6 +56,7 @@ private:
 	void Slep_Tick(_float fTimeDelta);
 	void Slide_Tick(_float fTimeDelta);
 	void SlideRending_Tick(_float fTimeDelta);
+	void HillDown_Tick(_float fTimeDelta);
 
 	void Move_Input(_float fTimeDelta);
 	void Attack_Input(_float fTimeDelta);
@@ -63,7 +67,7 @@ private:
 	void Rend_Input(_float fTimeDleta);
 	void Slide_Input(_float fTimeDelta);
 	void SlideRending_Input(_float fTimeDelta);
-
+	void HillDown_Input(_float fTimeDelta);
 
 	void Check_EndAnim();
 	void Calcul_State(_float fTimeDelta);
@@ -99,6 +103,15 @@ private:
 	STATE				m_eJumpState = STATE_END;
 
 	_bool				m_bImStop = false;
+
+
+
+	// For. HillDown
+	_float				m_fHillDownTimeAcc = 0.f;
+	_float				m_fHillUpTimeAcc = 0.f;
+
+	_float				m_fHillDownSpeed = 0.f;
+
 
 
 
