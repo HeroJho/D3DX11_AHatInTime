@@ -31,11 +31,14 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-	virtual void OnCollision(CGameObject* pOther) override;
+	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
 
 public:
 	void Set_State(MONSTER_STATE eState);
 	void Set_Anim();
+
+public:
+	void Attacked();
 
 private:
 	HRESULT Ready_Components();
@@ -56,15 +59,6 @@ private:
 private:
 	MONSTER_STATE			m_eState = MONSTER_IDLE;
 	MONSTER_STATE			m_ePreState = MONSTER_IDLE;
-
-	// For. Attacked Anim
-	_float					m_fAttackedTimeAcc = 0.f;
-	_float					m_fAttackedAnimAcc = 0.f;
-	_bool					m_bAttackedUpDown = false;
-	_float					m_fMaxY = 1.7f;
-	_float					m_fMinY = 0.4f;
-	_float					m_fMaxYAcc = 0.f;
-	_float					m_fMinYAcc = 0.f;
 
 
 public:

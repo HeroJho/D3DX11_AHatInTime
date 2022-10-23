@@ -13,11 +13,20 @@ public:
 public:
 	typedef struct tagColliderDesc
 	{
+		char			sTag[MAX_PATH] = "";
 		_float3			vCenter;
 		_float3			vSize;
 		_float3			vRotation;
 		_bool			bIsStatic = true;
 	}COLLIDERDESC;
+
+	typedef struct tagOtherToMeColDesc
+	{
+		class CGameObject* pOther = nullptr;
+		COLLIDERDESC OtherDesc;
+		COLLIDERDESC MyDesc;
+
+	}OTHERTOMECOLDESC;
 
 protected:
 	CCollider(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -29,6 +38,7 @@ public:
 	TYPE Get_ColliderType() const {
 		return m_eColliderType;
 	}
+	COLLIDERDESC Get_Desc() { return m_ColliderDesc; }
 
 	void SetbCol() { m_isColl = true; }
 

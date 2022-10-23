@@ -343,6 +343,9 @@ void COBB::Compute_Pigi(CGameObject * pObj, CNavigation* pNavi, CTransform* pTra
 
 	_float3 vPushDir;
 	_float fDis = 0.f;
+	if (pObj->Get_Colliders().empty())
+		return;
+
 	COBB* pStaticOBB = ((COBB*)pObj->Get_Colliders().front());
 
 	// 충돌했따 -> 방향으로 민다

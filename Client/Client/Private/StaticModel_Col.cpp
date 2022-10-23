@@ -90,55 +90,79 @@ HRESULT CStaticModel_Col::Ready_Components()
 		return E_FAIL;
 
 
+	if (FAILED(Ready_Col()))
+		return E_FAIL;
+
+
+	return S_OK;
+}
+
+HRESULT CStaticModel_Col::Ready_Col()
+{
 	/* For.Com_Collider */
 	CCollider::COLLIDERDESC ColDesc;
 	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
 
 
-	if (!lstrcmp(TEXT("Tree3"), m_cModelTag))
+	if (!lstrcmp(TEXT("Tree1"), m_cModelTag) || !lstrcmp(TEXT("tree2"), m_cModelTag) || !lstrcmp(TEXT("Tree3"), m_cModelTag))
 	{
 
-		ColDesc.vCenter = _float3(0.f, 5.f, 0.f);
-		ColDesc.vSize = _float3(1.f, 10.f, 0.5f);
+		ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
+		ColDesc.vSize = _float3(1.f, 75.f, 1.f);
 		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 		ColDesc.bIsStatic = true;
 
 		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 			return E_FAIL;
 	}
-	else if (!lstrcmp(TEXT("Ori_Hat"), m_cModelTag))
+	else if (!lstrcmp(TEXT("leaf_platform"), m_cModelTag))
 	{
 
-		ColDesc.vCenter = _float3(0.f, 0.1f, 0.f);
-		ColDesc.vSize = _float3(0.3f, 0.05f, 0.3f);
+		ColDesc.vCenter = _float3(0.f, 1.f, 0.f);
+		ColDesc.vSize = _float3(1.7f, 0.2f, 1.7f);
 		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 		ColDesc.bIsStatic = true;
 
 		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 			return E_FAIL;
 	}
-	else if (!lstrcmp(TEXT("HatGirl"), m_cModelTag))
+	else if (!lstrcmp(TEXT("tree_stump"), m_cModelTag))
 	{
 
-		ColDesc.vCenter = _float3(0.f, 0.25f, 0.f);
-		ColDesc.vSize = _float3(0.3f, 1.f, 0.2f);
+		ColDesc.vCenter = _float3(0.f, 0.23f, 0.f);
+		ColDesc.vSize = _float3(1.f, 1.f, 1.f);
 		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 		ColDesc.bIsStatic = true;
 
 		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 			return E_FAIL;
 	}
-	else if (!lstrcmp(TEXT("Fiona"), m_cModelTag))
+	else if (!lstrcmp(TEXT("sub_stone_02"), m_cModelTag))
 	{
 
-		ColDesc.vCenter = _float3(0.f, 0.25f, 0.f);
-		ColDesc.vSize = _float3(6.f, 2.5f, 1.f);
+		ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
+		ColDesc.vSize = _float3(0.6, 1.5f, 0.6f);
 		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 		ColDesc.bIsStatic = true;
 
 		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 			return E_FAIL;
 	}
+	else if (!lstrcmp(TEXT("sub_stone"), m_cModelTag))
+	{
+
+		ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
+		ColDesc.vSize = _float3(0.7f, 1.f, 0.7f);
+		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+		ColDesc.bIsStatic = true;
+
+		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+			return E_FAIL;
+	}
+
+
+
+
 
 
 

@@ -458,6 +458,84 @@ void CTransform::ResetGravity()
 	// m_fCulSpeed = 0.f;
 }
 
+void CTransform::ReSet_AttackedAnim()
+{
+	Set_OriScale();
+	m_fAttackedTimeAcc = 0.f;
+	m_fAttackedAnimAcc = 0.f;
+	m_bAttackedUpDown = false;
+	m_fMaxYAcc = m_fMaxY;
+	m_fMinYAcc = m_fMinY;
+
+
+	_vector vScale = XMLoadFloat3(&Get_Scale());
+
+	vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) + XMVectorGetY(vScale) * (m_fMaxY - 0.1f));
+	if (0.1f > XMVectorGetY(vScale))
+		vScale = XMVectorSetY(vScale, m_fMinY);
+
+	vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) - XMVectorGetX(vScale) * (m_fMaxY - 0.1f));
+	if (0.1f > XMVectorGetX(vScale))
+		vScale = XMVectorSetX(vScale, m_fMinY);
+
+	vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) - XMVectorGetZ(vScale) * (m_fMaxY - 0.1f));
+	if (0.1f > XMVectorGetZ(vScale))
+		vScale = XMVectorSetZ(vScale, m_fMinY);
+
+	Set_Scale(vScale);
+}
+
+_bool CTransform::Tick_AttackAnim(_float fTimeDelta)
+{
+	m_fAttackedTimeAcc += fTimeDelta;
+	if (1.5f < m_fAttackedTimeAcc)
+	{
+		Set_OriScale();
+		m_fAttackedTimeAcc = 0.f;
+		m_fAttackedAnimAcc = 0.f;
+		m_fMaxYAcc = m_fMaxY;
+		m_fMinYAcc = m_fMinY;
+		m_bAttackedUpDown = false;
+		return true;
+	}
+
+	_vector vScale = XMLoadFloat3(&Get_Scale());
+	_float fRatio_Y = XMVectorGetY(vScale) / Get_OriScale().y;
+
+
+	if (m_fMaxYAcc < fRatio_Y && !m_bAttackedUpDown)
+	{
+		m_bAttackedUpDown = true;
+		m_fMaxYAcc -= 0.1f;
+	}
+	else if (m_fMinYAcc > fRatio_Y && m_bAttackedUpDown)
+	{
+		m_bAttackedUpDown = false;
+		m_fMinYAcc += 0.1f;
+	}
+
+
+
+	if (m_bAttackedUpDown)
+	{
+		m_fAttackedAnimAcc = fTimeDelta * m_fMaxYAcc * 8.f;
+		vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) - m_fAttackedAnimAcc);
+		vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) + m_fAttackedAnimAcc * 0.5f);
+		vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) + m_fAttackedAnimAcc * 0.5f);
+		Set_Scale(vScale);
+	}
+	else
+	{
+		m_fAttackedAnimAcc = fTimeDelta * m_fMinYAcc * 8.f;
+		vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) + m_fAttackedAnimAcc);
+		vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) - m_fAttackedAnimAcc * 0.5f);
+		vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) - m_fAttackedAnimAcc * 0.5f);
+		Set_Scale(vScale);
+	}
+
+	return false;
+}
+
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {

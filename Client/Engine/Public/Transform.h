@@ -99,6 +99,12 @@ public:
 	void ResetGravity();
 
 
+
+	//====== Anim ======
+public:
+	void ReSet_AttackedAnim();
+	_bool Tick_AttackAnim(_float fTimeDelta);
+
 private:
 	_float4x4				m_WorldMatrix;
 	TRANSFORMDESC			m_TransformDesc;
@@ -116,6 +122,18 @@ private:
 	_float					m_fGravityAcc = 0.f;
 	_float					m_fVelocity = 0.f;
 	_float					m_fCulSpeed = 0.f;
+
+
+
+	//====== Attacked Anim ======
+	_float					m_fAttackedTimeAcc = 0.f;
+	_float					m_fAttackedAnimAcc = 0.f;
+	_bool					m_bAttackedUpDown = false;
+	_float					m_fMaxY = 1.7f;
+	_float					m_fMinY = 0.4f;
+	_float					m_fMaxYAcc = 0.f;
+	_float					m_fMinYAcc = 0.f;
+
 
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

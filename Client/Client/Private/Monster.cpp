@@ -87,6 +87,14 @@ void CMonster::Set_Anim()
 
 
 
+void CMonster::Attacked()
+{
+	Set_State(MONSTER_ATTACKED);
+	m_pTransformCom->ReSet_AttackedAnim();
+}
+
+
+
 
 
 
@@ -148,59 +156,9 @@ void CMonster::Tick_Chase(_float fTimeDelta)
 
 void CMonster::Tick_Attacked(_float fTimeDelta)
 {
-	
 
-
-
-	m_fAttackedTimeAcc += fTimeDelta;
-	if (1.5f < m_fAttackedTimeAcc)
-	{
+	if(m_pTransformCom->Tick_AttackAnim(fTimeDelta))
 		Set_State(MONSTER_CHASE);
-		m_pTransformCom->Set_OriScale();
-		m_fAttackedTimeAcc = 0.f;
-		m_fAttackedAnimAcc = 0.f;
-		m_fMaxYAcc = m_fMaxY;
-		m_fMinYAcc = m_fMinY;
-		m_bAttackedUpDown = false;
-		return;
-	}
-
-	_vector vScale = XMLoadFloat3(&m_pTransformCom->Get_Scale());
-	_float fRatio_Y = XMVectorGetY(vScale) / m_pTransformCom->Get_OriScale().y;
-
-	
-	if(m_fMaxYAcc < fRatio_Y && !m_bAttackedUpDown)
-	{
-		m_bAttackedUpDown = true;
-		m_fMaxYAcc -= 0.1f;
-	}
-	else if (m_fMinYAcc > fRatio_Y && m_bAttackedUpDown)
-	{
-		m_bAttackedUpDown = false;
-		m_fMinYAcc += 0.1f;
-	}
-
-
-
-	if (m_bAttackedUpDown)
-	{
-		m_fAttackedAnimAcc = fTimeDelta * m_fMaxYAcc * 8.f;
-		vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) - m_fAttackedAnimAcc);
-		vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) + m_fAttackedAnimAcc * 0.5f);
-		vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) + m_fAttackedAnimAcc * 0.5f);
-		m_pTransformCom->Set_Scale(vScale);
-	}
-	else
-	{
-		m_fAttackedAnimAcc = fTimeDelta * m_fMinYAcc * 8.f;
-		vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) + m_fAttackedAnimAcc);
-		vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) - m_fAttackedAnimAcc * 0.5f);
-		vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) - m_fAttackedAnimAcc * 0.5f);
-		m_pTransformCom->Set_Scale(vScale);
-	}
-
-
-
 
 }
 
@@ -269,33 +227,8 @@ HRESULT CMonster::Render()
 	return S_OK;
 }
 
-void CMonster::OnCollision(CGameObject * pOther)
+void CMonster::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-
-	Set_State(MONSTER_ATTACKED);
-	m_pTransformCom->Set_OriScale();
-	m_fAttackedTimeAcc = 0.f;
-	m_fAttackedAnimAcc = 0.f;
-	m_bAttackedUpDown = false;
-	m_fMaxYAcc = m_fMaxY;
-	m_fMinYAcc = m_fMinY;
-
-
-	_vector vScale = XMLoadFloat3(&m_pTransformCom->Get_Scale());
-
-	vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) + XMVectorGetY(vScale) * (m_fMaxY - 0.1f));
-	if (0.1f > XMVectorGetY(vScale))
-		vScale = XMVectorSetY(vScale, m_fMinY);
-
-	vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) - XMVectorGetX(vScale) * (m_fMaxY - 0.1f));
-	if (0.1f > XMVectorGetX(vScale))
-		vScale = XMVectorSetX(vScale, m_fMinY);
-
-	vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) - XMVectorGetZ(vScale) * (m_fMaxY - 0.1f));
-	if (0.1f > XMVectorGetZ(vScale))
-		vScale = XMVectorSetZ(vScale, m_fMinY);
-
-	m_pTransformCom->Set_Scale(vScale);
 
 
 }
@@ -341,6 +274,7 @@ HRESULT CMonster::Ready_Components()
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	ColDesc.vSize = _float3(0.3f, 1.f, 0.3f);
 	ColDesc.bIsStatic = true;
+	strcpy(ColDesc.sTag, "StaticOBB");
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 
@@ -350,11 +284,12 @@ HRESULT CMonster::Ready_Components()
 	//if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
 	//	return E_FAIL;
 
-	//ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
-	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	//if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
-	//	return E_FAIL;
+	ColDesc.vCenter = _float3(0.f, 0.25f, 0.f);
+	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	ColDesc.vSize = _float3(0.3f, 0.3f, 0.3f);
+	strcpy(ColDesc.sTag, "Sphere");
+	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+		return E_FAIL;
 
 
 

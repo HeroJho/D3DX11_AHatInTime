@@ -93,7 +93,7 @@ void CUI::LateTick(_float fTimeDelta)
 
 	if (PtInRect(&rcUI, ptMouse))
 	{
-		OnCollision(nullptr);
+		OnCollision(CCollider::OTHERTOMECOLDESC());
 	}
 }
 
@@ -157,7 +157,7 @@ void CUI::Handle_Collision()
 
 
 
-void CUI::OnCollision(CGameObject * pOther)
+void CUI::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 

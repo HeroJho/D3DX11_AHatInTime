@@ -27,6 +27,17 @@ CComponent * CGameObject::Get_ComponentPtr(const _tchar * pComponentTag)
 	return pComponent;	
 }
 
+CCollider * CGameObject::Get_Colliders(string sTag)
+{
+	for (auto& pCol : m_Colliders)
+	{
+		if (sTag == pCol->Get_Desc().sTag)
+			return pCol;
+	}
+
+	return nullptr;
+}
+
 COBB * CGameObject::Get_StaticOBB()
 {
 	if (m_Colliders.empty())
@@ -74,7 +85,7 @@ void CGameObject::Render_Col()
 		pCollider->Render();
 }
 
-HRESULT CGameObject::AddCollider(CCollider::TYPE eType, CCollider::tagColliderDesc Desc)
+HRESULT CGameObject::AddCollider(CCollider::TYPE eType, CCollider::COLLIDERDESC Desc)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 

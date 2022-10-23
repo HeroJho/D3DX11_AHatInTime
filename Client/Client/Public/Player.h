@@ -18,7 +18,7 @@ BEGIN(Client)
 class CPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_HILLDOWN, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_JUMPATTACK, STATE_JUMPATTACKRENDING, STATE_HILLDOWN, STATE_END };
 
 private:
 	CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -32,7 +32,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-	virtual void OnCollision(CGameObject* pOther) override;
+	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
 
 public:
 	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
@@ -57,6 +57,7 @@ private:
 	void Slide_Tick(_float fTimeDelta);
 	void SlideRending_Tick(_float fTimeDelta);
 	void HillDown_Tick(_float fTimeDelta);
+	void JumpAttack_Tick(_float fTimeDelta);
 
 	void Move_Input(_float fTimeDelta);
 	void Attack_Input(_float fTimeDelta);
@@ -68,6 +69,7 @@ private:
 	void Slide_Input(_float fTimeDelta);
 	void SlideRending_Input(_float fTimeDelta);
 	void HillDown_Input(_float fTimeDelta);
+	void JumpAttack_Input(_float fTimeDelta);
 
 	void Check_EndAnim();
 	void Calcul_State(_float fTimeDelta);
@@ -119,6 +121,11 @@ private:
 	_int				m_FaceAnimIndex[2];
 	_float				m_fAnimFaceAcc = 0.f;
 	_bool				m_bWingk = false;
+
+
+
+	// For. NearMonster
+	vector<CGameObject*> m_pNearMonsters;
 
 private:
 	HRESULT Ready_Components();

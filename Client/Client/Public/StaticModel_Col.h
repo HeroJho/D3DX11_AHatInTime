@@ -47,6 +47,7 @@ private:
 
 private:
 	HRESULT Ready_Components();
+	HRESULT Ready_Col();
 
 public:
 	static CStaticModel_Col* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

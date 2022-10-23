@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "Player.h"
 #include "ToolManager.h"
+#include "Monster.h"
 
 CUmbrella::CUmbrella(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -30,6 +31,8 @@ HRESULT CUmbrella::Initialize(void * pArg)
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+
+	m_sTag = "Umbrella";
 
 	if (nullptr != Desc->pOwner)
 	{
@@ -154,6 +157,14 @@ HRESULT CUmbrella::SetUp_State(_fmatrix StateMatrix)
 	m_pParentTransformCom->Set_Scale(XMVectorSet(1.f, 1.f, 1.f, 1.f));
 
 	return S_OK;
+}
+
+void CUmbrella::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+{
+	if ("Tag_Monster" == Desc.pOther->Get_Tag())
+	{
+		((CMonster*)Desc.pOther)->Attacked();
+	}
 }
 
 HRESULT CUmbrella::Ready_Components()

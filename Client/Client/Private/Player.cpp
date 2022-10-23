@@ -7,6 +7,8 @@
 
 #include "Camera_Free.h"
 
+#include "Monster.h"
+
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -180,6 +182,9 @@ void CPlayer::Set_Anim()
 	case STATE_ATTACK_3:
 		m_pModelCom->Set_AnimIndex(190);
 		break;
+	case STATE_JUMPATTACK:
+		m_pModelCom->Set_AnimIndex(66);
+		break;
 	case STATE_SLEP:
 		m_pModelCom->Set_AnimIndex(180);
 		break;
@@ -240,10 +245,12 @@ void CPlayer::Tick(_float fTimeDelta)
 		Attack_Input(fTimeDelta);
 		break;
 	case STATE_ATTACK_3:
-
 		break;
 	case STATE_READYATTACK:
 		ReadyAttack_Input(fTimeDelta);
+		break;
+	case STATE_JUMPATTACK:
+		JumpAttack_Tick(fTimeDelta);
 		break;
 	case STATE_HILLDOWN:
 		HillDown_Tick(fTimeDelta);
@@ -403,6 +410,36 @@ void CPlayer::HillDown_Tick(_float fTimeDelta)
 			HillDown_Input(fTimeDelta);
 	}
 
+}
+
+void CPlayer::JumpAttack_Tick(_float fTimeDelta)
+{
+	// 제일 가까운 몬스터를 찾는다.
+	CGameObject* pNearst = nullptr;
+	_float fMinDis = FLT_MAX;
+	for (auto& pMonster : m_pNearMonsters)
+	{
+		CTransform* pMonsterTran = (CTransform*)pMonster->Get_ComponentPtr(TEXT("Com_Transform"));
+		_vector vMonsterPos = pMonsterTran->Get_State(CTransform::STATE_POSITION);
+		_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		_float fDis = XMVectorGetX(XMVector3Length(vMonsterPos - vMyPos));
+		if (fMinDis > fDis)
+		{
+			pNearst = pMonster;
+			fMinDis = fDis;
+		}
+	}
+
+	// 몬스터의 머리 방향으로 내려 꼳는다
+	CTransform* pMonsterTran = (CTransform*)pNearst->Get_ComponentPtr(TEXT("Com_Transform"));
+	_float3 vCenter = pNearst->Get_Colliders(string("Sphere"))->Get_Desc().vCenter;
+	vCenter.y += pNearst->Get_Colliders(string("Sphere"))->Get_Desc().vSize.y;
+	_vector vMonsterHeadPos = pMonsterTran->Get_State(CTransform::STATE_POSITION) + XMLoadFloat3(&vCenter);
+	m_pTransformCom->LookAt(vMonsterHeadPos);
+	m_pTransformCom->Go_Straight(5.f, fTimeDelta, m_pNavigationCom);
+
+
+	JumpAttack_Input(fTimeDelta);
 }
 
 
@@ -743,6 +780,24 @@ void CPlayer::DoubleJump_Input(_float fTimeDelta)
 
 
 
+
+	// 점프 공격
+	if (pGameInstance->Mouse_Down(DIMK_LBUTTON))
+	{
+		// 내 주변에 몬스터가 있는지 확인한다.
+		// 몬스터가 있따면 GO
+		if(!m_pNearMonsters.empty())
+			m_TickStates.push_back(STATE_JUMPATTACK);
+	}
+
+
+	if (pGameInstance->Key_Down(DIK_LCONTROL))
+	{
+		m_TickStates.push_back(STATE_SLIDE);
+		m_pTransformCom->ResetGravity();
+	}
+
+
 	vTotalLook = XMVector3Normalize(vTotalLook);
 	XMStoreFloat3(&m_vDestLook, vTotalLook);
 
@@ -963,6 +1018,12 @@ void CPlayer::HillDown_Input(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 }
 
+void CPlayer::JumpAttack_Input(_float fTimeDelta)
+{
+
+
+}
+
 
 
 
@@ -1077,6 +1138,10 @@ void CPlayer::LateTick(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 
 
+
+	// ============== Clear Tick ===========
+
+	m_pNearMonsters.clear();
 }
 
 void CPlayer::Calcul_State(_float fTimeDelta)
@@ -1307,6 +1372,7 @@ HRESULT CPlayer::Ready_Components()
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	ColDesc.vSize = _float3(0.3f, 0.8f, 0.3f);
 	ColDesc.bIsStatic = true;
+	strcpy(ColDesc.sTag, "StaticOBB");
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 
@@ -1316,12 +1382,19 @@ HRESULT CPlayer::Ready_Components()
 	//if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
 	//	return E_FAIL;
 
-	//ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
-	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	//if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
-	//	return E_FAIL;
+	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
+	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	ColDesc.vSize = _float3(5.f, 5.f, 5.f);
+	strcpy(ColDesc.sTag, "Sphere");
+	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+		return E_FAIL;
 
+	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
+	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	ColDesc.vSize = _float3(0.5f, 0.5f, 0.5f);
+	strcpy(ColDesc.sTag, "Sphere_Head");
+	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+		return E_FAIL;
 
 
 
@@ -1348,10 +1421,32 @@ HRESULT CPlayer::Ready_Components()
 
 
 
-void CPlayer::OnCollision(CGameObject * pOther)
+void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	if("Tag_Barrel" == pOther->Get_Tag())
-		Get_StaticOBB()->Compute_Pigi(pOther, m_pNavigationCom, m_pTransformCom);
+	if("Tag_Barrel" == Desc.pOther->Get_Tag() && !strcmp("StaticOBB", Desc.MyDesc.sTag))
+		Get_StaticOBB()->Compute_Pigi(Desc.pOther, m_pNavigationCom, m_pTransformCom);
+
+
+	if ("Tag_Monster" == Desc.pOther->Get_Tag())
+	{
+		if(!strcmp("Sphere", Desc.MyDesc.sTag))
+			m_pNearMonsters.push_back(Desc.pOther);
+
+		if (!strcmp("Sphere_Head", Desc.MyDesc.sTag) && !strcmp("Sphere", Desc.OtherDesc.sTag))
+		{
+			if (STATE_JUMPATTACK == m_eState)
+			{
+				
+				((CMonster*)Desc.pOther)->Attacked();
+				m_TickStates.push_back(STATE_DOUBLEJUMP);
+				m_pTransformCom->DoubleJump(m_fJumpPower + 2.f);
+			}
+
+		}
+			
+	}
+
+
 }
 
 

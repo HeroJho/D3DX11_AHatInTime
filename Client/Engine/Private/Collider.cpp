@@ -52,6 +52,15 @@ HRESULT CCollider::Initialize(void * pArg)
 
 	memcpy(&m_ColliderDesc, pArg, sizeof(COLLIDERDESC));
 
+	// COLLIDERDESC* pColDesc = (COLLIDERDESC*)pArg;
+
+	//m_ColliderDesc.bIsStatic = pColDesc->bIsStatic;
+	// mColliderDesc.sTag = pColDesc->sTag;
+	//m_ColliderDesc.vCenter = pColDesc->vCenter;
+	//m_ColliderDesc.vRotation = pColDesc->vRotation;
+	//m_ColliderDesc.vSize = pColDesc->vSize;
+
+
 	return S_OK;
 }
 

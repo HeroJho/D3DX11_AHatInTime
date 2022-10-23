@@ -33,7 +33,7 @@ HRESULT CCamera_Free::Initialize(void * pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	m_fDis = 5.f;
+	m_fDis = 4.5f;
 	ZeroMemory(&m_vAngle, sizeof(_float3));
 
 	return S_OK;
@@ -93,7 +93,9 @@ void CCamera_Free::Game_Mode(_float fTimeDelta)
 	_vector vDestPos = pPlayerTran->Get_State(CTransform::STATE_POSITION) + vCamPos;
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDestPos);
-	m_pTransformCom->LookAt(pPlayerTran->Get_State(CTransform::STATE_POSITION));
+
+	_vector vLooPos = XMVectorSetY(pPlayerTran->Get_State(CTransform::STATE_POSITION), XMVectorGetY(pPlayerTran->Get_State(CTransform::STATE_POSITION)) + 0.8f);
+	m_pTransformCom->LookAt(vLooPos);
 
 }
 

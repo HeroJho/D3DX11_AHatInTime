@@ -104,10 +104,13 @@ HRESULT CRollingBarrel::Render()
 	return S_OK;
 }
 
-void CRollingBarrel::OnCollision(CGameObject * pOther)
+void CRollingBarrel::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
+	if ("Tag_Player" == Desc.pOther->Get_Tag() && !strcmp("StaticOBB", Desc.OtherDesc.sTag))
+	{
 
-	int i = 0;
+	}
+		// m_pOther = Desc.pOther;
 }
 
 

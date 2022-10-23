@@ -65,6 +65,19 @@ HRESULT CStaticModel::Initialize(void * pArg)
 
 	_vector vScale = XMLoadFloat3(&Desc->vScale);
 	vScale = XMVectorSetW(vScale, 1.f);
+
+	if (!lstrcmp(TEXT("Tree1"), m_cModelTag) || !lstrcmp(TEXT("tree2"), m_cModelTag) || !lstrcmp(TEXT("Tree3"), m_cModelTag))
+	{
+		if (1.1f > XMVectorGetX(vScale) && 1.1f > XMVectorGetY(vScale) && 1.1f > XMVectorGetZ(vScale))
+		{
+			vScale = XMVectorSetY(vScale, XMVectorGetY(vScale) * 4.f);
+			vScale = XMVectorSetX(vScale, XMVectorGetX(vScale) * 1.f);
+			vScale = XMVectorSetZ(vScale, XMVectorGetZ(vScale) * 1.f);
+		}
+
+	}
+
+
 	m_pTransformCom->Set_Scale(vScale);
 
 	m_vAxis = Desc->vAngle;

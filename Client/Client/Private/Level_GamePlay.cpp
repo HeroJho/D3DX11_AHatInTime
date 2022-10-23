@@ -128,14 +128,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		return E_FAIL;
 
 
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RollingBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
-	//	return E_FAIL;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RollingBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
+		return E_FAIL;
 
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RectBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
-	//	return E_FAIL;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RectBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
+		return E_FAIL;
 	
 
-	if (FAILED(CDataManager::Get_Instance()->Load_Map(1, LEVEL_GAMEPLAY)))
+	if (FAILED(CDataManager::Get_Instance()->Load_Map(0, LEVEL_GAMEPLAY)))
 		return E_FAIL;
 
 	Safe_Release(pGameInstance);
@@ -148,10 +148,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, pLayerTag)))
-	//	return E_FAIL;
-
-
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, pLayerTag)))
+		return E_FAIL;
 
 	Safe_Release(pGameInstance);
 

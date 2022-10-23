@@ -29,6 +29,8 @@ public:
 	virtual HRESULT Render();
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) override;
 
+	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;

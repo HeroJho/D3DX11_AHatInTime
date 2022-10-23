@@ -27,7 +27,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-	virtual void OnCollision(CGameObject* pOther) override;
+	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
 
 
 private:

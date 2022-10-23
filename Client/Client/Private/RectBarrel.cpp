@@ -115,9 +115,10 @@ HRESULT CRectBarrel::Render()
 	return S_OK;
 }
 
-void CRectBarrel::OnCollision(CGameObject * pOther)
+void CRectBarrel::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	m_pOther = pOther;
+	if("Tag_Player" == Desc.pOther->Get_Tag() && !strcmp("StaticOBB", Desc.OtherDesc.sTag))
+		m_pOther = Desc.pOther;
 
 
 }

@@ -20,6 +20,7 @@ public:
 
 	string Get_Tag() { return m_sTag; }
 
+	CCollider* Get_Colliders(string sTag);
 	list<CCollider*> Get_Colliders() { return m_Colliders; }
 	class COBB* Get_StaticOBB();
 
@@ -33,14 +34,14 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-	virtual void OnCollision(CGameObject* pOther) {};
+	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) {};
 	
 	void Tick_Col(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr);
 	void Render_Col();
 
 public:
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) { return S_OK; }
-	HRESULT AddCollider(CCollider::TYPE eType, CCollider::tagColliderDesc Desc);
+	HRESULT AddCollider(CCollider::TYPE eType, CCollider::COLLIDERDESC Desc);
 
 
 protected:

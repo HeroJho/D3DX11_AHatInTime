@@ -32,13 +32,20 @@ void CColliderManager::Calcul_ColGroup(COLLIDERGROUP eGroupL, COLLIDERGROUP eGro
 				{
 					if (pColL->Collision(pColR))
 					{
-						pObjL->OnCollision(pObjR);
-						pObjR->OnCollision(pObjL);
+						CCollider::OTHERTOMECOLDESC LDesc ,RDesc;
+						LDesc.MyDesc = pColL->Get_Desc();
+						LDesc.OtherDesc = pColR->Get_Desc();
+						LDesc.pOther = pObjR;
+
+						RDesc.MyDesc = pColR->Get_Desc();
+						RDesc.OtherDesc = pColL->Get_Desc();
+						RDesc.pOther = pObjL;
+
+						pObjL->OnCollision(LDesc);
+						pObjR->OnCollision(RDesc);
 					}
 				}
 			}
-			
-
 
 		}
 	}
