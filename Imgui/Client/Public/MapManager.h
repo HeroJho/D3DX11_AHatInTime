@@ -78,6 +78,7 @@ public:
 	class CStaticModel* Find_Model(string sTag);
 
 	void Conv_PickedModel_To_Bin();
+	void Conv_AllModel_To_Bin();
 
 	void Save_MapData();
 	void Load_MapData();
@@ -130,18 +131,21 @@ private:
 
 	// For. Col
 public:
-	CCollider::COLLIDERDESC Get_ColDesc() { return m_ColDesc; }
-	void Set_ColDesc(CCollider::COLLIDERDESC Desc); 
-
 	_bool Get_ColMode() { return m_bColMode; }
 	void Set_ColMode(_bool bColMode) { m_bColMode = bColMode; }
 
-	void Find_ClickedColInfo();
+	
+	CCollider::COLLIDERDESC Get_ClikedColDesc();
+	void Set_ClikedColDesc(CCollider::COLLIDERDESC Desc);
+	void Set_AllSameNameColDesc(CCollider::COLLIDERDESC Desc);
+
+	void Check_ClickedColor();
+
+	_bool Get_ClickedWall();
+	void Set_ClickedWall(_bool bWall);
 
 private:
-	CCollider::COLLIDERDESC m_ColDesc;
 	_bool m_bColMode = false;
-	_uint m_iColIndex = 0;
 
 
 public:

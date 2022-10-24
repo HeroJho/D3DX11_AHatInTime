@@ -616,9 +616,6 @@ void CImGui_Manager::Window_Model()
 			if (ImGui::Selectable(sModelName.data(), isSelected, 0, vSize))
 			{
 				CMapManager::Get_Instance()->Set_PickedString(sModelName);
-
-				if (CMapManager::Get_Instance()->Get_ColMode())
-					CMapManager::Get_Instance()->Find_ClickedColInfo();
 			}
 
 
@@ -720,6 +717,9 @@ void CImGui_Manager::Window_CreatedModel()
 
 	if (ImGui::Button("Convert To Bin"))
 		CMapManager::Get_Instance()->Conv_PickedModel_To_Bin();
+	ImGui::SameLine();
+	if(ImGui::Button("Convert To Bin All"))
+		CMapManager::Get_Instance()->Conv_AllModel_To_Bin();
 
 	if (ImGui::Button("AutoGen"))
 		CMapManager::Get_Instance()->AutoGen_ClickedModel();
@@ -798,6 +798,22 @@ void CImGui_Manager::Window_Navi()
 
 
 
+	ImGui::PushItemWidth(25.f);
+
+	_int ID = CMeshManager::Get_Instance()->Get_MapID();
+	if (ImGui::InputInt("Navi_ID", &ID, 0))
+		CMeshManager::Get_Instance()->Set_MapID(ID);
+
+	if (ImGui::Button("Save_Navi"))
+		CMeshManager::Get_Instance()->Save_NaviData();
+	ImGui::SameLine();
+	if (ImGui::Button("Load_Navi"))
+		CMeshManager::Get_Instance()->Load_NaviData();
+
+	ImGui::PopItemWidth();
+
+
+
 	ImGui::End();
 }
 
@@ -820,28 +836,35 @@ void CImGui_Manager::Window_Col()
 {
 	ImGui::Begin("Collider Tool");
 
-	CCollider::COLLIDERDESC ColDesc = CMapManager::Get_Instance()->Get_ColDesc();
+	CCollider::COLLIDERDESC ColDesc = CMapManager::Get_Instance()->Get_ClikedColDesc();
 
 	_float3			vCenter = ColDesc.vCenter;
-	if (ImGui::InputFloat3("vCenter", (_float*)&vCenter))
+	if (ImGui::DragFloat3("vCenter", (_float*)&vCenter, 0.1f))
 	{
 		ColDesc.vCenter = vCenter;
-		CMapManager::Get_Instance()->Set_ColDesc(ColDesc);
+		CMapManager::Get_Instance()->Set_ClikedColDesc(ColDesc);
 	}
 
 	_float3			vSize = ColDesc.vSize;
-	if (ImGui::InputFloat3("vSize", (_float*)&vSize))
+	if (ImGui::DragFloat3("vSize", (_float*)&vSize, 0.1f))
 	{
 		ColDesc.vSize = vSize;
-		CMapManager::Get_Instance()->Set_ColDesc(ColDesc);
+		CMapManager::Get_Instance()->Set_ClikedColDesc(ColDesc);
 	}
 
 	_float3			vRotation = ColDesc.vRotation;
-	if (ImGui::InputFloat3("vRotation", (_float*)&vRotation))
+	if (ImGui::DragFloat3("vRotation", (_float*)&vRotation, 0.1f))
 	{
 		ColDesc.vRotation = vRotation;
-		CMapManager::Get_Instance()->Set_ColDesc(ColDesc);
+		CMapManager::Get_Instance()->Set_ClikedColDesc(ColDesc);
 	}
+
+	if (ImGui::Button("Apply_ALL_SameName"))
+		CMapManager::Get_Instance()->Set_AllSameNameColDesc(ColDesc);
+
+	_bool bWall = CMapManager::Get_Instance()->Get_ClickedWall();
+	if (ImGui::Checkbox("isWall", &bWall))
+		CMapManager::Get_Instance()->Set_ClickedWall(bWall);
 
 
 	ImGui::End();

@@ -573,11 +573,16 @@ void CMeshManager::Comput_FreeVectexCube()
 
 }
 
-void CMeshManager::Load_NaviData(_int iMapId)
+void CMeshManager::Save_NaviData()
+{
+	CDataManager::Get_Instance()->Save_Navi(m_iMapNum);
+}
+
+void CMeshManager::Load_NaviData()
 {
 	Clear_Cells();
 
-	CDataManager::DATA_NAVI NaviData = CDataManager::Get_Instance()->Load_Navi(iMapId);
+	CDataManager::DATA_NAVI NaviData = CDataManager::Get_Instance()->Load_Navi(m_iMapNum);
 
 	for (_uint i = 0; i < NaviData.iNumCell; ++i)
 	{

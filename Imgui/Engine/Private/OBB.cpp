@@ -390,9 +390,20 @@ HRESULT COBB::Render()
 
 	m_pBatch->Begin();
 
-	DX::Draw(m_pBatch, *m_pOBB, XMLoadFloat4(&m_vColor));
+	if (m_bClicked)
+		DX::Draw(m_pBatch, *m_pOBB, XMLoadFloat4(&_float4(1.f, 0.f, 0.f , 1.f)));
+	else
+	{
+		if(m_ColliderDesc.bWall)
+			DX::Draw(m_pBatch, *m_pOBB, XMLoadFloat4(&_float4(1.f, 1.f, 0.f, 1.f)));
+		else
+			DX::Draw(m_pBatch, *m_pOBB, XMLoadFloat4(&_float4(0.f, 1.f, 0.f, 1.f)));
+	}
+
 
 	m_pBatch->End();
+
+	m_bClicked = false;
 
 	return S_OK;
 }

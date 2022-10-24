@@ -158,6 +158,7 @@ HRESULT CRollingBarrel::Ready_Components()
 		_vector vOriDir = XMVectorSet(1.f, 0.f, 0.f, 0.f);
 		_vector vCurDir = XMVector3TransformNormal(vOriDir, mRot);
 
+		strcpy(ColDesc.sTag, "OBB");
 		XMStoreFloat3(&ColDesc.vCenter, vCurDir);
 		ColDesc.vRotation = _float3(0.f, 0.f, fAngle + 90.f);
 		ColDesc.vSize = _float3(1.f, 0.5f, 3.f);

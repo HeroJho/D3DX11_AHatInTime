@@ -30,6 +30,9 @@ public:
 	COL_STATE Get_ColState() { return m_eColState; }
 
 
+	void  Set_Clicked() { m_bClicked = true; }
+
+
 public:
 	virtual HRESULT Initialize_Prototype(CCollider::TYPE eColliderType);
 	virtual HRESULT Initialize(void* pArg);
@@ -59,6 +62,8 @@ private:
 	BoundingOrientedBox*	m_pOriginal_OBB = nullptr;
 
 	COL_STATE				m_eColState = COL_NONE;
+
+	_bool m_bClicked = false;
 
 public:
 	static COBB* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCollider::TYPE eColliderType);

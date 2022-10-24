@@ -25,6 +25,8 @@ HRESULT CMonster::Initialize_Prototype()
 
 HRESULT CMonster::Initialize(void * pArg)
 {
+	__super::Initialize(pArg);
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -87,10 +89,19 @@ void CMonster::Set_Anim()
 
 
 
-void CMonster::Attacked()
+void CMonster::Attacked(_int iAT)
 {
-	Set_State(MONSTER_ATTACKED);
-	m_pTransformCom->ReSet_AttackedAnim();
+	--m_CreatureDesc.iHP;
+	if (0 >= m_CreatureDesc.iHP)
+	{
+		Set_State(MONSTER_DIE);
+	}
+	else
+	{
+		Set_State(MONSTER_ATTACKED);
+		m_pTransformCom->ReSet_AttackedAnim();
+	}
+
 }
 
 
@@ -124,16 +135,6 @@ void CMonster::Tick(_float fTimeDelta)
 
 void CMonster::Tick_Idle(_float fTimeDelta)
 {
-}
-
-void CMonster::Tick_Move(_float fTimeDelta)
-{
-	m_pTransformCom->Set_CurSpeed(1.f);
-}
-
-void CMonster::Tick_Chase(_float fTimeDelta)
-{
-	m_pTransformCom->Set_CurSpeed(1.f);
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -145,10 +146,56 @@ void CMonster::Tick_Chase(_float fTimeDelta)
 	}
 
 	CTransform* pTran = (CTransform*)pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
-	_vector vLookPos = pTran->Get_State(CTransform::STATE_POSITION);
+
+	_vector vPlayerPos = pTran->Get_State(CTransform::STATE_POSITION);
+	_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float fDis = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
+	if (5.f > fDis)
+		Set_State(MONSTER_CHASE);
 
 
-	m_pTransformCom->MoveTarget_Lend(vLookPos, m_pTransformCom->Get_CurSpeed(), fTimeDelta, m_pNavigationCom, 1.f);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+
+}
+
+void CMonster::Tick_Move(_float fTimeDelta)
+{
+	
+}
+
+void CMonster::Tick_Chase(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CGameObject* pPlayer = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	if (nullptr == pPlayer)
+	{
+		RELEASE_INSTANCE(CGameInstance);
+		return;
+	}
+
+	CTransform* pTran = (CTransform*)pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+
+
+	// 범위 확인
+	{
+		_vector vPlayerPos = pTran->Get_State(CTransform::STATE_POSITION);
+		_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		_float fDis = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
+		if (8.f < fDis)
+			Set_State(MONSTER_IDLE);
+	}
+
+	// 추격
+	{
+		_vector vLookPos = pTran->Get_State(CTransform::STATE_POSITION);
+
+		m_pTransformCom->MoveTarget_Lend(vLookPos, 1.f, fTimeDelta, m_pNavigationCom, 1.f);
+	}
+
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -164,6 +211,10 @@ void CMonster::Tick_Attacked(_float fTimeDelta)
 
 void CMonster::Tick_Die(_float fTimeDelta)
 {
+	m_fDeadTimeAcc += fTimeDelta;
+	if (10.f < m_fDeadTimeAcc)
+		Set_Dead(true);
+
 }
 
 
@@ -180,7 +231,11 @@ void CMonster::LateTick(_float fTimeDelta)
 	_matrix mWorld = m_pTransformCom->Get_OriScaleWorldMatrix();
 	Tick_Col(mWorld, m_pNavigationCom, m_pTransformCom);
 
-	m_pModelCom->Play_Animation(fTimeDelta);
+	if (m_pModelCom->Play_Animation(fTimeDelta))
+	{
+		// if (MONSTER_DIE == m_eState)
+			
+	}
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 
@@ -229,7 +284,6 @@ HRESULT CMonster::Render()
 
 void CMonster::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-
 
 }
 

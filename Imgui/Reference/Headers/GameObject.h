@@ -40,8 +40,7 @@ public:
 
 	void Tick_Col(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr);
 	void Render_Col();
-	void Edit_Col(_uint iIndex, CCollider::COLLIDERDESC Desc);
-	CCollider::COLLIDERDESC Get_ColInfo(_uint iIndex);
+	
 
 public:
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) { return S_OK; }

@@ -67,12 +67,6 @@
     <Filter Include="02.GameObjects\Parts">
       <UniqueIdentifier>{ee9b07d1-45ff-43ee-a2d6-f277ea5e71bd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\Parts\Ori_Hat">
-      <UniqueIdentifier>{4d2183fa-d646-43d0-a888-e625096f410e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\Parts\Umbrella">
-      <UniqueIdentifier>{9d5e333c-588b-4dd4-ac67-71a086b0c6c2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03.UI\Health">
       <UniqueIdentifier>{a14786f4-1821-40ab-b9ae-1c59f54cafc7}</UniqueIdentifier>
     </Filter>
@@ -150,12 +144,6 @@
     <ClInclude Include="..\Public\UIManager.h">
       <Filter>96.Managers\UIManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Ori_Hat.h">
-      <Filter>02.GameObjects\Parts\Ori_Hat</Filter>
-    </ClInclude>
-    <ClInclude Include="..\public\Umbrella.h">
-      <Filter>02.GameObjects\Parts\Umbrella</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\UI_Health.h">
       <Filter>03.UI\Health</Filter>
     </ClInclude>
@@ -179,6 +167,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\StaticModel_Col.h">
       <Filter>02.GameObjects\StaticModel\StaticModel_Col</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Parts.h">
+      <Filter>02.GameObjects\Parts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -233,12 +224,6 @@
     <ClCompile Include="..\Private\UIManager.cpp">
       <Filter>96.Managers\UIManager</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Ori_Hat.cpp">
-      <Filter>02.GameObjects\Parts\Ori_Hat</Filter>
-    </ClCompile>
-    <ClCompile Include="..\private\Umbrella.cpp">
-      <Filter>02.GameObjects\Parts\Umbrella</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\UI_Health.cpp">
       <Filter>03.UI\Health</Filter>
     </ClCompile>
@@ -259,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\StaticModel_Col.cpp">
       <Filter>02.GameObjects\StaticModel\StaticModel_Col</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Parts.cpp">
+      <Filter>02.GameObjects\Parts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

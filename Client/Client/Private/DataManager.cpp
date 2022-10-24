@@ -372,6 +372,11 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		ifs.read((char*)&DMJ->vPos, sizeof(_float3));
 		ifs.read((char*)&DMJ->vAngle, sizeof(_float3));
 		ifs.read((char*)&DMJ->vScale, sizeof(_float3));
+
+		ifs.read((char*)&DMJ->vCenter, sizeof(_float3));
+		ifs.read((char*)&DMJ->vRotation, sizeof(_float3));
+		ifs.read((char*)&DMJ->vSize, sizeof(_float3));
+		ifs.read((char*)&DMJ->bWall, sizeof(_bool));
 	}
 
 	ifs.close();
@@ -402,6 +407,11 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		Desc.vPos = DataObj.vPos;
 		Desc.vAngle = DataObj.vAngle;
 		Desc.vScale = DataObj.vScale;
+
+		Desc.vCenter = DataObj.vCenter;
+		Desc.vRotation = DataObj.vRotation;
+		Desc.vSize = DataObj.vSize;
+		Desc.bWall = DataObj.bWall;
 
 		// 콜라이더
 		if (pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), eLEVEL, TEXT("Layer_Model"), &Desc))

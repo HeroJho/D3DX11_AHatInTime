@@ -22,6 +22,11 @@ public:
 		_float3 vAngle;
 		_float3 vScale;
 
+		_float3 vCenter;
+		_float3 vRotation;
+		_float3 vSize;
+		_bool	bWall;
+
 	}DATA_MAP_OBJ;
 
 	typedef struct dataMap

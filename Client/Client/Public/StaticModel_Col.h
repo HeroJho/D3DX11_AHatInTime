@@ -20,6 +20,12 @@ public:
 		_float3		vPos;
 		_float3		vAngle;
 		_float3		vScale;
+
+		_float3 vCenter;
+		_float3 vRotation;
+		_float3 vSize;
+		_bool	bWall;
+
 	}STATICMODELDESC;
 
 private:
@@ -46,8 +52,7 @@ private:
 	_float3					m_vAxis;
 
 private:
-	HRESULT Ready_Components();
-	HRESULT Ready_Col();
+	HRESULT Ready_Components(STATICMODELDESC* Desc);
 
 public:
 	static CStaticModel_Col* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

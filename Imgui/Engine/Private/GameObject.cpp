@@ -74,51 +74,6 @@ void CGameObject::Render_Col()
 		pCollider->Render();
 }
 
-void CGameObject::Edit_Col(_uint iIndex, CCollider::COLLIDERDESC Desc)
-{
-	if (m_Colliders.empty())
-		return;
-
-	if (m_Colliders.size() <= iIndex)
-		return;
-
-	_uint iCount = 0;
-	for (auto& pCol : m_Colliders)
-	{
-		if (iCount == iIndex)
-		{
-			pCol->Edit_Col(Desc);
-			return;
-		}
-
-		iCount++;
-	}
-}
-
-CCollider::COLLIDERDESC CGameObject::Get_ColInfo(_uint iIndex)
-{
-	CCollider::COLLIDERDESC Desc;
-	ZeroMemory(&Desc, sizeof(CCollider::COLLIDERDESC));
-
-	if (m_Colliders.empty())
-		return Desc;
-
-	if (m_Colliders.size() <= iIndex)
-		return Desc;
-
-	_uint iCount = 0;
-	for (auto& pCol : m_Colliders)
-	{
-		if (iCount == iIndex)
-		{
-			return pCol->GetColDesc();
-		}
-
-		iCount++;
-	}
-
-	return Desc;
-}
 
 HRESULT CGameObject::AddCollider(CCollider::TYPE eType, CCollider::tagColliderDesc Desc)
 {

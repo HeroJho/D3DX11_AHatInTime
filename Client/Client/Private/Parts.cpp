@@ -1,46 +1,37 @@
 #include "stdafx.h"
-#include "..\Public\Umbrella.h"
+#include "..\Public\Parts.h"
 #include "GameInstance.h"
-#include "Player.h"
-#include "ToolManager.h"
-#include "Monster.h"
 
-CUmbrella::CUmbrella(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CParts::CParts(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
 	ZeroMemory(&m_vAxis, sizeof(_float3));
 }
 
-CUmbrella::CUmbrella(const CUmbrella & rhs)
+CParts::CParts(const CParts & rhs)
 	: CGameObject(rhs)
 {
 	ZeroMemory(&m_vAxis, sizeof(_float3));
 }
 
-HRESULT CUmbrella::Initialize_Prototype()
+HRESULT CParts::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CUmbrella::Initialize(void * pArg)
+HRESULT CParts::Initialize(void * pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
 
 	CSockat::PARTSDESC* Desc = (CSockat::PARTSDESC*)pArg;
 
+	lstrcpy(m_cModelTag, Desc->m_szModelName);
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_sTag = "Umbrella";
-
-	if (nullptr != Desc->pOwner)
-	{
-		m_pOwner = Desc->pOwner;
-		//Safe_AddRef(m_pOwner);
-	}
-
-
+	
 	m_pTransformCom->Set_Scale(XMLoadFloat3(&Desc->vScale));
 
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), Desc->vRot.x
@@ -51,63 +42,24 @@ HRESULT CUmbrella::Initialize(void * pArg)
 	vPos = XMVectorSetW(vPos, 1.f);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 
-
-
-
+	
 	return S_OK;
 }
 
-void CUmbrella::Tick(_float fTimeDelta)
+void CParts::Tick(_float fTimeDelta)
 {
-	CPlayer* pPlayer = ((CPlayer*)m_pOwner);
-	CPlayer::STATE ePlayerCurState = pPlayer->Get_State();
-
-	if (CPlayer::STATE_READYATTACK == ePlayerCurState)
-	{
-		m_fAttackTimeAcc = 0.f;
-		m_bCanAttack = false;
-	}
-
-	if (CPlayer::STATE_ATTACK_1 == ePlayerCurState ||
-		CPlayer::STATE_ATTACK_2 == ePlayerCurState ||
-		CPlayer::STATE_ATTACK_3 == ePlayerCurState )
-	{
-		m_fAttackTimeAcc += fTimeDelta;
-	}
-	else
-	{
-		m_fAttackTimeAcc = 0.f;
-		m_bCanAttack = false;
-	}
-
-
-	if (0.05f < m_fAttackTimeAcc && 0.2f > m_fAttackTimeAcc)
-	{
-		m_bCanAttack = true;
-	}
 
 }
 
-void CUmbrella::LateTick(_float fTimeDelta)
+void CParts::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return;
 
-	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
-	_matrix		WorldMatrix = m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix();
-	Tick_Col(WorldMatrix);
-
-
-	if (m_bCanAttack)
-	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_SWORD, this);
-		RELEASE_INSTANCE(CGameInstance);
-		m_bCanAttack = false;
-	}
+	// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
-HRESULT CUmbrella::Render()
+HRESULT CParts::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -131,23 +83,25 @@ HRESULT CUmbrella::Render()
 
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	
+	_uint iPassIndex = 0;
+	if (!lstrcmp(TEXT("Sprint_Hat"), m_cModelTag))
+		iPassIndex = 1;
+
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
-
-	if (CToolManager::Get_Instance()->Get_Debug())
-		Render_Col();
 
 	return S_OK;
 }
 
-HRESULT CUmbrella::SetUp_State(_fmatrix StateMatrix)
+HRESULT CParts::SetUp_State(_fmatrix StateMatrix)
 {
 	m_pParentTransformCom->Set_State(CTransform::STATE_RIGHT, StateMatrix.r[0]);
 	m_pParentTransformCom->Set_State(CTransform::STATE_UP, StateMatrix.r[1]);
@@ -159,15 +113,7 @@ HRESULT CUmbrella::SetUp_State(_fmatrix StateMatrix)
 	return S_OK;
 }
 
-void CUmbrella::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
-{
-	if ("Tag_Monster" == Desc.pOther->Get_Tag())
-	{
-		((CMonster*)Desc.pOther)->Attacked();
-	}
-}
-
-HRESULT CUmbrella::Ready_Components()
+HRESULT CParts::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -186,69 +132,42 @@ HRESULT CUmbrella::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Umbrella"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
-
-
-
-	/* For.Com_Collider */
-	CCollider::COLLIDERDESC ColDesc;
-	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
-
-	ColDesc.vCenter = _float3(0.f, 0.4f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(0.3f, 0.8f, 0.3f);
-	ColDesc.bIsStatic = false;
-	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-		return E_FAIL;
-
-	//ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
-	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	//if (FAILED(AddCollider(CCollider::TYPE_AABB, ColDesc)))
-	//	return E_FAIL;
-
-	//ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);
-	//ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	//ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-	//if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
-	//	return E_FAIL;
 
 	return S_OK;
 }
 
-CUmbrella * CUmbrella::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CParts * CParts::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CUmbrella*		pInstance = new CUmbrella(pDevice, pContext);
+	CParts*		pInstance = new CParts(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CUmbrella"));
+		MSG_BOX(TEXT("Failed To Created : CParts"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CUmbrella::Clone(void * pArg)
+CGameObject * CParts::Clone(void * pArg)
 {
-	CUmbrella*		pInstance = new CUmbrella(*this);
+	CParts*		pInstance = new CParts(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CUmbrella"));
+		MSG_BOX(TEXT("Failed To Cloned : CParts"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CUmbrella::Free()
+void CParts::Free()
 {
 	__super::Free();
 
-
-	// Safe_Release(m_pOwner);
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);

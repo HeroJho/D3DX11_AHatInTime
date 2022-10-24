@@ -14,7 +14,6 @@ IMPLEMENT_SINGLETON(CMapManager)
 
 CMapManager::CMapManager()
 {
-	ZeroMemory(&m_ColDesc, sizeof(CCollider::COLLIDERDESC));
 	ZeroMemory(&m_vSubConPos, sizeof(_float3));
 
 	for (_uint i = 0; i < 100; ++i)
@@ -42,6 +41,10 @@ void CMapManager::Tick(_float TimeDelta)
 	}
 
 	RELEASE_INSTANCE(CGameInstance);
+
+
+	if(m_bColMode)
+		Check_ClickedColor();
 }
 
 void CMapManager::Make_PickedModel()
@@ -162,10 +165,30 @@ void CMapManager::Conv_PickedModel_To_Bin()
 	CDataManager::Get_Instance()->Conv_Bin_Model(pModel, cTemp, CDataManager::DATA_NOEANIM);
 }
 
+void CMapManager::Conv_AllModel_To_Bin()
+{
+	for (auto& pModel : m_StaticModels)
+	{
+		CStaticModel* pStaticModel = pModel.second;
+		if (nullptr == pStaticModel)
+			return;
+		CModel* pModel = (CModel*)pStaticModel->Get_ComponentPtr(TEXT("Com_Model"));
+
+		if (pModel->Get_IsBin())
+			continue;
+
+		char cTemp[MAX_PATH];
+		CToolManager::Get_Instance()->TCtoC(pStaticModel->Get_ModelTag(), cTemp);
+
+		CDataManager::Get_Instance()->Conv_Bin_Model(pModel, cTemp, CDataManager::DATA_NOEANIM);
+	}
+
+
+}
+
 void CMapManager::Save_MapData()
 {
 	CDataManager::Get_Instance()->Save_Map(m_iID);
-	CDataManager::Get_Instance()->Save_Navi(m_iID);
 }
 
 void CMapManager::Load_MapData()
@@ -190,6 +213,11 @@ void CMapManager::Load_MapData()
 		Desc.vAngle = DataObj.vAngle;
 		Desc.vScale = DataObj.vScale;
 
+		Desc.vCenter = DataObj.vCenter;
+		Desc.vRotation = DataObj.vRotation;
+		Desc.vSize = DataObj.vSize;
+		Desc.bWall = DataObj.bWall;
+
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 		CGameObject* pObj = nullptr;
@@ -201,7 +229,9 @@ void CMapManager::Load_MapData()
 
 	}
 
-	CMeshManager::Get_Instance()->Load_NaviData(m_iID);
+	Safe_Delete_Array(pMapData->pObjDatas);
+	Safe_Delete(pMapData);
+
 }
 
 
@@ -370,21 +400,62 @@ bool CMapManager::GenTag(string* pOut)
 
 
 
-void CMapManager::Set_ColDesc(CCollider::COLLIDERDESC Desc)
+CCollider::COLLIDERDESC CMapManager::Get_ClikedColDesc()
 {
-	m_ColDesc = Desc;
-	for (auto& Pair : m_StaticModels)
+	CStaticModel* pModel = Get_PickedCreatedModel();
+	if (nullptr == pModel)
+		return CCollider::COLLIDERDESC();
+
+	CCollider::COLLIDERDESC Desc = pModel->Get_ColInfo();
+
+	return Desc;
+}
+
+void CMapManager::Set_ClikedColDesc(CCollider::COLLIDERDESC Desc)
+{
+	CStaticModel* pModel = Get_PickedCreatedModel();
+	if (nullptr == pModel)
+		return;
+
+	pModel->Set_ColInfo(Desc);
+}
+
+void CMapManager::Set_AllSameNameColDesc(CCollider::COLLIDERDESC Desc)
+{
+	CStaticModel* pModel = Get_PickedCreatedModel();
+	if (nullptr == pModel)
+		return;
+
+	for (auto& Fair : m_StaticModels)
 	{
-		Pair.second->Edit_Col(m_iColIndex);
+		if (!lstrcmp(pModel->Get_ModelTag(), Fair.second->Get_ModelTag()))
+			Fair.second->Set_ColInfo(Desc);
 	}
 }
 
-void CMapManager::Find_ClickedColInfo()
+void CMapManager::Check_ClickedColor()
 {
-	for (auto& Pair : m_StaticModels)
-	{
-		Pair.second->Get_ColInfo(m_iColIndex);
-	}
+	CStaticModel* pModel = Get_PickedCreatedModel();
+
+	if (nullptr == pModel)
+		return;
+
+	((COBB*)pModel->Get_Colliders().front())->Set_Clicked();
+}
+
+
+_bool CMapManager::Get_ClickedWall()
+{
+	CCollider::COLLIDERDESC Desc = Get_ClikedColDesc();
+
+	return Desc.bWall;
+}
+
+void CMapManager::Set_ClickedWall(_bool bWall)
+{
+	CCollider::COLLIDERDESC Desc = Get_ClikedColDesc();
+	Desc.bWall = bWall;
+	Set_ClikedColDesc(Desc);
 }
 
 void CMapManager::Free()

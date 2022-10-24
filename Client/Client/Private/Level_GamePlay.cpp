@@ -110,7 +110,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_GAMEPLAY, pLayerTag)))
+
+	CGameObject::CREATUREINFODESC ObjDesc;
+	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
+	ObjDesc.iAT = 1;
+	ObjDesc.iMaxHP = 4;
+	ObjDesc.iHP = 4;
+
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_GAMEPLAY, pLayerTag, &ObjDesc)))
 		return E_FAIL;
 
 
@@ -148,7 +155,13 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, pLayerTag)))
+	CGameObject::CREATUREINFODESC ObjDesc;
+	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
+	ObjDesc.iAT = 1;
+	ObjDesc.iMaxHP = 3;
+	ObjDesc.iHP = 3;
+
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, pLayerTag, &ObjDesc)))
 		return E_FAIL;
 
 	Safe_Release(pGameInstance);

@@ -57,6 +57,13 @@ HRESULT CGameObject::Initialize_Prototype()
 
 HRESULT CGameObject::Initialize(void * pArg)
 {
+	if (nullptr == pArg)
+		return S_OK;
+
+	ZeroMemory(&m_CreatureDesc, sizeof(CREATUREINFODESC));
+	m_CreatureDesc = *(CREATUREINFODESC*)pArg;
+
+
 	return S_OK;
 }
 

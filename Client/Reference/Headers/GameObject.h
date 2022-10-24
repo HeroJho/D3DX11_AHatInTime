@@ -7,6 +7,15 @@ BEGIN(Engine)
 
 class ENGINE_DLL CGameObject abstract : public CBase
 {
+public:
+	typedef struct tagCreatureInfoDesc
+	{
+		_int iHP;
+		_int iMaxHP;
+		_int iAT;
+
+	}CREATUREINFODESC;
+
 protected:
 	CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CGameObject(const CGameObject& rhs);
@@ -26,6 +35,9 @@ public:
 
 	CGameObject* Get_Owner() { return m_pOwner; }
 	void		Set_Owner(CGameObject* pOwner) { m_pOwner = pOwner;	}
+
+	_bool Get_Dead() { return m_bDead; }
+	void Set_Dead(_bool bDead) { m_bDead = bDead; }
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -60,6 +72,13 @@ protected:
 	string			m_sTag = "";
 	CGameObject*	m_pOwner = nullptr;
 	_float				m_fCamDistance = 0.f;
+
+	_bool			m_bDead = false;
+	
+	// For.Creature
+protected:
+	CREATUREINFODESC m_CreatureDesc;
+
 
 protected:
 	HRESULT Add_Component(_uint iLevelIndex, const _tchar* pPrototypeTag, const _tchar* pComponentTag, class CComponent** ppOut, void* pArg = nullptr);

@@ -22,6 +22,12 @@ public:
 		_float3		vPos;
 		_float3		vAngle;
 		_float3		vScale;
+
+		_float3 vCenter;
+		_float3 vRotation;
+		_float3 vSize;
+		_bool	bWall;
+
 	}STATICMODELDESC;
 
 private:
@@ -50,8 +56,9 @@ public:
 
 public:
 	_bool Check_Model();
-	void Get_ColInfo(_uint iIndex);
-	void Edit_Col(_uint iIndex);
+	CCollider::COLLIDERDESC Get_ColInfo();
+	void Set_ColInfo(CCollider::COLLIDERDESC Desc);
+
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -68,7 +75,7 @@ private:
 	_float					m_fSpaceTimeAcc = 0.f;
 
 private:
-	HRESULT Ready_Components();
+	HRESULT Ready_Components(STATICMODELDESC* Desc);
 
 public:
 	static CStaticModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

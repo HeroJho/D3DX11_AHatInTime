@@ -17,6 +17,7 @@ public:
 		_float3			vCenter;
 		_float3			vSize;
 		_float3			vRotation;
+		_bool			bWall = false;
 		_bool			bIsStatic = true;
 	}COLLIDERDESC;
 

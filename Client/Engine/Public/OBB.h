@@ -7,7 +7,7 @@ BEGIN(Engine)
 class ENGINE_DLL COBB final : public CCollider
 {
 public:
-	enum COL_STATE{ COL_NONE, COL_ON, COL_DOWN, COL_BLOCK, COL_SLIDE, COL_END};
+	enum COL_STATE{ COL_NONE, COL_SLIDE, COL_DOWN, COL_BLOCK, COL_ON, COL_END};
 
 public:
 	typedef struct tagOBBDesc
@@ -16,6 +16,15 @@ public:
 		_float3		vCenterAxis[3];
 		_float3		vAlignAxis[3];
 	}OBBDESC;
+
+private:
+	typedef struct tagCheckState
+	{
+		COL_STATE	eState = COL_END;
+		_float fDis = 0.f;
+		_float3 vPushDir;
+		COBB* pModel = nullptr;
+	}CHECKSTATE;
 
 protected:
 	COBB(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -59,6 +68,8 @@ private:
 
 	_float3 Compute_MaxRad(_fvector vA, _fvector vB, _fvector vC, _float* Out_MaxRad);
 
+	void Compute_State(class CNavigation* pNavi, class CTransform* pTran);
+
 #ifdef _DEBUG
 public:
 	virtual HRESULT Render();
@@ -70,6 +81,9 @@ private:
 
 	COL_STATE				m_ePreColState = COL_NONE;
 	COL_STATE				m_eColState = COL_NONE;
+
+	list<CHECKSTATE>			m_eTickColState;
+	list<CHECKSTATE>			m_eTickWallColState;
 
 	_float3 m_vHillPoss[3];
 

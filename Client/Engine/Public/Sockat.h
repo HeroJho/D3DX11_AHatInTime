@@ -13,6 +13,7 @@ public:
 	}SOCATDESC;
 	typedef struct tagPartsDsc
 	{
+		TCHAR				m_szModelName[MAX_PATH];
 		_float3				vPos;
 		_float3				vRot;
 		_float3				vScale;

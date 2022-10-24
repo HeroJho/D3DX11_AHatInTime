@@ -28,6 +28,8 @@ HRESULT CPlayer::Initialize_Prototype()
 
 HRESULT CPlayer::Initialize(void * pArg)
 {
+	__super::Initialize(pArg);
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -409,6 +411,9 @@ void CPlayer::HillDown_Tick(_float fTimeDelta)
 		if(1.f < m_fHillUpTimeAcc)
 			HillDown_Input(fTimeDelta);
 	}
+
+
+	// HillDown_Input(fTimeDelta);
 
 }
 
@@ -1350,18 +1355,41 @@ HRESULT CPlayer::Ready_Components()
 
 	CSockat::PARTSDESC PartsDesc;
 	ZeroMemory(&PartsDesc, sizeof(CSockat::PARTSDESC));
+
+	lstrcpy(PartsDesc.m_szModelName, TEXT("Ori_Hat"));
 	PartsDesc.vPos =	_float3(0.f, 0.f, -0.63f);
 	PartsDesc.vScale =	_float3(1.f, 1.f, 1.f);
 	PartsDesc.vRot =	_float3(-90.f, 0, 0);
 	PartsDesc.pOwner = this;
-	m_pSockatCom->Add_Sockat("bip_hat01", m_pModelCom, TEXT("Prototype_GameObject_Ori_Hat"), PartsDesc);
+	if (FAILED(m_pSockatCom->Add_Sockat("bip_hat01", m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
+		return E_FAIL;
 
+
+	//lstrcpy(PartsDesc.m_szModelName, TEXT("Sprint_Hat"));
+	//PartsDesc.vPos = _float3(0.f, -0.05f, -0.72f);
+	//PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+	//PartsDesc.vRot = _float3(-82.9f, 0.f, -180.f);
+	//PartsDesc.pOwner = this;
+	//if (FAILED(m_pSockatCom->Add_Sockat("bip_hat01", m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
+	//	return E_FAIL;
+
+
+	lstrcpy(PartsDesc.m_szModelName, TEXT("Witch_Hat"));
+	PartsDesc.vPos = _float3(0.f, 0.f, -0.79f);
+	PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+	PartsDesc.vRot = _float3(-85.1f, 0.f, -180.f);
+	PartsDesc.pOwner = this;
+	if (FAILED(m_pSockatCom->Add_Sockat("bip_hat01", m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
+		return E_FAIL;
+
+
+	lstrcpy(PartsDesc.m_szModelName, TEXT("Umbrella"));
 	PartsDesc.vPos = _float3(-0.28f, 0.11f, -0.41f);
 	PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 	PartsDesc.vRot = _float3(0.f, 0.f, 178.f);
 	PartsDesc.pOwner = this;
-	m_pSockatCom->Add_Sockat("bip_ItemPalmR01", m_pModelCom, TEXT("Prototype_GameObject_Umbrella"), PartsDesc);
-
+	if (FAILED(m_pSockatCom->Add_Sockat("bip_ItemPalmR01", m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
+		return E_FAIL;
 
 
 	/* For.Com_Collider */
@@ -1370,7 +1398,8 @@ HRESULT CPlayer::Ready_Components()
 
 	ColDesc.vCenter = _float3(0.f, 0.4f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(0.3f, 0.8f, 0.3f);
+	// ColDesc.vSize = _float3(0.3f, 0.8f, 0.3f);
+	ColDesc.vSize = _float3(0.5f, 0.8f, 0.5f);
 	ColDesc.bIsStatic = true;
 	strcpy(ColDesc.sTag, "StaticOBB");
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
@@ -1436,8 +1465,8 @@ void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 		{
 			if (STATE_JUMPATTACK == m_eState)
 			{
-				
-				((CMonster*)Desc.pOther)->Attacked();
+				// 점프 공격
+				((CMonster*)Desc.pOther)->Attacked(1);
 				m_TickStates.push_back(STATE_DOUBLEJUMP);
 				m_pTransformCom->DoubleJump(m_fJumpPower + 2.f);
 			}

@@ -31,7 +31,7 @@ HRESULT CStaticModel_Col::Initialize(void * pArg)
 	wcscpy_s(m_cModelTag, Desc->cModelTag);
 
 
-	if (FAILED(Ready_Components()))
+	if (FAILED(Ready_Components(Desc)))
 		return E_FAIL;
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&Desc->vPos), 1.f));
@@ -74,7 +74,7 @@ HRESULT CStaticModel_Col::Render()
 	return S_OK;
 }
 
-HRESULT CStaticModel_Col::Ready_Components()
+HRESULT CStaticModel_Col::Ready_Components(STATICMODELDESC* Desc)
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -90,80 +90,18 @@ HRESULT CStaticModel_Col::Ready_Components()
 		return E_FAIL;
 
 
-	if (FAILED(Ready_Col()))
-		return E_FAIL;
-
-
-	return S_OK;
-}
-
-HRESULT CStaticModel_Col::Ready_Col()
-{
 	/* For.Com_Collider */
 	CCollider::COLLIDERDESC ColDesc;
 	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
 
+	ColDesc.vCenter = Desc->vCenter;
+	ColDesc.vSize = Desc->vSize;
+	ColDesc.vRotation = Desc->vRotation;
+	ColDesc.bWall = Desc->bWall;
+	ColDesc.bIsStatic = true;
 
-	if (!lstrcmp(TEXT("Tree1"), m_cModelTag) || !lstrcmp(TEXT("tree2"), m_cModelTag) || !lstrcmp(TEXT("Tree3"), m_cModelTag))
-	{
-
-		ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
-		ColDesc.vSize = _float3(1.f, 75.f, 1.f);
-		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-		ColDesc.bIsStatic = true;
-
-		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-			return E_FAIL;
-	}
-	else if (!lstrcmp(TEXT("leaf_platform"), m_cModelTag))
-	{
-
-		ColDesc.vCenter = _float3(0.f, 1.f, 0.f);
-		ColDesc.vSize = _float3(1.7f, 0.2f, 1.7f);
-		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-		ColDesc.bIsStatic = true;
-
-		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-			return E_FAIL;
-	}
-	else if (!lstrcmp(TEXT("tree_stump"), m_cModelTag))
-	{
-
-		ColDesc.vCenter = _float3(0.f, 0.23f, 0.f);
-		ColDesc.vSize = _float3(1.f, 1.f, 1.f);
-		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-		ColDesc.bIsStatic = true;
-
-		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-			return E_FAIL;
-	}
-	else if (!lstrcmp(TEXT("sub_stone_02"), m_cModelTag))
-	{
-
-		ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
-		ColDesc.vSize = _float3(0.6, 1.5f, 0.6f);
-		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-		ColDesc.bIsStatic = true;
-
-		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-			return E_FAIL;
-	}
-	else if (!lstrcmp(TEXT("sub_stone"), m_cModelTag))
-	{
-
-		ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
-		ColDesc.vSize = _float3(0.7f, 1.f, 0.7f);
-		ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-		ColDesc.bIsStatic = true;
-
-		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-			return E_FAIL;
-	}
-
-
-
-
-
+	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+		return E_FAIL;
 
 
 	return S_OK;

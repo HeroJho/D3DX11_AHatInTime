@@ -13,8 +13,9 @@
 #include "UI_Edit_Button.h"
 #include "StaticModel_Col.h"
 #include "StaticModel_Instance.h"
-#include "Ori_Hat.h"
-#include "Umbrella.h"
+
+#include "Parts.h"
+
 #include "UI_Health.h"
 #include "UI_TextLife.h"
 #include "RollingBarrel.h"
@@ -180,16 +181,14 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 
-
-	/* For.Prototype_GameObject_Ori_Hat*/
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ori_Hat"),
-		COri_Hat::Create(m_pDevice, m_pContext))))
+	/* For.Prototype_GameObject_Parts*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Parts"),
+		CParts::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_Umbrella*/
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Umbrella"),
-		CUmbrella::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+
+
+
 
 	/* For.Prototype_UI_Health*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Health"),
@@ -254,6 +253,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	/* For. PartsModel */
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Ori_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Sprint_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Witch_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Umbrella"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 
 

@@ -38,6 +38,9 @@ public:
 	_uint Get_ClickedCell() { return m_iClickedCellIndex; }
 	_float3 Get_ClickedCellPos() { return m_vClickedPos; }
 
+	_uint Get_MapID() { return m_iMapNum; }
+	void Set_MapID(_uint iMapNum) { m_iMapNum = iMapNum; }
+
 public:
 	HRESULT Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void Tick(_float fTimeDelta);
@@ -78,7 +81,8 @@ public:
 	void Move_FreeVectexCube(_float fDis);
 	void Comput_FreeVectexCube();
 
-	void Load_NaviData(_int iMapId);
+	void Save_NaviData();
+	void Load_NaviData();
 
 private:
 	vector<CCell*>			m_Cells;
@@ -101,6 +105,8 @@ private:
 	class CClickedVertexCube* m_pClickedFreeVerteixCube = nullptr;
 	_bool	m_bClickVertexModel = false;
 
+
+	_uint m_iMapNum = 0;
 
 private:
 	ID3D11Device* m_pDevice;

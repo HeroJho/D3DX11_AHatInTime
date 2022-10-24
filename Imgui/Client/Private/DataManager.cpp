@@ -527,6 +527,14 @@ HRESULT CDataManager::Save_Map(_int iMapID)
 		ofs.write((char*)&vPos, sizeof(_float3));
 		ofs.write((char*)&vAngle, sizeof(_float3));
 		ofs.write((char*)&vScale, sizeof(_float3));
+
+		// 콜라이더
+		CCollider::COLLIDERDESC ColDesc = Model.second->Get_ColInfo();
+
+		ofs.write((char*)&ColDesc.vCenter, sizeof(_float3));
+		ofs.write((char*)&ColDesc.vRotation, sizeof(_float3));
+		ofs.write((char*)&ColDesc.vSize, sizeof(_float3));
+		ofs.write((char*)&ColDesc.bWall, sizeof(_bool));
 	}
 
 
@@ -567,9 +575,14 @@ CDataManager::DATA_MAP* CDataManager::Load_Map(_int iMapID)
 		ifs.read((char*)&DMJ->vPos, sizeof(_float3));
 		ifs.read((char*)&DMJ->vAngle, sizeof(_float3));
 		ifs.read((char*)&DMJ->vScale, sizeof(_float3));
+
+		ifs.read((char*)&DMJ->vCenter, sizeof(_float3));
+		ifs.read((char*)&DMJ->vRotation, sizeof(_float3));
+		ifs.read((char*)&DMJ->vSize, sizeof(_float3));
+		ifs.read((char*)&DMJ->bWall, sizeof(_bool));
 	}
 
-	m_Data_Maps.push_back(pData_Map);
+
 	return pData_Map;
 }
 
@@ -717,13 +730,6 @@ CDataManager::DATA_NAVI CDataManager::Load_Navi(_int iMapID)
 
 void CDataManager::Free()
 {
-	for (auto& MapData : m_Data_Maps)
-	{
-		Safe_Delete_Array(MapData->pObjDatas);
-		Safe_Delete(MapData);
-	}
-
-
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

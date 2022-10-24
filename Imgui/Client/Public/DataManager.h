@@ -21,8 +21,12 @@ public:
 		_float3 vAngle;
 		_float3 vScale;
 
-	}DATA_MAP_OBJ;
+		_float3 vCenter;
+		_float3 vRotation;
+		_float3 vSize;
+		_bool	bWall;
 
+	}DATA_MAP_OBJ;
 	typedef struct dataMap
 	{
 		_int iID;
@@ -113,8 +117,7 @@ public:
 	HRESULT Save_Navi(_int iMapID);
 	DATA_NAVI Load_Navi(_int iMapID);
 
-private:
-	list<DATA_MAP*> m_Data_Maps;
+
 
 
 

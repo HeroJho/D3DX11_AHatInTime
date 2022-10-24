@@ -55,7 +55,7 @@ HRESULT CStaticModel::Initialize(void * pArg)
 	wcscpy(m_cModelTag, Desc->cModelTag);
 
 
-	if (FAILED(Ready_Components()))
+	if (FAILED(Ready_Components(Desc)))
 		return E_FAIL;
 
 
@@ -300,25 +300,27 @@ _bool CStaticModel::Check_Model()
 	return true;
 }
 
-void CStaticModel::Get_ColInfo(_uint iIndex)
+CCollider::COLLIDERDESC CStaticModel::Get_ColInfo()
 {
-	if (!Check_Model())
-		return;
+	CCollider::COLLIDERDESC Desc;
+	ZeroMemory(&Desc, sizeof(CCollider::COLLIDERDESC));
 
-	CCollider::COLLIDERDESC Desc =  CGameObject::Get_ColInfo(iIndex);
-	CMapManager::Get_Instance()->Set_ColDesc(Desc);
+	if (m_Colliders.empty())
+		return Desc;
+
+	return m_Colliders.front()->GetColDesc();
 }
 
-void CStaticModel::Edit_Col(_uint iIndex)
+void CStaticModel::Set_ColInfo(CCollider::COLLIDERDESC Desc)
 {
-	if (!Check_Model())
+	if (m_Colliders.empty())
 		return;
 
-	CCollider::COLLIDERDESC Desc = CMapManager::Get_Instance()->Get_ColDesc();
-	CGameObject::Edit_Col(iIndex, Desc);
+	m_Colliders.front()->Edit_Col(Desc);
 }
 
-HRESULT CStaticModel::Ready_Components()
+
+HRESULT CStaticModel::Ready_Components(STATICMODELDESC* Desc)
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -337,9 +339,10 @@ HRESULT CStaticModel::Ready_Components()
 		return E_FAIL;
 
 	CCollider::COLLIDERDESC ColDesc;
-	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
-	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	ColDesc.vCenter = Desc->vCenter;
+	ColDesc.vRotation = Desc->vRotation;
+	ColDesc.vSize = Desc->vSize;
+	ColDesc.bWall = Desc->bWall;
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 

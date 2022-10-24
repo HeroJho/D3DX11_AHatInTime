@@ -38,7 +38,7 @@ public:
 	void Set_Anim();
 
 public:
-	void Attacked();
+	void Attacked(_int iAT);
 
 private:
 	HRESULT Ready_Components();
@@ -60,6 +60,8 @@ private:
 	MONSTER_STATE			m_eState = MONSTER_IDLE;
 	MONSTER_STATE			m_ePreState = MONSTER_IDLE;
 
+
+	_float					m_fDeadTimeAcc = 0.f;
 
 public:
 	static CMonster* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
