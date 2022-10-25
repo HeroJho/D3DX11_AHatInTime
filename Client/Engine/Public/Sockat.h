@@ -33,18 +33,25 @@ public:
 	void LateTick(_float fTimeDelta, class CRenderer* pRenderer);
 
 public:
-	HRESULT Add_Sockat(char* pBoneName, class CModel* pModel, _tchar* cName, PARTSDESC PartsDesc);
+	HRESULT Match_Enum_BoneName(char* pBoneName, _int iIndex);
+	HRESULT Add_Sockat(_int eID, class CModel* pModel, _tchar* cName, PARTSDESC PartsDesc);
+	HRESULT Remove_Sockat(_int eID);
+	HRESULT Remove_Sockat_If(_int eID, string sName);
+	_bool Check_Sockat(_int eID);
 
+	_bool Check_IsHaveSocket(_int eID, string sName);
 
 private:
 	void Update_ParentPos(CTransform* pParentTran);
-	HRESULT Add_Child(class CGameObject* pObj, class CHierarchyNode* pHierarchyNode);
+	HRESULT Add_Child(class CGameObject* pObj, class CHierarchyNode* pHierarchyNode, _int eID);
 
 private:
-	vector<class CGameObject*>			m_Parts;
-	typedef vector<class CGameObject*>	PARTS;
+	vector<class CGameObject*>		m_Parts;
+	vector<string>					m_PartsName;
 
 	vector<class CHierarchyNode*>	m_Sockets;
+	vector<string>					m_BoneNames;
+
 
 	_float4x4		m_mPivot;
 

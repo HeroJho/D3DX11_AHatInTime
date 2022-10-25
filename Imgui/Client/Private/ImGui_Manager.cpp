@@ -97,12 +97,14 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 		break;
 	case Client::LEVEL_MAPTOOL:
 		Render_MapTool();
+		Render_CamTool();
 		break;
 	case Client::LEVEL_CAMTOOL:
 		Render_CamTool();
 		break;
 	case Client::LEVEL_ANIMTOOL:
 		Render_AnimTool();
+		Render_CamTool();
 		break;
 	case Client::LEVEL_PARTSTOOL:
 		Render_PartsTool();
@@ -282,8 +284,6 @@ void CImGui_Manager::Render_CamTool()
 
 
 	UI_MarkCubes();
-	
-
 
 	if (CCamManager::Get_Instance()->Get_Start())
 	{
@@ -404,6 +404,7 @@ void CImGui_Manager::Clear_MapTool()
 	CMapManager::Get_Instance()->Free();
 	CMeshManager::Get_Instance()->Free();
 
+	CCamManager::Get_Instance()->Free();
 }
 void CImGui_Manager::Clear_CamTool()
 {
@@ -415,7 +416,7 @@ void CImGui_Manager::Clear_AnimTool()
 {
 
 	CAnimManager::Get_Instance()->Free();
-
+	CCamManager::Get_Instance()->Free();
 }
 void CImGui_Manager::Clear_PartsTool()
 {
@@ -1215,6 +1216,10 @@ void CImGui_Manager::Window_Part()
 		CPartsManager::Get_Instance()->Delete_Parts();
 	if (ImGui::Button("Convert_AllCreatedParts_To_Bin"))
 		CPartsManager::Get_Instance()->Conv_AllCratedModel_To_Bin();
+
+	_int iIndex = CPartsManager::Get_Instance()->Get_AnimIndex();
+	if (ImGui::InputInt("Anim", &iIndex))
+		CPartsManager::Get_Instance()->Set_AnimIndex(iIndex);
 
 
 	_bool bStatu = CPartsManager::Get_Instance()->Get_StatuMode();

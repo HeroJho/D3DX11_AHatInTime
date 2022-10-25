@@ -27,6 +27,12 @@ private:
 public:
 	static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;
+
+
+
+	// Test
+private:
+	_float m_fTimeAcc = 0.f;
 };
 
 END

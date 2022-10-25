@@ -111,6 +111,7 @@ void CMonster::Attacked(_int iAT)
 
 void CMonster::Tick(_float fTimeDelta)
 {
+	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_MONSTER);
 
 	switch (m_eState)
 	{
@@ -222,6 +223,8 @@ void CMonster::Tick_Die(_float fTimeDelta)
 
 void CMonster::LateTick(_float fTimeDelta)
 {
+	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_MONSTER);
+
 	if (nullptr == m_pRendererCom)
 		return;
 
@@ -239,9 +242,13 @@ void CMonster::LateTick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
-	RELEASE_INSTANCE(CGameInstance);
+
+	if (MONSTER_DIE != m_eState)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
+		RELEASE_INSTANCE(CGameInstance);
+	}
 }
 
 HRESULT CMonster::Render()

@@ -82,6 +82,21 @@
     <Filter Include="02.GameObjects\StaticModel\StaticModel_Col">
       <UniqueIdentifier>{ff58f263-3ecc-453e-8155-f7bf9fe5049e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Parts\Umbrella">
+      <UniqueIdentifier>{0c53b5bb-e135-4760-8949-8b3de6de3ac8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.Managers\ItemManager">
+      <UniqueIdentifier>{59aa9847-0e41-4a12-8546-950f25c1d7d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Item">
+      <UniqueIdentifier>{5e766757-6b4a-4a9f-9c6b-b80565b1314c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Item\Hart">
+      <UniqueIdentifier>{2dde4da9-cbf8-438e-a7b9-e5996c85f704}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Item\Yarn">
+      <UniqueIdentifier>{14b917e6-fb0b-404b-b3dc-2776015f7631}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -171,6 +186,18 @@
     <ClInclude Include="..\public\Parts.h">
       <Filter>02.GameObjects\Parts</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Umbrella.h">
+      <Filter>02.GameObjects\Parts\Umbrella</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ItemManager.h">
+      <Filter>96.Managers\ItemManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Item.h">
+      <Filter>02.GameObjects\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Yarn.h">
+      <Filter>02.GameObjects\Item\Yarn</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -247,6 +274,18 @@
     </ClCompile>
     <ClCompile Include="..\private\Parts.cpp">
       <Filter>02.GameObjects\Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Umbrella.cpp">
+      <Filter>02.GameObjects\Parts\Umbrella</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ItemManager.cpp">
+      <Filter>96.Managers\ItemManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Item.cpp">
+      <Filter>02.GameObjects\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Yarn.cpp">
+      <Filter>02.GameObjects\Item\Yarn</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

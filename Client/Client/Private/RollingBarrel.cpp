@@ -2,6 +2,8 @@
 #include "..\Public\RollingBarrel.h"
 #include "GameInstance.h"
 
+#include "ToolManager.h"
+
 CRollingBarrel::CRollingBarrel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -46,6 +48,8 @@ HRESULT CRollingBarrel::Initialize(void * pArg)
 
 void CRollingBarrel::Tick(_float fTimeDelta)
 {
+	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
+
 	m_pTransformCom->Turn(XMVectorSet(0.f, 0.f, 1.f, 0.f), 0.1f, fTimeDelta);
 }
 
@@ -53,6 +57,8 @@ void CRollingBarrel::Tick(_float fTimeDelta)
 
 void CRollingBarrel::LateTick(_float fTimeDelta)
 {
+	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
+
 	if (nullptr == m_pRendererCom)
 		return;
 

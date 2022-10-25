@@ -18,8 +18,8 @@ IMPLEMENT_SINGLETON(CCamManager)
 
 CCamManager::CCamManager()
 {
-	m_fMarkMoveSens = .1f;
-	m_fLookMoveSens = .1f;
+	m_fMarkMoveSens = 0.1f;
+	m_fLookMoveSens = 0.1f;
 }
 
 
@@ -385,7 +385,7 @@ void CCamManager::PlayMark(_float fTimeDelta)
 {
 
 	// µµÂø Çß³Ä
-	if (1.f < m_fMarkT)
+	if (1.f <= m_fMarkT)
 	{
 		if (1 > m_TempMarkCubes.size())
 		{
@@ -422,7 +422,7 @@ void CCamManager::PlayMark(_float fTimeDelta)
 	}
 	else
 	{
-		if (m_pCamTool->Move(vTempPos, m_fMarkSpeed, fTimeDelta, 5.f))
+		if (m_pCamTool->Move(vTempPos, m_fMarkSpeed, fTimeDelta, 1.f))
 		{
 			m_fMarkT += m_fMarkMoveSens;
 			m_vMarkTempPos = CalculMarkBasi();
@@ -654,6 +654,12 @@ _float3 CCamManager::CalculLookBasi()
 	}
 
 }
+
+
+
+
+
+
 
 void CCamManager::MakeRenderPos()
 {

@@ -170,6 +170,8 @@
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\DataManager.h" />
+    <ClInclude Include="..\public\Item.h" />
+    <ClInclude Include="..\public\ItemManager.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Level_Logo.h" />
@@ -191,6 +193,8 @@
     <ClInclude Include="..\Public\UI_Edit_Button.h" />
     <ClInclude Include="..\public\UI_Health.h" />
     <ClInclude Include="..\Public\UI_TextLife.h" />
+    <ClInclude Include="..\Public\Umbrella.h" />
+    <ClInclude Include="..\public\Yarn.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -199,6 +203,8 @@
   <ItemGroup>
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
+    <ClCompile Include="..\private\Item.cpp" />
+    <ClCompile Include="..\private\ItemManager.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
@@ -220,6 +226,8 @@
     <ClCompile Include="..\Private\UI_Edit_Button.cpp" />
     <ClCompile Include="..\private\UI_Health.cpp" />
     <ClCompile Include="..\Private\UI_TextLife.cpp" />
+    <ClCompile Include="..\Private\Umbrella.cpp" />
+    <ClCompile Include="..\private\Yarn.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

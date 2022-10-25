@@ -351,6 +351,7 @@ _bool  CTransform::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _
 	vPosition += XMVector3Normalize(vDirection) * fSpeed * fTimeDelta;
 
 	Set_State(CTransform::STATE_POSITION, vPosition);
+
 	return false;
 }
 

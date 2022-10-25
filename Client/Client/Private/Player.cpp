@@ -147,35 +147,46 @@ void CPlayer::Set_Anim()
 				m_pTransformCom->Set_DestLook();
 		}
 		m_pModelCom->Set_AnimIndex(193);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_SPRINT:
 		m_pModelCom->Set_AnimIndex(153);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_JUMP:
 		m_pModelCom->Set_AnimIndex(96);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_JUMPLENDING:
 		m_pModelCom->Set_AnimIndex(103);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_RUNJUMP:
 		m_pModelCom->Set_AnimIndex(94);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_RUNJUMPLENDING:
 		m_pModelCom->Set_AnimIndex(104);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_SPRINTJUMP:
 		m_pModelCom->Set_AnimIndex(106);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_DOUBLEJUMP:
 		m_pModelCom->Set_AnimIndex(92);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_SLIDE:
 		m_pModelCom->Set_AnimIndex(97);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_SLIDELENDING:
 		m_pModelCom->Set_AnimIndex(101);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_ATTACK_1:
+		Equip_Sockat(string("Umbrella"), SLOT_HAND);
 		m_pModelCom->Set_AnimIndex(188);
 		break;
 	case STATE_ATTACK_2:
@@ -186,12 +197,25 @@ void CPlayer::Set_Anim()
 		break;
 	case STATE_JUMPATTACK:
 		m_pModelCom->Set_AnimIndex(66);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_SLEP:
 		m_pModelCom->Set_AnimIndex(180);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_HILLDOWN:
 		m_pModelCom->Set_AnimIndex(53);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
+		break;
+	case STATE_STARTGETITEM:
+		m_pModelCom->Set_AnimIndex(9);
+		CToolManager::Get_Instance()->Set_WithOutPlayer(0.1f);
+		break;
+	case STATE_IDLEGETITEM:
+		m_pModelCom->Set_AnimIndex(7);
+		break;
+	case STATE_ENDGETITEM:
+		m_pModelCom->Set_AnimIndex(8);
 		break;
 	}
 }
@@ -208,6 +232,8 @@ void CPlayer::Set_Anim()
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_PLAYER);
+
 	Anim_Face(fTimeDelta);
 
 	switch (m_eState)
@@ -257,6 +283,16 @@ void CPlayer::Tick(_float fTimeDelta)
 	case STATE_HILLDOWN:
 		HillDown_Tick(fTimeDelta);
 		break;
+	case STATE_STARTGETITEM:
+		StartGetItem_Tick(fTimeDelta);
+		break;
+	case STATE_IDLEGETITEM:
+		IdleGetItem_Tick(fTimeDelta);
+		break;
+	case STATE_ENDGETITEM:
+		EndGetItem_Tick(fTimeDelta);
+		break;
+
 	}
 }
 
@@ -268,6 +304,14 @@ void CPlayer::Idle_Tick(_float fTimeDelta)
 		m_bImStop = true;
 		m_TickStates.push_back(STATE_SLEP);
 	}
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_T))
+		Anim_GetItem(string("yarn_ui_ice"));
+
+	RELEASE_INSTANCE(CGameInstance);
+
 }
 
 void CPlayer::Move_Tick(_float fTimeDelta)
@@ -447,6 +491,24 @@ void CPlayer::JumpAttack_Tick(_float fTimeDelta)
 	JumpAttack_Input(fTimeDelta);
 }
 
+void CPlayer::StartGetItem_Tick(_float fTimeDelta)
+{
+	StartGetItem_Input(fTimeDelta);
+
+}
+
+void CPlayer::IdleGetItem_Tick(_float fTimeDelta)
+{
+	IdleGetItem_Input(fTimeDelta);
+
+}
+
+void CPlayer::EndGetItem_Tick(_float fTimeDelta)
+{
+	EndGetItem_Input(fTimeDelta);
+
+}
+
 
 
 void CPlayer::Move_Input(_float fTimeDelta)
@@ -604,6 +666,7 @@ void CPlayer::ReadyAttack_Input(_float fTimeDelta)
 	if (m_ComboStates.empty())
 	{
 		m_TickStates.push_back(STATE_IDLE);
+		// m_pSockatCom->Remove_Sockat(SLOT_HAND);
 		return;
 	}
 
@@ -1029,6 +1092,31 @@ void CPlayer::JumpAttack_Input(_float fTimeDelta)
 
 }
 
+void CPlayer::StartGetItem_Input(_float fTimeDelta)
+{
+}
+
+void CPlayer::IdleGetItem_Input(_float fTimeDelta)
+{
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_SPACE))
+	{
+		m_TickStates.push_back(STATE_ENDGETITEM);
+		m_pSockatCom->Remove_Sockat(SLOT_HAND);
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+}
+
+void CPlayer::EndGetItem_Input(_float fTimeDelta)
+{
+}
+
 
 
 
@@ -1070,11 +1158,14 @@ void CPlayer::Anim_Face(_float fTimeDelta)
 
 void CPlayer::LateTick(_float fTimeDelta)
 {
+	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_PLAYER);
+
 	if (nullptr == m_pRendererCom)
 		return;
 
 	// 중력 적용
-	m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.008f);
+	if(STATE_STARTGETITEM != m_eState && STATE_IDLEGETITEM != m_eState && STATE_ENDGETITEM != m_eState)
+		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.7f);
 
 	// 이동 갱신
 	Calcul_State(fTimeDelta);
@@ -1196,6 +1287,10 @@ void CPlayer::Calcul_State(_float fTimeDelta)
 	{
 		m_pTransformCom->Set_CurSpeed(0.f);
 	}
+	else if (STATE_STARTGETITEM == m_eState || STATE_IDLEGETITEM == m_eState || STATE_ENDGETITEM == m_eState)
+	{
+		m_pTransformCom->Set_CurSpeed(0.f);
+	}
 
 	m_pTransformCom->Go_Straight(m_pTransformCom->Get_CurSpeed(), fTimeDelta, m_pNavigationCom);
 }
@@ -1216,6 +1311,7 @@ void CPlayer::Check_EndAnim()
 		break;
 	case STATE_ATTACK_3:
 		m_TickStates.push_back(STATE_IDLE);
+		// m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
 		break;
 	case STATE_SLEP:
 		m_TickStates.push_back(STATE_RUN);
@@ -1225,6 +1321,13 @@ void CPlayer::Check_EndAnim()
 		break;
 	case STATE_RUNJUMPLENDING:
 		m_TickStates.push_back(STATE_RUN);
+		break;
+	case STATE_STARTGETITEM:
+		m_TickStates.push_back(STATE_IDLEGETITEM);
+		break;
+	case STATE_ENDGETITEM:
+		m_TickStates.push_back(STATE_IDLE);
+		CToolManager::Get_Instance()->Set_WithOutPlayer(1.f);
 		break;
 	}
 
@@ -1309,6 +1412,12 @@ HRESULT CPlayer::Choose_Pass(_int iIndex)
 
 }
 
+void CPlayer::Anim_GetItem(string sItemName)
+{
+	m_TickStates.push_back(STATE_STARTGETITEM);
+	Equip_Sockat(sItemName, SLOT_HAND);
+}
+
 #pragma endregion
 
 
@@ -1346,50 +1455,9 @@ HRESULT CPlayer::Ready_Components()
 
 
 
-	/* For.Com_Sockat */
-	CSockat::SOCATDESC SockatDesc;
-	ZeroMemory(&SockatDesc, sizeof(CSockat::SOCATDESC));
-	XMStoreFloat4x4(&SockatDesc.mPivot, m_pModelCom->Get_PivotMatrix());
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sockat"), TEXT("Com_Sockat"), (CComponent**)&m_pSockatCom, &SockatDesc)))
+	if (FAILED(Ready_Sockat()))
 		return E_FAIL;
 
-	CSockat::PARTSDESC PartsDesc;
-	ZeroMemory(&PartsDesc, sizeof(CSockat::PARTSDESC));
-
-	lstrcpy(PartsDesc.m_szModelName, TEXT("Ori_Hat"));
-	PartsDesc.vPos =	_float3(0.f, 0.f, -0.63f);
-	PartsDesc.vScale =	_float3(1.f, 1.f, 1.f);
-	PartsDesc.vRot =	_float3(-90.f, 0, 0);
-	PartsDesc.pOwner = this;
-	if (FAILED(m_pSockatCom->Add_Sockat("bip_hat01", m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
-		return E_FAIL;
-
-
-	//lstrcpy(PartsDesc.m_szModelName, TEXT("Sprint_Hat"));
-	//PartsDesc.vPos = _float3(0.f, -0.05f, -0.72f);
-	//PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
-	//PartsDesc.vRot = _float3(-82.9f, 0.f, -180.f);
-	//PartsDesc.pOwner = this;
-	//if (FAILED(m_pSockatCom->Add_Sockat("bip_hat01", m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
-	//	return E_FAIL;
-
-
-	lstrcpy(PartsDesc.m_szModelName, TEXT("Witch_Hat"));
-	PartsDesc.vPos = _float3(0.f, 0.f, -0.79f);
-	PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
-	PartsDesc.vRot = _float3(-85.1f, 0.f, -180.f);
-	PartsDesc.pOwner = this;
-	if (FAILED(m_pSockatCom->Add_Sockat("bip_hat01", m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
-		return E_FAIL;
-
-
-	lstrcpy(PartsDesc.m_szModelName, TEXT("Umbrella"));
-	PartsDesc.vPos = _float3(-0.28f, 0.11f, -0.41f);
-	PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
-	PartsDesc.vRot = _float3(0.f, 0.f, 178.f);
-	PartsDesc.pOwner = this;
-	if (FAILED(m_pSockatCom->Add_Sockat("bip_ItemPalmR01", m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
-		return E_FAIL;
 
 
 	/* For.Com_Collider */
@@ -1436,6 +1504,130 @@ HRESULT CPlayer::Ready_Components()
 	
 
 
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Ready_Sockat()
+{
+	/* For.Com_Sockat */
+	CSockat::SOCATDESC SockatDesc;
+	ZeroMemory(&SockatDesc, sizeof(CSockat::SOCATDESC));
+	XMStoreFloat4x4(&SockatDesc.mPivot, m_pModelCom->Get_PivotMatrix());
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sockat"), TEXT("Com_Sockat"), (CComponent**)&m_pSockatCom, &SockatDesc)))
+		return E_FAIL;
+
+
+	if (FAILED(m_pSockatCom->Match_Enum_BoneName("bip_hat01", SLOT_HAT)))
+		return E_FAIL;
+	if (FAILED(m_pSockatCom->Match_Enum_BoneName("bip_ItemPalmR01", SLOT_HAND)))
+		return E_FAIL;
+
+
+	Equip_Sockat(string("Ori_Hat"), SLOT_HAT);
+	Equip_Sockat(string("Umbrella"), SLOT_HAND);
+
+
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
+{
+
+	// 중복으로 착용하려고 그럼 나간다
+	if (m_pSockatCom->Check_IsHaveSocket(eSlot, sItemName))
+		return S_OK;
+
+	// Item을 착용 중이냐
+	// 그럼 기존거를 삭제하고 끼운다
+	if (!m_pSockatCom->Check_Sockat(eSlot))
+		m_pSockatCom->Remove_Sockat(eSlot);
+
+
+	TCHAR cItemName[MAX_PATH];
+	CToolManager::Get_Instance()->CtoTC(sItemName.data(), cItemName);
+
+
+	CSockat::PARTSDESC PartsDesc;
+	ZeroMemory(&PartsDesc, sizeof(CSockat::PARTSDESC));
+
+
+	if (!lstrcmp(cItemName, TEXT("Ori_Hat")))
+	{
+		lstrcpy(PartsDesc.m_szModelName, TEXT("Ori_Hat"));
+		PartsDesc.vPos = _float3(0.f, 0.f, -0.63f);
+		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+		PartsDesc.vRot = _float3(-90.f, 0, 0);
+		PartsDesc.pOwner = this;
+	}
+	else if (!lstrcmp(cItemName, TEXT("Sprint_Hat")))
+	{
+		lstrcpy(PartsDesc.m_szModelName, TEXT("Sprint_Hat"));
+		PartsDesc.vPos = _float3(0.f, -0.05f, -0.72f);
+		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+		PartsDesc.vRot = _float3(-82.9f, 0.f, -180.f);
+		PartsDesc.pOwner = this;
+	}
+	else if (!lstrcmp(cItemName, TEXT("Witch_Hat")))
+	{
+		lstrcpy(PartsDesc.m_szModelName, TEXT("Witch_Hat"));
+		PartsDesc.vPos = _float3(0.f, 0.f, -0.79f);
+		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+		PartsDesc.vRot = _float3(-85.1f, 0.f, -180.f);
+		PartsDesc.pOwner = this;
+	}
+	else if (!lstrcmp(cItemName, TEXT("Umbrella")))
+	{
+		lstrcpy(PartsDesc.m_szModelName, TEXT("Umbrella"));
+		PartsDesc.vPos = _float3(-0.28f, 0.11f, -0.41f);
+		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+		PartsDesc.vRot = _float3(0.f, 0.f, 178.f);
+		PartsDesc.pOwner = this;
+
+		if (!FAILED(m_pSockatCom->Add_Sockat(eSlot, m_pModelCom, TEXT("Prototype_GameObject_Umbrella"), PartsDesc)))
+			return E_FAIL;
+
+		return S_OK;
+	}
+	else if (!lstrcmp(cItemName, TEXT("yarn_ui_brew")))
+	{
+		lstrcpy(PartsDesc.m_szModelName, TEXT("yarn_ui_brew"));
+		PartsDesc.vPos = _float3(-0.25, -0.11f, -0.44f);
+		PartsDesc.vScale = _float3(0.5f, 0.5f, 0.5f);
+		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
+		PartsDesc.pOwner = this;
+	}
+	else if (!lstrcmp(cItemName, TEXT("yarn_ui_hover")))
+	{
+		lstrcpy(PartsDesc.m_szModelName, TEXT("yarn_ui_hover"));
+		PartsDesc.vPos = _float3(-0.25, -0.11f, -0.44f);
+		PartsDesc.vScale = _float3(0.5f, 0.5f, 0.5f);
+		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
+		PartsDesc.pOwner = this;
+	}
+	else if (!lstrcmp(cItemName, TEXT("yarn_ui_ice")))
+	{
+		lstrcpy(PartsDesc.m_szModelName, TEXT("yarn_ui_ice"));
+		PartsDesc.vPos = _float3(-0.25, -0.11f, -0.44f);
+		PartsDesc.vScale = _float3(0.5f, 0.5f, 0.5f);
+		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
+		PartsDesc.pOwner = this;
+	}
+	else if (!lstrcmp(cItemName, TEXT("yarn_ui_sprint")))
+	{
+		lstrcpy(PartsDesc.m_szModelName, TEXT("yarn_ui_sprint"));
+		PartsDesc.vPos = _float3(-0.25, -0.11f, -0.44f);
+		PartsDesc.vScale = _float3(0.5f, 0.5f, 0.5f);
+		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
+		PartsDesc.pOwner = this;
+	}
+	else
+		return E_FAIL;
+
+
+	if (!FAILED(m_pSockatCom->Add_Sockat(eSlot, m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }

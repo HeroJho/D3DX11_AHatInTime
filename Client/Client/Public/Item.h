@@ -13,12 +13,24 @@ END
 
 BEGIN(Client)
 
-class CParts final : public CGameObject
+class CItem : public CGameObject
 {
-private:
-	CParts(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CParts(const CParts& rhs);
-	virtual ~CParts() = default;
+public:
+	typedef struct tagItemDesc
+	{
+		TCHAR szModelName[MAX_PATH];
+		_float3 vPos;
+		_float3 vAngle;
+		_float3 vScale;
+
+	}ITEMDESC;
+
+
+protected:
+	CItem(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CItem(const CItem& rhs);
+	virtual ~CItem() = default;
+
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -26,9 +38,21 @@ public:
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
+
+
+	void Update_ParentPos();
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) override;
 
-private:
+public:
+	_bool Get_IsHolded() { return m_bIsHolded; }
+	void Set_IsHolded(_bool bIsHolded) { m_bIsHolded = bIsHolded; }
+
+
+public:
+	virtual void Use_Item() = 0; 
+
+
+protected:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
@@ -39,16 +63,16 @@ public:
 	_float3* Get_Axis() { return &m_vAxis; }
 	TCHAR* Get_ModelTag() { return m_cModelTag; }
 
-private:
+protected:
 	TCHAR					m_cModelTag[MAX_PATH];
 	_float3					m_vAxis;
 
-private:
+	_bool					m_bIsHolded = false;
+
+protected:
 	HRESULT Ready_Components();
 
 public:
-	static CParts* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };
 

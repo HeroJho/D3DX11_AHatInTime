@@ -77,6 +77,16 @@ void CPlayer::Reset_AnimLinearData()
 	m_pModelCom->Reset_AnimLinearData();
 }
 
+_uint CPlayer::Get_AnimIndex()
+{
+	return m_pModelCom->Get_CurAnimIndex();
+}
+
+void CPlayer::Set_AnimIndex(_uint iIndex)
+{
+	m_pModelCom->Set_AnimIndex(iIndex);
+}
+
 
 void CPlayer::Set_State()
 {
@@ -117,12 +127,13 @@ void CPlayer::Set_Anim()
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	m_TickStates.push_back(STATE_IDLE);
+	// m_TickStates.push_back(STATE_IDLE);
 
 	if (m_bStatu)
-		m_TickStates.push_back(STATE_STATU);
+		m_pModelCom->Set_AnimIndex(130);
+	//	m_TickStates.push_back(STATE_STATU);
 
-	Input(fTimeDelta);
+	//Input(fTimeDelta);
 
 	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
 }
@@ -132,41 +143,41 @@ void CPlayer::Input(_float fTimeDelta)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 
-	if (pGameInstance->Key_Pressing(DIK_W))
-	{
+	//if (pGameInstance->Key_Pressing(DIK_W))
+	//{
 
-		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
-		{
-			m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta);
-			m_TickStates.push_back(STATE_RUN);
-		}
-		else
-		{
-			m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta);
-			m_TickStates.push_back(STATE_WALK);
-		}
-	}
-	else if (pGameInstance->Key_Pressing(DIK_S))
-	{
+	//	if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+	//	{
+	//		m_pTransformCom->Go_Straight(m_fRunSpeed, fTimeDelta);
+	//		m_TickStates.push_back(STATE_RUN);
+	//	}
+	//	else
+	//	{
+	//		m_pTransformCom->Go_Straight(m_fWalkSpeed, fTimeDelta);
+	//		m_TickStates.push_back(STATE_WALK);
+	//	}
+	//}
+	//else if (pGameInstance->Key_Pressing(DIK_S))
+	//{
 
-	}
+	//}
 
-	if (pGameInstance->Key_Pressing(DIK_A))
-	{
-		if (!pGameInstance->Key_Pressing(DIK_W))
-			m_pTransformCom->Go_Straight(m_fTurnSpeed, fTimeDelta);
+	//if (pGameInstance->Key_Pressing(DIK_A))
+	//{
+	//	if (!pGameInstance->Key_Pressing(DIK_W))
+	//		m_pTransformCom->Go_Straight(m_fTurnSpeed, fTimeDelta);
 
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), -m_fRotationSpeed, fTimeDelta);
-		m_TickStates.push_back(STATE_WALK);
-	}
-	else if (pGameInstance->Key_Pressing(DIK_D))
-	{
-		if (!pGameInstance->Key_Pressing(DIK_W))
-			m_pTransformCom->Go_Straight(m_fTurnSpeed, fTimeDelta);
+	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), -m_fRotationSpeed, fTimeDelta);
+	//	m_TickStates.push_back(STATE_WALK);
+	//}
+	//else if (pGameInstance->Key_Pressing(DIK_D))
+	//{
+	//	if (!pGameInstance->Key_Pressing(DIK_W))
+	//		m_pTransformCom->Go_Straight(m_fTurnSpeed, fTimeDelta);
 
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fRotationSpeed, fTimeDelta);
-		m_TickStates.push_back(STATE_WALK);
-	}
+	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fRotationSpeed, fTimeDelta);
+	//	m_TickStates.push_back(STATE_WALK);
+	//}
 
 
 
@@ -186,7 +197,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 
-	Set_State();
+	// Set_State();
 }
 
 HRESULT CPlayer::Render()

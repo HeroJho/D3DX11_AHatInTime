@@ -18,7 +18,8 @@ BEGIN(Client)
 class CPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_JUMPATTACK, STATE_JUMPATTACKRENDING, STATE_HILLDOWN, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_JUMPATTACK, STATE_JUMPATTACKRENDING, STATE_HILLDOWN, STATE_STARTGETITEM, STATE_IDLEGETITEM, STATE_ENDGETITEM, STATE_END };
+	enum SLOT { SLOT_HAT, SLOT_HAND, SLOT_END };
 
 private:
 	CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -59,6 +60,13 @@ private:
 	void HillDown_Tick(_float fTimeDelta);
 	void JumpAttack_Tick(_float fTimeDelta);
 
+	void StartGetItem_Tick(_float fTimeDelta);
+	void IdleGetItem_Tick(_float fTimeDelta);
+	void EndGetItem_Tick(_float fTimeDelta);
+
+
+
+
 	void Move_Input(_float fTimeDelta);
 	void Attack_Input(_float fTimeDelta);
 	void ReadyAttack_Input(_float fTimeDelta);
@@ -71,11 +79,26 @@ private:
 	void HillDown_Input(_float fTimeDelta);
 	void JumpAttack_Input(_float fTimeDelta);
 
+	void StartGetItem_Input(_float fTimeDelta);
+	void IdleGetItem_Input(_float fTimeDelta);
+	void EndGetItem_Input(_float fTimeDelta);
+
+
+
+
 	void Check_EndAnim();
 	void Calcul_State(_float fTimeDelta);
 
 
 	HRESULT Choose_Pass(_int iIndex);
+
+
+	// For. Play_Anim
+public:
+	void Anim_GetItem(string sItemName);
+
+
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
@@ -129,7 +152,9 @@ private:
 
 private:
 	HRESULT Ready_Components();
+	HRESULT Ready_Sockat();
 
+	HRESULT Equip_Sockat(string sItemName, SLOT eSlot);
 
 public:
 	static CPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -37,6 +37,8 @@ public:
 
 	char* Get_BoneName() { return m_BoneName; }
 
+	_uint Get_AnimIndex();
+	void Set_AnimIndex(_uint iIndex);
 
 
 private:

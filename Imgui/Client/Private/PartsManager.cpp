@@ -138,6 +138,16 @@ void CPartsManager::Set_StatuMode(_bool bStatu)
 	m_pPlayer->Set_bStatu(bStatu);
 }
 
+_uint CPartsManager::Get_AnimIndex()
+{
+	return m_pPlayer->Get_AnimIndex();
+}
+
+void CPartsManager::Set_AnimIndex(_uint iIndex)
+{
+	m_pPlayer->Set_AnimIndex(iIndex);
+}
+
 
 
 

@@ -2,9 +2,11 @@
 #include "..\Public\Level_GamePlay.h"
 
 #include "GameInstance.h"
-#include "Camera_Free.h"
-#include "DataManager.h"
 
+#include "DataManager.h"
+#include "ItemManager.h"
+
+#include "Camera_Free.h"
 #include "UI.h"
 
 
@@ -45,6 +47,29 @@ HRESULT CLevel_GamePlay::Initialize()
 void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	m_fTimeAcc += fTimeDelta;
+
+	if (10.f < m_fTimeAcc)
+	{
+		CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+		Safe_AddRef(pGameInstance);
+		
+		CGameObject::CREATUREINFODESC ObjDesc;
+		ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
+		ObjDesc.iAT = 1;
+		ObjDesc.iMaxHP = 3;
+		ObjDesc.iHP = 3;
+
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc);
+
+
+		Safe_Release(pGameInstance);
+
+		m_fTimeAcc = 0.f;
+	}
+
+
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -145,6 +170,21 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(CDataManager::Get_Instance()->Load_Map(0, LEVEL_GAMEPLAY)))
 		return E_FAIL;
 
+
+
+
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("yarn_ui_ice"), LEVEL_GAMEPLAY, _float3(-41.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("yarn_ui_hover"), LEVEL_GAMEPLAY, _float3(-42.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, _float3(-43.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Umbrella"), LEVEL_GAMEPLAY, _float3(-44.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+
+
 	Safe_Release(pGameInstance);
 
 	return S_OK;
@@ -152,19 +192,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
-
-	CGameObject::CREATUREINFODESC ObjDesc;
-	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
-	ObjDesc.iAT = 1;
-	ObjDesc.iMaxHP = 3;
-	ObjDesc.iHP = 3;
-
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, pLayerTag, &ObjDesc)))
-		return E_FAIL;
-
-	Safe_Release(pGameInstance);
 
 
 	return S_OK;

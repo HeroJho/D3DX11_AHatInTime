@@ -5,6 +5,7 @@
 
 #include "DataManager.h"
 #include "ToolManager.h"
+#include "ItemManager.h"
 
 #include "Level_Loading.h"
 
@@ -36,6 +37,9 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 	if (FAILED(CToolManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Init(m_pDevice, m_pContext)))
+		return E_FAIL;
+
 
 	if (FAILED(Ready_Prototype_Component()))
 		return E_FAIL;
@@ -68,6 +72,7 @@ void CMainApp::Tick(_float fTimeDelta)
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_MONSTER);
+	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_ITEM);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_MONSTER, CColliderManager::COLLIDER_SWORD);
 	m_pGameInstance->Clear_ColGroup();
 }
@@ -199,6 +204,7 @@ void CMainApp::Free()
 
 	CDataManager::Get_Instance()->Destroy_Instance();
 	CToolManager::Get_Instance()->Destroy_Instance();
+	CItemManager::Get_Instance()->Destroy_Instance();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

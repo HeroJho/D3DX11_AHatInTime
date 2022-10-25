@@ -21,8 +21,11 @@ HRESULT CLevel_AnimTool::Initialize()
 	if (FAILED(Ready_Lights()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
-		return E_FAIL;
+	CCamManager::Get_Instance()->Create_CamTool();
+	CCamManager::Get_Instance()->Create_SelectingCube();
+
+	//if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
+	//	return E_FAIL;
 
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;

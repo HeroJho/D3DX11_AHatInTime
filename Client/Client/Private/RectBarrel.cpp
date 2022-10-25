@@ -2,6 +2,8 @@
 #include "..\Public\RectBarrel.h"
 #include "GameInstance.h"
 
+#include "ToolManager.h"
+
 CRectBarrel::CRectBarrel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -46,6 +48,8 @@ HRESULT CRectBarrel::Initialize(void * pArg)
 
 void CRectBarrel::Tick(_float fTimeDelta)
 {
+	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
+
 	m_pTransformCom->Turn(XMVectorSet(0.f, 0.f, 1.f, 0.f), 0.4f, fTimeDelta);
 
 	if (nullptr != m_pOther)
@@ -61,6 +65,8 @@ void CRectBarrel::Tick(_float fTimeDelta)
 
 void CRectBarrel::LateTick(_float fTimeDelta)
 {
+	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
+
 	if (nullptr == m_pRendererCom)
 		return;
 

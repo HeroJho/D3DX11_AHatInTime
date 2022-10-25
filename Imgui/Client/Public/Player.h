@@ -44,6 +44,9 @@ public:
 	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
 	void Reset_AnimLinearData();
 
+	_uint Get_AnimIndex();
+	void Set_AnimIndex(_uint iIndex);
+
 
 private:
 	void Input(_float fTimeDelta);

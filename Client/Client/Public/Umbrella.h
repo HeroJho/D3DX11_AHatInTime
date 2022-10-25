@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "GameObject.h"
 
+
 BEGIN(Engine)
 class CShader;
 class CTexture;
@@ -13,12 +14,12 @@ END
 
 BEGIN(Client)
 
-class CParts final : public CGameObject
+class CUmbrella final : public CGameObject
 {
 private:
-	CParts(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CParts(const CParts& rhs);
-	virtual ~CParts() = default;
+	CUmbrella(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUmbrella(const CUmbrella& rhs);
+	virtual ~CUmbrella() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -27,6 +28,8 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) override;
+
+	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -43,11 +46,15 @@ private:
 	TCHAR					m_cModelTag[MAX_PATH];
 	_float3					m_vAxis;
 
+	_float					m_fAttackTimeAcc = 0.f;
+	_bool					m_bCanAttack = false;
+
+
 private:
 	HRESULT Ready_Components();
 
 public:
-	static CParts* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CUmbrella* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

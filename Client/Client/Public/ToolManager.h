@@ -7,6 +7,7 @@ BEGIN(Client)
 class CToolManager final : public CBase
 {
 	DECLARE_SINGLETON(CToolManager)
+
 public:
 	CToolManager();
 	virtual ~CToolManager() = default;
@@ -46,10 +47,23 @@ private:
 private:
 	list<_tchar*> m_ManagedTChar;
 	list<char*> m_ManagedChar;
-
-
-
 	_bool m_bDebug = false;
+
+
+	// For. TimeManager
+public:
+	enum TIMETAG { TIME_PLAYER, TIME_MONSTER, TIME_EM, TIME_ALL, TIME_END };
+
+public:
+	_float Get_TimeRatio(TIMETAG eTag);
+	void Set_TimeRatio(TIMETAG eTag, _float fTimeRatio);
+
+	void Set_WithOutPlayer(_float fTimeRatio);
+
+private:
+	_float m_fTimeRatios[TIME_END];
+
+
 
 public:
 	virtual void Free() override;
