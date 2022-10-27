@@ -60,6 +60,26 @@ public:
 
 	}DATA_NAVI;
 
+
+	typedef struct tagCamData
+	{
+		_float3 vPos;
+		_float fSpeed;
+		_uint iLinkIndex;
+	}CAMDATA;
+	typedef struct dataCams
+	{
+		_uint iID;
+
+		_uint iPosNum;
+		CAMDATA* pPosDatas;
+
+		_uint iLookNum;
+		CAMDATA* pLookDatas;
+
+	}DATA_CAMS;
+
+
 #pragma endregion
 
 	DECLARE_SINGLETON(CDataManager)
@@ -117,6 +137,7 @@ public:
 
 	list<ANIM_LINEAR_DATA> Load_Anim(char* pFileName);
 
+	DATA_CAMS* Load_Cam(_int iCamID);
 
 public:
 	virtual void Free() override;

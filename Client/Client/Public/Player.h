@@ -2,6 +2,7 @@
 
 #include "Client_Defines.h"
 #include "GameObject.h"
+#include "Item.h"
 
 BEGIN(Engine)
 class CShader;
@@ -93,9 +94,10 @@ private:
 	HRESULT Choose_Pass(_int iIndex);
 
 
-	// For. Play_Anim
+
 public:
-	void Anim_GetItem(string sItemName);
+	void Get_Item(CItem::ITEMINVENDESC Desc);
+	void Get_Hat(TCHAR* szModelName);
 
 
 

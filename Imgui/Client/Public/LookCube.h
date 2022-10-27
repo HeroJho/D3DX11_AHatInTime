@@ -3,6 +3,8 @@
 #include "Client_Defines.h"
 #include "GameObject.h"
 
+#include "DataManager.h"
+
 BEGIN(Engine)
 class CShader;
 class CTexture;
@@ -22,6 +24,13 @@ public:
 		_float3 vPos;
 		_float3 vScale;
 	}COLORCUBEDESC;
+
+	typedef struct tagCamData
+	{
+		_float3 vPos;
+		_float fSpeed;
+		_uint iLinkIndex;
+	}CAMDATA;
 
 private:
 	CLookCube(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -47,6 +56,9 @@ public:
 		else m_fSpeedTime = fSpeedTime;
 	}
 	_float Get_SpeedTime() { return m_fSpeedTime; }
+
+	CAMDATA Get_SaveDATA();
+	void Set_SaveDATA(CDataManager::CAMDATA* pData);
 
 private:
 	CShader*				m_pShaderCom = nullptr;

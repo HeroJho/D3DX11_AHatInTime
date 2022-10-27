@@ -20,6 +20,13 @@ CUI::CUI(const CUI & rhs)
 
 
 
+_vector CUI::Get_TotalPos()
+{
+	_vector vPos = { m_UiInfo.pParent->Get_Info().fX + m_UiInfo.fX, m_UiInfo.pParent->Get_Info().fY + m_UiInfo.fY };
+
+	return vPos;
+}
+
 HRESULT CUI::Initialize_Prototype()
 {
 	return S_OK;
@@ -36,6 +43,8 @@ HRESULT CUI::Initialize(void * pArg)
 	}
 	else
 	{
+		m_UiInfo.pParent = nullptr;
+
 		m_UiInfo.fSizeX = g_iWinSizeX;
 		m_UiInfo.fSizeY = g_iWinSizeY;
 
@@ -47,23 +56,32 @@ HRESULT CUI::Initialize(void * pArg)
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(g_iWinSizeX, g_iWinSizeY, 0.f, 1.f)));
 
-	m_TotalInfo = m_UiInfo;
 
 	return S_OK;
 }
 
 void CUI::Tick(_float fTimeDelta)
 {
-	for (auto& pChildUI : m_pChildUIs)
+	// 내꺼 먼저
+	if (nullptr != m_UiInfo.pParent)
 	{
-		pChildUI->SetParentUI(m_TotalInfo);
-		pChildUI->Tick(fTimeDelta);
+		m_TotalInfo.fX = m_UiInfo.pParent->Get_Info().fX + m_UiInfo.fX;
+		m_TotalInfo.fY = m_UiInfo.pParent->Get_Info().fY + m_UiInfo.fY;
 	}
-
+	else
+	{
+		m_TotalInfo = m_UiInfo;
+	}
 
 	m_pTransformCom->Set_Scale(XMVectorSet(m_UiInfo.fSizeX, m_UiInfo.fSizeY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_TotalInfo.fX - g_iWinSizeX * 0.5f, -m_TotalInfo.fY + g_iWinSizeY * 0.5f, 0.0f, 1.f));
 
+
+	// 자식들 ㄱㄱ
+	for (auto& pChildUI : m_pChildUIs)
+	{
+		pChildUI->Tick(fTimeDelta);
+	}
 
 	Handle_Collision();
 }
@@ -105,17 +123,19 @@ HRESULT CUI::Render()
 	return S_OK;
 }
 
-HRESULT CUI::Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _tchar * pTag)
+HRESULT CUI::Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _tchar * pTag, void* pArg)
 {
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	UIINFODESC UiInfoDesc;
 	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+	UiInfoDesc.pParent = this;
 	UiInfoDesc.fSizeX = fSizeX;
 	UiInfoDesc.fSizeY = fSizeY;
 	UiInfoDesc.fX = fX;
 	UiInfoDesc.fY = fY;
+	UiInfoDesc.pDesc = pArg;
 
 	CGameObject* pObj = nullptr;
 	pObj = pGameInstance->Clone_GameObject(pTag, &UiInfoDesc);
@@ -127,10 +147,14 @@ HRESULT CUI::Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _t
 	return S_OK;
 }
 
-void CUI::SetParentUI(UIINFODESC ParentUiInfo)
+void CUI::Delete_AllChildUI()
 {
-	m_TotalInfo.fX = ParentUiInfo.fX + m_UiInfo.fX;
-	m_TotalInfo.fY = ParentUiInfo.fY + m_UiInfo.fY;
+	for (auto& pUI : m_pChildUIs)
+	{
+		pUI->Set_Dead(true);
+		Safe_Release(pUI);
+	}
+	m_pChildUIs.clear();
 }
 
 

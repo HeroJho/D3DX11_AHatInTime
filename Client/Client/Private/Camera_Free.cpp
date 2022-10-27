@@ -2,6 +2,8 @@
 #include "..\Public\Camera_Free.h"
 #include "GameInstance.h"
 
+#include "CamManager.h"
+
 CCamera_Free::CCamera_Free(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCamera(pDevice, pContext)
 {
@@ -51,12 +53,20 @@ void CCamera_Free::Tick(_float fTimeDelta)
 		Safe_AddRef(m_pPlayer);
 
 		RELEASE_INSTANCE(CGameInstance);
-		return;
 	}
-	else
+
+
+	switch (m_eState)
 	{
+	case Client::CCamera_Free::CAM_GAME:
 		Game_Mode(fTimeDelta);
+		break;
+	case Client::CCamera_Free::CAM_CUTSCENE:
+		CutScene_Mode(fTimeDelta);
+		break;
 	}
+
+
 
 
 }
@@ -70,6 +80,20 @@ HRESULT CCamera_Free::Render()
 	return S_OK;
 }
 
+void CCamera_Free::Set_Pos(_float3 vPos)
+{
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vPos), 1.f));
+}
+
+_bool CCamera_Free::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance)
+{
+	return m_pTransformCom->Move(vTargetPos, fSpeed, fTimeDelta, fLimitDistance);
+}
+
+void CCamera_Free::LookAt(_fvector vTargetPos)
+{
+	m_pTransformCom->LookAt(vTargetPos);
+}
 
 
 
@@ -129,6 +153,13 @@ void CCamera_Free::Game_Mode_Input(_float fTimeDelta)
 
 
 	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CCamera_Free::CutScene_Mode(_float fTimeDelta)
+{
+
+	CCamManager::Get_Instance()->Tick(fTimeDelta);
+
 }
 
 

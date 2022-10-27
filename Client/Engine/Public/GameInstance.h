@@ -10,6 +10,7 @@
 #include "PipeLine.h"
 #include "Picking.h"
 #include "ColliderManager.h"
+#include "Font_Manager.h"
 
 
 
@@ -50,6 +51,7 @@ public: /* For.Object_Manager */
 	class CGameObject* Clone_GameObject(const _tchar* pPrototypeTag, void* pArg = nullptr);
 	HRESULT Add_Prototype(const _tchar* pPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg = nullptr);
+	HRESULT Add_GameObjectToLayer(const _tchar * pPrototypeTag, _uint iLevelIndex, const _tchar * pLayerTag, CGameObject** pObj, void * pArg);
 
 
 public: /*For.Component_Manager*/
@@ -91,6 +93,11 @@ public: /* For. ColliderManager */
 	void Calcul_ColGroup(CColliderManager::COLLIDERGROUP eGroupL, CColliderManager::COLLIDERGROUP eGroupR);
 	void Clear_ColGroup();
 
+public: /* For.Font_Manager */
+	HRESULT Add_Fonts(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pFontTag, const _tchar* pFontFilePath);
+	HRESULT Render_Fonts(const _tchar* pFontTag, const _tchar* pTextm, _float2 vPosition, _fvector vColor = XMVectorSet(1.f, 1.f, 1.f, 1.f),
+		_float fAngle = 0.f, _float2 vOrigin = _float2(0.f, 0.f), _float2 vScale = _float2(1.f, 1.f));
+
 
 private:
 	CGraphic_Device*				m_pGraphic_Device = nullptr;
@@ -103,6 +110,7 @@ private:
 	CLight_Manager*					m_pLight_Manager = nullptr;
 	CPicking*						m_pPicking = nullptr;
 	CColliderManager*				m_pColliderManager = nullptr;
+	CFont_Manager*					m_pFont_Manager = nullptr;
 
 
 public:

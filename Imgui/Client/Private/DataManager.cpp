@@ -6,9 +6,13 @@
 #include "ToolManager.h"
 #include "MapManager.h"
 #include "MeshManager.h"
+#include "CamManager.h"
 
 #include "StaticModel.h"
 #include "Cell.h"
+
+#include "MarkCube.h";
+#include "LookCube.h"
 
 
 IMPLEMENT_SINGLETON(CDataManager)
@@ -592,6 +596,9 @@ CDataManager::DATA_MAP* CDataManager::Load_Map(_int iMapID)
 	return pData_Map;
 }
 
+
+
+
 HRESULT CDataManager::Save_Anim(char * pFileName, list<ANIM_LINEAR_DATA> Datas)
 {
 	char cPullName[MAX_PATH];
@@ -728,6 +735,105 @@ CDataManager::DATA_NAVI CDataManager::Load_Navi(_int iMapID)
 	}
 
 	return NaviData;
+}
+
+
+
+HRESULT CDataManager::Save_Cam(_int iCamID)
+{
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iCamID);
+
+	strcpy_s(cName, "Cam_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Cam/");
+	strcat_s(cPullName, cName);
+
+
+	std::ofstream ofs(cPullName, ios::out | ios::binary);
+
+	if (!ofs)
+		return E_FAIL;
+
+
+	const list<CMarkCube*>* MarkCubes = CCamManager::Get_Instance()->Get_MarkCubes();
+	_uint iMarkCubeNum = MarkCubes->size();
+
+	ofs.write((char*)&iCamID, sizeof(int));		
+	ofs.write((char*)&iMarkCubeNum, sizeof(int));	
+
+	for (auto& pMarkCube : *MarkCubes)
+	{
+		CMarkCube::CAMDATA Data = pMarkCube->Get_SaveDATA();
+		ofs.write((char*)&Data, sizeof(CMarkCube::CAMDATA));
+	}
+
+
+	const list<CLookCube*>* LookCubes = CCamManager::Get_Instance()->Get_LookCubes();
+	_uint iLookCubes = LookCubes->size();
+
+	ofs.write((char*)&iLookCubes, sizeof(int));
+
+	for (auto& pLookCube : *LookCubes)
+	{
+		CLookCube::CAMDATA Data = pLookCube->Get_SaveDATA();
+		ofs.write((char*)&Data, sizeof(CLookCube::CAMDATA));
+	}
+
+	ofs.close();
+
+	return S_OK;
+}
+
+CDataManager::DATA_CAMS* CDataManager::Load_Cam(_int iCamID)
+{
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iCamID);
+
+	strcpy_s(cName, "Cam_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Cam/");
+	strcat_s(cPullName, cName);
+
+	std::ifstream ifs(cPullName, ios::in | ios::binary);
+
+	if (!ifs)
+		return nullptr;
+
+
+
+	DATA_CAMS* pDatas = new DATA_CAMS;
+	ZeroMemory(pDatas, sizeof(DATA_CAMS));
+
+	ifs.read((char*)&pDatas->iID, sizeof(int));
+	ifs.read((char*)&pDatas->iPosNum, sizeof(int));
+
+	pDatas->pPosDatas = new CAMDATA[pDatas->iPosNum];
+
+	for (_uint i = 0; i < pDatas->iPosNum; ++i)
+	{
+		CAMDATA Data;
+		ifs.read((char*)&Data, sizeof(CAMDATA));
+		pDatas->pPosDatas[i] = Data;
+	}
+
+
+
+	ifs.read((char*)&pDatas->iLookNum, sizeof(int));
+
+	pDatas->pLookDatas = new CAMDATA[pDatas->iLookNum];
+
+	for (_uint i = 0; i < pDatas->iLookNum; ++i)
+	{
+		CAMDATA Data;
+		ifs.read((char*)&Data, sizeof(CAMDATA));
+		pDatas->pLookDatas[i] = Data;
+	}
+
+
+	return pDatas;
 }
 
 

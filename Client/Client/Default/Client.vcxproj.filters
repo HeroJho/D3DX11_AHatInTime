@@ -97,6 +97,18 @@
     <Filter Include="02.GameObjects\Item\Yarn">
       <UniqueIdentifier>{14b917e6-fb0b-404b-b3dc-2776015f7631}</UniqueIdentifier>
     </Filter>
+    <Filter Include="96.Managers\CamManager">
+      <UniqueIdentifier>{b75c4916-5b69-462b-9790-3597d546e9f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\CamCube">
+      <UniqueIdentifier>{bee96a21-e0dd-4eca-a8bb-745d33f8f7d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\Hat_Inven">
+      <UniqueIdentifier>{86de944a-61b0-463f-b139-ab49d0aa5333}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\Item_Inven">
+      <UniqueIdentifier>{9385fec6-57ee-4a68-be55-ecff15e57723}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -198,6 +210,30 @@
     <ClInclude Include="..\public\Yarn.h">
       <Filter>02.GameObjects\Item\Yarn</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\CamManager.h">
+      <Filter>96.Managers\CamManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MarkCube.h">
+      <Filter>02.GameObjects\CamCube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\LookCube.h">
+      <Filter>02.GameObjects\CamCube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ColorCube.h">
+      <Filter>02.GameObjects\CamCube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Inven.h">
+      <Filter>03.UI\Hat_Inven</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_ItemButton.h">
+      <Filter>03.UI\Hat_Inven</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Item_Inven_Slot.h">
+      <Filter>03.UI\Item_Inven</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Item_Inven.h">
+      <Filter>03.UI\Item_Inven</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -286,6 +322,30 @@
     </ClCompile>
     <ClCompile Include="..\private\Yarn.cpp">
       <Filter>02.GameObjects\Item\Yarn</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\CamManager.cpp">
+      <Filter>96.Managers\CamManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MarkCube.cpp">
+      <Filter>02.GameObjects\CamCube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\LookCube.cpp">
+      <Filter>02.GameObjects\CamCube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ColorCube.cpp">
+      <Filter>02.GameObjects\CamCube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Inven.cpp">
+      <Filter>03.UI\Hat_Inven</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_ItemButton.cpp">
+      <Filter>03.UI\Hat_Inven</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Item_Inven_Slot.cpp">
+      <Filter>03.UI\Item_Inven</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Item_Inven.cpp">
+      <Filter>03.UI\Item_Inven</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

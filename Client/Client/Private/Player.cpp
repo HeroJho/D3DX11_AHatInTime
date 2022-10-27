@@ -4,6 +4,8 @@
 
 #include "DataManager.h"
 #include "ToolManager.h"
+#include "CamManager.h"
+#include "ItemManager.h"
 
 #include "Camera_Free.h"
 
@@ -305,12 +307,6 @@ void CPlayer::Idle_Tick(_float fTimeDelta)
 		m_TickStates.push_back(STATE_SLEP);
 	}
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
-	if (pGameInstance->Key_Down(DIK_T))
-		Anim_GetItem(string("yarn_ui_ice"));
-
-	RELEASE_INSTANCE(CGameInstance);
 
 }
 
@@ -1105,6 +1101,7 @@ void CPlayer::IdleGetItem_Input(_float fTimeDelta)
 	{
 		m_TickStates.push_back(STATE_ENDGETITEM);
 		m_pSockatCom->Remove_Sockat(SLOT_HAND);
+		//CCamManager::Get_Instance()->End_CutScene();
 	}
 
 
@@ -1328,6 +1325,7 @@ void CPlayer::Check_EndAnim()
 	case STATE_ENDGETITEM:
 		m_TickStates.push_back(STATE_IDLE);
 		CToolManager::Get_Instance()->Set_WithOutPlayer(1.f);
+		CCamManager::Get_Instance()->End_CutScene();
 		break;
 	}
 
@@ -1412,10 +1410,34 @@ HRESULT CPlayer::Choose_Pass(_int iIndex)
 
 }
 
-void CPlayer::Anim_GetItem(string sItemName)
+void CPlayer::Get_Item(CItem::ITEMINVENDESC Desc)
 {
 	m_TickStates.push_back(STATE_STARTGETITEM);
-	Equip_Sockat(sItemName, SLOT_HAND);
+
+
+	char szName[MAX_PATH];
+	CToolManager::Get_Instance()->TCtoC(Desc.szModelName, szName);
+
+	Equip_Sockat(szName, SLOT_HAND);
+
+	CCamManager::Get_Instance()->Play_CutScene(1, false, m_pTransformCom);
+
+	CItemManager::Get_Instance()->Add_Item(Desc.szModelName, Desc.iCount);
+
+}
+
+void CPlayer::Get_Hat(TCHAR * szModelName)
+{
+	m_TickStates.push_back(STATE_STARTGETITEM);
+
+	char szName[MAX_PATH];
+	CToolManager::Get_Instance()->TCtoC(szModelName, szName);
+
+	Equip_Sockat(szName, SLOT_HAND);
+
+	CCamManager::Get_Instance()->Play_CutScene(1, false, m_pTransformCom);
+
+	CItemManager::Get_Instance()->Add_Hat(szModelName);
 }
 
 #pragma endregion

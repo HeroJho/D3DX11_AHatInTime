@@ -9,8 +9,6 @@
 #include "Terrain.h"
 #include "Monster.h"
 #include "Player.h"
-#include "UI_Edit.h"
-#include "UI_Edit_Button.h"
 #include "StaticModel_Col.h"
 #include "StaticModel_Instance.h"
 
@@ -18,12 +16,22 @@
 #include "Umbrella.h"
 #include "Yarn.h"
 
+#include "UI_Edit.h"
+#include "UI_Edit_Button.h"
 #include "UI_Health.h"
 #include "UI_TextLife.h"
+
+#include "UI_Inven.h"
+#include "UI_ItemButton.h"
+#include "UI_Item_Inven.h"
+#include "UI_Item_Inven_Slot.h"
 
 #include "RollingBarrel.h"
 #include "RectBarrel.h"
 
+#include "ColorCube.h"
+#include "MarkCube.h"
+#include "LookCube.h"
 
 
 #include "Test.h"
@@ -199,6 +207,20 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 
+	/* For.Prototype_GameObject_ColorCube*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ColorCube"),
+		CColorCube::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_MarkCube*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MarkCube"),
+		CMarkCube::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_LookCube*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_LookCube"),
+		CLookCube::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
 
 
 	/* For.Prototype_UI_Health*/
@@ -210,6 +232,19 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CUI_TextLife::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Inven"),
+		CUI_Inven::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_ItemButton"),
+		CUI_ItemButton::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Item_Inven"),
+		CUI_Item_Inven::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Item_Inven_Slot"),
+		CUI_Item_Inven_Slot::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
 	/* For.Prototype_UI_TextLife*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_Test"),
 		CTest::Create(m_pDevice, m_pContext))))
@@ -227,18 +262,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 	// ==================== UI=====================
-	/* For.Prototype_Component_Texture_PlayerHealth */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_PlayerHealth"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/PlayerHealth/playerhealth_new_%d.dds"), 5))))
-		return E_FAIL;
-	/* For.Prototype_Component_Texture_LifeText */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_LifeText"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/PlayerHealth/text_life.dds"), 1))))
-		return E_FAIL;
-	/* For.Prototype_Component_Texture_SmartEye */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_SmartEye"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Meshes/Anim/HatGirl/hatkid_smarteyes.dds"), 1))))
-		return E_FAIL;
+	Loading_UI();
+
 
 
 
@@ -342,6 +367,63 @@ HRESULT CLoader::Loading_Model_NoneAnim()
 		CDataManager::Get_Instance()->Create_Try_BinModel(cTag, LEVEL_GAMEPLAY, CDataManager::DATA_NOEANIM);
 	}
 
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_UI()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	/* For.Prototype_Component_Texture_PlayerHealth */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_PlayerHealth"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/PlayerHealth/playerhealth_new_%d.dds"), 5))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_LifeText */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_LifeText"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/PlayerHealth/text_life.dds"), 1))))
+		return E_FAIL;
+
+
+	/* For.Prototype_Component_Texture_SmartEye */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_SmartEye"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Meshes/Anim/HatGirl/hatkid_smarteyes.dds"), 1))))
+		return E_FAIL;
+
+
+	/* For.Prototype_Component_Texture_Icon_KidHat */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_KidHat"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/itemicon_kidhat.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Icon_SprintHat */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_SprintHat"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/sprint_hat.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Icon_WitchHat */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_WitchHat"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/witch_hat.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Selector */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Selector"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/Selector.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Icon_WitchHat */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_SprintYarn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/yarn_ui_sprint.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Icon_WitchHat */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_WitchYarn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/yarn_ui_brew.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Icon_WitchHat */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_IceYarn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/yarn_ui_ice.dds"), 1))))
+		return E_FAIL;
 
 
 

@@ -118,9 +118,6 @@
     <Filter Include="01.Level\04. AnimTool">
       <UniqueIdentifier>{dfb6c689-90d2-4339-adb9-f61fe1100957}</UniqueIdentifier>
     </Filter>
-    <Filter Include="97.Manager\04 AnimManager">
-      <UniqueIdentifier>{9557c9bd-8ec3-42bf-a756-399dbb637694}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObject\03. AnimTool">
       <UniqueIdentifier>{00919330-4f26-49c4-aadc-5033ecc577af}</UniqueIdentifier>
     </Filter>
@@ -159,6 +156,9 @@
     </Filter>
     <Filter Include="02.GameObject\02. MapTool\03. ClickedVertexCube">
       <UniqueIdentifier>{a640c109-257c-42ea-81ca-a39b2500f0e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Manager\04. AnimManager">
+      <UniqueIdentifier>{9557c9bd-8ec3-42bf-a756-399dbb637694}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -291,7 +291,7 @@
       <Filter>01.Level\04. AnimTool</Filter>
     </ClInclude>
     <ClInclude Include="..\public\AnimManager.h">
-      <Filter>97.Manager\04 AnimManager</Filter>
+      <Filter>97.Manager\04. AnimManager</Filter>
     </ClInclude>
     <ClInclude Include="..\public\AnimModel.h">
       <Filter>02.GameObject\03. AnimTool\01. AnimModel</Filter>
@@ -440,7 +440,7 @@
       <Filter>01.Level\04. AnimTool</Filter>
     </ClCompile>
     <ClCompile Include="..\private\AnimManager.cpp">
-      <Filter>97.Manager\04 AnimManager</Filter>
+      <Filter>97.Manager\04. AnimManager</Filter>
     </ClCompile>
     <ClCompile Include="..\private\AnimModel.cpp">
       <Filter>02.GameObject\03. AnimTool\01. AnimModel</Filter>

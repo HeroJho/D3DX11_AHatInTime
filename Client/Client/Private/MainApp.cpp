@@ -6,6 +6,8 @@
 #include "DataManager.h"
 #include "ToolManager.h"
 #include "ItemManager.h"
+#include "CamManager.h"
+#include "UIManager.h"
 
 #include "Level_Loading.h"
 
@@ -38,6 +40,11 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(CToolManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
 	if (FAILED(CItemManager::Get_Instance()->Init(m_pDevice, m_pContext)))
+		return E_FAIL;
+	if (FAILED(CCamManager::Get_Instance()->Init()))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance->Add_Fonts(m_pDevice, m_pContext, TEXT("Font_Nexon"), TEXT("../Bin/Resources/Fonts/129ex.spritefont"))))
 		return E_FAIL;
 
 
@@ -202,9 +209,12 @@ CMainApp * CMainApp::Create()
 void CMainApp::Free()
 {
 
-	CDataManager::Get_Instance()->Destroy_Instance();
+	CUIManager::Get_Instance()->Destroy_Instance();
 	CToolManager::Get_Instance()->Destroy_Instance();
 	CItemManager::Get_Instance()->Destroy_Instance();
+	CCamManager::Get_Instance()->Destroy_Instance();
+	CDataManager::Get_Instance()->Destroy_Instance();
+
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

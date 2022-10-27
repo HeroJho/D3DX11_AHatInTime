@@ -58,6 +58,26 @@ public:
 
 	}DATA_NAVI;
 
+
+	typedef struct tagCamData
+	{
+		_float3 vPos;
+		_float fSpeed;
+		_uint iLinkIndex;
+	}CAMDATA;
+	typedef struct dataCams
+	{
+
+		_uint iID;
+
+		_uint iPosNum;
+		CAMDATA* pPosDatas;
+
+		_uint iLookNum;
+		CAMDATA* pLookDatas;
+
+	}DATA_CAMS;
+
 #pragma endregion
 
 	DECLARE_SINGLETON(CDataManager)
@@ -117,6 +137,8 @@ public:
 	HRESULT Save_Navi(_int iMapID);
 	DATA_NAVI Load_Navi(_int iMapID);
 
+	HRESULT Save_Cam(_int iCamID);
+	DATA_CAMS* Load_Cam(_int iCamID);
 
 
 

@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "ToolManager.h"
 #include "ImGui_Manager.h"
+#include "DataManager.h"
 
 #include "ColorCube.h"
 #include "MarkCube.h"
@@ -20,6 +21,7 @@ CCamManager::CCamManager()
 {
 	m_fMarkMoveSens = 0.1f;
 	m_fLookMoveSens = 0.1f;
+
 }
 
 
@@ -143,7 +145,7 @@ void CCamManager::Create_SelectingCube()
 	Safe_Release(pGameInstance);
 }
 
-void CCamManager::Create_MarkCube()
+void CCamManager::Create_MarkCube(CDataManager::CAMDATA* pData)
 {
 	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
@@ -168,13 +170,18 @@ void CCamManager::Create_MarkCube()
 
 	Safe_AddRef(pTempObj);
 
+	if (nullptr != pData)
+	{
+		((CMarkCube*)pTempObj)->Set_SaveDATA(pData);
+	}
+
 	Safe_Release(pGameInstance);
 
 	// 포스 계산
 	MakeRenderPos();
 }
 
-void CCamManager::Create_LookCube()
+void CCamManager::Create_LookCube(CDataManager::CAMDATA* pData)
 {
 	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
@@ -198,6 +205,11 @@ void CCamManager::Create_LookCube()
 	++m_iTagIndex;
 
 	Safe_AddRef(pTempObj);
+
+	if (nullptr != pData)
+	{
+		((CLookCube*)pTempObj)->Set_SaveDATA(pData);
+	}
 
 	Safe_Release(pGameInstance);
 
@@ -946,4 +958,83 @@ void CCamManager::Free()
 	m_iTagIndex = 0;
 }
 
+
+
+
+void CCamManager::Save_Data()
+{
+	CDataManager::Get_Instance()->Save_Cam(m_iSaveIndex);
+}
+
+void CCamManager::Load_Data()
+{
+
+	CDataManager::DATA_CAMS* Data = CDataManager::Get_Instance()->Load_Cam(m_iSaveIndex);
+
+	Clear_Data();
+
+	if (nullptr == Data)
+		return;
+
+	for (_uint i = 0; i < Data->iPosNum; ++i)
+	{
+		Create_MarkCube(&Data->pPosDatas[i]);
+	}
+
+	for (_uint i = 0; i < Data->iLookNum; ++i)
+	{
+		Create_LookCube(&Data->pLookDatas[i]);
+	}
+
+}
+
+
+
+
+
+void CCamManager::Clear_PosData()
+{
+	for (auto& pCube : m_MarkCubes)
+		pCube->Set_Dead();
+
+	m_MarkCubes.clear();
+	m_TempMarkCubes.clear();
+	m_pTempBasiMarkCubes.clear();
+
+
+	m_bStart = false;
+	m_fMarkSpeed = 0.f;
+	m_fMarkTimeAcc = 0.f;
+	m_fMarkT = 0.f;
+
+	m_fLookSpeed = 0.f;
+	m_fLookTimeAcc = 0.f;
+	m_fLookT = 0.f;
+
+}
+
+void CCamManager::Clear_LookData()
+{
+	for (auto& pCube : m_LookCubes)
+		pCube->Set_Dead();
+
+	m_LookCubes.clear();
+	m_TempLookCubes.clear();
+	m_pTempBasiLookCubes.clear();
+
+
+	m_bStart = false;
+	m_fMarkSpeed = 0.f;
+	m_fMarkTimeAcc = 0.f;
+	m_fMarkT = 0.f;
+
+	m_fLookSpeed = 0.f;
+	m_fLookTimeAcc = 0.f;
+	m_fLookT = 0.f;
+}
+void CCamManager::Clear_Data()
+{
+	Clear_PosData();
+	Clear_LookData();
+}
 

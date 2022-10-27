@@ -23,7 +23,15 @@ public:
 		_float3 vAngle;
 		_float3 vScale;
 
+		_uint iCount;
+
 	}ITEMDESC;
+
+	typedef struct tagIvenDesc
+	{
+		TCHAR szModelName[MAX_PATH];
+		_uint iCount;
+	}ITEMINVENDESC;
 
 
 protected:
@@ -61,10 +69,10 @@ protected:
 
 public:
 	_float3* Get_Axis() { return &m_vAxis; }
-	TCHAR* Get_ModelTag() { return m_cModelTag; }
+	TCHAR* Get_ModelTag() { return m_InvenDesc.szModelName; }
 
 protected:
-	TCHAR					m_cModelTag[MAX_PATH];
+	ITEMINVENDESC			m_InvenDesc;
 	_float3					m_vAxis;
 
 	_bool					m_bIsHolded = false;

@@ -88,11 +88,12 @@ void CYarn::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 	{
 		if (!strcmp("StaticOBB", Desc.OtherDesc.sTag))
 		{
+			if (Get_Dead())
+				return;
+
 			CPlayer* pPlayer = (CPlayer*)Desc.pOther;
 
-			char cTempName[MAX_PATH];
-			CToolManager::Get_Instance()->TCtoC(m_cModelTag, cTempName);
-			pPlayer->Anim_GetItem(string(cTempName));
+			pPlayer->Get_Item(m_InvenDesc);
 
 			Set_Dead(true);
 		}

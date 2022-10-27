@@ -131,7 +131,7 @@ void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTra
 		
 	}
 
-	if (!m_eTickColState.empty())
+	if (!m_eTickColState.empty() || !m_eTickWallColState.empty())
 		Compute_State(pNavi, pTran);
 
 }
@@ -207,10 +207,30 @@ _bool COBB::Collision_OBB(CCollider * pTargetCollider, CTransform* pTran, _float
 	_float	fDot = 0.f;
 	((COBB*)pTargetCollider)->Get_Collider().GetCorners(vPoints);
 
-	if (Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[0]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot) ||
-		Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[1]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot) || 
-		Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[4]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot) || 
-		Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[5]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot))
+	// TODO : 벽면으로도 레이를 쏴서 먼저 체크하는게 좋음 (지금 하나의 콜라이더 테스트)
+	// 0.25값을 높이면 높일수록 면위에 타고있을 때 끝 지점으로 가면 일찍이 멀어서 어색한 부분이 많음.
+
+	_vector vPos0 = XMLoadFloat3(&vPoints[0]) + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[0])) * 0.25f;
+	_vector vPos1 = XMLoadFloat3(&vPoints[1]) + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[1])) * 0.25f;
+	_vector vPos4 = XMLoadFloat3(&vPoints[4]) + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[4])) * 0.25f;
+	_vector vPos5 = XMLoadFloat3(&vPoints[5]) + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[5])) * 0.25f;
+
+	XMStoreFloat3(&vPoints[0], vPos0);
+	XMStoreFloat3(&vPoints[1], vPos1);
+	XMStoreFloat3(&vPoints[4], vPos4);
+	XMStoreFloat3(&vPoints[5], vPos5);
+
+	_bool bIsHit = false;
+	if (Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[0]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot))
+		bIsHit = true;
+	if (Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[1]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot))
+		bIsHit = true;
+	if (Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[4]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot))
+		bIsHit = true;
+	if (Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[5]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot))
+		bIsHit = true;
+	
+	if(bIsHit)
 	{// 맞았다
 		// 레이에 맞은 면을 찾는다.
 		// 너무 작은 면은 안 탄다 흘러 보낸다
@@ -232,11 +252,20 @@ _bool COBB::Collision_OBB(CCollider * pTargetCollider, CTransform* pTran, _float
 			// 너무 가파르다 -> 벽이다
 			if (0.3f > fDot)
 			{
-				_vector vAixY = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-				_vector vAixMyRight = XMVector3Cross(vAixY, vPushDir);
-				vPushDir = XMVector3Cross(vAixMyRight, vAixY);
-				((COBB*)pTargetCollider)->m_eColState = COL_BLOCK;
-				XMStoreFloat3(Out_fPushDir, XMVector3Normalize(vPushDir));
+
+				if (COL_ON == ((COBB*)pTargetCollider)->m_ePreColState && !m_ColliderDesc.bWall)
+				{
+					((COBB*)pTargetCollider)->m_eColState = COL_NONE;
+				}
+				else
+				{
+ 					_vector vAixY = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+					_vector vAixMyRight = XMVector3Cross(vAixY, vPushDir);
+					vPushDir = XMVector3Cross(vAixMyRight, vAixY);
+					((COBB*)pTargetCollider)->m_eColState = COL_BLOCK;
+					XMStoreFloat3(Out_fPushDir, XMVector3Normalize(vPushDir));
+				}
+
 			}
 			else
 			{
@@ -1077,6 +1106,7 @@ _bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss, 
 	_vector vVPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 0.3f);
 	_vector vVDir = vDir;
 
+	_float3 vTempPoss[3];
 
 	// 상
 	if (TriangleTests::Intersects(vVPos, vVDir, XMLoadFloat3(&vPoints[3]), XMLoadFloat3(&vPoints[2]), XMLoadFloat3(&vPoints[7]), fDis) ||
@@ -1084,9 +1114,9 @@ _bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss, 
 	{
 		if (fMinDis > fDis)
 		{
-			Out_pPoss[0] = vPoints[2];
-			Out_pPoss[1] = vPoints[7];
-			Out_pPoss[2] = vPoints[3];
+			vTempPoss[0] = vPoints[2];
+			vTempPoss[1] = vPoints[7];
+			vTempPoss[2] = vPoints[3];
 			fMinDis = fDis;
 		}
 
@@ -1099,9 +1129,9 @@ _bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss, 
 	{
 		if (fMinDis > fDis)
 		{
-			Out_pPoss[0] = vPoints[0];
-			Out_pPoss[1] = vPoints[5];
-			Out_pPoss[2] = vPoints[1];
+			vTempPoss[0] = vPoints[0];
+			vTempPoss[1] = vPoints[5];
+			vTempPoss[2] = vPoints[1];
 			fMinDis = fDis;
 		}
 
@@ -1115,9 +1145,9 @@ _bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss, 
 	{
 		if (fMinDis > fDis)
 		{
-			Out_pPoss[0] = vPoints[3];
-			Out_pPoss[1] = vPoints[7];
-			Out_pPoss[2] = vPoints[0];
+			vTempPoss[0] = vPoints[3];
+			vTempPoss[1] = vPoints[7];
+			vTempPoss[2] = vPoints[0];
 			fMinDis = fDis;
 		}
 
@@ -1130,9 +1160,9 @@ _bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss, 
 	{
 		if (fMinDis > fDis)
 		{
-			Out_pPoss[0] = vPoints[6];
-			Out_pPoss[1] = vPoints[2];
-			Out_pPoss[2] = vPoints[1];
+			vTempPoss[0] = vPoints[6];
+			vTempPoss[1] = vPoints[2];
+			vTempPoss[2] = vPoints[1];
 			fMinDis = fDis;
 		}
 
@@ -1145,9 +1175,9 @@ _bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss, 
 	{
 		if (fMinDis > fDis)
 		{
-			Out_pPoss[0] = vPoints[7];
-			Out_pPoss[1] = vPoints[5];
-			Out_pPoss[2] = vPoints[4];
+			vTempPoss[0] = vPoints[7];
+			vTempPoss[1] = vPoints[5];
+			vTempPoss[2] = vPoints[4];
 			fMinDis = fDis;
 		}
 
@@ -1160,24 +1190,35 @@ _bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss, 
 	{
 		if (fMinDis > fDis)
 		{
-			Out_pPoss[0] = vPoints[3];
-			Out_pPoss[1] = vPoints[1];
-			Out_pPoss[2] = vPoints[2];
+			vTempPoss[0] = vPoints[3];
+			vTempPoss[1] = vPoints[1];
+			vTempPoss[2] = vPoints[2];
 			fMinDis = fDis;
 		}
 
 		bInter = true;
 	}
 
-	_vector vAtoB = XMLoadFloat3(&Out_pPoss[1]) - XMLoadFloat3(&Out_pPoss[0]);
-	_vector vBtoC = XMLoadFloat3(&Out_pPoss[2]) - XMLoadFloat3(&Out_pPoss[1]);
+	// 내적 값이 제일 작은 애의 면 정보를 담는다.
+	if (bInter)
+	{
+		_vector vAtoB = XMLoadFloat3(&vTempPoss[1]) - XMLoadFloat3(&vTempPoss[0]);
+		_vector vBtoC = XMLoadFloat3(&vTempPoss[2]) - XMLoadFloat3(&vTempPoss[1]);
 
-	_vector vPlanNorDir = XMVector3Cross(vAtoB, vBtoC);
-	_vector vMyNorDir = -1.f * vVDir;
+		_vector vPlanNorDir = XMVector3Cross(vAtoB, vBtoC);
+		_vector vMyNorDir = -1.f * vVDir;
 
-	_float fDotTemp = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vPlanNorDir), XMVector3Normalize(vMyNorDir)));
-	if (*Out_fDot < fDotTemp)
-		*Out_fDot = fDotTemp;
+		_float fDotTemp = XMVectorGetX(XMVector3Dot(XMVector3Normalize(vPlanNorDir), XMVector3Normalize(vMyNorDir)));
+
+		if (*Out_fDot < fDotTemp)
+		{
+			Out_pPoss[0] = vTempPoss[0];
+			Out_pPoss[1] = vTempPoss[1];
+			Out_pPoss[2] = vTempPoss[2];
+
+			*Out_fDot = fDotTemp;
+		}
+	}
 
 	return bInter;
 }

@@ -2,6 +2,8 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+#include "DataManager.h"
+
 BEGIN(Engine)
 
 class CGameObject;
@@ -37,11 +39,16 @@ public:
 	_bool Get_Start() { return m_bStart; }
 	void Set_Start(_bool bStart);
 
-	const list<class CMarkCube*>* Get_MarkCubes() { return &m_MarkCubes; }
-	const list<class CLookCube*>* Get_LookCubes() { return &m_LookCubes; }
-
 	_bool Get_ShowCube() { return m_bShowCube; }
 	void Set_ShowCube(_bool bShowCube) { m_bShowCube = bShowCube; }
+
+	_uint Get_Index() { return m_iSaveIndex; }
+	void Set_Index(_uint iSaveIndex) { m_iSaveIndex = iSaveIndex; }
+
+
+
+	const list<class CMarkCube*>* Get_MarkCubes() { return &m_MarkCubes; }
+	const list<class CLookCube*>* Get_LookCubes() { return &m_LookCubes; }
 
 public:
 	// For. Common
@@ -52,8 +59,12 @@ public:
 
 	_bool Check_Exception();
 
+	void Clear_PosData();
+	void Clear_LookData();
+	void Clear_Data();
+
 	// For. MarkCube
-	void Create_MarkCube();
+	void Create_MarkCube(CDataManager::CAMDATA* pData = nullptr);
 	void Delete_MarkCube();
 	// For. RenderCube
 	void Create_RenderPosCube(_float3 vPos, _bool vMark);
@@ -62,7 +73,7 @@ public:
 	// For. LookCube
 	void Create_ChaseLookCube();
 
-	void Create_LookCube();
+	void Create_LookCube(CDataManager::CAMDATA* pData = nullptr);
 	void Delete_LookCube();
 
 
@@ -102,6 +113,9 @@ public: // .For CutScene
 	void GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2, CAMDATA vPos3, CAMDATA vPos4);
 
 
+	void Save_Data();
+	void Load_Data();
+
 
 private:
 	// For. Common
@@ -112,6 +126,7 @@ private:
 	_uint m_iTagIndex = 0;
 	_bool m_bShowCube = false;
 
+	_uint m_iSaveIndex = 0;
 
 
 	// For. Play

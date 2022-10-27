@@ -616,6 +616,56 @@ list<ANIM_LINEAR_DATA> CDataManager::Load_Anim(char * pFileName)
 	return Datas;
 }
 
+CDataManager::DATA_CAMS * CDataManager::Load_Cam(_int iCamID)
+{
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iCamID);
+
+	strcpy_s(cName, "Cam_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Cam/");
+	strcat_s(cPullName, cName);
+
+	std::ifstream ifs(cPullName, ios::in | ios::binary);
+
+	if (!ifs)
+		return nullptr;
+
+
+
+	DATA_CAMS* pDatas = new DATA_CAMS;
+	ZeroMemory(pDatas, sizeof(DATA_CAMS));
+
+	ifs.read((char*)&pDatas->iID, sizeof(int));
+	ifs.read((char*)&pDatas->iPosNum, sizeof(int));
+
+	pDatas->pPosDatas = new CAMDATA[pDatas->iPosNum];
+
+	for (_uint i = 0; i < pDatas->iPosNum; ++i)
+	{
+		CAMDATA Data;
+		ifs.read((char*)&Data, sizeof(CAMDATA));
+		pDatas->pPosDatas[i] = Data;
+	}
+
+
+
+	ifs.read((char*)&pDatas->iLookNum, sizeof(int));
+
+	pDatas->pLookDatas = new CAMDATA[pDatas->iLookNum];
+
+	for (_uint i = 0; i < pDatas->iLookNum; ++i)
+	{
+		CAMDATA Data;
+		ifs.read((char*)&Data, sizeof(CAMDATA));
+		pDatas->pLookDatas[i] = Data;
+	}
+
+
+	return pDatas;
+}
+
 
 
 

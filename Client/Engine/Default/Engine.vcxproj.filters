@@ -133,6 +133,12 @@
     <ClCompile Include="..\private\MeshContainer_Instance.cpp">
       <Filter>03.Components\02.VIBuffer\Instancing\Model\MeshContainer</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\CustomFont.cpp">
+      <Filter>04.Utility\04.Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Font_Manager.cpp">
+      <Filter>04.Utility\04.Fonts\Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -281,6 +287,12 @@
     </ClInclude>
     <ClInclude Include="..\public\MeshContainer_Instance.h">
       <Filter>03.Components\02.VIBuffer\Instancing\Model\MeshContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\CustomFont.h">
+      <Filter>04.Utility\04.Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Font_Manager.h">
+      <Filter>04.Utility\04.Fonts\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -433,6 +445,12 @@
     </Filter>
     <Filter Include="03.Components\02.VIBuffer\Instancing\Model\MeshContainer">
       <UniqueIdentifier>{7629bd0e-4636-42e2-9917-7f9e76f54500}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\04.Fonts">
+      <UniqueIdentifier>{2b8ed4c3-1c3a-4735-a9f3-9bb5f0a806fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\04.Fonts\Manager">
+      <UniqueIdentifier>{b07b9896-8875-4db6-a529-f40a11b9098e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

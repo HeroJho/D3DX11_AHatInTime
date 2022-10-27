@@ -22,6 +22,8 @@ public:
 	typedef struct tagUIInfoDesc
 	{
 		_float					fX, fY, fSizeX, fSizeY;
+		CUI*					pParent = nullptr;
+		void*					pDesc = nullptr;
 	}UIINFODESC;
 
 
@@ -29,6 +31,9 @@ protected:
 	CUI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI(const CUI& rhs);
 	virtual ~CUI() = default;
+
+public:
+	_vector Get_TotalPos();
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -41,9 +46,8 @@ public:
 
 public:
 	UIINFODESC	Get_Info() { return m_UiInfo; };
-	HRESULT Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _tchar* pTag);
-
-	void SetParentUI(UIINFODESC ParentUiInfo);
+	HRESULT Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _tchar* pTag, void* pArg = nullptr);
+	void Delete_AllChildUI();
 
 protected:
 	CRenderer*				m_pRendererCom = nullptr;		// ∞Ì¡§
@@ -58,6 +62,7 @@ protected:
 	_float4x4				m_ViewMatrix, m_ProjMatrix;
 
 	UI_STATE				m_eState = UI_END;
+
 
 private:
 	HRESULT Ready_Components();

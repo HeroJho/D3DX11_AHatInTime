@@ -86,6 +86,24 @@ _float3 CLookCube::Get_Pos()
 	return vTempPos;
 }
 
+CLookCube::CAMDATA CLookCube::Get_SaveDATA()
+{
+	CAMDATA Data;
+	ZeroMemory(&Data, sizeof(CAMDATA));
+
+	XMStoreFloat3(&Data.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	Data.fSpeed = m_fSpeedTime;
+	Data.iLinkIndex = m_iLinkIndex;
+
+	return Data;
+}
+void CLookCube::Set_SaveDATA(CDataManager::CAMDATA * pData)
+{
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&pData->vPos), 1.f));
+	m_fSpeedTime = pData->fSpeed;
+	m_iLinkIndex = pData->iLinkIndex;
+}
+
 
 HRESULT CLookCube::Set_RenderState()
 {

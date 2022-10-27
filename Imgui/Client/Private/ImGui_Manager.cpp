@@ -307,7 +307,22 @@ void CImGui_Manager::Render_CamTool()
 	if (ImGui::Checkbox("ShowCube", &bShowCube))
 		CCamManager::Get_Instance()->Set_ShowCube(bShowCube);
 
+	if (ImGui::Button("ClearMarkCube"))
+		CCamManager::Get_Instance()->Clear_PosData();
+	ImGui::SameLine();
+	if (ImGui::Button("ClearLookCube"))
+		CCamManager::Get_Instance()->Clear_LookData();
 
+	_int iSaveIndex = CCamManager::Get_Instance()->Get_Index();
+	if (ImGui::InputInt("Save Index", &iSaveIndex))
+		CCamManager::Get_Instance()->Set_Index(iSaveIndex);
+
+
+	if (ImGui::Button("Save"))
+		CCamManager::Get_Instance()->Save_Data();
+	ImGui::SameLine();
+	if (ImGui::Button("Load"))
+		CCamManager::Get_Instance()->Load_Data();
 
 
 	ImGui::End();

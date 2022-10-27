@@ -168,7 +168,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Camera_Free.h" />
+    <ClInclude Include="..\public\CamManager.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
+    <ClInclude Include="..\public\ColorCube.h" />
     <ClInclude Include="..\public\DataManager.h" />
     <ClInclude Include="..\public\Item.h" />
     <ClInclude Include="..\public\ItemManager.h" />
@@ -176,7 +178,9 @@
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Level_Logo.h" />
     <ClInclude Include="..\Public\Loader.h" />
+    <ClInclude Include="..\public\LookCube.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\public\MarkCube.h" />
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\public\Parts.h" />
     <ClInclude Include="..\Public\Player.h" />
@@ -192,6 +196,10 @@
     <ClInclude Include="..\Public\UI_Edit.h" />
     <ClInclude Include="..\Public\UI_Edit_Button.h" />
     <ClInclude Include="..\public\UI_Health.h" />
+    <ClInclude Include="..\Public\UI_Inven.h" />
+    <ClInclude Include="..\Public\UI_ItemButton.h" />
+    <ClInclude Include="..\Public\UI_Item_Inven.h" />
+    <ClInclude Include="..\public\UI_Item_Inven_Slot.h" />
     <ClInclude Include="..\Public\UI_TextLife.h" />
     <ClInclude Include="..\Public\Umbrella.h" />
     <ClInclude Include="..\public\Yarn.h" />
@@ -202,6 +210,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Camera_Free.cpp" />
+    <ClCompile Include="..\private\CamManager.cpp" />
+    <ClCompile Include="..\private\ColorCube.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
     <ClCompile Include="..\private\Item.cpp" />
     <ClCompile Include="..\private\ItemManager.cpp" />
@@ -209,7 +219,9 @@
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
+    <ClCompile Include="..\private\LookCube.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\private\MarkCube.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\private\Parts.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
@@ -225,6 +237,10 @@
     <ClCompile Include="..\Private\UI_Edit.cpp" />
     <ClCompile Include="..\Private\UI_Edit_Button.cpp" />
     <ClCompile Include="..\private\UI_Health.cpp" />
+    <ClCompile Include="..\Private\UI_Inven.cpp" />
+    <ClCompile Include="..\Private\UI_ItemButton.cpp" />
+    <ClCompile Include="..\Private\UI_Item_Inven.cpp" />
+    <ClCompile Include="..\private\UI_Item_Inven_Slot.cpp" />
     <ClCompile Include="..\Private\UI_TextLife.cpp" />
     <ClCompile Include="..\Private\Umbrella.cpp" />
     <ClCompile Include="..\private\Yarn.cpp" />

@@ -26,7 +26,9 @@ HRESULT CItem::Initialize(void * pArg)
 
 	ITEMDESC* Desc = (ITEMDESC*)pArg;
 
-	lstrcpy(m_cModelTag, Desc->szModelName);
+	lstrcpy(m_InvenDesc.szModelName, Desc->szModelName);
+	m_InvenDesc.iCount = Desc->iCount;
+
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -85,7 +87,7 @@ HRESULT CItem::Render()
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	_uint iPassIndex = 0;
-	if (!lstrcmp(TEXT("Sprint_Hat"), m_cModelTag))
+	if (!lstrcmp(TEXT("Sprint_Hat"), m_InvenDesc.szModelName))
 		iPassIndex = 1;
 
 
@@ -144,7 +146,7 @@ HRESULT CItem::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_InvenDesc.szModelName, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	return S_OK;
