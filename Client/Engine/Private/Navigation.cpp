@@ -185,50 +185,64 @@ void CNavigation::Ready_CellCollision(CGameObject* pGameObject)
 
 HRESULT CNavigation::Render()
 {
-	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
+	//CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
 
-	_float4x4			WorldMatrix;
-	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
+	//_float4x4			WorldMatrix;
+	//XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
 
-	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &pPipeLine->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-
-	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &pPipeLine->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-	//if (FAILED(m_pShader->Set_RawValue("g_vColor", &_float4(0.f, 1.f, 0.f, 1.f), sizeof(_float4))))
+	//if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
 	//	return E_FAIL;
 
-	RELEASE_INSTANCE(CPipeLine);
+	//if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &pPipeLine->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &pPipeLine->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+	//	return E_FAIL;
+
+	////if (FAILED(m_pShader->Set_RawValue("g_vColor", &_float4(0.f, 1.f, 0.f, 1.f), sizeof(_float4))))
+	////	return E_FAIL;
+
+	//RELEASE_INSTANCE(CPipeLine);
 
 
-	// m_pShader->Begin(0);
+	//// m_pShader->Begin(0);
 
 
-	if (-1 == m_NavigationDesc.iCurrentIndex)
+	//if (-1 == m_NavigationDesc.iCurrentIndex)
+	//{
+	//	for (auto& pCell : m_Cells)
+	//	{
+	//		if (nullptr != pCell)
+	//		{
+	//			if (FAILED(m_pShader->Set_RawValue("g_vColor", &pCell->Get_Color(), sizeof(_float4))))
+	//				return E_FAIL;
+
+	//			m_pShader->Begin(0);
+
+	//			pCell->Render_Cell();
+	//		}
+
+	//	}
+	//}
+
+
+
+
+	//return S_OK;
+
+
+	for (auto& pCell : m_Cells)
 	{
-		for (auto& pCell : m_Cells)
-		{
-			if (nullptr != pCell)
-			{
-				if (FAILED(m_pShader->Set_RawValue("g_vColor", &pCell->Get_Color(), sizeof(_float4))))
-					return E_FAIL;
-
-				m_pShader->Begin(0);
-
-				pCell->Render_Cell();
-			}
-
-		}
+		if (nullptr != pCell)
+			pCell->Render_Cell();
 	}
 
-
-
-
 	return S_OK;
+
+
+
+
+
 }
 
 #endif // _DEBUG

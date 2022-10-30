@@ -7,14 +7,19 @@
 
 #include "Camera_Free.h"
 #include "Terrain.h"
-#include "Monster.h"
 #include "Player.h"
 #include "StaticModel_Col.h"
 #include "StaticModel_Instance.h"
+#include "SkyModel.h"
+
+#include "Mad_Crow.h"
+#include "SubSpider.h"
 
 #include "Parts.h"
 #include "Umbrella.h"
 #include "Yarn.h"
+#include "Flask.h"
+#include "Vault.h"
 
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
@@ -32,6 +37,9 @@
 #include "ColorCube.h"
 #include "MarkCube.h"
 #include "LookCube.h"
+
+
+#include "Flask_EX.h"
 
 
 #include "Test.h"
@@ -161,10 +169,20 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CPlayer::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_Monster */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Monster"),
-		CMonster::Create(m_pDevice, m_pContext))))
+
+
+
+	/* For.Prototype_GameObject_Mad_Crow */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Mad_Crow"),
+		CMad_Crow::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_Spider */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SubSpider"),
+		CSubSpider::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+
 
 	/* For.Prototype_GameObject_RollingBarrel */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_RollingBarrel"),
@@ -190,6 +208,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CStaticModel_Instance::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_Sky*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
+		CSkyModel::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 	/* For.Prototype_GameObject_Parts*/
@@ -204,9 +226,20 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Yarn"),
 		CYarn::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_Flask*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Flask"),
+		CFlask::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_Flask_EX*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Flask_EX"),
+		CFlask_EX::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_Vault*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Vault"),
+		CVault::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
-
-
+	
 	/* For.Prototype_GameObject_ColorCube*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ColorCube"),
 		CColorCube::Create(m_pDevice, m_pContext))))
@@ -277,6 +310,12 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CVIBuffer_Map_Terrain::Create(m_pDevice, m_pContext, 100, 100))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Sky */
+	_matrix mPivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Sky"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Meshes/NonAnim/SubconSky/", "SubconSky.fbx", mPivot))))
+		return E_FAIL;
+
 
 
 	if (FAILED(Loading_Model_NoneAnim()))
@@ -286,6 +325,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For. AnimModel */
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("HatGirl"), LEVEL_STATIC, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Mad_Crow"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("SubSpider"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("vault"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 
 	/* For. PartsModel */
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Ori_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
@@ -297,9 +338,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("yarn_ui_hover"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("yarn_ui_ice"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("science_owlbrew_remade"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 
 
-
+	
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩중입니다. "));
 

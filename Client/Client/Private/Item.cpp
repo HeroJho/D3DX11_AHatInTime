@@ -87,9 +87,6 @@ HRESULT CItem::Render()
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	_uint iPassIndex = 0;
-	if (!lstrcmp(TEXT("Sprint_Hat"), m_InvenDesc.szModelName))
-		iPassIndex = 1;
-
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{

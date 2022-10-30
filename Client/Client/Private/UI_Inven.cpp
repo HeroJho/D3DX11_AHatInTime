@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 
 #include "ItemManager.h"
+#include "ToolManager.h"
 
 #include "UI_ItemButton.h"
 
@@ -57,12 +58,23 @@ void CUI_Inven::Tick(_float fTimeDelta)
 
 	if (pGameInstance->Key_Pressing(DIK_TAB))
 	{
+		m_bSwitch = true;
+
 		m_UiInfo.fX = g_iWinSizeX * 0.5f;
 		m_UiInfo.fY = g_iWinSizeY * 0.5f;
 		Start();
+		CToolManager::Get_Instance()->Set_All(0.1f);
 	}
 	else
 	{
+		if (m_bSwitch)
+		{
+			CToolManager::Get_Instance()->Set_All(1.f);
+			m_bSwitch = false;
+		}
+
+
+
 		End();
 	}
 
@@ -114,7 +126,7 @@ void CUI_Inven::LoadItemMgr_ItemUI()
 
 
 		CUI_ItemButton::ITEMBUTTONDESC IconDesc;
-		if (!lstrcmp(Desc.szModelName, TEXT("Kid_Hat")))
+		if (!lstrcmp(Desc.szModelName, TEXT("Ori_Hat")))
 		{
 			lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_Icon_KidHat"));
 			Make_ChildUI(vPos.x, vPos.y, 256.f / 3.f, 256.f / 3.f, TEXT("Prototype_UI_ItemButton"), &IconDesc);

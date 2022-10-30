@@ -396,6 +396,10 @@ HRESULT CGameInstance::Render_Fonts(const _tchar * pFontTag, const _tchar * pTex
 
 void CGameInstance::Release_Engine()
 {
+	CTarget_Manager::Get_Instance()->Destroy_Instance();
+
+	CFont_Manager::Get_Instance()->Destroy_Instance();
+
 	CGameInstance::Get_Instance()->Destroy_Instance();
 
 	CColliderManager::Get_Instance()->Destroy_Instance();

@@ -19,7 +19,7 @@ BEGIN(Client)
 class CPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_JUMPATTACK, STATE_JUMPATTACKRENDING, STATE_HILLDOWN, STATE_STARTGETITEM, STATE_IDLEGETITEM, STATE_ENDGETITEM, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_JUMPATTACK, STATE_JUMPATTACKRENDING, STATE_HILLDOWN, STATE_STARTGETITEM, STATE_IDLEGETITEM, STATE_ENDGETITEM, STATE_MAGEIDLE, STATE_MAGERUN, STATE_MAGEJUMP, STATE_MAGEIDLEJUMPRENDING, STATE_MAGERUNJUMPRENDING, STATE_MAGEDROW, STATE_ATTACKED, STATE_END };
 	enum SLOT { SLOT_HAT, SLOT_HAND, SLOT_END };
 
 private:
@@ -42,12 +42,14 @@ public:
 	STATE Get_State() { return m_eState; }
 	STATE Get_PreState() { return m_ePreState; }
 
+	_bool Get_Attacked() { return m_bAttacked; }
 
 private:
 	void Set_State();
 	void Set_Anim();
 
 	void Anim_Face(_float fTimeDelta);
+	void Check_Attacked(_float fTimeDelta);
 
 	void Idle_Tick(_float fTimeDelta);
 	void Jump_Tick(_float fTimeDelta);
@@ -60,14 +62,21 @@ private:
 	void SlideRending_Tick(_float fTimeDelta);
 	void HillDown_Tick(_float fTimeDelta);
 	void JumpAttack_Tick(_float fTimeDelta);
+	void Attacked_Tick(_float fTimeDelta);
 
 	void StartGetItem_Tick(_float fTimeDelta);
 	void IdleGetItem_Tick(_float fTimeDelta);
 	void EndGetItem_Tick(_float fTimeDelta);
 
+	void MageIdle_Tick(_float fTimeDelta);
+	void MageRun_Tick(_float fTimeDelta);
+	void MageJump_Tick(_float fTimeDelta);
+	void MageDrow_Tick(_float fTimeDelta);
 
 
 
+	
+	void Idle_Input(_float fTimeDelta);
 	void Move_Input(_float fTimeDelta);
 	void Attack_Input(_float fTimeDelta);
 	void ReadyAttack_Input(_float fTimeDelta);
@@ -84,7 +93,10 @@ private:
 	void IdleGetItem_Input(_float fTimeDelta);
 	void EndGetItem_Input(_float fTimeDelta);
 
-
+	void MageIdle_Input(_float fTimeDelta);
+	void MageRun_Input(_float fTimeDelta);
+	void MageJump_Input(_float fTimeDelta);
+	void MageDrow_Input(_float fTimeDelta);
 
 
 	void Check_EndAnim();
@@ -99,6 +111,9 @@ public:
 	void Get_Item(CItem::ITEMINVENDESC Desc);
 	void Get_Hat(TCHAR* szModelName);
 
+	HRESULT Equip_Sockat(string sItemName, SLOT eSlot);
+
+	void Attacked();
 
 
 private:
@@ -131,7 +146,10 @@ private:
 
 	_bool				m_bImStop = false;
 
-
+	// For. Attacked
+	_float				m_fAttackedTimeAcc = 0.f;
+	_float				m_fAttackedBoolTimeAcc = 0.f;
+	_bool				m_bAttacked = false;
 
 	// For. HillDown
 	_float				m_fHillDownTimeAcc = 0.f;
@@ -139,6 +157,10 @@ private:
 
 	_float				m_fHillDownSpeed = 0.f;
 
+
+	// For. Mage
+	_float				m_fMageGageTime = 2.f;
+	_float				m_fMageTimeAcc = 0.f;
 
 
 
@@ -155,8 +177,6 @@ private:
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Sockat();
-
-	HRESULT Equip_Sockat(string sItemName, SLOT eSlot);
 
 public:
 	static CPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

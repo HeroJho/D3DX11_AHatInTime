@@ -4,8 +4,8 @@
 
 
 #include "ToolManager.h"
+#include "ItemManager.h"
 
-#include "Player.h"
 
 CUI_Item_Inven_Slot::CUI_Item_Inven_Slot(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CUI(pDevice, pContext)
@@ -116,12 +116,12 @@ HRESULT CUI_Item_Inven_Slot::Render()
 
 	// TODO
 
-	//string str =  to_string(m_iCount);
-	//TCHAR temp[MAX_PATH];
-	//CToolManager::Get_Instance()->CtoTC(str.data(), temp);
-	//CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	//pGameInstance->Render_Fonts(TEXT("Font_Nexon"), temp, _float2(XMVectorGetX(Get_TotalPos()), XMVectorGetY(Get_TotalPos())));
-	//RELEASE_INSTANCE(CGameInstance);
+	string str =  to_string(m_iCount);
+	TCHAR temp[MAX_PATH];
+	CToolManager::Get_Instance()->CtoTC(str.data(), temp);
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), temp, _float2(XMVectorGetX(Get_TotalPos()), XMVectorGetY(Get_TotalPos())));
+	RELEASE_INSTANCE(CGameInstance);
 
 
 	// 자식들의 Render 호출
@@ -190,18 +190,8 @@ void CUI_Item_Inven_Slot::Handle_Press()
 
 void CUI_Item_Inven_Slot::Handle_Click()
 {
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
-	CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
-
-	RELEASE_INSTANCE(CGameInstance);
-
-
-	if (0 < m_iCount)
-	{
-		pPlayer->Get_Hat(m_pHatModelName);
-	}
-
+	if(0 < m_iCount)
+		CItemManager::Get_Instance()->Make_Hat(m_pHatModelName, m_pItemModelName);
 
 }
 

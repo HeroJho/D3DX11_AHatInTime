@@ -21,6 +21,11 @@ HRESULT CLevel_MapTool::Initialize()
 		return E_FAIL;
 
 
+	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
+		return E_FAIL;
+
+
+
 	CCamManager::Get_Instance()->Create_CamTool();
 	CCamManager::Get_Instance()->Create_SelectingCube();
 
@@ -39,7 +44,8 @@ HRESULT CLevel_MapTool::Ready_Lights()
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.1f, 0.1f, 0.1f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
 		return E_FAIL;
@@ -114,7 +120,7 @@ HRESULT CLevel_MapTool::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain_Map"), LEVEL_MAPTOOL, pLayerTag)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_MAPTOOL, pLayerTag)))
 		return E_FAIL;
 
 	Safe_Release(pGameInstance);

@@ -19,6 +19,11 @@ CSockat::CSockat(const CSockat & rhs)
 }
 
 
+string CSockat::Get_SlotTag(_uint eID)
+{
+	return m_PartsName[eID];
+}
+
 HRESULT CSockat::Initialize_Prototype()
 {
 
@@ -155,7 +160,8 @@ HRESULT CSockat::Remove_Sockat(_int eID)
 
 	m_Parts[eID] = nullptr;
 	m_Sockets[eID] = nullptr;
-	
+	m_PartsName[eID] = "";
+
 	Safe_Release(pParts);
 
 	return S_OK;

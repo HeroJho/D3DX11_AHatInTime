@@ -26,6 +26,7 @@
 #include "Ori_Hat.h"
 #include "Parts.h"
 #include "ClickedVertexCube.h"
+#include "SkyModel.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -182,11 +183,15 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		COri_Hat::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_Ori_Hat*/
+	/* For.Prototype_GameObject_Parts*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Parts"),
 		CParts::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	
+	/* For.Prototype_GameObject_Sky*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
+		CSkyModel::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
@@ -230,11 +235,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 	
 	// TEST
-	/* For.Prototype_Component_Ori_Hat */
-	//_matrix mPivot = XMMatrixScaling(0.1f, 0.1f, 0.1f);
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Ori_Hat"),
-	//	CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Meshes/NonAnim/Ori_Hat/", "Ori_Hat.fbx", mPivot))))
-	//	return E_FAIL;
+	/* For.Prototype_Component_Sky */
+	_matrix mPivot = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Sky"),
+		CModel::Create(m_pDevice, m_pContext, CModel::TYPE_NONANIM, "../Bin/Resources/Meshes/NonAnim/SubconSky/", "SubconSky.fbx", mPivot))))
+		return E_FAIL;
 
 
 	if (FAILED(Loading_Model_NoneAnim()))

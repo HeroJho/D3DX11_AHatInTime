@@ -160,6 +160,9 @@
     <Filter Include="97.Manager\04. AnimManager">
       <UniqueIdentifier>{9557c9bd-8ec3-42bf-a756-399dbb637694}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\02. MapTool\04. Sky">
+      <UniqueIdentifier>{c103879d-4122-43ae-adfd-ce41b76cfc60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -323,6 +326,12 @@
     <ClInclude Include="..\Public\Terrain_Anim.h">
       <Filter>02.GameObject\03. AnimTool\02. Terrain</Filter>
     </ClInclude>
+    <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp">
+      <Filter>96.ShaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\SkyModel.h">
+      <Filter>02.GameObject\02. MapTool\04. Sky</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -471,6 +480,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Terrain_Anim.cpp">
       <Filter>02.GameObject\03. AnimTool\02. Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SkyModel.cpp">
+      <Filter>02.GameObject\02. MapTool\04. Sky</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

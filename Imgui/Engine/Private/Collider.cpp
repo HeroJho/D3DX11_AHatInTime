@@ -67,9 +67,7 @@ void CCollider::Edit_Col(COLLIDERDESC Desc)
 
 HRESULT CCollider::Render()
 {
-#ifdef _DEBUG
 	m_vColor = m_isColl == false ? _float4(0.f, 1.f, 0.f, 1.f) : _float4(1.f, 0.f, 0.f, 1.f);
-#endif // _DEBUG
 
 	m_pEffect->SetWorld(XMMatrixIdentity());
 

@@ -61,6 +61,7 @@ public:
 	void Set_Scale(_fvector vScaleInfo);
 	_float3 Get_Scale();
 	
+	void Set_RealOriScale(_fvector vScale) { Set_Scale(vScale); XMStoreFloat3(&m_vOriScale, vScale); }
 	void Set_OriScale() { Set_Scale(XMLoadFloat3(&m_vOriScale)); }
 	_float3 Get_OriScale() { return m_vOriScale; }
 

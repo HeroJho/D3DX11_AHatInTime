@@ -38,7 +38,6 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_sTag = "Tag_Player";
 
 	list<ANIM_LINEAR_DATA> LinearDatas = CDataManager::Get_Instance()->Load_Anim("HatGirl");
-
 	for (auto& Data : LinearDatas)
 	{
 		Set_AnimLinearData(Data);
@@ -99,7 +98,10 @@ void CPlayer::Set_State()
 			m_fSlepSpeed = 2.f;
 			break;
 		case STATE_SLIDE:
-			m_pTransformCom->Set_CurSpeed(m_pTransformCom->Get_CurSpeed() + 4.f);
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_pTransformCom->Set_CurSpeed(m_pTransformCom->Get_CurSpeed() + 6.f);
+			else
+				m_pTransformCom->Set_CurSpeed(m_pTransformCom->Get_CurSpeed() + 4.f);
 			break;
 		case STATE_SLIDELENDING:
 			m_fSlepSpeed = m_pTransformCom->Get_CurSpeed();
@@ -107,6 +109,11 @@ void CPlayer::Set_State()
 		case STATE_HILLDOWN:
 			m_fHillDownTimeAcc = 0.f;
 			m_fHillUpTimeAcc = 0.f;
+			break;
+		case STATE_MAGEDROW:
+		{
+			CItemManager::Get_Instance()->Make_Flask(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_pTransformCom->Get_State(CTransform::STATE_LOOK), 5.f, 3.f, m_pNavigationCom->Get_CurCellIndex());
+		}
 			break;
 		default:
 			m_fSlepSpeed = 0.f;
@@ -211,13 +218,40 @@ void CPlayer::Set_Anim()
 		break;
 	case STATE_STARTGETITEM:
 		m_pModelCom->Set_AnimIndex(9);
-		CToolManager::Get_Instance()->Set_WithOutPlayer(0.1f);
+		CToolManager::Get_Instance()->Set_WithOutPlayer(0.f);
 		break;
 	case STATE_IDLEGETITEM:
 		m_pModelCom->Set_AnimIndex(7);
 		break;
 	case STATE_ENDGETITEM:
 		m_pModelCom->Set_AnimIndex(8);
+		break;
+	case STATE_MAGEIDLE:
+		m_pModelCom->Set_AnimIndex(150);
+		Equip_Sockat(string("science_owlbrew_remade"), SLOT_HAND);
+		break;
+	case STATE_MAGERUN:
+		m_pModelCom->Set_AnimIndex(61);
+		Equip_Sockat(string("science_owlbrew_remade"), SLOT_HAND);
+		break;
+	case STATE_MAGEJUMP:
+		m_pModelCom->Set_AnimIndex(96);
+		Equip_Sockat(string("science_owlbrew_remade"), SLOT_HAND);
+		break;
+	case STATE_MAGEIDLEJUMPRENDING:
+		m_pModelCom->Set_AnimIndex(103);
+		Equip_Sockat(string("science_owlbrew_remade"), SLOT_HAND);
+		break;
+	case STATE_MAGERUNJUMPRENDING:
+		m_pModelCom->Set_AnimIndex(104);
+		Equip_Sockat(string("science_owlbrew_remade"), SLOT_HAND);
+		break;
+	case STATE_MAGEDROW:
+		m_pModelCom->Set_AnimIndex(91);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("science_owlbrew_remade"));
+		break;
+	case STATE_ATTACKED:
+		m_pModelCom->Set_AnimIndex(77);
 		break;
 	}
 }
@@ -237,6 +271,8 @@ void CPlayer::Tick(_float fTimeDelta)
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_PLAYER);
 
 	Anim_Face(fTimeDelta);
+	Check_Attacked(fTimeDelta);
+
 
 	switch (m_eState)
 	{
@@ -256,6 +292,8 @@ void CPlayer::Tick(_float fTimeDelta)
 		break;
 	case STATE_JUMPLENDING:
 	case STATE_RUNJUMPLENDING:
+	case STATE_MAGEIDLEJUMPRENDING:
+	case STATE_MAGERUNJUMPRENDING:
 		Rend_Tick(fTimeDelta);
 		break;
 	case STATE_SPRINTJUMP:
@@ -294,19 +332,34 @@ void CPlayer::Tick(_float fTimeDelta)
 	case STATE_ENDGETITEM:
 		EndGetItem_Tick(fTimeDelta);
 		break;
-
+	case STATE_MAGEIDLE:
+		MageIdle_Tick(fTimeDelta);
+	case STATE_MAGERUN:
+		MageRun_Tick(fTimeDelta);
+		break;
+	case STATE_MAGEJUMP:
+		MageJump_Tick(fTimeDelta);
+		break;
+	case STATE_MAGEDROW:
+		MageDrow_Tick(fTimeDelta);
+		break;
+	case STATE_ATTACKED:
+		Attacked_Tick(fTimeDelta);
+		break;
 	}
 }
 
 
 void CPlayer::Idle_Tick(_float fTimeDelta)
 {
+
 	if (STATE_SPRINT == m_ePreState)
 	{
 		m_bImStop = true;
 		m_TickStates.push_back(STATE_SLEP);
 	}
 
+	Idle_Input(fTimeDelta);
 
 }
 
@@ -477,14 +530,26 @@ void CPlayer::JumpAttack_Tick(_float fTimeDelta)
 
 	// 몬스터의 머리 방향으로 내려 꼳는다
 	CTransform* pMonsterTran = (CTransform*)pNearst->Get_ComponentPtr(TEXT("Com_Transform"));
-	_float3 vCenter = pNearst->Get_Colliders(string("Sphere"))->Get_Desc().vCenter;
-	vCenter.y += pNearst->Get_Colliders(string("Sphere"))->Get_Desc().vSize.y;
+	_float3 vCenter = pNearst->Get_Colliders(string("Attacked_Sphere"))->Get_Desc().vCenter;
+	vCenter.y += pNearst->Get_Colliders(string("Attacked_Sphere"))->Get_Desc().vSize.y;
 	_vector vMonsterHeadPos = pMonsterTran->Get_State(CTransform::STATE_POSITION) + XMLoadFloat3(&vCenter);
 	m_pTransformCom->LookAt(vMonsterHeadPos);
 	m_pTransformCom->Go_Straight(5.f, fTimeDelta, m_pNavigationCom);
 
 
 	JumpAttack_Input(fTimeDelta);
+}
+
+void CPlayer::Attacked_Tick(_float fTimeDelta)
+{
+	m_fAttackedTimeAcc += fTimeDelta;
+
+	if (1.f < m_fAttackedTimeAcc)
+	{
+		m_TickStates.push_back(STATE_IDLE);
+		m_fAttackedTimeAcc = 0.f;
+	}
+
 }
 
 void CPlayer::StartGetItem_Tick(_float fTimeDelta)
@@ -505,7 +570,57 @@ void CPlayer::EndGetItem_Tick(_float fTimeDelta)
 
 }
 
+void CPlayer::MageIdle_Tick(_float fTimeDelta)
+{
+	m_fMageTimeAcc += fTimeDelta;
 
+	MageIdle_Input(fTimeDelta);
+}
+
+void CPlayer::MageRun_Tick(_float fTimeDelta)
+{
+	m_fMageTimeAcc += fTimeDelta;
+
+	MageRun_Input(fTimeDelta);
+
+	// 슬립했냐 안 했냐
+	if (m_pTransformCom->LinearTurn(m_vDestLook, 1.f, 0.3f, fTimeDelta))
+	{
+		m_fSlepSpeed = 2.2f;
+		m_TickStates.push_back(STATE_SLEP);
+	}
+}
+
+void CPlayer::MageJump_Tick(_float fTimeDelta)
+{
+	m_fMageTimeAcc += fTimeDelta;
+
+	m_eJumpState = STATE_IDLE;
+
+	MageJump_Input(fTimeDelta);
+
+	m_pTransformCom->LinearTurn(m_vDestLook, 0.1f, 0.3f, fTimeDelta, false);
+}
+
+void CPlayer::MageDrow_Tick(_float fTimeDelta)
+{
+	m_fMageTimeAcc = 0.f;
+
+	MageDrow_Input(fTimeDelta);
+}
+
+
+
+void CPlayer::Idle_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+}
 
 void CPlayer::Move_Input(_float fTimeDelta)
 {
@@ -534,11 +649,10 @@ void CPlayer::Move_Input(_float fTimeDelta)
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			m_TickStates.push_back(STATE_RUN);
-		}
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-		{
-			m_TickStates.push_back(STATE_SPRINT);
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_TickStates.push_back(STATE_SPRINT);
+			else
+				m_TickStates.push_back(STATE_RUN);
 		}
 		else
 		{
@@ -553,11 +667,10 @@ void CPlayer::Move_Input(_float fTimeDelta)
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			m_TickStates.push_back(STATE_RUN);
-		}
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-		{
-			m_TickStates.push_back(STATE_SPRINT);
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_TickStates.push_back(STATE_SPRINT);
+			else
+				m_TickStates.push_back(STATE_RUN);
 		}
 		else
 		{
@@ -574,11 +687,10 @@ void CPlayer::Move_Input(_float fTimeDelta)
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			m_TickStates.push_back(STATE_RUN);
-		}
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-		{
-			m_TickStates.push_back(STATE_SPRINT);
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_TickStates.push_back(STATE_SPRINT);
+			else
+				m_TickStates.push_back(STATE_RUN);
 		}
 		else
 		{
@@ -593,11 +705,10 @@ void CPlayer::Move_Input(_float fTimeDelta)
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			m_TickStates.push_back(STATE_RUN);
-		}
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-		{
-			m_TickStates.push_back(STATE_SPRINT);
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_TickStates.push_back(STATE_SPRINT);
+			else
+				m_TickStates.push_back(STATE_RUN);
 		}
 		else
 		{
@@ -608,20 +719,27 @@ void CPlayer::Move_Input(_float fTimeDelta)
 
 	if (pGameInstance->Key_Down(DIK_SPACE))
 	{
-		m_pTransformCom->Jump(m_fJumpPower);
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 		{
-			m_TickStates.push_back(STATE_RUNJUMP);
-		}
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-		{
-			m_TickStates.push_back(STATE_SPRINTJUMP);
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+			{
+				m_TickStates.push_back(STATE_SPRINTJUMP);
+				m_pTransformCom->Jump(m_fJumpPower + 2.f);
+			}
+			else
+			{
+				m_TickStates.push_back(STATE_RUNJUMP);
+				m_pTransformCom->Jump(m_fJumpPower);
+			}
+
 		}
 		else
 		{
 			m_TickStates.push_back(STATE_JUMP);
+			m_pTransformCom->Jump(m_fJumpPower);
 		}
+
 	}
 
 
@@ -631,13 +749,20 @@ void CPlayer::Move_Input(_float fTimeDelta)
 	}
 
 
-
+	if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+	{
+		if ("Witch_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+		{
+			m_TickStates.push_back(STATE_MAGEIDLE);
+			m_fMageTimeAcc = 0.f;
+		}
+	}
 
 	vTotalLook = XMVector3Normalize(vTotalLook);
 	XMStoreFloat3(&m_vDestLook, vTotalLook);
 
 
-	RELEASE_INSTANCE(CGameInstance);
+	RELEASE_INSTANCE(CGameInstance);																																
 }
 
 void CPlayer::Attack_Input(_float fTimeDelta)
@@ -680,8 +805,6 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	// WD : 카메라 Lend Look으로 Look
-	// AD : 카메라 Right로 Look
 	_matrix mCamWorld = XMMatrixInverse(nullptr, pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
 	_vector vCamRight = mCamWorld.r[0];
 	_vector vCamUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
@@ -701,9 +824,12 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 			vTotalLook += vLendLook;
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
-			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		{
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_SPRINT;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 		else
 			m_eJumpState = STATE_WALK;
 	}
@@ -714,9 +840,12 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 			vTotalLook += -1.f * vLendLook;
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
-			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		{
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_SPRINT;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 		else
 			m_eJumpState = STATE_WALK;
 	}
@@ -729,9 +858,12 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 			vTotalLook += -1.f * vCamRight;
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
-			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		{
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_SPRINT;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 		else
 			m_eJumpState = STATE_WALK;
 	}
@@ -742,9 +874,12 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 			vTotalLook += vCamRight;
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
-			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		{
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_SPRINT;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 		else
 			m_eJumpState = STATE_WALK;
 	}
@@ -794,9 +929,12 @@ void CPlayer::DoubleJump_Input(_float fTimeDelta)
 			vTotalLook += vLendLook;
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
-			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		{
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_SPRINT;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 		else
 			m_eJumpState = STATE_RUN;
 	}
@@ -807,9 +945,12 @@ void CPlayer::DoubleJump_Input(_float fTimeDelta)
 			vTotalLook += -1.f * vLendLook;
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
-			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		{
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_SPRINT;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 		else
 			m_eJumpState = STATE_RUN;
 	}
@@ -822,9 +963,12 @@ void CPlayer::DoubleJump_Input(_float fTimeDelta)
 			vTotalLook += -1.f * vCamRight;
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
-			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		{
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_SPRINT;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 		else
 			m_eJumpState = STATE_RUN;
 	}
@@ -835,9 +979,12 @@ void CPlayer::DoubleJump_Input(_float fTimeDelta)
 			vTotalLook += vCamRight;
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
-			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		{
+			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_SPRINT;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 		else
 			m_eJumpState = STATE_RUN;
 	}
@@ -895,8 +1042,8 @@ void CPlayer::SprintJump_Input(_float fTimeDelta)
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		//else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		//	m_eJumpState = STATE_SPRINT;
 		else
 			m_eJumpState = STATE_RUN;
 	}
@@ -908,8 +1055,8 @@ void CPlayer::SprintJump_Input(_float fTimeDelta)
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		//else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		//	m_eJumpState = STATE_SPRINT;
 		else
 			m_eJumpState = STATE_RUN;
 	}
@@ -923,8 +1070,8 @@ void CPlayer::SprintJump_Input(_float fTimeDelta)
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		//else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		//	m_eJumpState = STATE_SPRINT;
 		else
 			m_eJumpState = STATE_RUN;
 	}
@@ -936,8 +1083,8 @@ void CPlayer::SprintJump_Input(_float fTimeDelta)
 
 		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 			m_eJumpState = STATE_RUN;
-		else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
-			m_eJumpState = STATE_SPRINT;
+		//else if (pGameInstance->Key_Pressing(DIK_CAPSLOCK))
+		//	m_eJumpState = STATE_SPRINT;
 		else
 			m_eJumpState = STATE_RUN;
 	}
@@ -1114,6 +1261,175 @@ void CPlayer::EndGetItem_Input(_float fTimeDelta)
 {
 }
 
+void CPlayer::MageIdle_Input(_float fTimeDelta)
+{
+
+}
+
+void CPlayer::MageRun_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// WD : 카메라 Lend Look으로 Look
+	// AD : 카메라 Right로 Look
+	_matrix mCamWorld = XMMatrixInverse(nullptr, pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	_vector vCamRight = mCamWorld.r[0];
+	_vector vCamUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	_vector vLendLook = XMVector3Cross(vCamRight, vCamUp);
+
+	vLendLook = XMVector3Normalize(vLendLook);
+	vCamRight = XMVector3Normalize(vCamRight);
+
+
+	_vector vTotalLook = XMLoadFloat3(&m_vDestLook);
+
+
+
+	if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+		m_TickStates.push_back(STATE_MAGEIDLE);
+	else
+	{
+		if (m_fMageGageTime < m_fMageTimeAcc)
+			m_TickStates.push_back(STATE_MAGEDROW);
+		else
+		{
+			m_TickStates.push_back(STATE_IDLE);
+			m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("science_owlbrew_remade"));
+		}
+
+		
+		RELEASE_INSTANCE(CGameInstance);
+		return;
+	}
+
+
+
+
+
+
+	if (pGameInstance->Key_Pressing(DIK_W))
+	{
+		vTotalLook += vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vLendLook;
+
+		m_TickStates.push_back(STATE_MAGERUN);
+
+	}
+	else if (pGameInstance->Key_Pressing(DIK_S))
+	{
+		vTotalLook += -1.f * vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vLendLook;
+
+		m_TickStates.push_back(STATE_MAGERUN);
+	}
+
+
+	if (pGameInstance->Key_Pressing(DIK_A))
+	{
+		vTotalLook += -1.f * vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vCamRight;
+
+		m_TickStates.push_back(STATE_MAGERUN);
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		vTotalLook += vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vCamRight;
+
+		m_TickStates.push_back(STATE_MAGERUN);
+	}
+
+
+	if (pGameInstance->Key_Down(DIK_SPACE))
+	{
+		m_TickStates.push_back(STATE_MAGEJUMP);
+		m_pTransformCom->Jump(m_fJumpPower);
+	}
+
+
+	vTotalLook = XMVector3Normalize(vTotalLook);
+	XMStoreFloat3(&m_vDestLook, vTotalLook);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+}
+
+void CPlayer::MageJump_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_matrix mCamWorld = XMMatrixInverse(nullptr, pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	_vector vCamRight = mCamWorld.r[0];
+	_vector vCamUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	_vector vLendLook = XMVector3Cross(vCamRight, vCamUp);
+
+	vLendLook = XMVector3Normalize(vLendLook);
+	vCamRight = XMVector3Normalize(vCamRight);
+
+
+	_vector vTotalLook = XMLoadFloat3(&m_vDestLook);
+
+	if (pGameInstance->Key_Pressing(DIK_W))
+	{
+		vTotalLook += vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vLendLook;
+
+		m_eJumpState = STATE_RUN;
+	}
+	else if (pGameInstance->Key_Pressing(DIK_S))
+	{
+		vTotalLook += -1.f * vLendLook;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vLendLook;
+
+		m_eJumpState = STATE_RUN;
+	}
+
+
+	if (pGameInstance->Key_Pressing(DIK_A))
+	{
+		vTotalLook += -1.f * vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += -1.f * vCamRight;
+
+		m_eJumpState = STATE_RUN;
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		vTotalLook += vCamRight;
+		if (0.1f > XMVectorGetX(XMVector3Length(vTotalLook)))
+			vTotalLook += vCamRight;
+
+		m_eJumpState = STATE_RUN;
+	}
+
+
+	if (!pGameInstance->Key_Pressing(DIK_LSHIFT))
+	{
+		if (m_fMageGageTime < m_fMageTimeAcc)
+			m_TickStates.push_back(STATE_MAGEDROW);
+	}
+
+	vTotalLook = XMVector3Normalize(vTotalLook);
+	XMStoreFloat3(&m_vDestLook, vTotalLook);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CPlayer::MageDrow_Input(_float fTimeDelta)
+{
+}
+
 
 
 
@@ -1143,6 +1459,21 @@ void CPlayer::Anim_Face(_float fTimeDelta)
 	}
 }
 
+void CPlayer::Check_Attacked(_float fTimeDelta)
+{
+	if (!m_bAttacked)
+		return;
+
+
+	m_fAttackedBoolTimeAcc += fTimeDelta;
+	if (2.f < m_fAttackedBoolTimeAcc)
+	{
+		m_bAttacked = false;
+		m_fAttackedBoolTimeAcc = 0.f;
+	}
+
+}
+
 #pragma endregion 
 
 
@@ -1161,7 +1492,8 @@ void CPlayer::LateTick(_float fTimeDelta)
 		return;
 
 	// 중력 적용
-	if(STATE_STARTGETITEM != m_eState && STATE_IDLEGETITEM != m_eState && STATE_ENDGETITEM != m_eState)
+	if((STATE_STARTGETITEM != m_eState && STATE_IDLEGETITEM != m_eState && STATE_ENDGETITEM != m_eState)
+		&& STATE_ATTACKED != m_eState)
 		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.7f);
 
 	// 이동 갱신
@@ -1198,6 +1530,20 @@ void CPlayer::LateTick(_float fTimeDelta)
 			}
 
 		}
+		else if (STATE_MAGEJUMP == m_eState)
+		{
+			switch (m_eJumpState)
+			{
+			case STATE_IDLE:
+				m_TickStates.push_back(STATE_MAGEIDLEJUMPRENDING);
+				m_pTransformCom->Set_CurSpeed(0.1f);
+				break;
+			case STATE_RUN:
+				m_TickStates.push_back(STATE_MAGERUNJUMPRENDING);
+				m_pTransformCom->Set_CurSpeed(m_fRunSpeed);
+				break;
+			}
+		}
 		else if (STATE_SLIDE == m_eState)
 		{
 			m_TickStates.push_back(STATE_SLIDELENDING);
@@ -1224,7 +1570,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
 	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PLAYER, this);
@@ -1240,11 +1586,15 @@ void CPlayer::LateTick(_float fTimeDelta)
 void CPlayer::Calcul_State(_float fTimeDelta)
 {
 
-	if (STATE_WALK == m_eState)
+	if (STATE_IDLE == m_eState || STATE_MAGEIDLE == m_eState)
+	{
+		m_pTransformCom->Set_CurSpeed(0.f);
+	}
+	else if (STATE_WALK == m_eState)
 	{
 		m_pTransformCom->Set_CurSpeed(m_fWalkSpeed);
 	}
-	else if (STATE_RUN == m_eState)
+	else if (STATE_RUN == m_eState || STATE_MAGERUN == m_eState)
 	{
 		m_pTransformCom->Set_CurSpeed(m_fRunSpeed);
 	}
@@ -1263,7 +1613,7 @@ void CPlayer::Calcul_State(_float fTimeDelta)
 	else if (STATE_JUMPLENDING == m_eState || STATE_RUNJUMPLENDING == m_eState)
 	{
 		if(STATE_IDLE == m_eJumpState)
-			m_pTransformCom->Set_CurSpeed(0.1f);
+			m_pTransformCom->Set_CurSpeed(0.01f);
 	}
 	else if (STATE_JUMP == m_eState || STATE_RUNJUMP == m_eState || STATE_SPRINTJUMP == m_eState || STATE_DOUBLEJUMP == m_eState || STATE_SLIDE == m_eState)
 	{	
@@ -1271,10 +1621,6 @@ void CPlayer::Calcul_State(_float fTimeDelta)
  		if (COBB::COL_BLOCK == Get_StaticOBB()->Get_ColState())
 			m_pTransformCom->Set_CurSpeed(0.f);
 
-	}
-	else if (STATE_IDLE == m_eState)
-	{
-		m_pTransformCom->Set_CurSpeed(0.f);
 	}
 	else if (STATE_ATTACK_1 == m_eState || STATE_ATTACK_2 == m_eState || STATE_ATTACK_3 == m_eState)
 	{
@@ -1285,6 +1631,14 @@ void CPlayer::Calcul_State(_float fTimeDelta)
 		m_pTransformCom->Set_CurSpeed(0.f);
 	}
 	else if (STATE_STARTGETITEM == m_eState || STATE_IDLEGETITEM == m_eState || STATE_ENDGETITEM == m_eState)
+	{
+		m_pTransformCom->Set_CurSpeed(0.f);
+	}
+	else if (STATE_MAGEDROW == m_eState)
+	{
+		m_pTransformCom->Set_CurSpeed(0.f);
+	}
+	else if (STATE_ATTACKED == m_eState)
 	{
 		m_pTransformCom->Set_CurSpeed(0.f);
 	}
@@ -1318,6 +1672,12 @@ void CPlayer::Check_EndAnim()
 		break;
 	case STATE_RUNJUMPLENDING:
 		m_TickStates.push_back(STATE_RUN);
+		break;	
+	case STATE_MAGEIDLEJUMPRENDING:
+		m_TickStates.push_back(STATE_MAGEIDLE);
+		break;
+	case STATE_MAGERUNJUMPRENDING:
+		m_TickStates.push_back(STATE_MAGERUN);
 		break;
 	case STATE_STARTGETITEM:
 		m_TickStates.push_back(STATE_IDLEGETITEM);
@@ -1326,6 +1686,9 @@ void CPlayer::Check_EndAnim()
 		m_TickStates.push_back(STATE_IDLE);
 		CToolManager::Get_Instance()->Set_WithOutPlayer(1.f);
 		CCamManager::Get_Instance()->End_CutScene();
+		break;
+	case STATE_MAGEDROW:
+		m_TickStates.push_back(STATE_IDLE);
 		break;
 	}
 
@@ -1546,7 +1909,7 @@ HRESULT CPlayer::Ready_Sockat()
 		return E_FAIL;
 
 
-	Equip_Sockat(string("Ori_Hat"), SLOT_HAT);
+	// Equip_Sockat(string("Ori_Hat"), SLOT_HAT);
 	Equip_Sockat(string("Umbrella"), SLOT_HAND);
 
 
@@ -1585,19 +1948,42 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 	}
 	else if (!lstrcmp(cItemName, TEXT("Sprint_Hat")))
 	{
-		lstrcpy(PartsDesc.m_szModelName, TEXT("Sprint_Hat"));
-		PartsDesc.vPos = _float3(0.f, -0.05f, -0.72f);
-		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
-		PartsDesc.vRot = _float3(-82.9f, 0.f, -180.f);
-		PartsDesc.pOwner = this;
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Sprint_Hat"));
+			PartsDesc.vPos = _float3(-0.33f, -0.2f, -0.4f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+		else if(SLOT_HAT == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Sprint_Hat"));
+			PartsDesc.vPos = _float3(0.f, -0.03f, -0.72f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-82.9f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+
 	}
 	else if (!lstrcmp(cItemName, TEXT("Witch_Hat")))
 	{
-		lstrcpy(PartsDesc.m_szModelName, TEXT("Witch_Hat"));
-		PartsDesc.vPos = _float3(0.f, 0.f, -0.79f);
-		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
-		PartsDesc.vRot = _float3(-85.1f, 0.f, -180.f);
-		PartsDesc.pOwner = this;
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Witch_Hat"));
+			PartsDesc.vPos = _float3(-0.33f, -0.2f, -0.4f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+		else if(SLOT_HAT == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Witch_Hat")); 
+			PartsDesc.vPos = _float3(0.f, -0.03f, -0.72f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-82.9f, 0.f, -0.f);
+			PartsDesc.pOwner = this;
+		}
 	}
 	else if (!lstrcmp(cItemName, TEXT("Umbrella")))
 	{
@@ -1644,6 +2030,14 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
 		PartsDesc.pOwner = this;
 	}
+	else if (!lstrcmp(cItemName, TEXT("science_owlbrew_remade")))
+	{
+		lstrcpy(PartsDesc.m_szModelName, TEXT("science_owlbrew_remade"));
+		PartsDesc.vPos = _float3(-0.28, 0.03f, -0.41f);
+		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+		PartsDesc.vRot = _float3(180.f, 0.f, 0.f);
+		PartsDesc.pOwner = this;
+	}
 	else
 		return E_FAIL;
 
@@ -1652,6 +2046,12 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CPlayer::Attacked()
+{
+	m_TickStates.push_back(STATE_ATTACKED);
+	m_bAttacked = true;
 }
 
 
@@ -1675,7 +2075,7 @@ void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 		if(!strcmp("Sphere", Desc.MyDesc.sTag))
 			m_pNearMonsters.push_back(Desc.pOther);
 
-		if (!strcmp("Sphere_Head", Desc.MyDesc.sTag) && !strcmp("Sphere", Desc.OtherDesc.sTag))
+		if (!strcmp("Sphere_Head", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
 			if (STATE_JUMPATTACK == m_eState)
 			{

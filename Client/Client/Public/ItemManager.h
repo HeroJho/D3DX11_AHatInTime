@@ -31,9 +31,12 @@ public:
 
 public:
 	// 어떤 아아템을 어느 상태로 설치할거냐
-	HRESULT Make_Item(const TCHAR* szObjName, const TCHAR* szItemName, LEVEL eLevel, _float3 vPos, _float3 vAngle, _float3 vScale, _uint iCount = 1);
+	HRESULT Make_Item(const TCHAR* szObjName, const TCHAR* szItemName, LEVEL eLevel, _float3 vPos, _float3 vAngle, _float3 vScale, _uint iCount = 1, void* pArg = nullptr);
 
+	HRESULT Make_Hat(TCHAR* pHatModelName, TCHAR* pItemModelName);
+	void	Change_Hat(TCHAR* pHatModelName);
 
+	HRESULT Make_Flask(_fvector vPos, _fvector vDir, _float fDirPow, _float fJumpPow, _uint iNaviIndex);
 
 	// For. Inven
 public:
@@ -45,6 +48,9 @@ public:
 	void Add_Hat(TCHAR* szItemName);
 
 	void Add_Item(TCHAR* szItemName, _uint iCount);
+
+private:
+	TCHAR* Match_TextureWithModelName(TCHAR* pTextureName);
 
 private:
 	list<HATINFODESC>	m_pHats;

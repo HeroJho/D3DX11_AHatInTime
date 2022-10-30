@@ -3,6 +3,7 @@
 #include "Base.h"
 
 #include "AnimPlayer.h"
+#include "AnimModel.h"
 
 BEGIN(Engine)
 
@@ -126,6 +127,13 @@ public:
 	_uint Get_EndAnimIndex() { return m_pPlayer->Get_EndAnimIndex(); }
 
 
+	void Set_StartAnimLeanIndex(_uint iStartAnimIndex) { m_pAnimModel->Set_StartAnimIndex(iStartAnimIndex); }
+	_uint Get_StartAnimLeanIndex() { return m_pAnimModel->Get_StartAnimIndex(); }
+	void Set_EndAnimLeanIndex(_uint iEndAnimIndex) { m_pAnimModel->Set_EndAnimIndex(iEndAnimIndex); }
+	_uint Get_EndAnimLeanIndex() { return m_pAnimModel->Get_EndAnimIndex(); }
+
+	void Set_AnimLeanLinearData();
+
 
 	// For. Static
 public:
@@ -165,7 +173,8 @@ public: // For. Data
 	void Save_PlayerAnimData();
 	void Load_PlayerAnimData();
 
-
+	void Save_AnimData();
+	void Load_AnimData();
 
 
 public:

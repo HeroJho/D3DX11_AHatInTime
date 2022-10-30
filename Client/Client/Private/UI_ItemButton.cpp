@@ -2,6 +2,8 @@
 #include "..\Public\UI_ItemButton.h"
 #include "GameInstance.h"
 
+#include "ItemManager.h"
+
 CUI_ItemButton::CUI_ItemButton(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CUI(pDevice, pContext)
 {
@@ -45,6 +47,9 @@ HRESULT CUI_ItemButton::Initialize(void * pArg)
 	XMStoreFloat2(&m_vStartPos, vMyPos + vDis * 30.f);
 	XMStoreFloat2(&m_vEndPos, vMyPos);
 
+	m_fOriSize = m_UiInfo.fSizeX;
+	m_fHoverSize = m_UiInfo.fSizeX + 20.f;
+
 	return S_OK;
 }
 
@@ -63,6 +68,39 @@ void CUI_ItemButton::Tick(_float fTimeDelta)
 		Tick_End(fTimeDelta);
 		break;
 	}
+
+
+
+
+	if (UI_HOVER == m_eState)
+	{
+		if (m_fHoverSize > m_UiInfo.fSizeX)
+		{
+			m_UiInfo.fSizeX += 2.f;
+			m_UiInfo.fSizeY += 2.f;
+		}
+		else
+		{
+			m_UiInfo.fSizeX = m_fHoverSize;
+			m_UiInfo.fSizeY = m_fHoverSize;
+		}
+	}
+	else
+	{
+		if (m_fHoverSize < m_UiInfo.fSizeX)
+		{
+			m_UiInfo.fSizeX -= 2.f;
+			m_UiInfo.fSizeY -= 2.f;
+		}
+		else
+		{
+			m_UiInfo.fSizeX = m_fOriSize;
+			m_UiInfo.fSizeY = m_fOriSize;
+		}
+	}
+
+
+
 
 
 
@@ -131,7 +169,7 @@ void CUI_ItemButton::Tick_Start(_float fTimeDelta)
 	}
 	else
 	{
-		vPos += -1.f * XMLoadFloat2(&m_vDir) * 100.f * fTimeDelta;
+		vPos += -1.f * XMLoadFloat2(&m_vDir) * 150.f * fTimeDelta;
 		m_UiInfo.fX = XMVectorGetX(vPos);
 		m_UiInfo.fY = XMVectorGetY(vPos);
 	}
@@ -161,7 +199,7 @@ void CUI_ItemButton::Tick_End(_float fTimeDelta)
 	}
 	else
 	{
-		vPos += XMLoadFloat2(&m_vDir) * 100.f * fTimeDelta;
+		vPos += XMLoadFloat2(&m_vDir) * 150.f * fTimeDelta;
 		m_UiInfo.fX = XMVectorGetX(vPos);
 		m_UiInfo.fY = XMVectorGetY(vPos);
 	}
@@ -206,7 +244,7 @@ void CUI_ItemButton::Handle_Press()
 
 void CUI_ItemButton::Handle_Click()
 {
-	int a = 0;
+	CItemManager::Get_Instance()->Change_Hat(m_pIconTag);
 }
 
 

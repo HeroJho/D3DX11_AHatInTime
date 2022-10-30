@@ -203,7 +203,7 @@ void CStaticModel::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pModelCom->Play_Animation(fTimeDelta);
+	// m_pModelCom->Play_Animation(fTimeDelta);
 	
 	if (CMapManager::Get_Instance()->Get_ColMode())
 		Tick_Col(m_pTransformCom->Get_WorldMatrix());

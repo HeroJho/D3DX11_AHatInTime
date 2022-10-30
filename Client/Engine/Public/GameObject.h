@@ -14,6 +14,9 @@ public:
 		_int iMaxHP;
 		_int iAT;
 
+		_float3 vPos;
+		_uint iNaviIndex;
+
 	}CREATUREINFODESC;
 
 protected:

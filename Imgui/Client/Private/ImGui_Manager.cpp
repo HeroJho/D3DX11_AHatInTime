@@ -347,7 +347,11 @@ void CImGui_Manager::Render_AnimTool()
 		pObj = CAnimManager::Get_Instance()->Get_AnimModel();
 		Window_AnimModleList();
 		if (nullptr != pObj)
+		{
 			Window_AnimEditor();
+			Window_AnimLean();
+		}
+			
 	}
 
 
@@ -358,6 +362,9 @@ void CImGui_Manager::Render_AnimTool()
 		_float3* pAixs = pObj->Get_Axis();
 		Window_Transform(pTransform, pAixs);
 	}
+
+
+	
 
 
 	if (CAnimManager::Get_Instance()->Get_IsDelete())
@@ -1187,6 +1194,73 @@ void CImGui_Manager::Window_AnimTestMode()
 
 	ImGui::End();
 
+}
+
+void CImGui_Manager::Window_AnimLean()
+{
+	ImGui::Begin("AnimLeanMode");
+
+	_int iStartAnimIndex = CAnimManager::Get_Instance()->Get_StartAnimLeanIndex();
+	if (ImGui::InputInt("Start Index: ", &iStartAnimIndex))
+	{
+		CAnimManager::Get_Instance()->Set_StartAnimLeanIndex(iStartAnimIndex);
+		CAnimManager::Get_Instance()->Get_AnimModel()->Set_AnimIndex(iStartAnimIndex);
+	}
+
+	_int iEndAnimIndex = CAnimManager::Get_Instance()->Get_EndAnimLeanIndex();
+	if (ImGui::InputInt("End Index: ", &iEndAnimIndex))
+	{
+		CAnimManager::Get_Instance()->Set_EndAnimLeanIndex(iEndAnimIndex);
+		CAnimManager::Get_Instance()->Get_AnimModel()->Set_AnimIndex(iStartAnimIndex);
+	}
+
+
+
+
+	ImGui::Text("======AnimLinear======");
+	ImGui::InputFloat("TickPerSeconed", CAnimManager::Get_Instance()->Get_fTickperSceconed());
+	ImGui::InputFloat("LimitRatio", CAnimManager::Get_Instance()->Get_fLimitRatio());
+	if (ImGui::Button("Add Info!"))
+		CAnimManager::Get_Instance()->Set_AnimLeanLinearData();
+
+
+	if (ImGui::BeginListBox("LinearDataList"))
+	{
+		ImGui::PushItemWidth(100.f);
+
+		for (auto& Data : *CAnimManager::Get_Instance()->Get_LinearLists())
+		{
+
+			ImGui::Text("==========================");
+			ImGui::Text("MyIndex:        %d", Data.iMyIndex);
+			ImGui::Text("TargetIndex:    %d", Data.iTargetIndex);
+			ImGui::Text("TickPerSeconed: %f", Data.fTickPerSeconed);
+			ImGui::Text("LimitRatio:     %f", Data.fLimitRatio);
+			ImGui::Text("==========================");
+
+		}
+
+		ImGui::PopItemWidth();
+
+		ImGui::EndListBox();
+	}
+
+	ImGui::PushItemWidth(50.f);
+
+	if (ImGui::Button("SaveData"))
+		CAnimManager::Get_Instance()->Save_AnimData();
+	ImGui::SameLine();
+	if (ImGui::Button("LoadData"))
+		CAnimManager::Get_Instance()->Load_AnimData();
+
+
+	ImGui::PopItemWidth();
+
+
+
+
+
+	ImGui::End();
 }
 
 void CImGui_Manager::Window_Part()

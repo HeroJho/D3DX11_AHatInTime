@@ -139,6 +139,12 @@
     <ClCompile Include="..\private\Font_Manager.cpp">
       <Filter>04.Utility\04.Fonts\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\RenderTarget.cpp">
+      <Filter>04.Utility\05.RenderTargets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Target_Manager.cpp">
+      <Filter>04.Utility\05.RenderTargets\Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -293,6 +299,12 @@
     </ClInclude>
     <ClInclude Include="..\public\Font_Manager.h">
       <Filter>04.Utility\04.Fonts\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\RenderTarget.h">
+      <Filter>04.Utility\05.RenderTargets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Target_Manager.h">
+      <Filter>04.Utility\05.RenderTargets\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -452,10 +464,22 @@
     <Filter Include="04.Utility\04.Fonts\Manager">
       <UniqueIdentifier>{b07b9896-8875-4db6-a529-f40a11b9098e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.Utility\05.RenderTargets">
+      <UniqueIdentifier>{40236d1b-f2b2-4f23-9d7c-3f1282fe284c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\05.RenderTargets\Manager">
+      <UniqueIdentifier>{396a5158-3877-4d47-98f2-0d0c4621fb67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Components\01.Renderer\Shader">
+      <UniqueIdentifier>{61aa3173-63c1-45af-a425-0d7f941caf55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl">
       <Filter>03.Components\09.Navigation\Cell\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Imgui\Engine\Bin\ShaderFiles\Shader_Deferred.hlsl">
+      <Filter>03.Components\01.Renderer\Shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

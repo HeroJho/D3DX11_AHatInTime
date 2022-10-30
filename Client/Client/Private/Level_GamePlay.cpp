@@ -44,7 +44,8 @@ HRESULT CLevel_GamePlay::Initialize()
 	
 
 	// CCamManager::Get_Instance()->Play_CutScene(0, true);
-	
+	CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
+
 
 	return S_OK;
 }
@@ -55,7 +56,7 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	m_fTimeAcc += fTimeDelta;
 
-	if (10.f < m_fTimeAcc)
+	if (10.f < m_fTimeAcc && 10 > m_iCount)
 	{
 		CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 		Safe_AddRef(pGameInstance);
@@ -65,13 +66,16 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 		ObjDesc.iAT = 1;
 		ObjDesc.iMaxHP = 3;
 		ObjDesc.iHP = 3;
+		ObjDesc.vPos = _float3(-37.75, 12.34, 157.85);
+		ObjDesc.iNaviIndex = 13444;
 
-		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Monster"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc);
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Mad_Crow"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc);
 
 
 		Safe_Release(pGameInstance);
 
 		m_fTimeAcc = 0.f;
+		++m_iCount;
 	}
 
 
@@ -98,9 +102,9 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 0.f, 0.f, 1.f);
+	LightDesc.vDiffuse = _float4(0.8f, 0.8f, 0.8f, 1.f);
+	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
 		return E_FAIL;
@@ -161,6 +165,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))
+		return E_FAIL;
+
+
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
 
@@ -172,7 +180,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		return E_FAIL;
 	
 
-	if (FAILED(CDataManager::Get_Instance()->Load_Map(0, LEVEL_GAMEPLAY)))
+	if (FAILED(CDataManager::Get_Instance()->Load_Map(3, LEVEL_GAMEPLAY)))
 		return E_FAIL;
 
 
@@ -199,6 +207,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 
 
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-43.75f, 13.5f, 150.85f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f))))
+		return E_FAIL;
+
 
 
 
@@ -209,6 +220,21 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 {
+
+	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+	CGameObject::CREATUREINFODESC ObjDesc;
+	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
+	ObjDesc.iAT = 1;
+	ObjDesc.iMaxHP = 3;
+	ObjDesc.iHP = 3;
+	ObjDesc.vPos = _float3(-40.75, 14.34, 170.85);
+
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
+		return E_FAIL;
+
+	Safe_Release(pGameInstance);
 
 
 	return S_OK;

@@ -33,6 +33,8 @@ public:
 	// Test
 private:
 	_float m_fTimeAcc = 0.f;
+	_uint m_iCount = 0;
+
 };
 
 END

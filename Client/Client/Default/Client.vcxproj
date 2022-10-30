@@ -167,11 +167,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp" />
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\public\CamManager.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\ColorCube.h" />
     <ClInclude Include="..\public\DataManager.h" />
+    <ClInclude Include="..\public\Flask.h" />
+    <ClInclude Include="..\public\Flask_EX.h" />
     <ClInclude Include="..\public\Item.h" />
     <ClInclude Include="..\public\ItemManager.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
@@ -179,6 +182,7 @@
     <ClInclude Include="..\Public\Level_Logo.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\public\LookCube.h" />
+    <ClInclude Include="..\public\Mad_Crow.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\public\MarkCube.h" />
     <ClInclude Include="..\Public\Monster.h" />
@@ -186,8 +190,10 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\RectBarrel.h" />
     <ClInclude Include="..\public\RollingBarrel.h" />
+    <ClInclude Include="..\public\SkyModel.h" />
     <ClInclude Include="..\Public\StaticModel_Col.h" />
     <ClInclude Include="..\public\StaticModel_Instance.h" />
+    <ClInclude Include="..\public\SubSpider.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\Test.h" />
     <ClInclude Include="..\public\ToolManager.h" />
@@ -202,6 +208,7 @@
     <ClInclude Include="..\public\UI_Item_Inven_Slot.h" />
     <ClInclude Include="..\Public\UI_TextLife.h" />
     <ClInclude Include="..\Public\Umbrella.h" />
+    <ClInclude Include="..\public\Vault.h" />
     <ClInclude Include="..\public\Yarn.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
@@ -213,6 +220,8 @@
     <ClCompile Include="..\private\CamManager.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
+    <ClCompile Include="..\private\Flask.cpp" />
+    <ClCompile Include="..\private\Flask_EX.cpp" />
     <ClCompile Include="..\private\Item.cpp" />
     <ClCompile Include="..\private\ItemManager.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
@@ -220,6 +229,7 @@
     <ClCompile Include="..\Private\Level_Logo.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\private\LookCube.cpp" />
+    <ClCompile Include="..\private\Mad_Crow.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\private\MarkCube.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
@@ -227,8 +237,10 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\RectBarrel.cpp" />
     <ClCompile Include="..\private\RollingBarrel.cpp" />
+    <ClCompile Include="..\private\SkyModel.cpp" />
     <ClCompile Include="..\Private\StaticModel_Col.cpp" />
     <ClCompile Include="..\private\StaticModel_Instance.cpp" />
+    <ClCompile Include="..\private\SubSpider.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\Test.cpp" />
     <ClCompile Include="..\private\ToolManager.cpp" />
@@ -243,6 +255,7 @@
     <ClCompile Include="..\private\UI_Item_Inven_Slot.cpp" />
     <ClCompile Include="..\Private\UI_TextLife.cpp" />
     <ClCompile Include="..\Private\Umbrella.cpp" />
+    <ClCompile Include="..\private\Vault.cpp" />
     <ClCompile Include="..\private\Yarn.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -25,6 +25,8 @@ public:
 
 		_uint iCount;
 
+		void* pDesc = nullptr;
+
 	}ITEMDESC;
 
 	typedef struct tagIvenDesc

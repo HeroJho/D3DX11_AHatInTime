@@ -25,8 +25,9 @@ public:
 	void Ready_CellCollision(class CGameObject* pGameObject);
 
 public:
-	const vector<class CGameObject*>* Get_CurCellColliders(); 
+	const vector<class CGameObject*>* Get_CurCellColliders();
 	_bool Get_GroundCell(_float3* pPoss, class CTransform* pTran);
+	_uint Get_CurCellIndex() { return m_NavigationDesc.iCurrentIndex; }
 
 public:
 	// 나의 셀에 대해 y값을 얻어온다
@@ -41,7 +42,7 @@ public:
 
 #ifdef _DEBUG
 public:
-	HRESULT Render();
+	virtual HRESULT Render() override;
 #endif // _DEBUG
 
 private:

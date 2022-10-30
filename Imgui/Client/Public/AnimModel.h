@@ -50,6 +50,28 @@ private:
 	_float3					m_vAxis;
 	LEVEL					m_eModelLevel = LEVEL_END;
 
+
+
+	// For. LeanAnim
+public:
+
+	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
+	void Reset_AnimLinearData();
+
+
+	void		Set_AnimIndex(_uint iIndex);
+
+	void Set_StartAnimIndex(_uint iStartAnimIndex) { m_iStartAnimIndex = iStartAnimIndex; }
+	_uint Get_StartAnimIndex() { return m_iStartAnimIndex; }
+	void Set_EndAnimIndex(_uint iEndAnimIndex) { m_iEndAnimIndex = iEndAnimIndex; }
+	_uint Get_EndAnimIndex() { return m_iEndAnimIndex; }
+
+
+private:
+	_uint				m_iStartAnimIndex = 0;
+	_uint				m_iEndAnimIndex = 0;
+
+
 private:
 	HRESULT Ready_Components();
 

@@ -98,6 +98,8 @@ private:
 	void Window_PlayMode();
 	void Window_AnimTestMode();
 
+	void Window_AnimLean();
+
 	// FOR. Part
 	void Window_Part();
 

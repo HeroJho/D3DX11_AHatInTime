@@ -52,13 +52,14 @@ private:
 
 	// For. TimeManager
 public:
-	enum TIMETAG { TIME_PLAYER, TIME_MONSTER, TIME_EM, TIME_ALL, TIME_END };
+	enum TIMETAG { TIME_PLAYER, TIME_MONSTER, TIME_EM, TIME_END };
 
 public:
 	_float Get_TimeRatio(TIMETAG eTag);
 	void Set_TimeRatio(TIMETAG eTag, _float fTimeRatio);
 
 	void Set_WithOutPlayer(_float fTimeRatio);
+	void Set_All(_float fTimeRatio);
 
 private:
 	_float m_fTimeRatios[TIME_END];

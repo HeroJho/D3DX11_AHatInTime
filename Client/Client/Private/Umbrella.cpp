@@ -166,7 +166,7 @@ void CUmbrella::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 	if (!m_bCanAttack)
 		return;
 
-	if ("Tag_Monster" == Desc.pOther->Get_Tag())
+	if ("Tag_Monster" == Desc.pOther->Get_Tag() && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 	{
 		((CMonster*)Desc.pOther)->Attacked(1);
 		m_bCanAttack = false;

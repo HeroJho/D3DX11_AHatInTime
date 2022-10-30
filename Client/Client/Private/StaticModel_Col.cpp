@@ -61,7 +61,7 @@ void CStaticModel_Col::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 	if (CToolManager::Get_Instance()->Get_Debug())
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 }
 
 HRESULT CStaticModel_Col::Render()

@@ -36,6 +36,24 @@ HRESULT CAnimModel::Initialize(void * pArg)
 	return S_OK;
 }
 
+
+void CAnimModel::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
+{
+	m_pModelCom->Push_AnimLinearData(LinearData);
+}
+
+void CAnimModel::Reset_AnimLinearData()
+{
+	m_pModelCom->Reset_AnimLinearData();
+}
+
+void CAnimModel::Set_AnimIndex(_uint iIndex)
+{
+	m_pModelCom->Set_AnimIndex(iIndex);
+}
+
+
+
 void CAnimModel::Tick(_float fTimeDelta)
 {
 
@@ -46,7 +64,18 @@ void CAnimModel::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pModelCom->Play_Animation(fTimeDelta);
+	if (m_pModelCom->Play_Animation(fTimeDelta))
+	{
+		if (m_pModelCom->Get_CurAnimIndex() == m_iStartAnimIndex)
+		{
+			m_pModelCom->Set_AnimIndex(m_iEndAnimIndex);
+		}
+		else if (m_pModelCom->Get_CurAnimIndex() == m_iEndAnimIndex)
+		{
+			m_pModelCom->Set_AnimIndex(m_iStartAnimIndex);
+		}
+	}
+
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }

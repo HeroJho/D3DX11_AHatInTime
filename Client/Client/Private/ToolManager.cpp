@@ -95,8 +95,6 @@ _float CToolManager::Get_TimeRatio(TIMETAG eTag)
 		return m_fTimeRatios[TIME_MONSTER];
 	case Client::CToolManager::TIME_EM:
 		return m_fTimeRatios[TIME_EM];
-	case Client::CToolManager::TIME_ALL:
-		return m_fTimeRatios[TIME_ALL];
 	}
 }
 
@@ -110,8 +108,6 @@ void CToolManager::Set_TimeRatio(TIMETAG eTag, _float fTimeRatio)
 		m_fTimeRatios[TIME_MONSTER] = fTimeRatio;
 	case Client::CToolManager::TIME_EM:
 		m_fTimeRatios[TIME_EM] = fTimeRatio;
-	case Client::CToolManager::TIME_ALL:
-		m_fTimeRatios[TIME_ALL] = fTimeRatio;
 	}
 }
 
@@ -119,7 +115,14 @@ void CToolManager::Set_WithOutPlayer(_float fTimeRatio)
 {
 	Set_TimeRatio(TIME_MONSTER, fTimeRatio);
 	Set_TimeRatio(TIME_EM, fTimeRatio);
-	Set_TimeRatio(TIME_ALL, fTimeRatio);
+}
+
+void CToolManager::Set_All(_float fTimeRatio)
+{
+	for (_uint i = 0; i < TIME_END; ++i)
+	{
+		Set_TimeRatio((TIMETAG)i, fTimeRatio);
+	}
 }
 
 

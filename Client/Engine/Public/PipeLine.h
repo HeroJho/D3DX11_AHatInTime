@@ -28,6 +28,9 @@ public:
 		XMStoreFloat4x4(&Transform, XMMatrixTranspose(Get_TransformMatrix(eTransformState)));
 		return Transform;
 	}
+	_matrix Get_TransformMatrixInverse(TRANSFORMSTATE eTransformState) const {
+		return XMLoadFloat4x4(&m_TransformInverseMatrix[eTransformState]);
+	}
 
 	_float4 Get_CamPosition() const {
 		return m_vCamPosition;
@@ -35,7 +38,7 @@ public:
 
 public:
 	void Update();
-	
+
 private:
 	_float4x4				m_TransformMatrix[D3DTS_END];
 	_float4x4				m_TransformInverseMatrix[D3DTS_END];

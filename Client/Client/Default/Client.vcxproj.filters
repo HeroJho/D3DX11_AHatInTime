@@ -109,6 +109,21 @@
     <Filter Include="03.UI\Item_Inven">
       <UniqueIdentifier>{9385fec6-57ee-4a68-be55-ecff15e57723}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Sky">
+      <UniqueIdentifier>{9ea1e669-b653-4609-9125-cd560589e56d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Item\Flask">
+      <UniqueIdentifier>{18fa6015-9c59-46d3-8410-2fd8e595acc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Monster\SubSpider">
+      <UniqueIdentifier>{15dcba3e-5679-496a-becc-a794320f628b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Monster\Mad_Crow">
+      <UniqueIdentifier>{fdb592a5-7b61-4419-ad3b-09ad15f98d92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Item\vault">
+      <UniqueIdentifier>{5665fdd9-d2bc-42eb-8ba1-1d758b0d94bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -152,9 +167,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
       <Filter>02.GameObjects\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Monster.h">
-      <Filter>02.GameObjects\Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI.h">
       <Filter>03.UI</Filter>
@@ -234,6 +246,30 @@
     <ClInclude Include="..\Public\UI_Item_Inven.h">
       <Filter>03.UI\Item_Inven</Filter>
     </ClInclude>
+    <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp">
+      <Filter>97.ShaderFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\SkyModel.h">
+      <Filter>02.GameObjects\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Flask.h">
+      <Filter>02.GameObjects\Item\Flask</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Flask_EX.h">
+      <Filter>02.GameObjects\Item\Flask</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\SubSpider.h">
+      <Filter>02.GameObjects\Monster\SubSpider</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster.h">
+      <Filter>02.GameObjects\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Mad_Crow.h">
+      <Filter>02.GameObjects\Monster\Mad_Crow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Vault.h">
+      <Filter>02.GameObjects\Item\vault</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -265,9 +301,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02.GameObjects\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Monster.cpp">
-      <Filter>02.GameObjects\Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI.cpp">
       <Filter>03.UI</Filter>
@@ -346,6 +379,27 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_Item_Inven.cpp">
       <Filter>03.UI\Item_Inven</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SkyModel.cpp">
+      <Filter>02.GameObjects\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Flask.cpp">
+      <Filter>02.GameObjects\Item\Flask</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Flask_EX.cpp">
+      <Filter>02.GameObjects\Item\Flask</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SubSpider.cpp">
+      <Filter>02.GameObjects\Monster\SubSpider</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster.cpp">
+      <Filter>02.GameObjects\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Mad_Crow.cpp">
+      <Filter>02.GameObjects\Monster\Mad_Crow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Vault.cpp">
+      <Filter>02.GameObjects\Item\vault</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

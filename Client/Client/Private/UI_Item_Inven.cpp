@@ -41,13 +41,13 @@ HRESULT CUI_Item_Inven::Initialize(void * pArg)
 
 	CUI_Item_Inven_Slot::ITEMBUTTONDESC IconDesc;
 	lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_Icon_SprintYarn"));
-	Make_ChildUI(100.f, 0.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
+	Make_ChildUI(100.f, -50.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
 
 	lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_Icon_WitchYarn"));
-	Make_ChildUI(0.f, 0.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
+	Make_ChildUI(0.f, -50.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
 
 	lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_Icon_IceYarn"));
-	Make_ChildUI(-100.f, 0, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
+	Make_ChildUI(-100.f, -50.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
 
 
 	return S_OK;

@@ -27,6 +27,10 @@ private:
 
 
 public:
+	string Get_SlotTag(_uint eID);
+
+
+public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 	void Tick(_float fTimeDelta, class CTransform* pParentTran);

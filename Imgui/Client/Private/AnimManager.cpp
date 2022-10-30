@@ -317,6 +317,32 @@ void CAnimManager::Conv_Bin_Anim()
 	CDataManager::Get_Instance()->Conv_Bin_Model((CModel*)m_pAnimModel->Get_ComponentPtr(TEXT("Com_Model")), cName, CDataManager::DATA_ANIM);
 }
 
+void CAnimManager::Set_AnimLeanLinearData()
+{
+	ANIM_LINEAR_DATA LinearData;
+	ZeroMemory(&LinearData, sizeof(ANIM_LINEAR_DATA));
+	LinearData.fLimitRatio = m_fLimitRatio;
+	LinearData.fTickPerSeconed = m_fTickperSceconed;
+	LinearData.iMyIndex = m_pAnimModel->Get_StartAnimIndex();
+	LinearData.iTargetIndex = m_pAnimModel->Get_EndAnimIndex();
+
+
+	for (auto& Data : m_LinearLists)
+	{
+		if (m_iMyIndex == Data.iMyIndex && m_iTargetIndex == Data.iTargetIndex)
+		{
+			Data.fTickPerSeconed = m_fTickperSceconed;
+			Data.fLimitRatio = m_fLimitRatio;
+			m_pAnimModel->Set_AnimLinearData(LinearData);
+			return;
+		}
+	}
+
+
+	m_pAnimModel->Set_AnimLinearData(LinearData);
+	m_LinearLists.push_back(LinearData);
+}
+
 char * CAnimManager::Get_CurAnimName(EDIT_TYPE eType)
 {
 	if (EDIT_PLAYER == eType)
@@ -393,6 +419,38 @@ void CAnimManager::Load_PlayerAnimData()
 		m_LinearLists.push_back(Data);
 	}
 
+}
+
+void CAnimManager::Save_AnimData()
+{
+	if (nullptr == m_pAnimModel)
+		return;
+
+	char cTemp[MAX_PATH];
+
+	CToolManager::Get_Instance()->TCtoC(m_pAnimModel->Get_ModelName(), cTemp);
+
+	CDataManager::Get_Instance()->Save_Anim(cTemp, m_LinearLists);
+}
+
+void CAnimManager::Load_AnimData()
+{
+	if (nullptr == m_pAnimModel)
+		return;
+
+	m_LinearLists.clear();
+	m_pAnimModel->Reset_AnimLinearData();
+
+	char cTemp[MAX_PATH];
+	CToolManager::Get_Instance()->TCtoC(m_pAnimModel->Get_ModelName(), cTemp);
+
+	list<ANIM_LINEAR_DATA> TempDatas = CDataManager::Get_Instance()->Load_Anim(cTemp);
+
+	for (auto& Data : TempDatas)
+	{
+		m_pAnimModel->Set_AnimLinearData(Data);
+		m_LinearLists.push_back(Data);
+	}
 }
 
 

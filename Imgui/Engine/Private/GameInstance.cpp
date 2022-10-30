@@ -13,8 +13,9 @@ CGameInstance::CGameInstance()
 	, m_pPipeLine(CPipeLine::Get_Instance())
 	, m_pLight_Manager(CLight_Manager::Get_Instance())
 	, m_pFrustum(CFrustum::Get_Instance())
-
+	, m_pTarget_Manager(CTarget_Manager::Get_Instance())
 {
+	Safe_AddRef(m_pTarget_Manager);
 	Safe_AddRef(m_pFrustum);
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
@@ -414,6 +415,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pPipeLine);

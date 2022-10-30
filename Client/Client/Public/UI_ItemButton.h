@@ -57,7 +57,6 @@ private:
 	CTexture*				m_pTextureCom = nullptr;
 
 private:
-	UI_STATE				m_eState = UI_END;
 	TCHAR m_pIconTag[MAX_PATH];
 
 	
@@ -66,6 +65,10 @@ private:
 	_float2 m_vEndPos;
 	_float  m_fChangeTimeAcc = 0.f;
 	_float2 m_vDir;
+
+
+	_float m_fOriSize = 0.f;
+	_float m_fHoverSize = 0.f;
 
 public:
 	static CUI_ItemButton* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
