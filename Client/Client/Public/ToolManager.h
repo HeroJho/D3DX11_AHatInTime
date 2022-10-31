@@ -37,6 +37,8 @@ public:
 	_tchar* Get_ManagedTChar();
 	char* Get_ManagedChar();
 
+	_float Get_RendomNum(_float fMin, _float fMax);
+
 private:
 	void ClearManagedChar();
 

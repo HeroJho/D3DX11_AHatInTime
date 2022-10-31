@@ -124,6 +124,9 @@
     <Filter Include="02.GameObjects\Item\vault">
       <UniqueIdentifier>{5665fdd9-d2bc-42eb-8ba1-1d758b0d94bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Item\Diamond">
+      <UniqueIdentifier>{83f04d35-5f74-49d8-abd6-864f5f2a3bde}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -270,6 +273,9 @@
     <ClInclude Include="..\public\Vault.h">
       <Filter>02.GameObjects\Item\vault</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Diamond.h">
+      <Filter>02.GameObjects\Item\Diamond</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -400,6 +406,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Vault.cpp">
       <Filter>02.GameObjects\Item\vault</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Diamond.cpp">
+      <Filter>02.GameObjects\Item\Diamond</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

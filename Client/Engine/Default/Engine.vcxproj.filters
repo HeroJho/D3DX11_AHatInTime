@@ -145,6 +145,9 @@
     <ClCompile Include="..\private\Target_Manager.cpp">
       <Filter>04.Utility\05.RenderTargets\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\private\Frustum.cpp">
+      <Filter>04.Utility\06.Frustum</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -305,6 +308,9 @@
     </ClInclude>
     <ClInclude Include="..\public\Target_Manager.h">
       <Filter>04.Utility\05.RenderTargets\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Frustum.h">
+      <Filter>04.Utility\06.Frustum</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -472,6 +478,9 @@
     </Filter>
     <Filter Include="03.Components\01.Renderer\Shader">
       <UniqueIdentifier>{61aa3173-63c1-45af-a425-0d7f941caf55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Utility\06.Frustum">
+      <UniqueIdentifier>{db875ca9-d332-4b47-939b-d7ea6a68a0ff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

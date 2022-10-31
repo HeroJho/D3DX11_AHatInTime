@@ -143,14 +143,14 @@ _bool CNavigation::isMove(_fvector vPosition)
 	return _bool();
 }
 
-_bool CNavigation::isGround(_fvector vPosition, _float* OutfCellY)
+_bool CNavigation::isGround(_fvector vPosition, _float* OutfCellY, _float fMagicNum)
 {
 	_float fCellY = Compute_Height(vPosition);
 	_float fY = XMVectorGetY(vPosition);
 
 	*OutfCellY = fCellY;
 
-	if (fCellY >= fY)
+	if ((fCellY + fMagicNum) >= fY)
 		return true;
 
 	return false;

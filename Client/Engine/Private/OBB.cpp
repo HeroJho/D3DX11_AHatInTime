@@ -57,7 +57,7 @@ HRESULT COBB::Initialize(void * pArg)
 
 
 
-void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran)
+void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran, _float fMagicNum)
 {
 	{
 		//m_isColl = false;
@@ -233,7 +233,7 @@ void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTra
 				{
 					pTran->ResetGravity();
 					_vector vPos = pTran->Get_State(CTransform::STATE_POSITION);
-					vPos = XMVectorSetY(vPos, fDis);
+					vPos = XMVectorSetY(vPos, fDis + fMagicNum);
 					pTran->Set_State(CTransform::STATE_POSITION, vPos);
 				}
 				break;

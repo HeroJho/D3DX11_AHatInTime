@@ -475,8 +475,11 @@ HRESULT CModel::Ready_Materials(const char* pModelFilePath)
 
 			_splitpath_s(strPath.data, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
-	
-			memcpy(&DataMaterialDesc.cNames[j], &szFileName, sizeof(char) * MAX_PATH);
+			char			szSaveName[MAX_PATH] = "";
+			strcat_s(szSaveName, szFileName);
+			strcat_s(szSaveName, szExt);
+
+			memcpy(&DataMaterialDesc.cNames[j], &szSaveName, sizeof(char) * MAX_PATH);
 
 			strcpy_s(szFullPath, pModelFilePath);
 			strcat_s(szFullPath, szFileName);
@@ -837,11 +840,19 @@ HRESULT CModel::Bin_Ready_Materials(const char* pModelFilePath)
 
 
 			char			szFullPath[MAX_PATH] = "";
-			char			szExt[MAX_PATH] = ".dds";
+			char			szExt[MAX_PATH] = "";
+
+			_splitpath_s(pAIMaterial.cNames[j], nullptr, 0, nullptr, 0, szFullPath, MAX_PATH, szExt, MAX_PATH);
 
 			strcpy_s(szFullPath, pModelFilePath);
 			strcat_s(szFullPath, pAIMaterial.cNames[j]);
-			strcat_s(szFullPath, szExt);
+
+			if (!strcmp("", szExt))
+			{
+				strcpy_s(szExt, ".dds");
+				strcat_s(szFullPath, szExt);
+			}
+
 
 			_tchar			szWideFullPath[MAX_PATH] = TEXT("");
 

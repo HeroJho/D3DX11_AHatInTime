@@ -414,12 +414,16 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		Desc.vSize = DataObj.vSize;
 		Desc.bWall = DataObj.bWall;
 
-		// 콜라이더
-		if (pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), eLEVEL, TEXT("Layer_Model"), &Desc))
+		if (0.01f < Desc.vSize.x)
 		{
-			RELEASE_INSTANCE(CGameInstance);
-			return E_FAIL;
+			// 콜라이더
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), eLEVEL, TEXT("Layer_Model"), &Desc)))
+			{
+				RELEASE_INSTANCE(CGameInstance);
+				return E_FAIL;
+			}
 		}
+
 
 
 

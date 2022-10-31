@@ -23,8 +23,8 @@ public:
 		_float3 vAngle;
 		_float3 vScale;
 
-		_uint iCount;
 
+		_uint iCount;
 		void* pDesc = nullptr;
 
 	}ITEMDESC;

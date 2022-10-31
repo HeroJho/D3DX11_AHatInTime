@@ -12,8 +12,7 @@
 #include "ColliderManager.h"
 #include "Font_Manager.h"
 #include "Target_Manager.h"
-
-
+#include "Frustum.h"
 
 /* 클라이언트로 보여주기위한 가장 대표적인 클래스이다. */
 /* 각종 매니져클래스들의 주요함수를 클라로 보여준다.  */
@@ -99,6 +98,10 @@ public: /* For.Font_Manager */
 	HRESULT Render_Fonts(const _tchar* pFontTag, const _tchar* pTextm, _float2 vPosition, _fvector vColor = XMVectorSet(1.f, 1.f, 1.f, 1.f),
 		_float fAngle = 0.f, _float2 vOrigin = _float2(0.f, 0.f), _float2 vScale = _float2(1.f, 1.f));
 
+public: /* For.Frustum */
+	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius = 0.f);
+
+
 
 private:
 	CGraphic_Device*				m_pGraphic_Device = nullptr;
@@ -112,6 +115,7 @@ private:
 	CPicking*						m_pPicking = nullptr;
 	CColliderManager*				m_pColliderManager = nullptr;
 	CFont_Manager*					m_pFont_Manager = nullptr;
+	CFrustum*						m_pFrustum = nullptr;
 
 
 public:

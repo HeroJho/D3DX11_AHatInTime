@@ -1,29 +1,29 @@
 #include "stdafx.h"
-#include "..\Public\Yarn.h"
+#include "..\Public\Diamond.h"
 
 #include "GameInstance.h"
 #include "ToolManager.h"
 
 #include "Player.h"
 
-CYarn::CYarn(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CDiamond::CDiamond(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CItem(pDevice, pContext)
 {
-	
+
 }
 
-CYarn::CYarn(const CYarn & rhs)
+CDiamond::CDiamond(const CDiamond & rhs)
 	: CItem(rhs)
 {
-	
+
 }
 
-HRESULT CYarn::Initialize_Prototype()
+HRESULT CDiamond::Initialize_Prototype()
 {
 	return __super::Initialize_Prototype();
 }
 
-HRESULT CYarn::Initialize(void * pArg)
+HRESULT CDiamond::Initialize(void * pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -55,7 +55,7 @@ HRESULT CYarn::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CYarn::Tick(_float fTimeDelta)
+void CDiamond::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
@@ -66,7 +66,7 @@ void CYarn::Tick(_float fTimeDelta)
 
 }
 
-void CYarn::LateTick(_float fTimeDelta)
+void CDiamond::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
@@ -99,7 +99,7 @@ void CYarn::LateTick(_float fTimeDelta)
 
 }
 
-HRESULT CYarn::Render()
+HRESULT CDiamond::Render()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
@@ -108,16 +108,16 @@ HRESULT CYarn::Render()
 	{
 		if (FAILED(__super::Render()))
 			return E_FAIL;
-	}           
+	}
 
 
-	if(CToolManager::Get_Instance()->Get_Debug())
+	if (CToolManager::Get_Instance()->Get_Debug())
 		Render_Col();
 
 	return S_OK;
 }
 
-HRESULT CYarn::SetUp_State(_fmatrix StateMatrix)
+HRESULT CDiamond::SetUp_State(_fmatrix StateMatrix)
 {
 	if (FAILED(__super::SetUp_State(StateMatrix)))
 		return E_FAIL;
@@ -126,7 +126,7 @@ HRESULT CYarn::SetUp_State(_fmatrix StateMatrix)
 }
 
 
-void CYarn::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+void CDiamond::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
@@ -135,9 +135,9 @@ void CYarn::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 			if (Get_Dead())
 				return;
 
-			CPlayer* pPlayer = (CPlayer*)Desc.pOther;
+			//CPlayer* pPlayer = (CPlayer*)Desc.pOther;
 
-			pPlayer->Get_Item(m_InvenDesc);
+			//pPlayer->Get_Item(m_InvenDesc);
 
 			Set_Dead(true);
 		}
@@ -149,20 +149,20 @@ void CYarn::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 
 
-void CYarn::Use_Item()
+void CDiamond::Use_Item()
 {
 
 
 
 }
 
-void CYarn::Init_Pigic_Bounding(_float OriJumpPow, _float OriDirPow)
+void CDiamond::Init_Pigic_Bounding(_float OriJumpPow, _float OriDirPow)
 {
 	m_fJumpPower = OriJumpPow;
 	m_fDirPower = OriDirPow;
 }
 
-void CYarn::Tick_Pigic_Bounding(_float fTimeDelta)
+void CDiamond::Tick_Pigic_Bounding(_float fTimeDelta)
 {
 
 	if (nullptr == m_pNavigationCom || (m_bStop && m_bOn))
@@ -215,7 +215,7 @@ void CYarn::Tick_Pigic_Bounding(_float fTimeDelta)
 
 
 
-HRESULT CYarn::Ready_Components()
+HRESULT CDiamond::Ready_Components()
 {
 
 	if (m_Desc.bIsPigic)
@@ -258,33 +258,33 @@ HRESULT CYarn::Ready_Components()
 	return S_OK;
 }
 
-CYarn * CYarn::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CDiamond * CDiamond::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CYarn*		pInstance = new CYarn(pDevice, pContext);
+	CDiamond*		pInstance = new CDiamond(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CYarn"));
+		MSG_BOX(TEXT("Failed To Created : CDiamond"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CYarn::Clone(void * pArg)
+CGameObject * CDiamond::Clone(void * pArg)
 {
-	CYarn*		pInstance = new CYarn(*this);
+	CDiamond*		pInstance = new CDiamond(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CYarn"));
+		MSG_BOX(TEXT("Failed To Cloned : CDiamond"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CYarn::Free()
+void CDiamond::Free()
 {
 	__super::Free();
 

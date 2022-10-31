@@ -173,6 +173,7 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\ColorCube.h" />
     <ClInclude Include="..\public\DataManager.h" />
+    <ClInclude Include="..\public\Diamond.h" />
     <ClInclude Include="..\public\Flask.h" />
     <ClInclude Include="..\public\Flask_EX.h" />
     <ClInclude Include="..\public\Item.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="..\private\CamManager.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
+    <ClCompile Include="..\private\Diamond.cpp" />
     <ClCompile Include="..\private\Flask.cpp" />
     <ClCompile Include="..\private\Flask_EX.cpp" />
     <ClCompile Include="..\private\Item.cpp" />

@@ -3,6 +3,7 @@
 
 #include "GameInstance.h"
 #include "ToolManager.h"
+#include "ItemManager.h"
 
 #include "Player.h"
 
@@ -33,8 +34,12 @@ HRESULT CVault::Initialize(void * pArg)
 
 	lstrcpy(m_InvenDesc.szModelName, Desc->szModelName);
 	m_InvenDesc.iCount = Desc->iCount;
-
-
+	
+	if (nullptr == Desc->pDesc)
+		return E_FAIL;
+	VAULTDESC* VaultDesc = (VAULTDESC*)Desc->pDesc;
+	m_iNaviIndex = VaultDesc->iNaviIndex;
+	
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -169,13 +174,13 @@ void CVault::Set_Anim()
 	switch (m_eState)
 	{
 	case Client::CVault::STATE_IDLE:
-		m_pModelCom->Set_AnimIndex(1);
-		break;
-	case Client::CVault::STATE_OPEN:
 		m_pModelCom->Set_AnimIndex(0);
 		break;
-	case Client::CVault::STATE_OPENED:
+	case Client::CVault::STATE_OPEN:
 		m_pModelCom->Set_AnimIndex(2);
+		break;
+	case Client::CVault::STATE_OPENED:
+		m_pModelCom->Set_AnimIndex(1);
 		break;
 	}
 }
@@ -194,6 +199,14 @@ void CVault::Idle_Tick(_float fTimeDelta)
 
 void CVault::Open_Tick(_float fTimeDelta)
 {
+	m_fSprintItemTimeAcc += fTimeDelta;
+
+	if (3.f < m_fSprintItemTimeAcc && !m_bIsSprintItem)
+	{
+		m_bIsSprintItem = true;
+		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), 1, m_iNaviIndex, 10);
+	}
 
 }
 

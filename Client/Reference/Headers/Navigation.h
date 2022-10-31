@@ -35,7 +35,7 @@ public:
 	// 이동 가능하냐
 	_bool isMove(_fvector vPosition);
 	// 셀에 닿였냐
-	_bool isGround(_fvector vPosition, _float* OutfCellY);
+	_bool isGround(_fvector vPosition, _float* OutfCellY , _float fMagicNum = 0.f);
 
 
 

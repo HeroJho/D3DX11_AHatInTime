@@ -20,6 +20,7 @@
 #include "Yarn.h"
 #include "Flask.h"
 #include "Vault.h"
+#include "Diamond.h"
 
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
@@ -238,6 +239,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Vault"),
 		CVault::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_Diamond*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Diamond"),
+		CDiamond::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	
 	/* For.Prototype_GameObject_ColorCube*/
@@ -339,6 +344,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("yarn_ui_ice"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("science_owlbrew_remade"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("capsule"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 
 
 	

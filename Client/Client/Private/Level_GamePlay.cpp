@@ -10,6 +10,7 @@
 
 #include "Camera_Free.h"
 #include "UI.h"
+#include "Vault.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -206,8 +207,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		return E_FAIL;
 
 
-
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-43.75f, 13.5f, 150.85f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f))))
+	CVault::VAULTDESC Desc;
+	Desc.iNaviIndex = 2411;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-10.43f, 8.f, 118.47f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc)))
 		return E_FAIL;
 
 

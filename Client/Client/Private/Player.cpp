@@ -11,6 +11,9 @@
 
 #include "Monster.h"
 
+// TEST
+#include "Yarn.h"
+
 CPlayer::CPlayer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -272,6 +275,32 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	Anim_Face(fTimeDelta);
 	Check_Attacked(fTimeDelta);
+
+
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_K))
+	{
+
+		_float3 vPos;
+		XMStoreFloat3(&vPos ,m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
+		vPos.y += 3.f;
+
+
+		// CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), 1, &Desc);
+
+		// CItemManager::Get_Instance()->Make_DrowItem(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), 1, _float3(1.f, 0.f, 0.f), 2.f, 2.f, m_pNavigationCom->Get_CurCellIndex());
+		
+		// 	CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), 1, m_pNavigationCom->Get_CurCellIndex(), 10);
+
+
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
 
 
 	switch (m_eState)
@@ -1505,7 +1534,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 
 	// ÂøÁö Çß´Ù¸é
 	_float fTemp = 0.f;
-	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp) || COBB::COL_ON == Get_StaticOBB()->Get_ColState() || COBB::COL_SLIDE == Get_StaticOBB()->Get_ColState())
+	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp, 0.f) || COBB::COL_ON == Get_StaticOBB()->Get_ColState() || COBB::COL_SLIDE == Get_StaticOBB()->Get_ColState())
 	{
 		if (STATE_JUMP == m_eState || STATE_RUNJUMP == m_eState || STATE_SPRINTJUMP == m_eState || STATE_DOUBLEJUMP == m_eState)
 		{

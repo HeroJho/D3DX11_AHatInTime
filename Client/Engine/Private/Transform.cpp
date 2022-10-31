@@ -413,17 +413,17 @@ void CTransform::Push_Dir(_fvector vDir, _float fDis, CNavigation* pNavigation)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
-void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _float fGravity)
+void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _float fGravity, _float fMagicNum)
 {
 	_float3 vPos;
 	XMStoreFloat3(&vPos, Get_State(CTransform::STATE_POSITION));
 
 	_float fCellY = 0.f;
-	if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY) && (1.f > m_fVelocity))
+	if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY, fMagicNum) && (1.f > m_fVelocity))
 	{
 		m_fGravityAcc = 0.f;
 		m_fVelocity = 0.f;
-		vPos.y = fCellY;
+		vPos.y = fCellY + fMagicNum;
 	}
 	else
 	{

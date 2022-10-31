@@ -392,6 +392,8 @@ void CGameInstance::Release_Engine()
 {
 	CGameInstance::Get_Instance()->Destroy_Instance();
 
+	CTarget_Manager::Get_Instance()->Destroy_Instance();
+
 	CComponent_Manager::Get_Instance()->Destroy_Instance();
 
 	CObject_Manager::Get_Instance()->Destroy_Instance();

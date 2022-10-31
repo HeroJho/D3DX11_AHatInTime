@@ -14,8 +14,10 @@ CGameInstance::CGameInstance()
 	, m_pLight_Manager(CLight_Manager::Get_Instance())
 	, m_pColliderManager(CColliderManager::Get_Instance())
 	, m_pFont_Manager(CFont_Manager::Get_Instance())
+	, m_pFrustum(CFrustum::Get_Instance())
 {	
 
+	Safe_AddRef(m_pFrustum);
 	Safe_AddRef(m_pFont_Manager);
 	Safe_AddRef(m_pColliderManager);
 	Safe_AddRef(m_pPicking);
@@ -46,6 +48,9 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInst, cons
 
 	/* 사운드 초기화. */
 
+	if (FAILED(m_pFrustum->Initialize()))
+		return E_FAIL;
+
 	if (FAILED(m_pPicking->Initialize(GraphicDesc.hWnd, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY, *ppDevice, *ppContext)))
 		return E_FAIL;
 
@@ -70,6 +75,8 @@ void CGameInstance::Tick_Engine(_float fTimeDelta)
 	m_pObject_Manager->Tick(fTimeDelta);
 
 	m_pPipeLine->Update();
+
+	m_pFrustum->Tick();
 
 	m_pPicking->Tick();
 
@@ -393,9 +400,18 @@ HRESULT CGameInstance::Render_Fonts(const _tchar * pFontTag, const _tchar * pTex
 	return m_pFont_Manager->Render_Fonts(pFontTag, pTextm, vPosition, vColor, fAngle, vOrigin, vScale);
 }
 
+_bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius)
+{
+	if (nullptr == m_pFrustum)
+		return false;
+
+	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRadius);
+}
 
 void CGameInstance::Release_Engine()
 {
+	CFrustum::Get_Instance()->Destroy_Instance();
+
 	CTarget_Manager::Get_Instance()->Destroy_Instance();
 
 	CFont_Manager::Get_Instance()->Destroy_Instance();
@@ -425,6 +441,8 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+
+	Safe_Release(m_pFrustum);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pColliderManager);
 	Safe_Release(m_pLight_Manager);

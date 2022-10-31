@@ -16,6 +16,12 @@ BEGIN(Client)
 class CVault final : public CItem
 {
 public:
+	typedef struct tagVaultDesc
+	{
+		_uint iNaviIndex = 0;
+	}VAULTDESC;
+
+public:
 	enum VAULT_STATE { STATE_IDLE, STATE_OPEN, STATE_OPENED, STATE_END };
 
 private:
@@ -54,6 +60,11 @@ private:
 	VAULT_STATE m_ePreState = STATE_END;
 
 	_bool m_bStartOpenning = false;
+
+	_float m_fSprintItemTimeAcc = 0.f;
+	_bool m_bIsSprintItem = false;
+
+	_uint m_iNaviIndex = 0;
 
 protected:
 	HRESULT Ready_Components();

@@ -8,15 +8,15 @@
 
 BEGIN(Client)
 
-class CYarn final : public CItem
+class CDiamond final : public CItem
 {
 public:
 
 
 private:
-	CYarn(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CYarn(const CYarn& rhs);
-	virtual ~CYarn() = default;
+	CDiamond(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CDiamond(const CDiamond& rhs);
+	virtual ~CDiamond() = default;
 
 private:
 	CNavigation* m_pNavigationCom = nullptr;
@@ -41,7 +41,7 @@ public:
 
 private:
 	CItemManager::SPRINTDESC m_Desc;
-	
+
 	_bool m_bStop = false;
 
 	_bool m_bOn = false;
@@ -55,7 +55,7 @@ protected:
 
 
 public:
-	static CYarn* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CDiamond* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 
