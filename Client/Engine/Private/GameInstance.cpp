@@ -408,6 +408,14 @@ _bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius)
 	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRadius);
 }
 
+_vector CGameInstance::Get_WinToWorldPos(_float fX, _float fY)
+{
+	if (nullptr == m_pPicking)
+		return XMVectorSet(0.f, 0.f, 0.f, 0.f);
+
+	return m_pPicking->Get_WinToWorldPos(fX, fY);
+}
+
 void CGameInstance::Release_Engine()
 {
 	CFrustum::Get_Instance()->Destroy_Instance();

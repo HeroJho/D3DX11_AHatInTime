@@ -93,7 +93,15 @@ void CCamManager::Set_SelectingCubePosToSelectedCube()
 	Set_SelectingCube(vPos);
 }
 
+void CCamManager::Set_SelectingCubePosToCamPos()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	_float3 vPos = *(_float3*)&pGameInstance->Get_CamPosition();
+	Set_SelectingCube(vPos);
+
+	RELEASE_INSTANCE(CGameInstance);
+}
 
 
 
@@ -1037,4 +1045,5 @@ void CCamManager::Clear_Data()
 	Clear_PosData();
 	Clear_LookData();
 }
+
 

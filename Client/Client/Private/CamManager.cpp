@@ -559,6 +559,8 @@ void CCamManager::Load_Data()
 	m_Datas.push_back(Data);
 	Data = CDataManager::Get_Instance()->Load_Cam(1);
 	m_Datas.push_back(Data);
+	Data = CDataManager::Get_Instance()->Load_Cam(2);
+	m_Datas.push_back(Data);
 }
 
 

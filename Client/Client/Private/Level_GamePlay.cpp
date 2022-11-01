@@ -10,7 +10,7 @@
 
 #include "Camera_Free.h"
 #include "UI.h"
-#include "Vault.h"
+#include "MonsterVault.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -57,27 +57,27 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 
 	m_fTimeAcc += fTimeDelta;
 
-	if (10.f < m_fTimeAcc && 10 > m_iCount)
-	{
-		CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-		Safe_AddRef(pGameInstance);
-		
-		CGameObject::CREATUREINFODESC ObjDesc;
-		ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
-		ObjDesc.iAT = 1;
-		ObjDesc.iMaxHP = 3;
-		ObjDesc.iHP = 3;
-		ObjDesc.vPos = _float3(-37.75, 12.34, 157.85);
-		ObjDesc.iNaviIndex = 13444;
+	//if (10.f < m_fTimeAcc && 10 > m_iCount)
+	//{
+	//	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	//	Safe_AddRef(pGameInstance);
+	//	
+	//	CGameObject::CREATUREINFODESC ObjDesc;
+	//	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
+	//	ObjDesc.iAT = 1;
+	//	ObjDesc.iMaxHP = 3;
+	//	ObjDesc.iHP = 3;
+	//	ObjDesc.vPos = _float3(-37.75, 12.34, 157.85);
+	//	ObjDesc.iNaviIndex = 13444;
 
-		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Mad_Crow"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc);
+	//	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Mad_Crow"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc);
 
 
-		Safe_Release(pGameInstance);
+	//	Safe_Release(pGameInstance);
 
-		m_fTimeAcc = 0.f;
-		++m_iCount;
-	}
+	//	m_fTimeAcc = 0.f;
+	//	++m_iCount;
+	//}
 
 
 }
@@ -169,22 +169,18 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
 
-
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
 
-
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RollingBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
-
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RectBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
-		return E_FAIL;
+	
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RectBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
+	//	return E_FAIL; 
 	
 
 	if (FAILED(CDataManager::Get_Instance()->Load_Map(3, LEVEL_GAMEPLAY)))
 		return E_FAIL;
-
-
 
 
 	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
@@ -198,7 +194,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("Umbrella"), LEVEL_GAMEPLAY, _float3(-44.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
 		return E_FAIL;
 
-
+	
 
 
 	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, _float3(-43.75f, 15.34f, 158.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
@@ -207,9 +203,13 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		return E_FAIL;
 
 
-	CVault::VAULTDESC Desc;
+	CMonsterVault::VAULTDESC Desc;
 	Desc.iNaviIndex = 2411;
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-10.43f, 8.f, 118.47f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc)))
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_MonsterVault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-10.43f, 8.f, 118.47f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc)))
+		return E_FAIL;
+
+	Desc.iNaviIndex = 2420;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-21.02f, 31.53f, 126.75f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc)))
 		return E_FAIL;
 
 
@@ -222,7 +222,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 {
-
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
@@ -230,11 +229,29 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
 	ObjDesc.iAT = 1;
 	ObjDesc.iMaxHP = 3;
-	ObjDesc.iHP = 3;
+	ObjDesc.iHP = 1;
 	ObjDesc.vPos = _float3(-40.75, 14.34, 170.85);
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
+
+	ObjDesc.vPos = _float3(-11.9f, 22.2f, 93.417f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
+		return E_FAIL;
+
+	ObjDesc.vPos = _float3(-15.18f, 24.72f, 108.52f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
+		return E_FAIL;
+
+	ObjDesc.vPos = _float3(-17.7f, 26.22f, 114.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
+		return E_FAIL;
+
+	ObjDesc.vPos = _float3(-19.45f, 28.9f, 120.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
+		return E_FAIL;
+
+
 
 	Safe_Release(pGameInstance);
 

@@ -55,6 +55,7 @@ public:
 	void Create_CamTool();
 	void Create_SelectingCube();
 	void Set_SelectingCubePosToSelectedCube();
+	void Set_SelectingCubePosToCamPos();
 	CGameObject* Get_SelectedCube();
 
 	_bool Check_Exception();

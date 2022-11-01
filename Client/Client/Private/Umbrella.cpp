@@ -205,7 +205,7 @@ HRESULT CUmbrella::Ready_Components()
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	ColDesc.vSize = _float3(0.5f, 0.8f, 0.5f);
 	ColDesc.bIsStatic = false;
-	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
 		return E_FAIL;
 
 	//ColDesc.vCenter = _float3(0.f, 0.2f, 0.f);

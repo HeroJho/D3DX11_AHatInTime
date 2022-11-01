@@ -61,8 +61,17 @@ void CDiamond::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
+	if (!m_bGet)
+	{
+		Tick_Pigic_Bounding(fTimeDelta);
+	}
+	else
+	{
+		Get_Tick(fTimeDelta);
+		m_bStop = true;
+		m_bOn = true;
+	}
 
-	Tick_Pigic_Bounding(fTimeDelta);
 
 }
 
@@ -72,25 +81,28 @@ void CDiamond::LateTick(_float fTimeDelta)
 
 	__super::LateTick(fTimeDelta);
 
-
-	if (nullptr == m_pNavigationCom)
+	if (!m_bGet)
 	{
-		_matrix mWorld = m_pTransformCom->Get_OriScaleWorldMatrix();
-		Tick_Col(mWorld, nullptr, nullptr);
-	}
-	else
-	{
-		_matrix mWorld = m_pTransformCom->Get_OriScaleWorldMatrix();
 
-		if (m_bStop && m_bOn)
+		if (nullptr == m_pNavigationCom)
+		{
+			_matrix mWorld = m_pTransformCom->Get_OriScaleWorldMatrix();
 			Tick_Col(mWorld, nullptr, nullptr);
+		}
 		else
 		{
-			Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom, 0.25f);
-			m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.7f, 0.25f);
-		}
-	}
+			_matrix mWorld = m_pTransformCom->Get_OriScaleWorldMatrix();
 
+			if (m_bStop && m_bOn)
+				Tick_Col(mWorld, nullptr, nullptr);
+			else
+			{
+				Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom, 0.25f);
+				m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.7f, 0.25f);
+			}
+		}
+
+	}
 
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -130,16 +142,12 @@ void CDiamond::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
-		if (!strcmp("StaticOBB", Desc.OtherDesc.sTag))
+		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
 			if (Get_Dead())
 				return;
 
-			//CPlayer* pPlayer = (CPlayer*)Desc.pOther;
-
-			//pPlayer->Get_Item(m_InvenDesc);
-
-			Set_Dead(true);
+			m_bGet = true;
 		}
 	}
 }
@@ -153,6 +161,18 @@ void CDiamond::Use_Item()
 {
 
 
+
+}
+
+void CDiamond::Get_Tick(_float fTimeDelta)
+{
+	// 화면의 왼 하단 좌표를 구한다.
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	
+	_vector vLeftDownPos =  pGameInstance->Get_WinToWorldPos(0.f, g_iWinSizeY);
+	m_pTransformCom->Move(vLeftDownPos, 10.f, fTimeDelta);
+
+	RELEASE_INSTANCE(CGameInstance);
 
 }
 

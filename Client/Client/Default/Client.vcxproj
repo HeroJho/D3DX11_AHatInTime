@@ -176,6 +176,7 @@
     <ClInclude Include="..\public\Diamond.h" />
     <ClInclude Include="..\public\Flask.h" />
     <ClInclude Include="..\public\Flask_EX.h" />
+    <ClInclude Include="..\public\GameManager.h" />
     <ClInclude Include="..\public\Item.h" />
     <ClInclude Include="..\public\ItemManager.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\public\MarkCube.h" />
     <ClInclude Include="..\Public\Monster.h" />
+    <ClInclude Include="..\public\MonsterVault.h" />
     <ClInclude Include="..\public\Parts.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\RectBarrel.h" />
@@ -210,6 +212,7 @@
     <ClInclude Include="..\Public\UI_TextLife.h" />
     <ClInclude Include="..\Public\Umbrella.h" />
     <ClInclude Include="..\public\Vault.h" />
+    <ClInclude Include="..\public\Vault_Mad_Crow.h" />
     <ClInclude Include="..\public\Yarn.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
@@ -224,6 +227,7 @@
     <ClCompile Include="..\private\Diamond.cpp" />
     <ClCompile Include="..\private\Flask.cpp" />
     <ClCompile Include="..\private\Flask_EX.cpp" />
+    <ClCompile Include="..\private\GameManager.cpp" />
     <ClCompile Include="..\private\Item.cpp" />
     <ClCompile Include="..\private\ItemManager.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
@@ -235,6 +239,7 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\private\MarkCube.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
+    <ClCompile Include="..\private\MonsterVault.cpp" />
     <ClCompile Include="..\private\Parts.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\RectBarrel.cpp" />
@@ -258,6 +263,7 @@
     <ClCompile Include="..\Private\UI_TextLife.cpp" />
     <ClCompile Include="..\Private\Umbrella.cpp" />
     <ClCompile Include="..\private\Vault.cpp" />
+    <ClCompile Include="..\private\Vault_Mad_Crow.cpp" />
     <ClCompile Include="..\private\Yarn.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

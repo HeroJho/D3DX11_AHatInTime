@@ -216,8 +216,11 @@ void CSubSpider::Attacked_Tick(_float fTimeDelta)
 void CSubSpider::Die_Tick(_float fTimeDelta)
 {
 	m_fDeadTimeAcc += fTimeDelta;
-	if (10.f < m_fDeadTimeAcc)
-		Set_Dead(true);
+	if (30.f < m_fDeadTimeAcc)
+	{
+		Set_State(SPIDER_UPIDLE);
+		m_fDeadTimeAcc = 0.f;
+	}
 }
 
 
@@ -245,14 +248,20 @@ void CSubSpider::LateTick(_float fTimeDelta)
 
 
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-
-
+	// Á×À¸¸é Àá½Ã ²ö´Ù.
 	if (SPIDER_DIE != m_eState)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
+
+
+		_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 		RELEASE_INSTANCE(CGameInstance);
+
+		if (true == isDraw)
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		}
 	}
 
 
@@ -305,7 +314,7 @@ void CSubSpider::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
-		if (!strcmp("ChaseSphere", Desc.MyDesc.sTag) && !strcmp("StaticOBB", Desc.OtherDesc.sTag))
+		if (!strcmp("ChaseSphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
 			if (SPIDER_UPIDLE == m_eState)
 				Set_State(SPIDER_DOWN);
@@ -313,7 +322,7 @@ void CSubSpider::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 			m_bOn = true;
 		}
 
-		if (!strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("StaticOBB", Desc.OtherDesc.sTag)
+		if (!strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag)
 			&& SPIDER_ATTACKED !=  m_eState)
 		{
 			CPlayer* pPlayer = (CPlayer*)Desc.pOther;
@@ -377,7 +386,7 @@ HRESULT CSubSpider::Ready_Components()
 
 	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(4.f, 4.f, 4.f);
+	ColDesc.vSize = _float3(6.f, 6.f, 6.f);
 	strcpy(ColDesc.sTag, "ChaseSphere");
 	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
 		return E_FAIL;

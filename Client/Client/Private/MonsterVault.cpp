@@ -1,32 +1,33 @@
 #include "stdafx.h"
-#include "..\Public\Vault.h"
+#include "..\Public\MonsterVault.h"
 
 #include "GameInstance.h"
 #include "ToolManager.h"
 #include "ItemManager.h"
+#include "GameManager.h"
 #include "CamManager.h"
 
 #include "Player.h"
 
 
-CVault::CVault(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CMonsterVault::CMonsterVault(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CItem(pDevice, pContext)
 {
 
 }
 
-CVault::CVault(const CVault & rhs)
+CMonsterVault::CMonsterVault(const CMonsterVault & rhs)
 	: CItem(rhs)
 {
 
 }
 
-HRESULT CVault::Initialize_Prototype()
+HRESULT CMonsterVault::Initialize_Prototype()
 {
 	return __super::Initialize_Prototype();
 }
 
-HRESULT CVault::Initialize(void * pArg)
+HRESULT CMonsterVault::Initialize(void * pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
@@ -35,12 +36,12 @@ HRESULT CVault::Initialize(void * pArg)
 
 	lstrcpy(m_InvenDesc.szModelName, Desc->szModelName);
 	m_InvenDesc.iCount = Desc->iCount;
-	
+
 	if (nullptr == Desc->pDesc)
 		return E_FAIL;
 	VAULTDESC* VaultDesc = (VAULTDESC*)Desc->pDesc;
 	m_iNaviIndex = VaultDesc->iNaviIndex;
-	
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -60,10 +61,33 @@ HRESULT CVault::Initialize(void * pArg)
 	m_sTag = "Tag_Vault";
 	Set_State(STATE_IDLE);
 
+
+	// 몬스터 생성
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CGameObject::CREATUREINFODESC ObjDesc;
+	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
+	ObjDesc.iAT = 1;
+	ObjDesc.iMaxHP = 3;
+	ObjDesc.iHP = 3;
+
+	for (_uint i = 0; i < 7; ++i)
+	{
+		XMStoreFloat3(&ObjDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		ObjDesc.iNaviIndex = m_iNaviIndex;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Vault_Mad_Crow"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
+			return E_FAIL;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+
 	return S_OK;
 }
 
-void CVault::Tick(_float fTimeDelta)
+void CMonsterVault::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 	__super::Tick(fTimeDelta);
@@ -71,20 +95,20 @@ void CVault::Tick(_float fTimeDelta)
 
 	switch (m_eState)
 	{
-	case Client::CVault::STATE_IDLE:
+	case Client::CMonsterVault::STATE_IDLE:
 		Idle_Tick(fTimeDelta);
 		break;
-	case Client::CVault::STATE_OPEN:
+	case Client::CMonsterVault::STATE_OPEN:
 		Open_Tick(fTimeDelta);
 		break;
-	case Client::CVault::STATE_OPENED:
+	case Client::CMonsterVault::STATE_OPENED:
 		Opened_Tick(fTimeDelta);
 		break;
 	}
 
 }
 
-void CVault::LateTick(_float fTimeDelta)
+void CMonsterVault::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
@@ -113,7 +137,7 @@ void CVault::LateTick(_float fTimeDelta)
 
 }
 
-HRESULT CVault::Render()
+HRESULT CMonsterVault::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -124,7 +148,7 @@ HRESULT CVault::Render()
 	return S_OK;
 }
 
-HRESULT CVault::SetUp_State(_fmatrix StateMatrix)
+HRESULT CMonsterVault::SetUp_State(_fmatrix StateMatrix)
 {
 	if (FAILED(__super::SetUp_State(StateMatrix)))
 		return E_FAIL;
@@ -133,13 +157,13 @@ HRESULT CVault::SetUp_State(_fmatrix StateMatrix)
 }
 
 
-void CVault::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+void CMonsterVault::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
-		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+		if (!strcmp("StaticOBB", Desc.OtherDesc.sTag))
 		{
-				
+
 			m_bStartOpenning = true;
 
 			//CPlayer* pPlayer = (CPlayer*)Desc.pOther;
@@ -148,10 +172,9 @@ void CVault::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 		}
 	}
-
 }
 
-void CVault::Set_State(VAULT_STATE eState)
+void CMonsterVault::Set_State(VAULT_STATE eState)
 {
 	m_ePreState = m_eState;
 	m_eState = eState;
@@ -161,8 +184,8 @@ void CVault::Set_State(VAULT_STATE eState)
 	{
 		switch (m_eState)
 		{
-		//case Client::CMad_Crow::MONSTER_ATTACKED:
-		//	break;
+			//case Client::CMad_Crow::MONSTER_ATTACKED:
+			//	break;
 		}
 	}
 
@@ -171,17 +194,17 @@ void CVault::Set_State(VAULT_STATE eState)
 
 
 
-void CVault::Set_Anim()
+void CMonsterVault::Set_Anim()
 {
 	switch (m_eState)
 	{
-	case Client::CVault::STATE_IDLE:
+	case Client::CMonsterVault::STATE_IDLE:
 		m_pModelCom->Set_AnimIndex(0);
 		break;
-	case Client::CVault::STATE_OPEN:
+	case Client::CMonsterVault::STATE_OPEN:
 		m_pModelCom->Set_AnimIndex(2);
 		break;
-	case Client::CVault::STATE_OPENED:
+	case Client::CMonsterVault::STATE_OPENED:
 		m_pModelCom->Set_AnimIndex(1);
 		break;
 	}
@@ -189,7 +212,7 @@ void CVault::Set_Anim()
 
 
 
-void CVault::Idle_Tick(_float fTimeDelta)
+void CMonsterVault::Idle_Tick(_float fTimeDelta)
 {
 
 	if (Check_OpenIf())
@@ -200,7 +223,7 @@ void CVault::Idle_Tick(_float fTimeDelta)
 
 }
 
-void CVault::Open_Tick(_float fTimeDelta)
+void CMonsterVault::Open_Tick(_float fTimeDelta)
 {
 
 	m_fSprintItemTimeAcc += fTimeDelta;
@@ -214,7 +237,7 @@ void CVault::Open_Tick(_float fTimeDelta)
 
 }
 
-void CVault::Opened_Tick(_float fTimeDelta)
+void CMonsterVault::Opened_Tick(_float fTimeDelta)
 {
 
 }
@@ -223,7 +246,7 @@ void CVault::Opened_Tick(_float fTimeDelta)
 
 
 
-void CVault::Use_Item()
+void CMonsterVault::Use_Item()
 {
 
 
@@ -235,7 +258,7 @@ void CVault::Use_Item()
 
 
 
-HRESULT CVault::Ready_Components()
+HRESULT CMonsterVault::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -287,40 +310,39 @@ HRESULT CVault::Ready_Components()
 	return S_OK;
 }
 
-_bool CVault::Check_OpenIf()
+_bool CMonsterVault::Check_OpenIf()
 {
 	// 상자가 열리는 조건
-
-	return m_bStartOpenning;
+	return 	CGameManager::Get_Instance()->Check_MonsterVaultCount();
 }
 
-CVault * CVault::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CMonsterVault * CMonsterVault::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CVault*		pInstance = new CVault(pDevice, pContext);
+	CMonsterVault*		pInstance = new CMonsterVault(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CVault"));
+		MSG_BOX(TEXT("Failed To Created : CMonsterVault"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CVault::Clone(void * pArg)
+CGameObject * CMonsterVault::Clone(void * pArg)
 {
-	CVault*		pInstance = new CVault(*this);
+	CMonsterVault*		pInstance = new CMonsterVault(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CVault"));
+		MSG_BOX(TEXT("Failed To Cloned : CMonsterVault"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CVault::Free()
+void CMonsterVault::Free()
 {
 	__super::Free();
 

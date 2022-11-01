@@ -8,6 +8,7 @@
 #include "ItemManager.h"
 #include "CamManager.h"
 #include "UIManager.h"
+#include "GameManager.h"
 
 #include "Level_Loading.h"
 
@@ -77,10 +78,14 @@ void CMainApp::Tick(_float fTimeDelta)
 #endif // _DEBUG
 
 	m_pGameInstance->Tick_Engine(fTimeDelta);
-
+	
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_MONSTER);
+	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_PUSHMONSTER);
+	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_EM);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_ITEM);
-	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_MONSTER, CColliderManager::COLLIDER_SWORD);
+	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PUSHMONSTER, CColliderManager::COLLIDER_PUSHMONSTER);
+	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_SWORD, CColliderManager::COLLIDER_MONSTER);
+	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_SWORD, CColliderManager::COLLIDER_PUSHMONSTER);
 	m_pGameInstance->Clear_ColGroup();
 }
 
@@ -209,6 +214,7 @@ CMainApp * CMainApp::Create()
 void CMainApp::Free()
 {
 
+	CGameManager::Get_Instance()->Destroy_Instance();
 	CUIManager::Get_Instance()->Destroy_Instance();
 	CToolManager::Get_Instance()->Destroy_Instance();
 	CItemManager::Get_Instance()->Destroy_Instance();

@@ -320,6 +320,8 @@ void CPlayer::Tick(_float fTimeDelta)
 		Jump_Tick(fTimeDelta);
 		break;
 	case STATE_JUMPLENDING:
+		IdleRend_Tick(fTimeDelta);
+		break;
 	case STATE_RUNJUMPLENDING:
 	case STATE_MAGEIDLEJUMPRENDING:
 	case STATE_MAGERUNJUMPRENDING:
@@ -434,9 +436,20 @@ void CPlayer::SprintJump_Tick(_float fTimeDelta)
 	m_pTransformCom->LinearTurn(m_vDestLook, 0.5f, 0.3f, fTimeDelta, false);
 }
 
+void CPlayer::IdleRend_Tick(_float fTimeDelta)
+{
+
+	 Move_Input(fTimeDelta);
+
+	if (m_pTransformCom->LinearTurn(m_vDestLook, 0.5f, 0.3f, fTimeDelta))
+	{
+		m_fSlepSpeed = 2.2f;
+		m_TickStates.push_back(STATE_SLEP);
+	}
+}
+
 void CPlayer::Rend_Tick(_float fTimeDelta)
 {
-	// m_eJumpState = STATE_IDLE;
 
 	Rend_Input(fTimeDelta);
 
@@ -542,7 +555,7 @@ void CPlayer::HillDown_Tick(_float fTimeDelta)
 void CPlayer::JumpAttack_Tick(_float fTimeDelta)
 {
 	// 제일 가까운 몬스터를 찾는다.
-	CGameObject* pNearst = nullptr;
+	m_pNearstMonster = nullptr;
 	_float fMinDis = FLT_MAX;
 	for (auto& pMonster : m_pNearMonsters)
 	{
@@ -552,18 +565,18 @@ void CPlayer::JumpAttack_Tick(_float fTimeDelta)
 		_float fDis = XMVectorGetX(XMVector3Length(vMonsterPos - vMyPos));
 		if (fMinDis > fDis)
 		{
-			pNearst = pMonster;
+			m_pNearstMonster = pMonster;
 			fMinDis = fDis;
 		}
 	}
 
 	// 몬스터의 머리 방향으로 내려 꼳는다
-	CTransform* pMonsterTran = (CTransform*)pNearst->Get_ComponentPtr(TEXT("Com_Transform"));
-	_float3 vCenter = pNearst->Get_Colliders(string("Attacked_Sphere"))->Get_Desc().vCenter;
-	vCenter.y += pNearst->Get_Colliders(string("Attacked_Sphere"))->Get_Desc().vSize.y;
+	CTransform* pMonsterTran = (CTransform*)m_pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform"));
+	_float3 vCenter = m_pNearstMonster->Get_Colliders(string("Attacked_Sphere"))->Get_Desc().vCenter;
+	vCenter.y += m_pNearstMonster->Get_Colliders(string("Attacked_Sphere"))->Get_Desc().vSize.y;
 	_vector vMonsterHeadPos = pMonsterTran->Get_State(CTransform::STATE_POSITION) + XMLoadFloat3(&vCenter);
 	m_pTransformCom->LookAt(vMonsterHeadPos);
-	m_pTransformCom->Go_Straight(5.f, fTimeDelta, m_pNavigationCom);
+	m_pTransformCom->Go_Straight(10.f, fTimeDelta, m_pNavigationCom);
 
 
 	JumpAttack_Input(fTimeDelta);
@@ -1495,7 +1508,7 @@ void CPlayer::Check_Attacked(_float fTimeDelta)
 
 
 	m_fAttackedBoolTimeAcc += fTimeDelta;
-	if (2.f < m_fAttackedBoolTimeAcc)
+	if (3.f < m_fAttackedBoolTimeAcc)
 	{
 		m_bAttacked = false;
 		m_fAttackedBoolTimeAcc = 0.f;
@@ -1522,7 +1535,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 
 	// 중력 적용
 	if((STATE_STARTGETITEM != m_eState && STATE_IDLEGETITEM != m_eState && STATE_ENDGETITEM != m_eState)
-		&& STATE_ATTACKED != m_eState)
+		&& STATE_ATTACKED != m_eState && STATE_JUMPATTACK != m_eState)
 		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.7f);
 
 	// 이동 갱신
@@ -1903,7 +1916,7 @@ HRESULT CPlayer::Ready_Components()
 	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	ColDesc.vSize = _float3(0.5f, 0.5f, 0.5f);
-	strcpy(ColDesc.sTag, "Sphere_Head");
+	strcpy(ColDesc.sTag, "Attacked_Sphere");
 	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
 		return E_FAIL;
 
@@ -2095,7 +2108,7 @@ void CPlayer::Attacked()
 
 void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	if("Tag_Barrel" == Desc.pOther->Get_Tag() && !strcmp("StaticOBB", Desc.MyDesc.sTag))
+	if("Tag_Barrel" == Desc.pOther->Get_Tag() && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag))
 		Get_StaticOBB()->Compute_Pigi(Desc.pOther, m_pNavigationCom, m_pTransformCom);
 
 
@@ -2104,14 +2117,14 @@ void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 		if(!strcmp("Sphere", Desc.MyDesc.sTag))
 			m_pNearMonsters.push_back(Desc.pOther);
 
-		if (!strcmp("Sphere_Head", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+		if (!strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
-			if (STATE_JUMPATTACK == m_eState)
+			if (STATE_JUMPATTACK == m_eState && Desc.pOther == Get_NearstMonster())
 			{
 				// 점프 공격
 				((CMonster*)Desc.pOther)->Attacked(1);
 				m_TickStates.push_back(STATE_DOUBLEJUMP);
-				m_pTransformCom->DoubleJump(m_fJumpPower + 2.f);
+				m_pTransformCom->DoubleJump(m_fJumpPower + 4.f);
 			}
 
 		}

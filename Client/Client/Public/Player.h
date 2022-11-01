@@ -55,6 +55,7 @@ private:
 	void Jump_Tick(_float fTimeDelta);
 	void DoubleJump_Tick(_float fTimeDelta);
 	void SprintJump_Tick(_float fTimeDelta);
+	void IdleRend_Tick(_float fTimeDelta);
 	void Rend_Tick(_float fTimeDelta);
 	void Move_Tick(_float fTimeDelta);
 	void Slep_Tick(_float fTimeDelta);
@@ -116,6 +117,9 @@ public:
 	void Attacked();
 
 
+	CGameObject* Get_NearstMonster() { return m_pNearstMonster; }
+
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
@@ -173,6 +177,7 @@ private:
 
 	// For. NearMonster
 	vector<CGameObject*> m_pNearMonsters;
+	CGameObject* m_pNearstMonster = nullptr;
 
 private:
 	HRESULT Ready_Components();

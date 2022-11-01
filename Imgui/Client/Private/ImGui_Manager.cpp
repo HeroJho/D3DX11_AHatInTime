@@ -300,6 +300,9 @@ void CImGui_Manager::Render_CamTool()
 
 	if (ImGui::Button("SetPos"))
 		CCamManager::Get_Instance()->Set_SelectingCubePosToSelectedCube();
+	ImGui::SameLine();
+	if(ImGui::Button("SetCamPos"))
+		CCamManager::Get_Instance()->Set_SelectingCubePosToCamPos();
 
 	ImGui::SameLine();
 

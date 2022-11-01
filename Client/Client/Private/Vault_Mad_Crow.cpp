@@ -1,18 +1,19 @@
 #include "stdafx.h"
-#include "..\Public\Mad_Crow.h"
+#include "..\Public\Vault_Mad_Crow.h"
 #include "GameInstance.h"
 
 #include "ToolManager.h"
 #include "DataManager.h"
+#include "GameManager.h"
 
 #include "Player.h"
 
-CMad_Crow::CMad_Crow(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CVault_Mad_Crow::CVault_Mad_Crow(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
 {
 }
 
-CMad_Crow::CMad_Crow(const CMad_Crow & rhs)
+CVault_Mad_Crow::CVault_Mad_Crow(const CVault_Mad_Crow & rhs)
 	: CMonster(rhs)
 {
 }
@@ -22,12 +23,12 @@ CMad_Crow::CMad_Crow(const CMad_Crow & rhs)
 
 
 
-HRESULT CMad_Crow::Initialize_Prototype()
+HRESULT CVault_Mad_Crow::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CMad_Crow::Initialize(void * pArg)
+HRESULT CVault_Mad_Crow::Initialize(void * pArg)
 {
 	__super::Initialize(pArg);
 
@@ -44,11 +45,19 @@ HRESULT CMad_Crow::Initialize(void * pArg)
 	}
 
 
-	
+
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&m_CreatureDesc.vPos), 1.f));
 	m_pTransformCom->Set_CurSpeed(1.f);
 
-	Set_State(MONSTER_CHASE);
+
+	_float fDegree = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
+	_vector vDir = XMVector3TransformNormal(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMMatrixRotationY(XMConvertToRadians(fDegree)));
+	_float fDis = CToolManager::Get_Instance()->Get_RendomNum(3.f, 7.f);
+
+	XMStoreFloat3(&m_vDestPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION) + fDis * vDir);
+
+
+	Set_State(MONSTER_FINDPLACE);
 
 	return S_OK;
 }
@@ -59,12 +68,12 @@ HRESULT CMad_Crow::Initialize(void * pArg)
 
 
 
-void CMad_Crow::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
+void CVault_Mad_Crow::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
 {
 	m_pModelCom->Push_AnimLinearData(LinearData);
 }
 
-void CMad_Crow::Set_State(MONSTER_STATE eState)
+void CVault_Mad_Crow::Set_State(MONSTER_STATE eState)
 {
 	m_ePreState = m_eState;
 	m_eState = eState;
@@ -74,7 +83,7 @@ void CMad_Crow::Set_State(MONSTER_STATE eState)
 	{
 		switch (m_eState)
 		{
-		case Client::CMad_Crow::MONSTER_ATTACKED:
+		case Client::CVault_Mad_Crow::MONSTER_ATTACKED:
 			break;
 		}
 	}
@@ -82,23 +91,23 @@ void CMad_Crow::Set_State(MONSTER_STATE eState)
 	Set_Anim();
 }
 
-void CMad_Crow::Set_Anim()
+void CVault_Mad_Crow::Set_Anim()
 {
 
 	switch (m_eState)
 	{
-	case Client::CMad_Crow::MONSTER_IDLE:
+	case Client::CVault_Mad_Crow::MONSTER_IDLE:
 		m_pModelCom->Set_AnimIndex(2);
 		break;
-	case Client::CMad_Crow::MONSTER_MOVE:
+	case Client::CVault_Mad_Crow::MONSTER_MOVE:
 		m_pModelCom->Set_AnimIndex(3);
 		break;
-	case Client::CMad_Crow::MONSTER_CHASE:
+	case Client::CVault_Mad_Crow::MONSTER_CHASE:
 		m_pModelCom->Set_AnimIndex(3);
 		break;
-	case Client::CMad_Crow::MONSTER_ATTACKED:
+	case Client::CVault_Mad_Crow::MONSTER_ATTACKED:
 		break;
-	case Client::CMad_Crow::MONSTER_DIE:
+	case Client::CVault_Mad_Crow::MONSTER_DIE:
 		m_pModelCom->Set_AnimIndex(0);
 		break;
 	}
@@ -107,12 +116,13 @@ void CMad_Crow::Set_Anim()
 
 
 
-void CMad_Crow::Attacked(_int iAT)
+void CVault_Mad_Crow::Attacked(_int iAT)
 {
 	--m_CreatureDesc.iHP;
 	if (0 >= m_CreatureDesc.iHP)
 	{
 		Set_State(MONSTER_DIE);
+		CGameManager::Get_Instance()->Dis_MonsterVaultCount();
 	}
 	else
 	{
@@ -127,32 +137,59 @@ void CMad_Crow::Attacked(_int iAT)
 
 
 
-void CMad_Crow::Tick(_float fTimeDelta)
+void CVault_Mad_Crow::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_MONSTER);
 
 	switch (m_eState)
 	{
-	case Client::CMad_Crow::MONSTER_IDLE:
+	case Client::CVault_Mad_Crow::MONSTER_FINDPLACE:
+		Tick_FindPlace(fTimeDelta);
+		break;
+	case Client::CVault_Mad_Crow::MONSTER_IDLE:
 		Tick_Idle(fTimeDelta);
 		break;
-	case Client::CMad_Crow::MONSTER_MOVE:
+	case Client::CVault_Mad_Crow::MONSTER_MOVE:
 		Tick_Move(fTimeDelta);
 		break;
-	case Client::CMad_Crow::MONSTER_CHASE:
+	case Client::CVault_Mad_Crow::MONSTER_CHASE:
 		Tick_Chase(fTimeDelta);
 		break;
-	case Client::CMad_Crow::MONSTER_ATTACKED:
+	case Client::CVault_Mad_Crow::MONSTER_ATTACKED:
 		Tick_Attacked(fTimeDelta);
 		break;
-	case Client::CMad_Crow::MONSTER_DIE:
+	case Client::CVault_Mad_Crow::MONSTER_DIE:
 		Tick_Die(fTimeDelta);
 		break;
 	}
 
 }
 
-void CMad_Crow::Tick_Idle(_float fTimeDelta)
+void CVault_Mad_Crow::Tick_FindPlace(_float fTimeDelta)
+{
+	_vector vDestPos = XMLoadFloat3(&m_vDestPos);
+	_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float fDis = XMVectorGetX(XMVector3Length(vDestPos - vMyPos));
+	if (1.f > fDis)
+	{
+		Set_State(MONSTER_IDLE);
+		return;
+	}
+
+	m_pTransformCom->MoveTarget_Lend(vDestPos, 1.f, fTimeDelta, m_pNavigationCom, 1.f);
+
+
+
+	// 5초 이상 도착하지 못하면 (벽에 박히면) 그냥 Idle로 가라
+
+	//m_fDestTimeAcc += fTimeDelta;
+	//if (5.f < m_fDestTimeAcc)
+	//	Set_State(MONSTER_IDLE);
+
+
+}
+
+void CVault_Mad_Crow::Tick_Idle(_float fTimeDelta)
 {
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -180,12 +217,12 @@ void CMad_Crow::Tick_Idle(_float fTimeDelta)
 
 }
 
-void CMad_Crow::Tick_Move(_float fTimeDelta)
+void CVault_Mad_Crow::Tick_Move(_float fTimeDelta)
 {
 
 }
 
-void CMad_Crow::Tick_Chase(_float fTimeDelta)
+void CVault_Mad_Crow::Tick_Chase(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -211,7 +248,6 @@ void CMad_Crow::Tick_Chase(_float fTimeDelta)
 	// 추격
 	{
 		_vector vLookPos = pTran->Get_State(CTransform::STATE_POSITION);
-
 		m_pTransformCom->MoveTarget_Lend(vLookPos, 1.f, fTimeDelta, m_pNavigationCom, 0.5f);
 	}
 
@@ -220,7 +256,7 @@ void CMad_Crow::Tick_Chase(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 }
 
-void CMad_Crow::Tick_Attacked(_float fTimeDelta)
+void CVault_Mad_Crow::Tick_Attacked(_float fTimeDelta)
 {
 
 	if (m_pTransformCom->Tick_AttackAnim(fTimeDelta))
@@ -228,7 +264,7 @@ void CMad_Crow::Tick_Attacked(_float fTimeDelta)
 
 }
 
-void CMad_Crow::Tick_Die(_float fTimeDelta)
+void CVault_Mad_Crow::Tick_Die(_float fTimeDelta)
 {
 	m_fDeadTimeAcc += fTimeDelta;
 	if (10.f < m_fDeadTimeAcc)
@@ -239,7 +275,7 @@ void CMad_Crow::Tick_Die(_float fTimeDelta)
 
 
 
-void CMad_Crow::LateTick(_float fTimeDelta)
+void CVault_Mad_Crow::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_MONSTER);
 
@@ -259,13 +295,13 @@ void CMad_Crow::LateTick(_float fTimeDelta)
 	}
 
 
+
 	if (MONSTER_DIE != m_eState)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PUSHMONSTER, this);
 		RELEASE_INSTANCE(CGameInstance);
 	}
-
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
@@ -276,7 +312,7 @@ void CMad_Crow::LateTick(_float fTimeDelta)
 	}
 }
 
-HRESULT CMad_Crow::Render()
+HRESULT CVault_Mad_Crow::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -314,7 +350,7 @@ HRESULT CMad_Crow::Render()
 	return S_OK;
 }
 
-void CMad_Crow::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+void CVault_Mad_Crow::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
@@ -324,12 +360,25 @@ void CMad_Crow::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 			CPlayer* pPlayer = (CPlayer*)Desc.pOther;
 
 			if (CPlayer::STATE_JUMPATTACK != pPlayer->Get_State() &&
-				CPlayer::STATE_JUMPATTACKRENDING != pPlayer->Get_State() &&
+				MONSTER_ATTACKED !=  m_eState &&
 				false == pPlayer->Get_Attacked())
 			{
 				pPlayer->Attacked();
 			}
 		}
+	}
+	else if ("Tag_Monster" == Desc.pOther->Get_Tag())
+	{
+		// 몬스터 끼리는 밀어 낸다 
+		if (!strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+		{
+			_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+			_vector vOtherPos = ((CTransform*)Desc.pOther->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+			_float fMyDis = Desc.MyDesc.vSize.x;
+			_float fOtherDis = Desc.MyDesc.vSize.x;
+			m_pTransformCom->PushMe(vMyPos, fMyDis, vOtherPos, fOtherDis, m_pNavigationCom);
+		}
+
 	}
 
 }
@@ -347,7 +396,7 @@ void CMad_Crow::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 
 
-HRESULT CMad_Crow::Ready_Components()
+HRESULT CVault_Mad_Crow::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -415,33 +464,33 @@ HRESULT CMad_Crow::Ready_Components()
 
 
 
-CMad_Crow * CMad_Crow::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CVault_Mad_Crow * CVault_Mad_Crow::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CMad_Crow*		pInstance = new CMad_Crow(pDevice, pContext);
+	CVault_Mad_Crow*		pInstance = new CVault_Mad_Crow(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CMad_Crow"));
+		MSG_BOX(TEXT("Failed To Created : CVault_Mad_Crow"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CMad_Crow::Clone(void * pArg)
+CGameObject * CVault_Mad_Crow::Clone(void * pArg)
 {
-	CMad_Crow*		pInstance = new CMad_Crow(*this);
+	CVault_Mad_Crow*		pInstance = new CVault_Mad_Crow(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CMad_Crow"));
+		MSG_BOX(TEXT("Failed To Cloned : CVault_Mad_Crow"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CMad_Crow::Free()
+void CVault_Mad_Crow::Free()
 {
 	__super::Free();
 

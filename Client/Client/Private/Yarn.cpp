@@ -70,8 +70,6 @@ void CYarn::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
-	__super::LateTick(fTimeDelta);
-
 
 	if (nullptr == m_pNavigationCom)
 	{
@@ -97,19 +95,17 @@ void CYarn::LateTick(_float fTimeDelta)
 	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_ITEM, this);
 	RELEASE_INSTANCE(CGameInstance);
 
+
+	__super::LateTick(fTimeDelta);
+
 }
 
 HRESULT CYarn::Render()
 {
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
-	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
-	RELEASE_INSTANCE(CGameInstance);
-	if (true == isDraw)
-	{
-		if (FAILED(__super::Render()))
-			return E_FAIL;
-	}           
 
+	if (FAILED(__super::Render()))
+		return E_FAIL;
+       
 
 	if(CToolManager::Get_Instance()->Get_Debug())
 		Render_Col();
@@ -130,7 +126,7 @@ void CYarn::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
-		if (!strcmp("StaticOBB", Desc.OtherDesc.sTag))
+		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
 			if (Get_Dead())
 				return;

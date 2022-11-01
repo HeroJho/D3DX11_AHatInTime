@@ -69,7 +69,7 @@ void CRollingBarrel::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
+	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_EM, this);
 	RELEASE_INSTANCE(CGameInstance);
 }
 

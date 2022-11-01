@@ -9,8 +9,8 @@ class CColliderManager final : public CBase
 	DECLARE_SINGLETON(CColliderManager)
 
 public:
-	enum COLLIDERGROUP { COLLIDER_PLAYER, COLLIDER_MONSTER, COLLIDER_SWORD, COLLIDER_ITEM, COLLIDER_END };
-
+	enum COLLIDERGROUP { COLLIDER_PLAYER, COLLIDER_MONSTER, COLLIDER_PUSHMONSTER, COLLIDER_SWORD, COLLIDER_ITEM, COLLIDER_EM, COLLIDER_END };
+	enum COLTYPE {COLTYPE_SPHARE, COLTYPE_AABB, COLTYPE_OBB};
 
 private:
 	CColliderManager();
@@ -24,6 +24,7 @@ public:
 
 private:
 	list<class CGameObject*> m_ObjGroups[COLLIDER_END];
+
 
 public:
 	virtual void Free() override;

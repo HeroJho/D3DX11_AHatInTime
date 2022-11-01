@@ -49,7 +49,12 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	// if (lstrcmp(TEXT("SubCon_Instance"), m_cModelTag))
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	}
+
+
 }
 
 HRESULT CStaticModel_Instance::Render()

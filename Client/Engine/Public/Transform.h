@@ -99,6 +99,7 @@ public:
 	void DoubleJump(_float fPower);
 	void ResetGravity();
 
+	void PushMe(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
 
 
 	//====== Anim ======

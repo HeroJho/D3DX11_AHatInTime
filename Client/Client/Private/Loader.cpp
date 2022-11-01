@@ -13,6 +13,7 @@
 #include "SkyModel.h"
 
 #include "Mad_Crow.h"
+#include "Vault_Mad_Crow.h"
 #include "SubSpider.h"
 
 #include "Parts.h"
@@ -21,6 +22,7 @@
 #include "Flask.h"
 #include "Vault.h"
 #include "Diamond.h"
+#include "MonsterVault.h"
 
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
@@ -177,6 +179,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Mad_Crow"),
 		CMad_Crow::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_Vault_Mad_Crow */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Vault_Mad_Crow"),
+		CVault_Mad_Crow::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 	/* For.Prototype_GameObject_Spider */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SubSpider"),
 		CSubSpider::Create(m_pDevice, m_pContext))))
@@ -238,6 +244,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_Vault*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Vault"),
 		CVault::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_MonsterVault*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MonsterVault"),
+		CMonsterVault::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	/* For.Prototype_GameObject_Diamond*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Diamond"),

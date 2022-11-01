@@ -127,6 +127,15 @@
     <Filter Include="02.GameObjects\Item\Diamond">
       <UniqueIdentifier>{83f04d35-5f74-49d8-abd6-864f5f2a3bde}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Item\vault\Monstervault">
+      <UniqueIdentifier>{1ffa87c7-512c-4413-a394-bfc65d0c1066}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.Managers\GameManager">
+      <UniqueIdentifier>{9c54565e-500b-4557-9a00-9dce191ca885}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Monster\Mad_Crow\Vault_Mad_Crow">
+      <UniqueIdentifier>{d7a812ab-b8bc-40e8-a734-ea41c3d6feb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -276,6 +285,15 @@
     <ClInclude Include="..\public\Diamond.h">
       <Filter>02.GameObjects\Item\Diamond</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MonsterVault.h">
+      <Filter>02.GameObjects\Item\vault\Monstervault</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\GameManager.h">
+      <Filter>96.Managers\GameManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Vault_Mad_Crow.h">
+      <Filter>02.GameObjects\Monster\Mad_Crow\Vault_Mad_Crow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -409,6 +427,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Diamond.cpp">
       <Filter>02.GameObjects\Item\Diamond</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MonsterVault.cpp">
+      <Filter>02.GameObjects\Item\vault\Monstervault</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\GameManager.cpp">
+      <Filter>96.Managers\GameManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Vault_Mad_Crow.cpp">
+      <Filter>02.GameObjects\Monster\Mad_Crow\Vault_Mad_Crow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
