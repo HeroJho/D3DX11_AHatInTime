@@ -136,6 +136,21 @@
     <Filter Include="02.GameObjects\Monster\Mad_Crow\Vault_Mad_Crow">
       <UniqueIdentifier>{d7a812ab-b8bc-40e8-a734-ea41c3d6feb2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.UI\Number">
+      <UniqueIdentifier>{5eb98a4d-3d4a-4910-a442-5e866d59b354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\Diamond">
+      <UniqueIdentifier>{9429a25f-6ae4-422f-b43e-1e690894a62e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Monster\SubconEye">
+      <UniqueIdentifier>{3e29e01a-993e-4c29-a694-a3388147bfad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Wisp">
+      <UniqueIdentifier>{e81ed800-48e9-4a3b-bcfb-45267b5daef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Monster\BellMount">
+      <UniqueIdentifier>{ac377386-6e29-4bf9-b3bc-3e3b2af34215}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -294,6 +309,27 @@
     <ClInclude Include="..\public\Vault_Mad_Crow.h">
       <Filter>02.GameObjects\Monster\Mad_Crow\Vault_Mad_Crow</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Number.h">
+      <Filter>03.UI\Number</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Diamond.h">
+      <Filter>03.UI\Diamond</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_X.h">
+      <Filter>03.UI\Diamond</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_DiamondScore.h">
+      <Filter>03.UI\Diamond</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\SubconEye.h">
+      <Filter>02.GameObjects\Monster\SubconEye</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Wisp.h">
+      <Filter>02.GameObjects\Wisp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\BellMount.h">
+      <Filter>02.GameObjects\Monster\BellMount</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -436,6 +472,27 @@
     </ClCompile>
     <ClCompile Include="..\private\Vault_Mad_Crow.cpp">
       <Filter>02.GameObjects\Monster\Mad_Crow\Vault_Mad_Crow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Number.cpp">
+      <Filter>03.UI\Number</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Diamond.cpp">
+      <Filter>03.UI\Diamond</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_X.cpp">
+      <Filter>03.UI\Diamond</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_DiamondScore.cpp">
+      <Filter>03.UI\Diamond</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SubconEye.cpp">
+      <Filter>02.GameObjects\Monster\SubconEye</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Wisp.cpp">
+      <Filter>02.GameObjects\Wisp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BellMount.cpp">
+      <Filter>02.GameObjects\Monster\BellMount</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

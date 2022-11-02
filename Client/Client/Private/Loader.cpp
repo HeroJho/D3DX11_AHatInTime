@@ -23,6 +23,9 @@
 #include "Vault.h"
 #include "Diamond.h"
 #include "MonsterVault.h"
+#include "SubconEye.h"
+#include "Wisp.h"
+#include "BellMount.h"
 
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
@@ -33,6 +36,10 @@
 #include "UI_ItemButton.h"
 #include "UI_Item_Inven.h"
 #include "UI_Item_Inven_Slot.h"
+#include "UI_Number.h"
+#include "UI_Diamond.h"
+#include "UI_X.h"
+#include "UI_DiamondScore.h"
 
 #include "RollingBarrel.h"
 #include "RectBarrel.h"
@@ -187,6 +194,14 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SubSpider"),
 		CSubSpider::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_SubconEye */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SubconEye"),
+		CSubconEye::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_BellMount */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BellMount"),
+		CBellMount::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
@@ -198,6 +213,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_RectBarrel */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_RectBarrel"),
 		CRectBarrel::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_Wisp */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Wisp"),
+		CWisp::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	
@@ -279,7 +298,32 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_TextLife"),
 		CUI_TextLife::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_UI_Number*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Number"),
+		CUI_Number::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
+	/* For.Prototype_UI_TextLife*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_DiamondScore"),
+		CUI_DiamondScore::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_UI_TextLife*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Diamond"),
+		CUI_Diamond::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_UI_TextLife*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_X"),
+		CUI_X::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
+	/* For.Prototype_UI_TextLife*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_Test"),
+		CTest::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+
+	// TEST
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Inven"),
 		CUI_Inven::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
@@ -292,11 +336,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Item_Inven_Slot"),
 		CUI_Item_Inven_Slot::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-	
-	/* For.Prototype_UI_TextLife*/
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_Test"),
-		CTest::Create(m_pDevice, m_pContext))))
-		return E_FAIL;
+
 
 
 
@@ -342,6 +382,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Mad_Crow"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("SubSpider"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("vault"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("SubconEye"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("BellMount"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 
 	/* For. PartsModel */
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Ori_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
@@ -470,17 +512,30 @@ HRESULT CLoader::Loading_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/Selector.dds"), 1))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Icon_WitchHat */
+	/* For.Prototype_Component_Texture_Icon_SprintYarn */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_SprintYarn"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/yarn_ui_sprint.dds"), 1))))
 		return E_FAIL;
-	/* For.Prototype_Component_Texture_Icon_WitchHat */
+	/* For.Prototype_Component_Texture_Icon_WitchYarn */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_WitchYarn"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/yarn_ui_brew.dds"), 1))))
 		return E_FAIL;
-	/* For.Prototype_Component_Texture_Icon_WitchHat */
+	/* For.Prototype_Component_Texture_Icon_IceYarn */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_IceYarn"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/yarn_ui_ice.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Number */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Number"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Number/number%d.dds"), 10))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_EnergyBit */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_EnergyBit"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/EnergyBit.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_X */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_X"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/locked_screen_x.dds"), 1))))
 		return E_FAIL;
 
 

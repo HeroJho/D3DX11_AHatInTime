@@ -76,7 +76,7 @@ void CPicking::Compute_LocalRayInfo(_float3 * pRayDir, _float3 * pRayPos, CTrans
 	XMStoreFloat3(pRayDir, XMVector3TransformNormal(XMLoadFloat3(&m_vRayDir), WorldMatrixInv));
 }
 
-_vector CPicking::Get_WinToWorldPos(_float fX, _float fY)
+void CPicking::Get_WinToWorldPos(_float fX, _float fY, _float3* Out_vPos, _float3* Out_vDir)
 {
 
 	_float3			vLeftDownPos;
@@ -97,6 +97,7 @@ _vector CPicking::Get_WinToWorldPos(_float fX, _float fY)
 
 	/* 뷰스페이스 상의 마우스 레이와 레이포스를 구하자. */
 	XMVECTOR vVectorRayPos{ 0.f, 0.f, 0.f, 0.f };
+	XMVECTOR vVectorRayDir = vVectorMousePos - vVectorRayPos;
 
 
 	/* 월드스페이스 상의 마우스 레이와 레이포스를 구하자. */
@@ -104,8 +105,10 @@ _vector CPicking::Get_WinToWorldPos(_float fX, _float fY)
 	ViewMatrixInv = CPipeLine::Get_Instance()->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
 	ViewMatrixInv = XMMatrixInverse(nullptr, ViewMatrixInv);
 	vVectorMousePos = XMVector3TransformCoord(vVectorMousePos, ViewMatrixInv);
+	vVectorRayDir = XMVector3TransformNormal(vVectorRayDir, ViewMatrixInv);
 
-	return vVectorMousePos;
+	XMStoreFloat3(Out_vPos, vVectorMousePos);
+	XMStoreFloat3(Out_vDir, vVectorRayDir);
 }
 
 void CPicking::Free()

@@ -38,6 +38,7 @@ HRESULT CVault_Mad_Crow::Initialize(void * pArg)
 
 	m_sTag = "Tag_Monster";
 
+	
 	list<ANIM_LINEAR_DATA> LinearDatas = CDataManager::Get_Instance()->Load_Anim("SubSpider");
 	for (auto& Data : LinearDatas)
 	{

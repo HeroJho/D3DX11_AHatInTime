@@ -51,6 +51,7 @@ private:
 
 	_bool m_bGet = false;
 
+	_float m_fRatio = 0.f;
 
 protected:
 	HRESULT Ready_Components();

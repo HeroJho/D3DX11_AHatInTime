@@ -33,7 +33,7 @@ public:
 	string Get_Tag() { return m_sTag; }
 
 	CCollider* Get_Colliders(string sTag);
-	list<CCollider*> Get_Colliders() { return m_Colliders; }
+	list<CCollider*>* Get_Colliders() { return &m_Colliders; }
 	class COBB* Get_StaticOBB();
 
 	CGameObject* Get_Owner() { return m_pOwner; }

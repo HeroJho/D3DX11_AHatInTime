@@ -11,6 +11,7 @@
 #include "Camera_Free.h"
 #include "UI.h"
 #include "MonsterVault.h"
+#include "BellMount.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -172,8 +173,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RollingBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RollingBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
+	//	return E_FAIL;
 	
 	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RectBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
 	//	return E_FAIL; 
@@ -209,7 +210,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		return E_FAIL;
 
 	Desc.iNaviIndex = 2420;
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-21.02f, 31.53f, 126.75f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc)))
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-21.02f, 32.53f, 126.75f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc)))
 		return E_FAIL;
 
 
@@ -225,15 +226,33 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
+
+	// TEST
+	CBellMount::WISPDESC WispDesc;
+	WispDesc.vPos = _float3(-40.75, 13.34, 165.85);
+	WispDesc.fRatio = 100;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
+		return E_FAIL;
+	
+
 	CGameObject::CREATUREINFODESC ObjDesc;
 	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
 	ObjDesc.iAT = 1;
 	ObjDesc.iMaxHP = 3;
 	ObjDesc.iHP = 1;
 	ObjDesc.vPos = _float3(-40.75, 14.34, 170.85);
-
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
+
+
+	//ObjDesc.vPos = _float3(-40.75, 12.34, 165.85);
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubconEye"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
+	//	return E_FAIL;
+
+
+
+
+	//=============== REAL MOB ========================
 
 	ObjDesc.vPos = _float3(-11.9f, 22.2f, 93.417f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
@@ -251,7 +270,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
 
-
+	
 
 	Safe_Release(pGameInstance);
 
@@ -275,11 +294,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 		return E_FAIL;
 
 
+
+
 	Safe_Release(pGameInstance);
 
 
 	CUIManager::Get_Instance()->Make_InvenUI();
 	CUIManager::Get_Instance()->Make_ItemInvenUI();
+	CUIManager::Get_Instance()->Make_DiamondUI();
 
 
 	return S_OK;

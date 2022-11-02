@@ -22,7 +22,7 @@ public:
 
 	_uint Get_MaterialIndex(_uint iMeshIndex);
 
-	void Set_AnimIndex(_uint iAnimIndex);
+	void Set_AnimIndex(_uint iAnimIndex, _bool bContinue = false);
 	_int Get_AnimIndex() { return m_iNumAnimations; }
 	_int Get_CurAnimIndex() { return m_iCurrentAnimIndex; }
 
@@ -85,6 +85,8 @@ private:
 
 	vector<vector<ANIM_LINEAR_DATA>>	m_AnimLinearDatas;
 	ANIM_LINEAR_DATA*					m_pCurLinearData = nullptr;
+
+	list<KEYFRAME> m_NextFirstKeyFrams;
 
 private:
 	HRESULT Ready_MeshContainers(_fmatrix PivotMatrix);

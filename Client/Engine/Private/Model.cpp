@@ -61,12 +61,12 @@ _uint CModel::Get_MaterialIndex(_uint iMeshIndex)
 	return m_Meshes[iMeshIndex]->Get_MaterialIndex();
 }
 
-void CModel::Set_AnimIndex(_uint iAnimIndex)
+void CModel::Set_AnimIndex(_uint iAnimIndex , _bool bContinue)
 {
 	if (0 > iAnimIndex || m_iNumAnimations < iAnimIndex)
 		return;
 
-	if (m_iCurrentAnimIndex == iAnimIndex)
+	if (!bContinue && m_iCurrentAnimIndex == iAnimIndex)
 		return;
 
 
@@ -290,9 +290,9 @@ _bool CModel::Play_Animation(_float fTimeDelta)
 	}
 	else
 	{
-		list<KEYFRAME> NextFirstKeyFrams;
-		m_Animations[m_pCurLinearData->iTargetIndex]->Get_FirstKeys(&NextFirstKeyFrams);
-		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(m_pCurLinearData, &NextFirstKeyFrams, fTimeDelta))
+		m_NextFirstKeyFrams.clear();
+		m_Animations[m_pCurLinearData->iTargetIndex]->Get_FirstKeys(&m_NextFirstKeyFrams);
+		if (m_Animations[m_iCurrentAnimIndex]->Play_Animation(m_pCurLinearData, &m_NextFirstKeyFrams, fTimeDelta))
 		{
 			m_iCurrentAnimIndex = m_pCurLinearData->iTargetIndex;
 			m_pCurLinearData = nullptr;

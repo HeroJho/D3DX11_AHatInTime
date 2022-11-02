@@ -2,9 +2,13 @@
 #include "..\Public\UIManager.h"
 #include "GameInstance.h"
 
+
+#include "ItemManager.h"
+
 #include "UI_Inven.h"
 #include "UI_Item_Inven.h"
-#include "ItemManager.h"
+#include "UI_DiamondScore.h"
+
 
 
 IMPLEMENT_SINGLETON(CUIManager)
@@ -64,6 +68,34 @@ HRESULT CUIManager::Make_ItemInvenUI()
 	return S_OK;
 }
 
+HRESULT CUIManager::Make_DiamondUI()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	CUI::UIINFODESC UiInfoDesc;
+	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+
+	UiInfoDesc.fSizeX = 0.f;
+	UiInfoDesc.fSizeY = 0.f;
+	UiInfoDesc.fX = 70;
+	UiInfoDesc.fY = 680;
+	UiInfoDesc.pDesc = nullptr;
+
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_DiamondScore"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+		return E_FAIL;
+
+	pDiamondScore = (CUI_DiamondScore*)pObj;
+	Safe_AddRef(pDiamondScore);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+	return S_OK;
+}
+
 
 
 
@@ -89,6 +121,14 @@ HRESULT CUIManager::Update_ItemInvenSlot()
 	return S_OK;
 }
 
+HRESULT CUIManager::Set_Score(_uint iNum)
+{
+
+	pDiamondScore->Set_Score(iNum);
+
+	return S_OK;
+}
+
 
 
 
@@ -96,8 +136,7 @@ HRESULT CUIManager::Update_ItemInvenSlot()
 
 void CUIManager::Free()
 {
-
+	Safe_Release(pDiamondScore);
 	Safe_Release(pInven);
 	Safe_Release(pItem_Inven);
-
 }

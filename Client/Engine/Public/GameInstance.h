@@ -102,7 +102,7 @@ public: /* For.Frustum */
 	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius = 0.f);
 
 public:
-	_vector Get_WinToWorldPos(_float fX, _float fY);
+	void Get_WinToWorldPos(_float fX, _float fY, _float3* Out_vPos, _float3* Out_vDir);
 
 
 private:

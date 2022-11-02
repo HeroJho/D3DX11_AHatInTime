@@ -392,6 +392,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	map<string, list<_float4x4>> TempMap;
+	map<string, _bool> TempWall;
 
 	for (_int i = 0; i < pData_Map->iNumObj; ++i)
 	{
@@ -446,6 +447,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 
 			TempMap.insert({ sTemp, flist });
+			TempWall.insert({ sTemp, DataObj.bWall });
 		}
 		else
 		{
@@ -521,6 +523,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		// 바로 생성
 		CStaticModel_Instance::STATICMODELDESC ModelInsDesc;
 		memcpy(ModelInsDesc.cModelTag, Desc.cModelTag, sizeof(TCHAR) * MAX_PATH);
+		ModelInsDesc.bWall = TempWall[Pair.first];
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel_Instance"), eLEVEL, TEXT("Layer_Model"), &ModelInsDesc)))
 		{
 			RELEASE_INSTANCE(CGameInstance);

@@ -158,12 +158,12 @@ _bool CNavigation::isGround(_fvector vPosition, _float* OutfCellY, _float fMagic
 
 void CNavigation::Ready_CellCollision(CGameObject* pGameObject)
 {
-	if (pGameObject->Get_Colliders().empty())
+	if (pGameObject->Get_Colliders()->empty())
 		return;
 
 	_matrix TransformMatrix = ((CTransform*)pGameObject->Get_ComponentPtr(TEXT("Com_Transform")))->Get_WorldMatrix();
 	
-	COBB* pObb = (COBB*)pGameObject->Get_Colliders().front();
+	COBB* pObb = (COBB*)(*(pGameObject->Get_Colliders())).front();
 
 	for (auto& pCell : m_Cells)
 	{

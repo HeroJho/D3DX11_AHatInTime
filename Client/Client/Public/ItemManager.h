@@ -66,8 +66,8 @@ public:
 
 	// For. Inven
 public:
-	list<HATINFODESC> Get_Hats() { return m_pHats; }
-	list<ITEMINFODESC> Get_Items() { return m_pItems; }
+	list<HATINFODESC>* Get_Hats() { return &m_pHats; }
+	list<ITEMINFODESC>* Get_Items() { return &m_pItems; }
 
 public:
 	// 이름에 맞는 모자를 추가한다 UI 갱신

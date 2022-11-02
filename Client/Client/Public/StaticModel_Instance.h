@@ -19,6 +19,7 @@ public:
 	typedef struct tagStaticModelDesc
 	{
 		TCHAR		cModelTag[MAX_PATH];
+		_bool		bWall = false;
 
 	}STATICMODELDESC;
 
@@ -46,6 +47,7 @@ private:
 
 private:
 	TCHAR					m_cModelTag[MAX_PATH];
+	_bool					m_bWall = false;
 	_float3					m_vAxis;
 
 private:

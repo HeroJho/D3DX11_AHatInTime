@@ -5,6 +5,7 @@
 #include "ToolManager.h"
 #include "ItemManager.h"
 #include "CamManager.h"
+#include "GameManager.h"
 
 #include "Player.h"
 
@@ -163,6 +164,8 @@ void CVault::Set_State(VAULT_STATE eState)
 		{
 		//case Client::CMad_Crow::MONSTER_ATTACKED:
 		//	break;
+		default:
+			break;
 		}
 	}
 
@@ -188,7 +191,7 @@ void CVault::Set_Anim()
 }
 
 
-
+ 
 void CVault::Idle_Tick(_float fTimeDelta)
 {
 
@@ -209,7 +212,8 @@ void CVault::Open_Tick(_float fTimeDelta)
 	{
 		m_bIsSprintItem = true;
 		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), 1, m_iNaviIndex, 10);
+		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 30);
+		CGameManager::Get_Instance()->Set_JumpVault();
 	}
 
 }

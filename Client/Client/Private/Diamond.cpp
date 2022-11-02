@@ -3,6 +3,7 @@
 
 #include "GameInstance.h"
 #include "ToolManager.h"
+#include "GameManager.h"
 
 #include "Player.h"
 
@@ -169,8 +170,35 @@ void CDiamond::Get_Tick(_float fTimeDelta)
 	// 화면의 왼 하단 좌표를 구한다.
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	
-	_vector vLeftDownPos =  pGameInstance->Get_WinToWorldPos(0.f, g_iWinSizeY);
-	m_pTransformCom->Move(vLeftDownPos, 10.f, fTimeDelta);
+	_float3 vPos, vDir;
+
+	pGameInstance->Get_WinToWorldPos(0.f, g_iWinSizeY, &vPos, &vDir);
+	
+	_vector vVPos = XMLoadFloat3(&vDir);
+	_vector vRatioDir = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	_vector vPlayerRight = ((CTransform*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Transform"), 0))->Get_State(CTransform::STATE_RIGHT);
+	vRatioDir += vPlayerRight;
+
+	m_fRatio += fTimeDelta * 2.f;
+	if (1.f < m_fRatio)
+		m_fRatio = 1.f;
+
+	vRatioDir = vRatioDir * (1.f - m_fRatio) + vVPos * m_fRatio;
+
+	_vector vDestPos = XMLoadFloat3(&vPos) + XMVector3Normalize(vRatioDir) * 4.f;
+	vDestPos = XMVectorSetW(vDestPos, 1.f);
+	
+	m_pTransformCom->Move(vDestPos, 10.f * m_fRatio, fTimeDelta);
+
+
+	// 도착하면 올리고 사라짐
+	_float fDis = XMVectorGetX(XMVector3Length(vDestPos - m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
+	if (0.5f > fDis)
+	{
+		CGameManager::Get_Instance()->Inc_Diamond(43);
+		Set_Dead(true);
+	}
+
 
 	RELEASE_INSTANCE(CGameInstance);
 

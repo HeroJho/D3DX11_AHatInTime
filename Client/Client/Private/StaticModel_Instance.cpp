@@ -2,6 +2,7 @@
 #include "..\Public\StaticModel_Instance.h"
 #include "GameInstance.h"
 
+#include "GameManager.h"
 
 
 CStaticModel_Instance::CStaticModel_Instance(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -28,7 +29,7 @@ HRESULT CStaticModel_Instance::Initialize(void * pArg)
 		return E_FAIL;
 	STATICMODELDESC* Desc = (STATICMODELDESC*)pArg;
 	wcscpy_s(m_cModelTag, Desc->cModelTag);
-
+	m_bWall = Desc->bWall;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -76,6 +77,23 @@ HRESULT CStaticModel_Instance::Render()
 
 
 
+	_uint iPassIndex = 0;
+	if (CGameManager::Get_Instance()->Get_WispBool())
+	{
+		iPassIndex = 1;
+
+		_float3 vWispPos = CGameManager::Get_Instance()->Get_WispPos();
+		_float fWispRatio = CGameManager::Get_Instance()->Get_WispRatio();
+
+		if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatio", &fWispRatio, sizeof(_float))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_WispPos", &vWispPos, sizeof(_float3))))
+			return E_FAIL;
+
+	}
+	else
+		iPassIndex = 0;
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
@@ -83,7 +101,7 @@ HRESULT CStaticModel_Instance::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 

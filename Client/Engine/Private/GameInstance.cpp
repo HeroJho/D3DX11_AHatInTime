@@ -408,12 +408,12 @@ _bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius)
 	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRadius);
 }
 
-_vector CGameInstance::Get_WinToWorldPos(_float fX, _float fY)
+void CGameInstance::Get_WinToWorldPos(_float fX, _float fY, _float3* Out_vPos, _float3* Out_vDir)
 {
 	if (nullptr == m_pPicking)
-		return XMVectorSet(0.f, 0.f, 0.f, 0.f);
+		return;
 
-	return m_pPicking->Get_WinToWorldPos(fX, fY);
+	m_pPicking->Get_WinToWorldPos(fX, fY, Out_vPos, Out_vDir);
 }
 
 void CGameInstance::Release_Engine()

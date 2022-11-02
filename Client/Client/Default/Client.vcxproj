@@ -168,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp" />
+    <ClInclude Include="..\public\BellMount.h" />
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\public\CamManager.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
@@ -196,12 +197,15 @@
     <ClInclude Include="..\public\SkyModel.h" />
     <ClInclude Include="..\Public\StaticModel_Col.h" />
     <ClInclude Include="..\public\StaticModel_Instance.h" />
+    <ClInclude Include="..\public\SubconEye.h" />
     <ClInclude Include="..\public\SubSpider.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\Test.h" />
     <ClInclude Include="..\public\ToolManager.h" />
     <ClInclude Include="..\Public\UI.h" />
     <ClInclude Include="..\Public\UIManager.h" />
+    <ClInclude Include="..\public\UI_Diamond.h" />
+    <ClInclude Include="..\public\UI_DiamondScore.h" />
     <ClInclude Include="..\Public\UI_Edit.h" />
     <ClInclude Include="..\Public\UI_Edit_Button.h" />
     <ClInclude Include="..\public\UI_Health.h" />
@@ -209,10 +213,13 @@
     <ClInclude Include="..\Public\UI_ItemButton.h" />
     <ClInclude Include="..\Public\UI_Item_Inven.h" />
     <ClInclude Include="..\public\UI_Item_Inven_Slot.h" />
+    <ClInclude Include="..\public\UI_Number.h" />
     <ClInclude Include="..\Public\UI_TextLife.h" />
+    <ClInclude Include="..\public\UI_X.h" />
     <ClInclude Include="..\Public\Umbrella.h" />
     <ClInclude Include="..\public\Vault.h" />
     <ClInclude Include="..\public\Vault_Mad_Crow.h" />
+    <ClInclude Include="..\public\Wisp.h" />
     <ClInclude Include="..\public\Yarn.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
@@ -220,6 +227,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\private\BellMount.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\private\CamManager.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
@@ -247,12 +255,15 @@
     <ClCompile Include="..\private\SkyModel.cpp" />
     <ClCompile Include="..\Private\StaticModel_Col.cpp" />
     <ClCompile Include="..\private\StaticModel_Instance.cpp" />
+    <ClCompile Include="..\private\SubconEye.cpp" />
     <ClCompile Include="..\private\SubSpider.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\Test.cpp" />
     <ClCompile Include="..\private\ToolManager.cpp" />
     <ClCompile Include="..\Private\UI.cpp" />
     <ClCompile Include="..\Private\UIManager.cpp" />
+    <ClCompile Include="..\private\UI_Diamond.cpp" />
+    <ClCompile Include="..\private\UI_DiamondScore.cpp" />
     <ClCompile Include="..\Private\UI_Edit.cpp" />
     <ClCompile Include="..\Private\UI_Edit_Button.cpp" />
     <ClCompile Include="..\private\UI_Health.cpp" />
@@ -260,10 +271,13 @@
     <ClCompile Include="..\Private\UI_ItemButton.cpp" />
     <ClCompile Include="..\Private\UI_Item_Inven.cpp" />
     <ClCompile Include="..\private\UI_Item_Inven_Slot.cpp" />
+    <ClCompile Include="..\private\UI_Number.cpp" />
     <ClCompile Include="..\Private\UI_TextLife.cpp" />
+    <ClCompile Include="..\private\UI_X.cpp" />
     <ClCompile Include="..\Private\Umbrella.cpp" />
     <ClCompile Include="..\private\Vault.cpp" />
     <ClCompile Include="..\private\Vault_Mad_Crow.cpp" />
+    <ClCompile Include="..\private\Wisp.cpp" />
     <ClCompile Include="..\private\Yarn.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "..\Public\SubSpider.h"
 #include "GameInstance.h"
+
 #include  "ToolManager.h"
+#include "DataManager.h"
 
 #include "Player.h"
 
@@ -34,6 +36,11 @@ HRESULT CSubSpider::Initialize(void * pArg)
 
 	m_sTag = "Tag_Monster";
 
+	list<ANIM_LINEAR_DATA> LinearDatas = CDataManager::Get_Instance()->Load_Anim("SubSpider");
+	for (auto& Data : LinearDatas)
+	{
+		Set_AnimLinearData(Data);
+	}
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&m_CreatureDesc.vPos), 1.f));
 	m_pTransformCom->Set_CurSpeed(1.f);

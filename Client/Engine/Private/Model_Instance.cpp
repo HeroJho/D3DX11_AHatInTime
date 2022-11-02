@@ -439,13 +439,19 @@ HRESULT CModel_Instance::Bin_Ready_Materials(const char* pModelFilePath)
 			if (!strcmp(pAIMaterial.cNames[j], ""))
 				continue;
 
-
 			char			szFullPath[MAX_PATH] = "";
-			char			szExt[MAX_PATH] = ".dds";
+			char			szExt[MAX_PATH] = "";
+
+			_splitpath_s(pAIMaterial.cNames[j], nullptr, 0, nullptr, 0, szFullPath, MAX_PATH, szExt, MAX_PATH);
 
 			strcpy_s(szFullPath, pModelFilePath);
 			strcat_s(szFullPath, pAIMaterial.cNames[j]);
-			strcat_s(szFullPath, szExt);
+
+			if (!strcmp("", szExt))
+			{
+				strcpy_s(szExt, ".dds");
+				strcat_s(szFullPath, szExt);
+			}
 
 			_tchar			szWideFullPath[MAX_PATH] = TEXT("");
 

@@ -105,7 +105,7 @@ void CUI_Inven::LoadItemMgr_ItemUI()
 {
 	Delete_AllChildUI();
 
-	list<CItemManager::HATINFODESC> items = CItemManager::Get_Instance()->Get_Hats();
+	list<CItemManager::HATINFODESC>* items = CItemManager::Get_Instance()->Get_Hats();
 
 	_float fDis = 150.f;
 
@@ -113,9 +113,9 @@ void CUI_Inven::LoadItemMgr_ItemUI()
 	 
 	_vector vInitDir = { 0.f, -1.f, 0.f, 0.f };
 
-	for (auto& Desc : items)
+	for (auto& Desc : *items)
 	{
-		iAngle += 360.f / items.size();
+		iAngle += 360.f / items->size();
 
 		_float2 vPos;
 		_matrix mRot = XMMatrixRotationAxis(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(iAngle));

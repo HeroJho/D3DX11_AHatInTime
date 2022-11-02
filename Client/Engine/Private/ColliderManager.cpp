@@ -25,13 +25,14 @@ void CColliderManager::Calcul_ColGroup(COLLIDERGROUP eGroupL, COLLIDERGROUP eGro
 			if (pObjL == pObjR)
 				continue;
 
-			list<CCollider*> LCols = pObjL->Get_Colliders();
-			list<CCollider*> RCols = pObjR->Get_Colliders();
+			list<CCollider*>* LCols = pObjL->Get_Colliders();
+			list<CCollider*>* RCols = pObjR->Get_Colliders();
 
-			for (auto& pColL : LCols)
+			for (auto& pColL : *LCols)
 			{
-				for (auto& pColR : RCols)
+				for (auto& pColR : *RCols)
 				{
+
 					// 몬스터 끼리는 스페어 충돌만 검사한다 -> 밀기용
 					if ((COLLIDER_MONSTER == eGroupL && COLLIDER_MONSTER == eGroupR) && (CCollider::TYPE_SPHERE != pColL->Get_ColliderType() || CCollider::TYPE_SPHERE != pColR->Get_ColliderType()))
 						continue;

@@ -160,7 +160,7 @@ void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTra
 	for (auto& pObj : *pColliders)
 	{
 
-		pStaticOBB = ((COBB*)pObj->Get_Colliders().front());
+		pStaticOBB = ((COBB*)pObj->Get_Colliders()->front());
 
 		// 충돌했따 -> 방향으로 민다
 		if (pStaticOBB->Collision_OBB(this, pTran, &vPushDir, &fDis))
@@ -555,12 +555,12 @@ void COBB::Compute_Pigi(CGameObject * pObj, CNavigation* pNavi, CTransform* pTra
 	{
 		_float3 vPushDir;
 		_float fDis = 0.f;
-		if (pObj->Get_Colliders().empty())
+		if (pObj->Get_Colliders()->empty())
 			return;
 
 		list<CHECKSTATE> TickTempState;
 
-		for (auto& pOBB : pObj->Get_Colliders())
+		for (auto& pOBB : *(pObj->Get_Colliders()))
 		{
 			if (TYPE_OBB != pOBB->Get_ColliderType())
 				continue;

@@ -16,7 +16,7 @@ public:
 	void Tick(); /* 월드스페이스 상의 마우스레이, 레이포스를 구한다. */
 	void Compute_LocalRayInfo(_float3* pRayDir, _float3* pRayPos, class CTransform* pTransform);
 
-	_vector Get_WinToWorldPos(_float fX, _float fY);
+	void Get_WinToWorldPos(_float fX, _float fY, _float3* Out_vPos, _float3* Out_vDir);
 
 private:
 	ID3D11Device*			m_pDevice = nullptr;

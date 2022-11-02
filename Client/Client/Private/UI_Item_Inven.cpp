@@ -79,14 +79,14 @@ HRESULT CUI_Item_Inven::Render()
 void CUI_Item_Inven::LoadItemMgr_ItemUI()
 {
 
-	list<CItemManager::ITEMINFODESC> items = CItemManager::Get_Instance()->Get_Items();
+	list<CItemManager::ITEMINFODESC>* items = CItemManager::Get_Instance()->Get_Items();
 
 
 	for (auto& pChild : m_pChildUIs)
 	{
 		CUI_Item_Inven_Slot* pSlot = (CUI_Item_Inven_Slot*)pChild;
 
-		for (auto& pItem : items)
+		for (auto& pItem : *items)
 		{
 			if (!lstrcmp(pSlot->Get_ItemModelTag(), pItem.szModelName))
 			{
