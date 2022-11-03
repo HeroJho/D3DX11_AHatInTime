@@ -5,6 +5,7 @@
 #include "ToolManager.h"
 #include "DataManager.h"
 #include "GameManager.h"
+#include "CutSceneManager.h"
 
 CBellMount::CBellMount(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
@@ -207,6 +208,7 @@ void CBellMount::Attacked(_int iAT)
 {
 	m_pModelCom->Set_AnimIndex(0, true);
 	m_eState = STATE_RING_UP;
+	// CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM3);
 }
  
 

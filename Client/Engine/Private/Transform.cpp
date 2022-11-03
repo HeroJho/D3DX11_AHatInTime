@@ -429,8 +429,8 @@ void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _floa
 	{
 		m_fGravityAcc += fGravity * fTimeDelta;
 		if (0.5f < m_fGravityAcc)
-			m_fGravityAcc = 0.5f;
-		m_fVelocity -= m_fGravityAcc;
+			m_fGravityAcc = 15.f;
+		m_fVelocity -= m_fGravityAcc * fTimeDelta;
 	}
 
 	vPos.y += m_fVelocity * fTimeDelta;

@@ -37,6 +37,8 @@ HRESULT CCamera_Free::Initialize(void * pArg)
 
 	m_fDis = 4.5f;
 	ZeroMemory(&m_vAngle, sizeof(_float3));
+	ZeroMemory(&m_vDestLookPos, sizeof(_float3));
+	ZeroMemory(&m_vPreLookPos, sizeof(_float3));
 
 	return S_OK;
 }
@@ -51,6 +53,10 @@ void CCamera_Free::Tick(_float fTimeDelta)
 
 		m_pPlayer = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
 		Safe_AddRef(m_pPlayer);
+
+
+		CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+		// XmStoreFloat3(m_vPreLookPos
 
 		RELEASE_INSTANCE(CGameInstance);
 	}
@@ -98,28 +104,74 @@ void CCamera_Free::LookAt(_fvector vTargetPos)
 
 
 
-
-
-
 void CCamera_Free::Game_Mode(_float fTimeDelta)
 {
+
 	Game_Mode_Input(fTimeDelta);
+
+	OriCamPos(fTimeDelta);
+
+
 
 
 	CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+	// 플레이어 발바닥 보다 살짝 위로 본다/
+	XMStoreFloat3(&m_vDestLookPos, XMVectorSetY(pPlayerTran->Get_State(CTransform::STATE_POSITION), XMVectorGetY(pPlayerTran->Get_State(CTransform::STATE_POSITION)) + 0.8f));
 
+
+	SmoothLook(fTimeDelta);
+
+}
+
+void CCamera_Free::OriCamPos(_float fDeltaTime)
+{
+	CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+
+	// x, y 회전 행렬
 	_matrix mX = XMMatrixRotationAxis(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.x));
 	_matrix mY = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.y));
 
-	_vector vCamDir = XMVector3TransformNormal(XMVector3Normalize(XMVectorSet(0.f, 1.f, -1.f, 0.f)), mX);
+	// 멀어질 방향
+	_vector vCamDir = XMVector3Normalize(XMVectorSet(0.f, 1.f, -1.f, 0.f));
+
+	// X, Y회전
+	vCamDir = XMVector3TransformNormal(vCamDir, mX);
 	vCamDir = XMVector3TransformNormal(vCamDir, mY);
 	_vector vCamPos = vCamDir * m_fDis;
 	_vector vDestPos = pPlayerTran->Get_State(CTransform::STATE_POSITION) + vCamPos;
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDestPos);
+}
 
-	_vector vLooPos = XMVectorSetY(pPlayerTran->Get_State(CTransform::STATE_POSITION), XMVectorGetY(pPlayerTran->Get_State(CTransform::STATE_POSITION)) + 0.8f);
-	m_pTransformCom->LookAt(vLooPos);
+void CCamera_Free::SmoothLook(_float fDeltaTime)
+{
+	_vector vDestPos = XMLoadFloat3(&m_vDestLookPos);
+	_vector vPrePos = XMLoadFloat3(&m_vPreLookPos);
+
+	_vector vDir = vDestPos - vPrePos;
+	_vector vNorDir = XMVector3Normalize(vDir);
+	_float fDis = XMVectorGetX(XMVector3Length(vDir));
+
+	vPrePos += vNorDir * fDis * 5.f * fDeltaTime;
+
+
+	_float fX = XMVectorGetX(vPrePos) + XMVectorGetX(vNorDir) * fDis * 3.f * fDeltaTime;
+	_float fY = XMVectorGetY(vPrePos) + XMVectorGetY(vNorDir) * fDis * 20.f * fDeltaTime;
+
+	vPrePos = XMVectorSetX(vPrePos, fX);
+	vPrePos = XMVectorSetY(vPrePos, fY);
+
+	
+	if (0.01f < fDis)
+	{
+		XMStoreFloat3(&m_vPreLookPos, vPrePos);
+		m_pTransformCom->LookAt(XMVectorSetW(vPrePos, 1.f));
+	}
+	else
+	{
+		XMStoreFloat3(&m_vPreLookPos, vDestPos);
+		m_pTransformCom->LookAt(XMVectorSetW(vDestPos, 1.f));
+	}
 
 }
 
@@ -154,6 +206,9 @@ void CCamera_Free::Game_Mode_Input(_float fTimeDelta)
 
 	RELEASE_INSTANCE(CGameInstance);
 }
+
+
+
 
 void CCamera_Free::CutScene_Mode(_float fTimeDelta)
 {

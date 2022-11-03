@@ -7,6 +7,7 @@
 #include "ItemManager.h"
 #include "CamManager.h"
 #include "UIManager.h"
+#include "CutSceneManager.h"
 
 #include "Camera_Free.h"
 #include "UI.h"
@@ -56,30 +57,8 @@ void CLevel_GamePlay::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	m_fTimeAcc += fTimeDelta;
 
-	//if (10.f < m_fTimeAcc && 10 > m_iCount)
-	//{
-	//	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	//	Safe_AddRef(pGameInstance);
-	//	
-	//	CGameObject::CREATUREINFODESC ObjDesc;
-	//	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
-	//	ObjDesc.iAT = 1;
-	//	ObjDesc.iMaxHP = 3;
-	//	ObjDesc.iHP = 3;
-	//	ObjDesc.vPos = _float3(-37.75, 12.34, 157.85);
-	//	ObjDesc.iNaviIndex = 13444;
-
-	//	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Mad_Crow"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc);
-
-
-	//	Safe_Release(pGameInstance);
-
-	//	m_fTimeAcc = 0.f;
-	//	++m_iCount;
-	//}
-
+	CCutSceneManager::Get_Instance()->Tick(fTimeDelta);
 
 }
 
@@ -104,7 +83,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(0.8f, 0.8f, 0.8f, 1.f);
+	LightDesc.vDiffuse = _float4(0.9f, 0.9f, 0.9f, 1.f);
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
@@ -118,25 +97,8 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar * pLayerTag)
 {
-	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
-	Safe_AddRef(pGameInstance);
 
-	CCamera::CAMERADESC			CameraDesc;
-
-	CameraDesc.vEye = _float4(0.f, 10.f, -10.f, 1.f);
-	CameraDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
-	CameraDesc.fFovy = XMConvertToRadians(60.0f);
-	CameraDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
-	CameraDesc.fNear = 0.2f;
-	CameraDesc.fFar = 300.0f;
-
-	CameraDesc.TransformDesc.fSpeedPerSec = 5.f;
-	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_GAMEPLAY, pLayerTag, &CameraDesc)))
-		return E_FAIL;
-
-	Safe_Release(pGameInstance);
+	CCamManager::Get_Instance()->Create_Cam();
 
 	return S_OK;
 }
@@ -173,11 +135,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
 
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RollingBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
-	//	return E_FAIL;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag)))
+		return E_FAIL;
 	
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RectBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
-	//	return E_FAIL; 
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RollingBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
+		return E_FAIL; 
 	
 
 	if (FAILED(CDataManager::Get_Instance()->Load_Map(3, LEVEL_GAMEPLAY)))
@@ -229,8 +191,13 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 
 	// TEST
 	CBellMount::WISPDESC WispDesc;
-	WispDesc.vPos = _float3(-40.75, 13.34, 165.85);
+	WispDesc.vPos = _float3(-41.75f, 6.43f, 83.f);
 	WispDesc.fRatio = 100;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
+		return E_FAIL;
+	
+	WispDesc.vPos = _float3(-40.75, 12.34, 165.85);
+	WispDesc.fRatio = 50;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
 	
@@ -240,7 +207,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	ObjDesc.iAT = 1;
 	ObjDesc.iMaxHP = 3;
 	ObjDesc.iHP = 1;
-	ObjDesc.vPos = _float3(-40.75, 14.34, 170.85);
+	ObjDesc.vPos = _float3(-40.75f, 14.34f, 170.85f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
 

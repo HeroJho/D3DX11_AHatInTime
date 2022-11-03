@@ -6,6 +6,7 @@
 #include "ToolManager.h"
 #include "CamManager.h"
 #include "ItemManager.h"
+#include "GameManager.h"
 
 #include "Camera_Free.h"
 
@@ -515,12 +516,10 @@ void CPlayer::HillDown_Tick(_float fTimeDelta)
 	_vector vY = XMVectorSet(0.f, 2.f, 0.f, 0.f); // 빛
 	_float vDot = XMVectorGetX(XMVector3Dot(vPlan, vY));
 	_vector vNorPlan = vPlan * vDot;
-	_vector vSlide = vNorPlan - vY;
-
 
 	// 드러눕기
 	m_fHillDownTimeAcc += fTimeDelta;
-	if (2.7f < m_fHillDownTimeAcc)
+	if (1.5f < m_fHillDownTimeAcc)
 	{
 		// 면의 노말 벡터를 내 업 벡터로 맞춘다.
 
@@ -528,15 +527,11 @@ void CPlayer::HillDown_Tick(_float fTimeDelta)
 	}
 
 
-
-	m_fHillDownSpeed += fTimeDelta * 0.1f;
-	m_pTransformCom->Go_Dir(vSlide, m_fHillDownSpeed, fTimeDelta);
-
 	// 만약에 vDot 값이 1.99가 넘어간다면 평평한 곳에 왔다는 것
 	// 잠깐 누워있다가 스페이스바로 Idle 복귀 가능
 	if (1.8f < vDot)
 	{
-		m_fHillDownSpeed -= fTimeDelta * 0.01f;
+		m_fHillDownSpeed -= fTimeDelta * 0.1f;
 
 		if (0.f > m_fHillDownSpeed)
 			m_fHillDownSpeed = 0.0f;
@@ -546,7 +541,13 @@ void CPlayer::HillDown_Tick(_float fTimeDelta)
 		if(1.f < m_fHillUpTimeAcc)
 			HillDown_Input(fTimeDelta);
 	}
+	else
+	{
+		XMStoreFloat3(&m_vHillDir, vNorPlan - vY);
+		m_fHillDownSpeed += fTimeDelta * 0.1f;
+	}
 
+	m_pTransformCom->Go_Dir(XMLoadFloat3(&m_vHillDir), m_fHillDownSpeed, fTimeDelta);
 
 	// HillDown_Input(fTimeDelta);
 
@@ -1529,20 +1530,21 @@ void CPlayer::Check_Attacked(_float fTimeDelta)
 void CPlayer::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_PLAYER);
-
+	
 	if (nullptr == m_pRendererCom)
 		return;
 
 	// 중력 적용
 	if((STATE_STARTGETITEM != m_eState && STATE_IDLEGETITEM != m_eState && STATE_ENDGETITEM != m_eState)
 		&& STATE_ATTACKED != m_eState && STATE_JUMPATTACK != m_eState)
-		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.7f);
+		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 3.f);
 
 	// 이동 갱신
 	Calcul_State(fTimeDelta);
 
 	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
-	Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom);
+	_bool bisIsWisp = CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom, 0.f, bisIsWisp);
 
 
 	// 착지 했다면
@@ -1642,7 +1644,7 @@ void CPlayer::Calcul_State(_float fTimeDelta)
 	}
 	else if (STATE_SPRINT == m_eState)
 	{
-		m_pTransformCom->Set_CurSpeed(m_fRunSpeed + 2.f);
+		m_pTransformCom->Set_CurSpeed(m_fRunSpeed + 3.f);
 	}
 	else if (STATE_SLEP == m_eState)
 	{
@@ -2109,7 +2111,7 @@ void CPlayer::Attacked()
 void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if("Tag_Barrel" == Desc.pOther->Get_Tag() && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag))
-		Get_StaticOBB()->Compute_Pigi(Desc.pOther, m_pNavigationCom, m_pTransformCom);
+		Get_StaticOBB()->Compute_Pigi(Desc.pOther, m_pNavigationCom, m_pTransformCom, CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
 
 
 	if ("Tag_Monster" == Desc.pOther->Get_Tag())

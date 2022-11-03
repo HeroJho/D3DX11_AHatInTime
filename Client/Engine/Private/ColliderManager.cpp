@@ -37,9 +37,9 @@ void CColliderManager::Calcul_ColGroup(COLLIDERGROUP eGroupL, COLLIDERGROUP eGro
 					if ((COLLIDER_MONSTER == eGroupL && COLLIDER_MONSTER == eGroupR) && (CCollider::TYPE_SPHERE != pColL->Get_ColliderType() || CCollider::TYPE_SPHERE != pColR->Get_ColliderType()))
 						continue;
 
-					// OBB 충돌은 비용이 너무 비싸다 ! 하지말자.
-					if (CCollider::TYPE_OBB == pColL->Get_ColliderType() || CCollider::TYPE_OBB == pColR->Get_ColliderType())
-						continue;
+					//// OBB 충돌은 비용이 너무 비싸다 ! 하지말자.
+					//if (CCollider::TYPE_OBB == pColL->Get_ColliderType() || CCollider::TYPE_OBB == pColR->Get_ColliderType())
+					//	continue;
 
 
 					if (pColL->Collision(pColR))

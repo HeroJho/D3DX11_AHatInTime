@@ -46,7 +46,7 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eColliderType);
 	virtual HRESULT Initialize(void* pArg);
-	virtual void Update(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr, _float fMagicNum = 0.f) = 0;
+	virtual void Update(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr, _float fMagicNum = 0.f, _bool bIsInWisp = false) = 0;
 	virtual _bool Collision(CCollider* pTargetCollider) = 0;
 
 

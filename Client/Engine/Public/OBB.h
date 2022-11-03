@@ -47,21 +47,21 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype(CCollider::TYPE eColliderType);
 	virtual HRESULT Initialize(void* pArg);
-	virtual void Update(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr, _float fMagicNum = 0.f);
+	virtual void Update(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr, _float fMagicNum = 0.f, _bool bIsInWisp = false);
 	virtual _bool Collision(CCollider* pTargetCollider);
 
 	_bool	Collision_Cell(_fvector vA, _fvector vB, _fvector vC, _fmatrix TransformMatrix);
 
 public:
-	_bool Collision_OBB(CCollider* pTargetCollider, class CTransform* pTran, _float3* Out_fPushDir, _float* Out_fPlanY);
+	_bool Collision_OBB(CCollider* pTargetCollider, class CTransform* pTran, _float3* Out_fPushDir, _float* Out_fPlanY, _bool bIsConpi = false);
 	_bool DontTouchMe(CCollider* pTargetCollider);
 
-	void Compute_Pigi(class CGameObject* pOther, class CNavigation* pNavi,  class CTransform* pTran);
+	void Compute_Pigi(class CGameObject* pOther, class CNavigation* pNavi,  class CTransform* pTran, _bool bIsInWisp = false);
 
 private:
 	OBBDESC Compute_OBBDesc();
 	_float Compute_Height(_fvector vPos, _float3* vPoss);
-	_bool Compute_LayPlane(_fvector vPos, _fvector vDir, _float3* Out_pPoss, _float* Out_fDot);
+	_bool Compute_LayPlane(_fvector vSentorPos, _fvector vPos, _fvector vDir, _float3* Out_pPoss, _float* Out_fDot, _float* Out_fY);
 
 	_float3 Copute_CellY(_float3 vPos, _float fa, _float fb, _float fc, _float fd);
 	_bool Check_Area(_fvector vA, _fvector vB, _fvector vC, _float _vMaxArea = 0.01f);

@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 
 #include "ToolManager.h"
-
+#include "GameManager.h"
 
 CStaticModel_Col::CStaticModel_Col(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)

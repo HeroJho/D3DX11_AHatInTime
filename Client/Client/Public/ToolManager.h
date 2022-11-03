@@ -54,7 +54,7 @@ private:
 
 	// For. TimeManager
 public:
-	enum TIMETAG { TIME_PLAYER, TIME_MONSTER, TIME_EM, TIME_END };
+	enum TIMETAG { TIME_PLAYER, TIME_MONSTER, TIME_EM, TIME_CAM, TIME_END };
 
 public:
 	_float Get_TimeRatio(TIMETAG eTag);

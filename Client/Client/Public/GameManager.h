@@ -23,6 +23,8 @@ public:
 	_float Get_WispRatio() { return m_fWispRatio; }
 	_float3 Get_WispPos() { return m_vWispPos; }
 
+	_bool Check_IsInWisp(_fvector vPos);
+
 private:
 	_bool	m_bWispBool = false;
 	_float m_fWispRatio = 0.f;

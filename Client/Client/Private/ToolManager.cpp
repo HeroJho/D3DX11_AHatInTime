@@ -108,6 +108,8 @@ _float CToolManager::Get_TimeRatio(TIMETAG eTag)
 		return m_fTimeRatios[TIME_MONSTER];
 	case Client::CToolManager::TIME_EM:
 		return m_fTimeRatios[TIME_EM];
+	case Client::CToolManager::TIME_CAM:
+		return m_fTimeRatios[TIME_CAM];
 	}
 }
 
@@ -117,10 +119,16 @@ void CToolManager::Set_TimeRatio(TIMETAG eTag, _float fTimeRatio)
 	{
 	case Client::CToolManager::TIME_PLAYER:
 		m_fTimeRatios[TIME_PLAYER] = fTimeRatio;
+		break;
 	case Client::CToolManager::TIME_MONSTER:
 		m_fTimeRatios[TIME_MONSTER] = fTimeRatio;
+		break;
 	case Client::CToolManager::TIME_EM:
 		m_fTimeRatios[TIME_EM] = fTimeRatio;
+		break;
+	case Client::CToolManager::TIME_CAM:
+		m_fTimeRatios[TIME_CAM] = fTimeRatio;
+		break;
 	}
 }
 

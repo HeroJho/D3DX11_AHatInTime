@@ -73,12 +73,6 @@
     <Filter Include="02.GameObjects\StaticModel\StaticModel_Insatnce">
       <UniqueIdentifier>{7d9d8c01-b763-4b56-afa3-dbc993a79bcf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\RollingBarrel">
-      <UniqueIdentifier>{aa701a76-7461-4deb-a2e3-2f963258b9ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\RectBarrel">
-      <UniqueIdentifier>{69a0396d-51e4-4ac7-a379-72e00e34162c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\StaticModel\StaticModel_Col">
       <UniqueIdentifier>{ff58f263-3ecc-453e-8155-f7bf9fe5049e}</UniqueIdentifier>
     </Filter>
@@ -145,11 +139,26 @@
     <Filter Include="02.GameObjects\Monster\SubconEye">
       <UniqueIdentifier>{3e29e01a-993e-4c29-a694-a3388147bfad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\Wisp">
-      <UniqueIdentifier>{e81ed800-48e9-4a3b-bcfb-45267b5daef3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\Monster\BellMount">
       <UniqueIdentifier>{ac377386-6e29-4bf9-b3bc-3e3b2af34215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.Managers\CutSceneManager">
+      <UniqueIdentifier>{766cf107-b7b6-4b20-aa86-05de3f72daab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map">
+      <UniqueIdentifier>{39ff52dd-66dd-427d-8f98-9813fcd2d0fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\RectBarrel">
+      <UniqueIdentifier>{69a0396d-51e4-4ac7-a379-72e00e34162c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\RollingBarrel">
+      <UniqueIdentifier>{aa701a76-7461-4deb-a2e3-2f963258b9ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\Wisp">
+      <UniqueIdentifier>{e81ed800-48e9-4a3b-bcfb-45267b5daef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\SpikeBlock">
+      <UniqueIdentifier>{2042427f-db67-4a1a-b0f9-0f5999322df8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -226,10 +235,10 @@
       <Filter>02.GameObjects\Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\public\RollingBarrel.h">
-      <Filter>02.GameObjects\RollingBarrel</Filter>
+      <Filter>02.GameObjects\Map\RollingBarrel</Filter>
     </ClInclude>
     <ClInclude Include="..\public\RectBarrel.h">
-      <Filter>02.GameObjects\RectBarrel</Filter>
+      <Filter>02.GameObjects\Map\RectBarrel</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\StaticModel_Col.h">
       <Filter>02.GameObjects\StaticModel\StaticModel_Col</Filter>
@@ -325,10 +334,16 @@
       <Filter>02.GameObjects\Monster\SubconEye</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Wisp.h">
-      <Filter>02.GameObjects\Wisp</Filter>
+      <Filter>02.GameObjects\Map\Wisp</Filter>
     </ClInclude>
     <ClInclude Include="..\public\BellMount.h">
       <Filter>02.GameObjects\Monster\BellMount</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\CutSceneManager.h">
+      <Filter>96.Managers\CutSceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\SpikeBlock.h">
+      <Filter>02.GameObjects\Map\SpikeBlock</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -393,10 +408,10 @@
       <Filter>02.GameObjects\Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\private\RollingBarrel.cpp">
-      <Filter>02.GameObjects\RollingBarrel</Filter>
+      <Filter>02.GameObjects\Map\RollingBarrel</Filter>
     </ClCompile>
     <ClCompile Include="..\private\RectBarrel.cpp">
-      <Filter>02.GameObjects\RectBarrel</Filter>
+      <Filter>02.GameObjects\Map\RectBarrel</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\StaticModel_Col.cpp">
       <Filter>02.GameObjects\StaticModel\StaticModel_Col</Filter>
@@ -489,10 +504,16 @@
       <Filter>02.GameObjects\Monster\SubconEye</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Wisp.cpp">
-      <Filter>02.GameObjects\Wisp</Filter>
+      <Filter>02.GameObjects\Map\Wisp</Filter>
     </ClCompile>
     <ClCompile Include="..\private\BellMount.cpp">
       <Filter>02.GameObjects\Monster\BellMount</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\CutSceneManager.cpp">
+      <Filter>96.Managers\CutSceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SpikeBlock.cpp">
+      <Filter>02.GameObjects\Map\SpikeBlock</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

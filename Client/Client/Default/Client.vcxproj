@@ -173,6 +173,7 @@
     <ClInclude Include="..\public\CamManager.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\ColorCube.h" />
+    <ClInclude Include="..\public\CutSceneManager.h" />
     <ClInclude Include="..\public\DataManager.h" />
     <ClInclude Include="..\public\Diamond.h" />
     <ClInclude Include="..\public\Flask.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="..\public\RectBarrel.h" />
     <ClInclude Include="..\public\RollingBarrel.h" />
     <ClInclude Include="..\public\SkyModel.h" />
+    <ClInclude Include="..\public\SpikeBlock.h" />
     <ClInclude Include="..\Public\StaticModel_Col.h" />
     <ClInclude Include="..\public\StaticModel_Instance.h" />
     <ClInclude Include="..\public\SubconEye.h" />
@@ -231,6 +233,7 @@
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\private\CamManager.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
+    <ClCompile Include="..\private\CutSceneManager.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
     <ClCompile Include="..\private\Diamond.cpp" />
     <ClCompile Include="..\private\Flask.cpp" />
@@ -253,6 +256,7 @@
     <ClCompile Include="..\private\RectBarrel.cpp" />
     <ClCompile Include="..\private\RollingBarrel.cpp" />
     <ClCompile Include="..\private\SkyModel.cpp" />
+    <ClCompile Include="..\private\SpikeBlock.cpp" />
     <ClCompile Include="..\Private\StaticModel_Col.cpp" />
     <ClCompile Include="..\private\StaticModel_Instance.cpp" />
     <ClCompile Include="..\private\SubconEye.cpp" />

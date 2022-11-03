@@ -43,6 +43,7 @@
 
 #include "RollingBarrel.h"
 #include "RectBarrel.h"
+#include "SpikeBlock.h"
 
 #include "ColorCube.h"
 #include "MarkCube.h"
@@ -272,6 +273,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Diamond"),
 		CDiamond::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_SpikeBlock*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SpikeBlock"),
+		CSpikeBlock::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	
 	/* For.Prototype_GameObject_ColorCube*/
@@ -362,7 +367,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	/* For.Prototype_Component_VIBuffer_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Map_Terrain"),
-		CVIBuffer_Map_Terrain::Create(m_pDevice, m_pContext, 100, 100))))
+		CVIBuffer_Map_Terrain::Create(m_pDevice, m_pContext, 2, 2))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Sky */
@@ -372,7 +377,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 
-
+	/* For. NoneAnimModel */
 	if (FAILED(Loading_Model_NoneAnim()))
 		return E_FAIL;
 
@@ -384,6 +389,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("vault"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("SubconEye"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("BellMount"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+
 
 	/* For. PartsModel */
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Ori_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);

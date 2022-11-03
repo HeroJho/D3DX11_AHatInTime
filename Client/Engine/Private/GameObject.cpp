@@ -80,10 +80,10 @@ HRESULT CGameObject::Render()
 	return S_OK;
 }
 
-void CGameObject::Tick_Col(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran, _float fMagicNum)
+void CGameObject::Tick_Col(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran, _float fMagicNum, _bool bIsinWisp)
 {
 	for (auto& pCollider : m_Colliders)
-		pCollider->Update(TransformMatrix, pNavi, pTran, fMagicNum);
+		pCollider->Update(TransformMatrix, pNavi, pTran, fMagicNum, bIsinWisp);
 }
 
 void CGameObject::Render_Col()

@@ -30,6 +30,28 @@ public:
 	CCamManager();
 	virtual ~CCamManager() = default;
 
+
+public:
+	void Tick(_float fTimeDelta);
+
+
+
+
+	// For. GameCam
+public:
+	HRESULT Create_Cam();
+
+
+private:
+	// class CCamera_Free* m_pGameCam = nullptr;
+
+
+
+
+
+
+
+	// For. CutScene
 public:
 	HRESULT Init();
 
@@ -37,6 +59,7 @@ public:
 	_bool Get_Start() { return m_bStart; }
 	void Set_Start(_bool bStart);
 
+	_bool Get_IsEnd() { return !m_bStart; }
 
 public:
 	void Play_CutScene(_uint iIndex, _bool bAutoEnd, class CTransform* pTran = nullptr);
@@ -60,13 +83,7 @@ public:
 	void Create_LookCube(CDataManager::CAMDATA* pData = nullptr);
 
 
-
-
-
-public:
-	void Tick(_float fTimeDelta);
-
-public: // .For CutScene
+public: 
 	void PlayCutScene(_float fTimeDelta);
 
 	void PlayMark(_float fTimeDelta);

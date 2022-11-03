@@ -5,6 +5,7 @@
 #include "ToolManager.h"
 #include "DataManager.h"
 
+
 #include "Camera_Free.h"
 
 #include "ColorCube.h"
@@ -23,13 +24,65 @@ CCamManager::CCamManager()
 
 
 
+
+
+HRESULT CCamManager::Create_Cam()
+{
+	if (nullptr != m_pCamTool)
+		return E_FAIL;
+
+	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+	CCamera::CAMERADESC			CameraDesc;
+
+	CameraDesc.vEye = _float4(0.f, 10.f, -10.f, 1.f);
+	CameraDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
+	CameraDesc.fFovy = XMConvertToRadians(60.0f);
+	CameraDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+	CameraDesc.fNear = 0.2f;
+	CameraDesc.fFar = 300.0f;
+
+	CameraDesc.TransformDesc.fSpeedPerSec = 5.f;
+	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_GAMEPLAY, TEXT("Layer_Cam"), &pObj, &CameraDesc)))
+		return E_FAIL;
+
+	m_pCamTool = (CCamera_Free*)pObj;
+	Safe_AddRef(m_pCamTool);
+
+	Safe_Release(pGameInstance);
+
+	return S_OK;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 HRESULT CCamManager::Init()
 {
 
 	Load_Data();
 	return S_OK;
 }
-
 
 
 
@@ -185,6 +238,9 @@ void CCamManager::End_CutScene()
 
 void CCamManager::Tick(_float fTimeDelta)
 {
+	_float d = CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_CAM);
+	fTimeDelta *= d;
+
 	PlayCutScene(fTimeDelta);
 }
 
@@ -208,11 +264,6 @@ void CCamManager::Set_Start(_bool bStart)
 
 	if (bStart)
 	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		m_pCamTool = (CCamera_Free*)pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Camera"), 0);
-		RELEASE_INSTANCE(CGameInstance);
-
-
 		m_TempMarkCubes = m_MarkCubes;
 		MakeMarkPos();
 		m_vMarkTempPos = CalculMarkBasi();
@@ -341,7 +392,7 @@ void CCamManager::PlayLook(_float fTimeDelta)
 	}
 	else
 	{
-		if (m_pChaseLookCube->Move(vTempPos, m_fLookSpeed, fTimeDelta, 5.f))
+		if (m_pChaseLookCube->Move(vTempPos, m_fLookSpeed, fTimeDelta, 10.f)) //5.f
 		{
 			m_fLookT += m_fLookMoveSens;
 			m_vLookTempPos = CalculLookBasi();
@@ -525,7 +576,8 @@ _float3 CCamManager::CalculLookBasi()
 
 void CCamManager::Free()
 {
-	// Safe_Release(m_pCamTool);
+	
+	Safe_Release(m_pCamTool);
 
 	for (auto& pCube : m_MarkCubes)
 		Safe_Release(pCube);
@@ -560,6 +612,8 @@ void CCamManager::Load_Data()
 	Data = CDataManager::Get_Instance()->Load_Cam(1);
 	m_Datas.push_back(Data);
 	Data = CDataManager::Get_Instance()->Load_Cam(2);
+	m_Datas.push_back(Data);
+	Data = CDataManager::Get_Instance()->Load_Cam(3);
 	m_Datas.push_back(Data);
 }
 

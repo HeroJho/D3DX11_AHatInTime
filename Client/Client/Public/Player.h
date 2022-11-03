@@ -144,6 +144,7 @@ private:
 	_float				m_fTurnSpeed = 0.f;
 	_float				m_fRotationSpeed = 0.f;
 	_float				m_fSlepSpeed = 0.f;
+	_float				m_fSprintSpeed = 0.f;
 
 	_float				m_fJumpPower = 5.f;
 	STATE				m_eJumpState = STATE_END;
@@ -160,7 +161,7 @@ private:
 	_float				m_fHillUpTimeAcc = 0.f;
 
 	_float				m_fHillDownSpeed = 0.f;
-
+	_float3				m_vHillDir;
 
 	// For. Mage
 	_float				m_fMageGageTime = 2.f;

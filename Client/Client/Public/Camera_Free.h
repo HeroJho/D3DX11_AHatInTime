@@ -34,17 +34,34 @@ public:
 
 
 private:
+	void CutScene_Mode(_float fTimeDelta);
+
+
+
+
+	// For. GameMode
+public:
+	void OriCamPos(_float fDeltaTime);
+	void SmoothLook(_float fDeltaTime);
+
+
+private:
 	void Game_Mode(_float fTimeDelta);
 	void Game_Mode_Input(_float fTimeDelta);
 
-	void CutScene_Mode(_float fTimeDelta);
+
 
 private:
 	CGameObject*		m_pPlayer = nullptr;
 	_float3				m_vAngle;
 	_float				m_fDis = 0.f;
+	_float3				m_vDestLookPos;
+	_float3				m_vPreLookPos;
 
 	CAM_STATE			m_eState = CAM_GAME;
+
+
+
 
 public:
 	static CCamera_Free* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

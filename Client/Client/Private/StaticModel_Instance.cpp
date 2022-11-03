@@ -50,11 +50,16 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	// if (lstrcmp(TEXT("SubCon_Instance"), m_cModelTag))
+
+
+	if(m_bWall && CGameManager::Get_Instance()->Get_WispBool())
 	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 	}
-
+	else if (!m_bWall)
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	}
 
 }
 
@@ -88,6 +93,8 @@ HRESULT CStaticModel_Instance::Render()
 		if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatio", &fWispRatio, sizeof(_float))))
 			return E_FAIL;
 		if (FAILED(m_pShaderCom->Set_RawValue("g_WispPos", &vWispPos, sizeof(_float3))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_Wall", &m_bWall, sizeof(_bool))))
 			return E_FAIL;
 
 	}

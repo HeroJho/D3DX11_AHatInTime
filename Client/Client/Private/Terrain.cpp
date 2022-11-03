@@ -21,10 +21,12 @@ HRESULT CTerrain::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
-
+	
 	if (FAILED(Ready_FilterTexture()))
 		return E_FAIL;
 	
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 9999.f, 0.f, 1.f));
+
 	return S_OK;
 }
 

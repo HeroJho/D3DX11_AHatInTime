@@ -1,15 +1,16 @@
 #include "stdafx.h"
-#include "..\Public\RectBarrel.h"
+#include "..\Public\SpikeBlock.h"
 #include "GameInstance.h"
 
+#include "GameManager.h"
 #include "ToolManager.h"
 
-CRectBarrel::CRectBarrel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CSpikeBlock::CSpikeBlock(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CRectBarrel::CRectBarrel(const CRectBarrel & rhs)
+CSpikeBlock::CSpikeBlock(const CSpikeBlock & rhs)
 	: CGameObject(rhs)
 {
 }
@@ -19,12 +20,12 @@ CRectBarrel::CRectBarrel(const CRectBarrel & rhs)
 
 
 
-HRESULT CRectBarrel::Initialize_Prototype()
+HRESULT CSpikeBlock::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CRectBarrel::Initialize(void * pArg)
+HRESULT CSpikeBlock::Initialize(void * pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -46,24 +47,26 @@ HRESULT CRectBarrel::Initialize(void * pArg)
 
 
 
-void CRectBarrel::Tick(_float fTimeDelta)
+void CSpikeBlock::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
-	m_pTransformCom->Turn(XMVectorSet(0.f, 0.f, 1.f, 0.f), 0.4f, fTimeDelta);
-
+	m_pTransformCom->Turn(XMVectorSet(1.f, 0.f, 0.f, 0.f), 0.4f, fTimeDelta);
+	
 	if (nullptr != m_pOther)
 	{
 		CTransform* pTran = (CTransform*)m_pOther->Get_ComponentPtr(TEXT("Com_Transform"));
 		CNavigation* pNavi = (CNavigation*)m_pOther->Get_ComponentPtr(TEXT("Com_Navigation"));
-		pTran->Go_Dir(XMVectorSet(-1.f, 0.f, 0.f, 0.f), 0.4f, fTimeDelta, pNavi);
+		_vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+		_vector vDir = XMVector3Cross(vRight, XMVectorSet(0.f, 1.f, 0.f, 0.f));
+		pTran->Go_Dir(vDir, 0.4f, fTimeDelta, pNavi);
 	}
 
 }
 
 
 
-void CRectBarrel::LateTick(_float fTimeDelta)
+void CSpikeBlock::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
@@ -74,17 +77,21 @@ void CRectBarrel::LateTick(_float fTimeDelta)
 	Tick_Col(m_pTransformCom->Get_WorldMatrix(), nullptr, nullptr);
 
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
-	RELEASE_INSTANCE(CGameInstance);
+	if (CGameManager::Get_Instance()->Get_WispBool())
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
+		RELEASE_INSTANCE(CGameInstance);
+	}
 
 
 	m_pOther = nullptr;
 }
 
-HRESULT CRectBarrel::Render()
+HRESULT CSpikeBlock::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -102,6 +109,26 @@ HRESULT CRectBarrel::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+	_uint iPassIndex = 0;
+	if (CGameManager::Get_Instance()->Get_WispBool())
+	{
+		iPassIndex = 3;
+
+		_float3 vWispPos = CGameManager::Get_Instance()->Get_WispPos();
+		_float fWispRatio = CGameManager::Get_Instance()->Get_WispRatio();
+
+		if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatio", &fWispRatio, sizeof(_float))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_WispPos", &vWispPos, sizeof(_float3))))
+			return E_FAIL;
+		_bool bWall = true;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_Wall", &bWall, sizeof(_bool))))
+			return E_FAIL;
+
+	}
+	else
+		iPassIndex = 0;
+
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -110,7 +137,7 @@ HRESULT CRectBarrel::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 
@@ -121,9 +148,9 @@ HRESULT CRectBarrel::Render()
 	return S_OK;
 }
 
-void CRectBarrel::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+void CSpikeBlock::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	if("Tag_Player" == Desc.pOther->Get_Tag() && !strcmp("StaticOBB", Desc.OtherDesc.sTag))
+	if ("Tag_Player" == Desc.pOther->Get_Tag() && !strcmp("StaticOBB", Desc.OtherDesc.sTag) && !strcmp("StaticOBB", Desc.MyDesc.sTag))
 		m_pOther = Desc.pOther;
 
 
@@ -142,7 +169,7 @@ void CRectBarrel::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 
 
-HRESULT CRectBarrel::Ready_Components()
+HRESULT CSpikeBlock::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -155,23 +182,30 @@ HRESULT CRectBarrel::Ready_Components()
 	/* For.Com_Shader */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
-	
+
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Mad_Crow"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("secret_plain_rectangle"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
-
-
+	
 	/* For.Com_Collider */
 	CCollider::COLLIDERDESC ColDesc;
 	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
 
 	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(3.f, 3.f, 10.f);
+	ColDesc.vSize = _float3(8.5f, 2.4f, 2.6f);
+	ColDesc.bWall = true;
+	strcpy(ColDesc.sTag, "StaticOBB");
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 
+	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	ColDesc.vSize = _float3(10.f, 10.f, 10.f);
+	strcpy(ColDesc.sTag, "Sphere");
+	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+		return E_FAIL;
 
 
 
@@ -188,33 +222,33 @@ HRESULT CRectBarrel::Ready_Components()
 
 
 
-CRectBarrel * CRectBarrel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CSpikeBlock * CSpikeBlock::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CRectBarrel*		pInstance = new CRectBarrel(pDevice, pContext);
+	CSpikeBlock*		pInstance = new CSpikeBlock(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CRectBarrel"));
+		MSG_BOX(TEXT("Failed To Created : CSpikeBlock"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CRectBarrel::Clone(void * pArg)
+CGameObject * CSpikeBlock::Clone(void * pArg)
 {
-	CRectBarrel*		pInstance = new CRectBarrel(*this);
+	CSpikeBlock*		pInstance = new CSpikeBlock(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CRectBarrel"));
+		MSG_BOX(TEXT("Failed To Cloned : CSpikeBlock"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CRectBarrel::Free()
+void CSpikeBlock::Free()
 {
 	__super::Free();
 

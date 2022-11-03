@@ -36,7 +36,7 @@ HRESULT CSphere::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CSphere::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran, _float fMagicNum)
+void CSphere::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran, _float fMagicNum, _bool bIsInWisp)
 {
 	m_isColl = false;
 	m_pOriginal_Sphere->Transform(*m_pSphere, TransformMatrix);

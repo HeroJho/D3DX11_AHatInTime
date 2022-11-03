@@ -26,6 +26,20 @@ void CGameManager::Set_Wisp(_bool bWispBool, _float fWispRatio, _float3 vWispPos
 	m_vWispPos = vWispPos;
 }
 
+_bool CGameManager::Check_IsInWisp(_fvector vPos)
+{
+	if (!m_bWispBool)
+		return false;
+
+	_vector vWispPos = XMLoadFloat3(&m_vWispPos);
+	_float fDis = XMVectorGetX(XMVector3Length(vPos - vWispPos));
+
+	if (m_fWispRatio > fDis)
+		return true;
+
+	return false;
+}
+
 void CGameManager::Inc_Diamond(_uint iNum)
 {
 	m_iDiamond += iNum;

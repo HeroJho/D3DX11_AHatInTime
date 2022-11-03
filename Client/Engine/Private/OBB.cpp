@@ -57,7 +57,7 @@ HRESULT COBB::Initialize(void * pArg)
 
 
 
-void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran, _float fMagicNum)
+void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran, _float fMagicNum, _bool bIsInWisp)
 {
 	{
 		//m_isColl = false;
@@ -137,6 +137,7 @@ void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTra
 	}
 
 
+
 	m_isColl = false;
 	m_pOriginal_OBB->Transform(*m_pOBB, TransformMatrix);
 
@@ -165,6 +166,29 @@ void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTra
 		// 충돌했따 -> 방향으로 민다
 		if (pStaticOBB->Collision_OBB(this, pTran, &vPushDir, &fDis))
 		{
+
+			// 웹 안에 있다
+			if (bIsInWisp)
+			{
+				// 충돌체가 Wall아니면 노충돌
+				if (!pStaticOBB->Get_Desc().bWall)
+				{
+					m_eColState = COL_NONE;
+					continue;
+				}
+			}
+			// 웹 밖에 있다
+			else
+			{
+				// 충돌체가 Wall아니면 충돌
+				if (pStaticOBB->Get_Desc().bWall)
+				{
+					m_eColState = COL_NONE;
+					continue;
+				}
+			}
+
+
 
 			if (COL_ON == m_eColState)
 			{
@@ -249,7 +273,7 @@ void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTra
 
 }
 
-_bool COBB::Collision_OBB(CCollider * pTargetCollider, CTransform* pTran, _float3* Out_fPushDir, _float* Out_fPlanY)
+_bool COBB::Collision_OBB(CCollider * pTargetCollider, CTransform* pTran, _float3* Out_fPushDir, _float* Out_fPlanY, _bool bIsConpi)
 {
 	if (TYPE_OBB != pTargetCollider->Get_ColliderType())
 		return false;
@@ -324,24 +348,25 @@ _bool COBB::Collision_OBB(CCollider * pTargetCollider, CTransform* pTran, _float
 	_float3 vPoss[3];
 	_float	fDot = 0.f;
 	((COBB*)pTargetCollider)->Get_Collider().GetCorners(vPoints);
-	_vector vPos0 = XMLoadFloat3(&vPoints[0]) + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[0]));
-	_vector vPos1 = XMLoadFloat3(&vPoints[1]) + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[1]));
-	_vector vPos4 = XMLoadFloat3(&vPoints[4]) + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[4]));
-	_vector vPos5 = XMLoadFloat3(&vPoints[5]) + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[5]));
+	_vector vPos0 = XMLoadFloat3(&vPoints[0]); // + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[0]));
+	_vector vPos1 = XMLoadFloat3(&vPoints[1]); // + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[1]));
+	_vector vPos4 = XMLoadFloat3(&vPoints[4]); // + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[4]));
+	_vector vPos5 = XMLoadFloat3(&vPoints[5]); // + XMVector3Normalize(vPos - XMLoadFloat3(&vPoints[5]));
 	XMStoreFloat3(&vPoints[0], vPos0);
 	XMStoreFloat3(&vPoints[1], vPos1);
 	XMStoreFloat3(&vPoints[4], vPos4);
 	XMStoreFloat3(&vPoints[5], vPos5);
 
-	// 내적 값이 제일 작은 애의 면 정보를 담는다.
+	// 내적 값이 제일 작은 애의 면 정보를 담는다. -> 문제다 y 값이 낮은 애를 가져온다?
 	_bool bIsBottomHit = false;
-	if (Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[0]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot))
+	_float fY = FLT_MAX;
+	if (Compute_LayPlane(vPos, XMVectorSetW(XMLoadFloat3(&vPoints[0]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot, &fY))
 		bIsBottomHit = true;
-	if (Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[1]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot))
+	if (Compute_LayPlane(vPos, XMVectorSetW(XMLoadFloat3(&vPoints[1]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot, &fY))
 		bIsBottomHit = true;
-	if (Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[4]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot))
+	if (Compute_LayPlane(vPos, XMVectorSetW(XMLoadFloat3(&vPoints[4]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot, &fY))
 		bIsBottomHit = true;
-	if (Compute_LayPlane(XMVectorSetW(XMLoadFloat3(&vPoints[5]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot))
+	if (Compute_LayPlane(vPos, XMVectorSetW(XMLoadFloat3(&vPoints[5]), 1.f), XMVectorSet(0.f, -1.f, 0.f, 0.f), vPoss, &fDot, &fY))
 		bIsBottomHit = true;
 	
 
@@ -358,14 +383,13 @@ _bool COBB::Collision_OBB(CCollider * pTargetCollider, CTransform* pTran, _float
 		// 해당 면을 탄다
 		*Out_fPlanY = Compute_Height(vPos, vPoss);
 		*Out_fPushDir = _float3(0.f, 0.f, 0.f);
-		((COBB*)pTargetCollider)->m_eColState = COL_ON;
 
 		// 내적값이 0.7f 이하라면 (경사) 슬라이드
 		// On이였는데 0.2f라면 None
-		if (0.4f > fDot)
+		if (0.5f > fDot)
 		{
 			// 너무 가파르다 -> 벽이다
-			if (0.3f > fDot)
+			if (0.2f > fDot)
 			{
 
 				if (COL_ON == ((COBB*)pTargetCollider)->m_ePreColState && !m_ColliderDesc.bWall)
@@ -387,20 +411,31 @@ _bool COBB::Collision_OBB(CCollider * pTargetCollider, CTransform* pTran, _float
 				//if (COL_ON == ((COBB*)pTargetCollider)->m_ePreColState)
 				//	((COBB*)pTargetCollider)->m_eColState = COL_NONE;
 				//else
-				//{
+				if(!bIsConpi && COL_ON != ((COBB*)pTargetCollider)->m_eColState)
+				{
 					((COBB*)pTargetCollider)->m_eColState = COL_SLIDE;
 					memcpy(((COBB*)pTargetCollider)->m_vHillPoss, vPoss, sizeof(_float3) * 3);
-				// }
+				}
+				else if(bIsConpi)
+				{
+					((COBB*)pTargetCollider)->m_eColState = COL_SLIDE;
+					memcpy(((COBB*)pTargetCollider)->m_vHillPoss, vPoss, sizeof(_float3) * 3);
+				}
 			}
 
 		}
+		else
+		{
+			((COBB*)pTargetCollider)->m_eColState = COL_ON;
+		}
+
 	}
 	else
 	{// 안 맞았다 -> 벽에 부딪혔거나 바닥 부딪힘.
 
 
 		// 위로 레이를 쏴서 아무 충돌이 없다
-		if (!Compute_LayPlane(vPos, XMVectorSet(0.f, 1.f, 0.f, 0.f), vPoss, &fDot))
+		if (!Compute_LayPlane(XMVectorSet(0.f, 0.f, 0.f, 0.f), vPos, XMVectorSet(0.f, 1.f, 0.f, 0.f), vPoss, &fDot, nullptr))
 		{ // 벽에 부딪혔다
 
 			_vector vAixY = XMVectorSet(0.f, 1.f, 0.f, 0.f);
@@ -480,206 +515,132 @@ _bool COBB::DontTouchMe(CCollider * pTargetCollider)
 	return m_isColl;
 }
 
-void COBB::Compute_Pigi(CGameObject * pObj, CNavigation* pNavi, CTransform* pTran)
+void COBB::Compute_Pigi(CGameObject * pObj, CNavigation* pNavi, CTransform* pTran, _bool bIsInWisp)
 {
+	_float3 vPushDir;
+	_float fDis = 0.f;
+	if (pObj->Get_Colliders()->empty())
+		return;
 
-	//_float3 vPushDir;
-	//_float fDis = 0.f;
-	//if (pObj->Get_Colliders().empty())
-	//	return;
-
-	//COBB* pStaticOBB = ((COBB*)pObj->Get_Colliders().front());
-
-	//// 충돌했따 -> 방향으로 민다
-	//if (pStaticOBB->Collision_OBB(this, pTran, &vPushDir, &fDis))
-	//{
-	//	m_bOnCollision = true;
-
-	//	_vector vNorPushDir = XMVector3Normalize(XMLoadFloat3(&vPushDir));
-
-	//	if (COL_ON == m_eColState)
-	//	{
-	//		// 점프를 했다면 면을 안 탄다.
-	//		if (0.001f > pTran->Get_Velocity())
-	//		{
-	//			pTran->ResetGravity();
-	//			_vector vPos = pTran->Get_State(CTransform::STATE_POSITION);
-	//			vPos = XMVectorSetY(vPos, fDis);
-	//			pTran->Set_State(CTransform::STATE_POSITION, vPos);
-	//		}
-	//		else
-	//		{
-	//			m_eColState = COL_NONE;
-	//		}
-	//	}
-	//	else if (COL_DOWN == m_eColState)
-	//	{
-	//		// 밑면과 부딪혔다면 그대로 떨어진다
-	//		_vector vPreToCurDir = XMLoadFloat3(&pTran->Get_PrePos()) - pTran->Get_State(CTransform::STATE_POSITION);
-	//		_float fPreToCurDis = fabs(XMVectorGetX(XMVector3Length(vPreToCurDir)));
-
-	//		pTran->ResetGravity();
-	//		pTran->Set_CurSpeed(0.f);
-	//		pTran->Push_Dir(vNorPushDir, fPreToCurDis + 0.1f, pNavi);
-	//	}
-	//	else if (COL_BLOCK == m_eColState)
-	//	{
-	//		// 벽과 부딪혔다면 그대로 밀어낸다
-	//		_vector vPreToCurDir = XMLoadFloat3(&pTran->Get_PrePos()) - pTran->Get_State(CTransform::STATE_POSITION);
-	//		_float fPreToCurDis = fabs(XMVectorGetX(XMVector3Length(vPreToCurDir)));
-
-	//		pTran->ResetGravity();
-
-	//		// 충돌 풀릴때까지 조금씩 밀자..
-	//		while (DontTouchMe(pStaticOBB) && 0.01f < (XMVectorGetX(XMVector3Length(vNorPushDir))))
-	//		{
-	//			pTran->Push_Dir(vNorPushDir, 0.01f, pNavi);
-	//			m_pOriginal_OBB->Transform(*m_pOBB, pTran->Get_WorldMatrix());
-	//		}
-
-	//	}
-	//	else if (COL_SLIDE == m_eColState)
-	//	{
-	//		pTran->ResetGravity();
-	//		_vector vPos = pTran->Get_State(CTransform::STATE_POSITION);
-	//		vPos = XMVectorSetY(vPos, fDis);
-	//		pTran->Set_State(CTransform::STATE_POSITION, vPos);
-	//	}
-
-
-	//}
-
-
-
-
+	for (auto& pOBB : *(pObj->Get_Colliders()))
 	{
-		_float3 vPushDir;
-		_float fDis = 0.f;
-		if (pObj->Get_Colliders()->empty())
-			return;
+		if (TYPE_OBB != pOBB->Get_ColliderType())
+			continue;
 
-		list<CHECKSTATE> TickTempState;
+		CHECKSTATE Data;
+		ZeroMemory(&Data, sizeof(CHECKSTATE));
 
-		for (auto& pOBB : *(pObj->Get_Colliders()))
+		COBB* pStaticOBB = nullptr;
+		pStaticOBB = ((COBB*)pOBB);
+
+
+		// 충돌했따 -> 방향으로 민다
+		if (pStaticOBB->Collision_OBB(this, pTran, &vPushDir, &fDis, true))
 		{
-			if (TYPE_OBB != pOBB->Get_ColliderType())
-				continue;
-
-			CHECKSTATE Data;
-			ZeroMemory(&Data, sizeof(CHECKSTATE));
-
-			COBB* pStaticOBB = nullptr;
-			pStaticOBB = ((COBB*)pOBB);
-
-			// 충돌했따 -> 방향으로 민다
-			if (pStaticOBB->Collision_OBB(this, pTran, &vPushDir, &fDis))
+			
+			// 웹 안에 있다
+			if (bIsInWisp)
 			{
-				m_bOnCollision = true;
-
-				if (COL_ON == m_eColState)
+				// 충돌체가 Wall아니면 노충돌
+				if (!pStaticOBB->Get_Desc().bWall)
 				{
-					Data.eState = COL_ON;
-
-					// 점프를 했다면 면을 안 탄다.
-					if (!(0.001f > pTran->Get_Velocity()))
-					{
-						Data.eState = COL_ON;
-					}
-
+					m_eColState = COL_NONE;
+					continue;
 				}
-				else if (COL_DOWN == m_eColState)
-				{
-					Data.eState = COL_DOWN;
-				}
-				else if (COL_BLOCK == m_eColState)
-				{
-					Data.eState = COL_BLOCK;
-				}
-				else if (COL_SLIDE == m_eColState)
-				{
-					Data.eState = COL_SLIDE;
-				}
-
-
-				Data.fDis = fDis;
-				Data.vPushDir = vPushDir;
-				Data.pModel = pStaticOBB;
-
-
-
-				TickTempState.push_back(Data);
 			}
-		}
+			// 웹 밖에 있다
+			else
+			{
+				// 충돌체가 Wall아니면 충돌
+				if (pStaticOBB->Get_Desc().bWall)
+				{
+					m_eColState = COL_NONE;
+					continue;
+				}
+			}
+
+
+			m_bOnCollision = true;
+
+			if (COL_ON == m_eColState)
+			{
+				m_eColState = COL_ON;
+
+				// 점프를 했다면 면을 안 탄다.
+				if (!(0.001f > pTran->Get_Velocity()))
+				{
+					m_eColState = COL_ON;
+				}
+
+			}
+			else if (COL_DOWN == m_eColState)
+			{
+				m_eColState = COL_DOWN;
+			}
+			else if (COL_BLOCK == m_eColState)
+			{
+				m_eColState = COL_BLOCK;
+			}
+			else if (COL_SLIDE == m_eColState)
+			{
+				m_eColState = COL_SLIDE;
+			}
 
 
 
-		if (TickTempState.empty())
-			return;
+			// 충돌 연산 바로 진행
 
+			_fvector vNorPushDir = XMVector3Normalize(XMLoadFloat3(&vPushDir));
 
-		CHECKSTATE MaxData;
-		ZeroMemory(&MaxData, sizeof(CHECKSTATE));
-		for (auto& Data : TickTempState)
-		{
-			if (MaxData.eState < Data.eState)
-				MaxData = Data;
-		}
+			switch (m_eColState)
+			{
+			case Engine::COBB::COL_NONE:
+				break;
+			case Engine::COBB::COL_DOWN:
+			{
+				// 밑면과 부딪혔다면 그대로 떨어진다
+				_vector vPreToCurDir = XMLoadFloat3(&pTran->Get_PrePos()) - pTran->Get_State(CTransform::STATE_POSITION);
+				_float fPreToCurDis = fabs(XMVectorGetX(XMVector3Length(vPreToCurDir)));
 
-
-		fDis = MaxData.fDis;
-		_fvector vNorPushDir = XMVector3Normalize(XMLoadFloat3(&MaxData.vPushDir));
-		COBB* pStaticOBB = MaxData.pModel;
-
-
-		Set_ColState(MaxData.eState);
-
-		switch (m_eColState)
-		{
-		case Engine::COBB::COL_NONE:
+				pTran->ResetGravity();
+				pTran->Set_CurSpeed(0.f);
+				pTran->Push_Dir(vNorPushDir, fPreToCurDis + 0.1f, pNavi);
+			}
 			break;
-		case Engine::COBB::COL_DOWN:
-		{
-			// 밑면과 부딪혔다면 그대로 떨어진다
-			_vector vPreToCurDir = XMLoadFloat3(&pTran->Get_PrePos()) - pTran->Get_State(CTransform::STATE_POSITION);
-			_float fPreToCurDis = fabs(XMVectorGetX(XMVector3Length(vPreToCurDir)));
-
-			pTran->ResetGravity();
-			pTran->Set_CurSpeed(0.f);
-			pTran->Push_Dir(vNorPushDir, fPreToCurDis + 0.1f, pNavi);
-		}
-		break;
-		case Engine::COBB::COL_BLOCK:
-		{
-			// 벽과 부딪혔다면 그대로 밀어낸다
-			_vector vPreToCurDir = XMLoadFloat3(&pTran->Get_PrePos()) - pTran->Get_State(CTransform::STATE_POSITION);
-			_float fPreToCurDis = fabs(XMVectorGetX(XMVector3Length(vPreToCurDir)));
-
-			pTran->ResetGravity();
-
-			// 충돌 풀릴때까지 조금씩 밀자..
-			while (DontTouchMe(pStaticOBB) && 0.01f < (XMVectorGetX(XMVector3Length(vNorPushDir))))
+			case Engine::COBB::COL_BLOCK:
 			{
-				pTran->Push_Dir(vNorPushDir, 0.01f, pNavi);
-				m_pOriginal_OBB->Transform(*m_pOBB, pTran->Get_WorldMatrix());
+				// 벽과 부딪혔다면 그대로 밀어낸다
+				_vector vPreToCurDir = XMLoadFloat3(&pTran->Get_PrePos()) - pTran->Get_State(CTransform::STATE_POSITION);
+				_float fPreToCurDis = fabs(XMVectorGetX(XMVector3Length(vPreToCurDir)));
+
+				pTran->ResetGravity();
+
+				// 충돌 풀릴때까지 조금씩 밀자..
+				while (DontTouchMe(pStaticOBB) && 0.01f < (XMVectorGetX(XMVector3Length(vNorPushDir))))
+				{
+					pTran->Push_Dir(vNorPushDir, 0.01f, pNavi);
+					m_pOriginal_OBB->Transform(*m_pOBB, pTran->Get_WorldMatrix());
+				}
 			}
-		}
-		break;
-		case Engine::COBB::COL_SLIDE:
-		{
-			pTran->ResetGravity();
-			_vector vPos = pTran->Get_State(CTransform::STATE_POSITION);
-			vPos = XMVectorSetY(vPos, fDis);
-			pTran->Set_State(CTransform::STATE_POSITION, vPos);
-		}
-		break;
-		case Engine::COBB::COL_ON:
-		{
-			pTran->ResetGravity();
-			_vector vPos = pTran->Get_State(CTransform::STATE_POSITION);
-			vPos = XMVectorSetY(vPos, fDis);
-			pTran->Set_State(CTransform::STATE_POSITION, vPos);
-		}
-		break;
+			break;
+			case Engine::COBB::COL_SLIDE:
+			{
+				pTran->ResetGravity();
+				_vector vPos = pTran->Get_State(CTransform::STATE_POSITION);
+				vPos = XMVectorSetY(vPos, fDis);
+				pTran->Set_State(CTransform::STATE_POSITION, vPos);
+			}
+			break;
+			case Engine::COBB::COL_ON:
+			{
+				pTran->ResetGravity();
+				_vector vPos = pTran->Get_State(CTransform::STATE_POSITION);
+				vPos = XMVectorSetY(vPos, fDis);
+				pTran->Set_State(CTransform::STATE_POSITION, vPos);
+			}
+			break;
+			}
+
 		}
 	}
 
@@ -1209,7 +1170,7 @@ _float COBB::Compute_Height(_fvector vPos, _float3 * vPoss)
 	return (-fa * fx - fc * fz - fd) / fb;
 }
 
-_bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss, _float* Out_fDot)
+_bool COBB::Compute_LayPlane(_fvector vSentorPos, _fvector vPos, _fvector vDir, _float3 * Out_pPoss, _float* Out_fDot, _float* Out_fY)
 {
 	_float3			vPoints[8];
 	m_pOBB->GetCorners(vPoints); // 나무의 OBB
@@ -1336,13 +1297,17 @@ _bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss, 
 		}
 		else
 		{
-			if (*Out_fDot < fDotTemp)
+			_float fY = Compute_Height(vSentorPos, vTempPoss);
+
+			if(nullptr != Out_fY && *Out_fY > fY)
 			{
+				// if (*Out_fDot < fDotTemp)
 				Out_pPoss[0] = vTempPoss[0];
 				Out_pPoss[1] = vTempPoss[1];
 				Out_pPoss[2] = vTempPoss[2];
 
 				*Out_fDot = fDotTemp;
+				*Out_fY = fY;
 			}
 		}
 

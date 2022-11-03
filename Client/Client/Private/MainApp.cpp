@@ -9,6 +9,7 @@
 #include "CamManager.h"
 #include "UIManager.h"
 #include "GameManager.h"
+#include "CutSceneManager.h"
 
 #include "Level_Loading.h"
 
@@ -214,6 +215,7 @@ CMainApp * CMainApp::Create()
 void CMainApp::Free()
 {
 
+	CCutSceneManager::Get_Instance()->Destroy_Instance();
 	CGameManager::Get_Instance()->Destroy_Instance();
 	CUIManager::Get_Instance()->Destroy_Instance();
 	CToolManager::Get_Instance()->Destroy_Instance();
