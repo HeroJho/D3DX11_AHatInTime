@@ -252,6 +252,14 @@ TCHAR* CItemManager::Match_TextureWithModelName(TCHAR* pTextureName)
 	{
 		return TEXT("Ori_Hat");
 	}
+	else if (!lstrcmp(pTextureName, TEXT("Prototype_Component_Texture_DwellerMask")) || !lstrcmp(pTextureName, TEXT("Ori_Hat")))
+	{
+		return TEXT("Mask_Cat");
+	}
+	else if (!lstrcmp(pTextureName, TEXT("Prototype_Component_Texture_Foxmask")) || !lstrcmp(pTextureName, TEXT("Ori_Hat")))
+	{
+		return TEXT("Mask_Fox");
+	}
 
 }
 

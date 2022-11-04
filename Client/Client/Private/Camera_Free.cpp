@@ -4,6 +4,8 @@
 
 #include "CamManager.h"
 
+#include "Player.h"
+
 CCamera_Free::CCamera_Free(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCamera(pDevice, pContext)
 {
@@ -35,7 +37,7 @@ HRESULT CCamera_Free::Initialize(void * pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	m_fDis = 4.5f;
+	m_fOriDis = m_fDis = 4.5f;
 	ZeroMemory(&m_vAngle, sizeof(_float3));
 	ZeroMemory(&m_vDestLookPos, sizeof(_float3));
 	ZeroMemory(&m_vPreLookPos, sizeof(_float3));
@@ -51,7 +53,7 @@ void CCamera_Free::Tick(_float fTimeDelta)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-		m_pPlayer = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+		m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
 		Safe_AddRef(m_pPlayer);
 
 
@@ -62,12 +64,15 @@ void CCamera_Free::Tick(_float fTimeDelta)
 	}
 
 
+
+
 	switch (m_eState)
 	{
-	case Client::CCamera_Free::CAM_GAME:
+	case CAM_GAME:
+	case CAM_FOCUS:
 		Game_Mode(fTimeDelta);
 		break;
-	case Client::CCamera_Free::CAM_CUTSCENE:
+	case CAM_CUTSCENE:
 		CutScene_Mode(fTimeDelta);
 		break;
 	}
@@ -103,20 +108,59 @@ void CCamera_Free::LookAt(_fvector vTargetPos)
 
 
 
+void CCamera_Free::Look_Player()
+{
+	CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+	// 플레이어 발바닥 보다 살짝 위로 본다/
+	Set_Target(XMVectorSetY(pPlayerTran->Get_State(CTransform::STATE_POSITION), XMVectorGetY(pPlayerTran->Get_State(CTransform::STATE_POSITION)) + 0.8f));
+
+}
+
+void CCamera_Free::Look_NearMonster()
+{
+
+	m_pPlayer->Find_NearstMonster();
+	CGameObject* pNearstMonster = m_pPlayer->Get_NearstMonster();
+	if (nullptr == pNearstMonster)
+	{
+		m_eState = CAM_GAME;
+		return;
+	}
+
+	_vector vPos = ((CTransform*)pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+
+	Set_Target(XMVectorSetY(vPos, XMVectorGetY(vPos) + 0.5f) );
+
+	Dis_TwoPos(((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION), vPos);
+}
+
+void CCamera_Free::Dis_TwoPos(_fvector vPosL, _fvector vPosR)
+{
+	_float fDis = XMVectorGetX(XMVector3Length(vPosL - vPosR));
+
+	m_fDis = m_fOriDis - 2.f + fDis * 1.5f;
+}
+
+
+
 
 void CCamera_Free::Game_Mode(_float fTimeDelta)
 {
 
-	Game_Mode_Input(fTimeDelta);
-
-	OriCamPos(fTimeDelta);
-
-
-
-
-	CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
-	// 플레이어 발바닥 보다 살짝 위로 본다/
-	XMStoreFloat3(&m_vDestLookPos, XMVectorSetY(pPlayerTran->Get_State(CTransform::STATE_POSITION), XMVectorGetY(pPlayerTran->Get_State(CTransform::STATE_POSITION)) + 0.8f));
+	switch (m_eState)
+	{
+	case CAM_GAME:
+		m_fDis = m_fOriDis;
+		Game_Mode_Input(fTimeDelta);
+		Look_Player();
+		OriCamPos(fTimeDelta);
+		break;
+	case CAM_FOCUS:
+		OriCamPos(fTimeDelta);
+		Look_NearMonster();
+		Game_Mode_Input(fTimeDelta);
+		break;
+	}
 
 
 	SmoothLook(fTimeDelta);
@@ -175,6 +219,8 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 
 }
 
+
+
 void CCamera_Free::Game_Mode_Input(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -204,10 +250,22 @@ void CCamera_Free::Game_Mode_Input(_float fTimeDelta)
 
 
 
+	if (pGameInstance->Mouse_Down(DIMK_RBUTTON))
+	{
+		if (CAM_FOCUS != m_eState)
+			m_eState = CAM_FOCUS;
+		else if(CAM_FOCUS == m_eState)
+		{
+ 			m_eState = CAM_GAME;
+			RELEASE_INSTANCE(CGameInstance);
+			return;
+		}
+
+	}
+
+
 	RELEASE_INSTANCE(CGameInstance);
 }
-
-
 
 
 void CCamera_Free::CutScene_Mode(_float fTimeDelta)

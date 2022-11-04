@@ -94,7 +94,7 @@ public:
 
 	void Push_Dir(_fvector vDir, _float fDis, class CNavigation* pNavigation = nullptr);
 
-	void Tick_Gravity(_float fTimeDelta, class CNavigation* pNavigation, _float fGravity = 1.f, _float fMagicNum = 0.f);
+	void Tick_Gravity(_float fTimeDelta, class CNavigation* pNavigation, _float fGravity = 1.f, _float fMagicNum = 0.f, _bool bIsWiap = false);
 	void Jump(_float fPower);
 	void DoubleJump(_float fPower);
 	void ResetGravity();

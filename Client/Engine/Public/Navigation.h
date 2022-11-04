@@ -29,6 +29,8 @@ public:
 	_bool Get_GroundCell(_float3* pPoss, class CTransform* pTran);
 	_uint Get_CurCellIndex() { return m_NavigationDesc.iCurrentIndex; }
 
+	void Set_NaviIndex(_uint iIndex) { m_NavigationDesc.iCurrentIndex = iIndex; }
+
 public:
 	// 나의 셀에 대해 y값을 얻어온다
 	_float Compute_Height(_fvector  vPos);
@@ -37,7 +39,7 @@ public:
 	// 셀에 닿였냐
 	_bool isGround(_fvector vPosition, _float* OutfCellY , _float fMagicNum = 0.f);
 
-
+	_int Find_NaviIndex(_fvector vPos);
 
 
 #ifdef _DEBUG

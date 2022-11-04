@@ -4,6 +4,7 @@
 
 #include "DataManager.h"
 
+
 BEGIN(Engine)
 
 class CGameObject;
@@ -40,10 +41,12 @@ public:
 	// For. GameCam
 public:
 	HRESULT Create_Cam();
+	
+	class CCamera_Free* Get_Cam() { return m_pCamTool; }
+
 
 
 private:
-	// class CCamera_Free* m_pGameCam = nullptr;
 
 
 

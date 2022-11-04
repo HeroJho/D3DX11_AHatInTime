@@ -135,7 +135,7 @@ HRESULT CUI_Item_Inven_Slot::Render()
 
 void CUI_Item_Inven_Slot::Match_TextureWithModelName()
 {
-
+	
 
 	if (!lstrcmp(m_pIconTag, TEXT("Prototype_Component_Texture_Icon_SprintYarn")))
 	{
@@ -150,6 +150,16 @@ void CUI_Item_Inven_Slot::Match_TextureWithModelName()
 	else if (!lstrcmp(m_pIconTag, TEXT("Prototype_Component_Texture_Icon_IceYarn")))
 	{
 		lstrcpy(m_pItemModelName, TEXT("yarn_ui_ice"));
+		lstrcpy(m_pHatModelName, TEXT("Ori_Hat"));
+	}
+	else if (!lstrcmp(m_pIconTag, TEXT("Prototype_Component_Texture_Foxmask")))
+	{
+		lstrcpy(m_pItemModelName, TEXT("Mask_Fox"));
+		lstrcpy(m_pHatModelName, TEXT("Ori_Hat"));
+	}
+	else if (!lstrcmp(m_pIconTag, TEXT("Prototype_Component_Texture_DwellerMask")))
+	{
+		lstrcpy(m_pItemModelName, TEXT("Mask_Cat"));
 		lstrcpy(m_pHatModelName, TEXT("Ori_Hat"));
 	}
 

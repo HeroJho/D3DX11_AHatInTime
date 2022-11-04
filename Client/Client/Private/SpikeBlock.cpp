@@ -27,12 +27,23 @@ HRESULT CSpikeBlock::Initialize_Prototype()
 
 HRESULT CSpikeBlock::Initialize(void * pArg)
 {
+	if (nullptr == pArg)
+		return E_FAIL;
+
+	m_Desc = *((SPIKEBLOCKDESC*)pArg);
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
 	m_sTag = "Tag_Barrel";
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-30.75, 15.f, 157.85, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_Desc.vPos.x, m_Desc.vPos.y, m_Desc.vPos.z, 1.f));
+	m_pTransformCom->Set_Scale(XMLoadFloat3(&m_Desc.vScale));
+
+	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_Desc.vRotation.x
+		, XMVectorSet(0.f, 1.f, 0.f, 0.f), m_Desc.vRotation.y
+		, XMVectorSet(0.f, 0.f, 1.f, 0.f), m_Desc.vRotation.z);
+
 	m_pTransformCom->Set_CurSpeed(1.f);
 
 	return S_OK;
@@ -51,7 +62,15 @@ void CSpikeBlock::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
-	m_pTransformCom->Turn(XMVectorSet(1.f, 0.f, 0.f, 0.f), 0.4f, fTimeDelta);
+
+
+	if (m_Desc.vMyRight)
+	{
+		_vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+		m_pTransformCom->Turn(vRight, m_Desc.fSpeed, fTimeDelta);
+	}
+	else
+		m_pTransformCom->Turn(XMLoadFloat3(&m_Desc.vAix), m_Desc.fSpeed, fTimeDelta);
 	
 	if (nullptr != m_pOther)
 	{
@@ -59,7 +78,7 @@ void CSpikeBlock::Tick(_float fTimeDelta)
 		CNavigation* pNavi = (CNavigation*)m_pOther->Get_ComponentPtr(TEXT("Com_Navigation"));
 		_vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
 		_vector vDir = XMVector3Cross(vRight, XMVectorSet(0.f, 1.f, 0.f, 0.f));
-		pTran->Go_Dir(vDir, 0.4f, fTimeDelta, pNavi);
+		pTran->Go_Dir(vDir, m_Desc.fSpeed, fTimeDelta, pNavi);
 	}
 
 }
@@ -142,7 +161,7 @@ HRESULT CSpikeBlock::Render()
 	}
 
 
-	Render_Col();
+	// Render_Col();
 
 
 	return S_OK;
@@ -194,7 +213,7 @@ HRESULT CSpikeBlock::Ready_Components()
 
 	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(8.5f, 2.4f, 2.6f);
+	ColDesc.vSize = m_Desc.vColScale;
 	ColDesc.bWall = true;
 	strcpy(ColDesc.sTag, "StaticOBB");
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))

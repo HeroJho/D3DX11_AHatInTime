@@ -5,6 +5,7 @@
 
 #include "Level_Loading.h"
 
+
 IMPLEMENT_SINGLETON(CToolManager)
 
 CToolManager::CToolManager()
@@ -150,6 +151,32 @@ void CToolManager::Set_All(_float fTimeRatio)
 
 
 
+_uint CToolManager::Find_NaviIndex(_fvector vPos)
+{
+	return m_pNavi->Find_NaviIndex(vPos);
+}
+
+HRESULT CToolManager::Clone_Navi()
+{
+
+	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+	CComponent*			pComponent = pGameInstance->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"));
+	if (nullptr == pComponent)
+		return E_FAIL;
+
+	m_pNavi = (CNavigation*)pComponent;
+
+	Safe_Release(pGameInstance);
+
+	return S_OK;
+}
+
+
+
+
+
 
 
 void CToolManager::ClearManagedChar()
@@ -162,6 +189,8 @@ void CToolManager::ClearManagedChar()
 
 void CToolManager::Free()
 {
+	Safe_Release(m_pNavi);
+
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 

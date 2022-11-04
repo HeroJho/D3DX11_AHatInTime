@@ -12,6 +12,8 @@
 
 #include "Monster.h"
 
+#include "Wisp.h"
+
 // TEST
 #include "Yarn.h"
 
@@ -57,12 +59,18 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_vDestLook = _float3{ 0.f, 0.f, 1.f };
 	m_pTransformCom->Set_Look(XMLoadFloat3(&m_vDestLook));
 	m_pTransformCom->Set_DestLook();
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-38.75, 12.34, 157.85, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-68.97f, 11.04f, 121.20f, 1.f));
 
 	m_pTransformCom->Set_CurSpeed(m_fWalkSpeed);
 
 	m_FaceAnimIndex[0] = 0;
 	m_FaceAnimIndex[1] = 32;
+
+	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	_int iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(XMLoadFloat3(&vPos));
+	CGameManager::Get_Instance()->Set_SavePoint(iNaviIndex, vPos);
+
+
 
 	return S_OK;
 }
@@ -279,28 +287,8 @@ void CPlayer::Tick(_float fTimeDelta)
 
 
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	if (pGameInstance->Key_Down(DIK_K))
-	{
-
-		_float3 vPos;
-		XMStoreFloat3(&vPos ,m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-
-		vPos.y += 3.f;
-
-
-		// CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), 1, &Desc);
-
-		// CItemManager::Get_Instance()->Make_DrowItem(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), 1, _float3(1.f, 0.f, 0.f), 2.f, 2.f, m_pNavigationCom->Get_CurCellIndex());
-		
-		// 	CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), 1, m_pNavigationCom->Get_CurCellIndex(), 10);
-
-
-	}
-
-	RELEASE_INSTANCE(CGameInstance);
-
+	State_Input(fTimeDelta);
 
 
 
@@ -555,21 +543,8 @@ void CPlayer::HillDown_Tick(_float fTimeDelta)
 
 void CPlayer::JumpAttack_Tick(_float fTimeDelta)
 {
-	// 제일 가까운 몬스터를 찾는다.
-	m_pNearstMonster = nullptr;
-	_float fMinDis = FLT_MAX;
-	for (auto& pMonster : m_pNearMonsters)
-	{
-		CTransform* pMonsterTran = (CTransform*)pMonster->Get_ComponentPtr(TEXT("Com_Transform"));
-		_vector vMonsterPos = pMonsterTran->Get_State(CTransform::STATE_POSITION);
-		_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-		_float fDis = XMVectorGetX(XMVector3Length(vMonsterPos - vMyPos));
-		if (fMinDis > fDis)
-		{
-			m_pNearstMonster = pMonster;
-			fMinDis = fDis;
-		}
-	}
+	Find_NearstMonster();
+
 
 	// 몬스터의 머리 방향으로 내려 꼳는다
 	CTransform* pMonsterTran = (CTransform*)m_pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform"));
@@ -653,6 +628,19 @@ void CPlayer::MageDrow_Tick(_float fTimeDelta)
 }
 
 
+
+void CPlayer::State_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_B))
+	{
+		m_pWisp->Start();
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
+}
 
 void CPlayer::Idle_Input(_float fTimeDelta)
 {
@@ -1534,16 +1522,21 @@ void CPlayer::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
+	_bool bisIsWisp = CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	_bool bisIsWispX = CGameManager::Get_Instance()->Check_IsInWispX(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
 	// 중력 적용
 	if((STATE_STARTGETITEM != m_eState && STATE_IDLEGETITEM != m_eState && STATE_ENDGETITEM != m_eState)
 		&& STATE_ATTACKED != m_eState && STATE_JUMPATTACK != m_eState)
-		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 3.f);
+		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 3.f, 0.f, bisIsWispX);
 
 	// 이동 갱신
 	Calcul_State(fTimeDelta);
 
+	// 맵에서 떨어졌는지. 세이브 포인트
+	OnDipY();
+
 	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
-	_bool bisIsWisp = CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom, 0.f, bisIsWisp);
 
 
@@ -1603,6 +1596,8 @@ void CPlayer::LateTick(_float fTimeDelta)
 
 	// 상태 갱신
 	Set_State();
+
+
 
 
 	// 애니메이션 END 이벤트
@@ -1927,11 +1922,26 @@ HRESULT CPlayer::Ready_Components()
 	/* For.Com_Navigation */
 	CNavigation::NAVIGATIONDESC NaviDesc;
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
-	NaviDesc.iCurrentIndex = 13444;
+	//NaviDesc.iCurrentIndex = 13444;
+	//NaviDesc.iCurrentIndex = 5841;
+	NaviDesc.iCurrentIndex = 2254;
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 		return E_FAIL;
 	
 
+
+	CWisp::WISPDESC WispDesc;
+	WispDesc.pOwner = this;
+	WispDesc.fMaxRatio = 10.f;
+	WispDesc.fSpeed = 1.f;
+
+	CGameObject* pObj = nullptr;
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wisp"), LEVEL_GAMEPLAY, TEXT("Layer_Wisp"), &pObj, &WispDesc)))
+		return E_FAIL;
+	RELEASE_INSTANCE(CGameInstance);
+	m_pWisp = (CWisp*)pObj;
+	Safe_AddRef(m_pWisp);
 
 
 	return S_OK;
@@ -2029,6 +2039,44 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.pOwner = this;
 		}
 	}
+	else if (!lstrcmp(cItemName, TEXT("Mask_Cat")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Mask_Cat"));
+			PartsDesc.vPos = _float3(-0.33f, -0.2f, -0.4f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+		else if (SLOT_HAT == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Mask_Cat"));
+			PartsDesc.vPos = _float3(0.f, -0.14f, -0.58f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-90.f, 0.f, -0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
+	else if (!lstrcmp(cItemName, TEXT("Mask_Fox")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Mask_Fox"));
+			PartsDesc.vPos = _float3(-0.33f, -0.2f, -0.4f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+		else if (SLOT_HAT == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Mask_Fox"));
+			PartsDesc.vPos = _float3(0.f, -0.14f, -0.58f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-90.f, 0.f, -0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
 	else if (!lstrcmp(cItemName, TEXT("Umbrella")))
 	{
 		lstrcpy(PartsDesc.m_szModelName, TEXT("Umbrella"));
@@ -2098,6 +2146,27 @@ void CPlayer::Attacked()
 	m_bAttacked = true;
 }
 
+void CPlayer::Find_NearstMonster()
+{
+
+	// 제일 가까운 몬스터를 찾는다.
+	m_pNearstMonster = nullptr;
+	_float fMinDis = FLT_MAX;
+	for (auto& pMonster : m_pNearMonsters)
+	{
+		CTransform* pMonsterTran = (CTransform*)pMonster->Get_ComponentPtr(TEXT("Com_Transform"));
+		_vector vMonsterPos = pMonsterTran->Get_State(CTransform::STATE_POSITION);
+		_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		_float fDis = XMVectorGetX(XMVector3Length(vMonsterPos - vMyPos));
+		if (fMinDis > fDis)
+		{
+			m_pNearstMonster = pMonster;
+			fMinDis = fDis;
+		}
+	}
+
+}
+
 
 
 
@@ -2116,7 +2185,7 @@ void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 	if ("Tag_Monster" == Desc.pOther->Get_Tag())
 	{
-		if(!strcmp("Sphere", Desc.MyDesc.sTag))
+		if(!strcmp("Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 			m_pNearMonsters.push_back(Desc.pOther);
 
 		if (!strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
@@ -2135,6 +2204,27 @@ void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 
 }
+
+void CPlayer::OnDipY()
+{
+	_float fY = XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
+	if (-20.f > fY)
+	{
+		// 가장 최근에 친 종으로 이동한다.
+		_uint iNaviIndex = 0;
+		_float3 vNaviPos; ZeroMemory(&vNaviPos, sizeof(_float3));
+		CGameManager::Get_Instance()->Get_NaviPoint(&iNaviIndex, &vNaviPos);
+
+		m_pNavigationCom->Set_NaviIndex(iNaviIndex);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vNaviPos), 1.f));
+
+		m_pTransformCom->ResetGravity();
+	}
+
+}
+
+
 
 
 
@@ -2168,6 +2258,7 @@ void CPlayer::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pWisp);
 	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pTextureCom_SmartEye);
 	Safe_Release(m_pSockatCom);

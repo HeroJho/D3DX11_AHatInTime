@@ -404,6 +404,8 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 		string sTemp = DataObj.cName;
 
+		if ("SubCon" != sTemp)			
+			continue;
 
 		CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
 		Desc.vPos = DataObj.vPos;
@@ -466,6 +468,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 	}
 
+
 	// Instancing
 	for (auto& Pair : TempMap)
 	{
@@ -491,8 +494,6 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 			++iIndex;
 		}
-
-
 
 
 		// 원본 생성

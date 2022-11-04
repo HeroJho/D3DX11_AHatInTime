@@ -220,6 +220,7 @@
     <ClInclude Include="..\public\UI_X.h" />
     <ClInclude Include="..\Public\Umbrella.h" />
     <ClInclude Include="..\public\Vault.h" />
+    <ClInclude Include="..\public\Vault_2.h" />
     <ClInclude Include="..\public\Vault_Mad_Crow.h" />
     <ClInclude Include="..\public\Wisp.h" />
     <ClInclude Include="..\public\Yarn.h" />
@@ -280,6 +281,7 @@
     <ClCompile Include="..\private\UI_X.cpp" />
     <ClCompile Include="..\Private\Umbrella.cpp" />
     <ClCompile Include="..\private\Vault.cpp" />
+    <ClCompile Include="..\private\Vault_2.cpp" />
     <ClCompile Include="..\private\Vault_Mad_Crow.cpp" />
     <ClCompile Include="..\private\Wisp.cpp" />
     <ClCompile Include="..\private\Yarn.cpp" />

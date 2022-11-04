@@ -50,11 +50,14 @@ HRESULT CBellMount::Initialize(void * pArg)
 	m_fRatio = 0.f;
 	m_fMaxRatio = pDesc->fRatio;
 
-
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&pDesc->vPos), 1.f));
 	m_pTransformCom->Set_CurSpeed(0.f);
 
+
+	m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(XMLoadFloat3(&pDesc->vPos));
+
 	m_eState = STATE_IDLE;
+	
 
 	return S_OK;
 }
@@ -71,6 +74,12 @@ HRESULT CBellMount::Initialize(void * pArg)
 void CBellMount::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
+
+	if (CGameManager::Get_Instance()->Get_JumpVault2())
+		m_fSpeed = 50.f;
+	else
+		m_fSpeed = 1.f;
+
 
 	switch (m_eState)
 	{
@@ -106,7 +115,7 @@ void CBellMount::Tick(_float fTimeDelta)
 			}
 			else
 			{
-				m_fRatio -= fTimeDelta;
+				m_fRatio -= fTimeDelta * m_fSpeed;
 				_float3 vPos;
 				XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
@@ -207,8 +216,20 @@ void CBellMount::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 void CBellMount::Attacked(_int iAT)
 {
 	m_pModelCom->Set_AnimIndex(0, true);
+
+	// 퀘를 완료하면 더이상 열리지 않는다
+	if (CGameManager::Get_Instance()->Get_JumpVault2())
+		return;
+
 	m_eState = STATE_RING_UP;
-	// CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM3);
+	
+	// 세이브 포인트
+	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	CGameManager::Get_Instance()->Set_SavePoint(m_iNaviIndex, vPos);
+
+	if (!m_bFirstHit)
+		CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM3);
+	m_bFirstHit = true;
 }
  
 

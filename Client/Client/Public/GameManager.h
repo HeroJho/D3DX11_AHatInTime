@@ -24,11 +24,13 @@ public:
 	_float3 Get_WispPos() { return m_vWispPos; }
 
 	_bool Check_IsInWisp(_fvector vPos);
+	_bool Check_IsInWispX(_fvector vPos);
 
 private:
 	_bool	m_bWispBool = false;
 	_float m_fWispRatio = 0.f;
 	_float3 m_vWispPos;
+
 
 	// Diamond
 public:
@@ -48,14 +50,28 @@ public:
 	void Dis_MonsterVaultCount();
 	_bool Check_MonsterVaultCount();
 
+
+	_bool Get_JumpVault2() { return m_bJumpMapvalut2; }
+
 	void Set_JumpVault() { m_bJumpMapvalut = true; }
+	void Set_JumpVault2() { m_bJumpMapvalut2 = true; }
 
 private:
-	_uint m_iMonsterVaultCount = 1;
+	_uint m_iMonsterVaultCount = 7;
 	_bool m_bModVault = false;
 	_bool m_bJumpMapvalut = false;
+	_bool m_bJumpMapvalut2 = false;
 
 
+
+	// For. SavePoint
+public:
+	void Set_SavePoint(_uint iNaviIndex, _float3 vNaviPos);
+	void Get_NaviPoint(_uint* iNaviIndex, _float3* vNaviPos);
+
+private:
+	_uint m_iNaviIndex = 0;
+	_float3 m_vNaviPos;
 
 
 public:

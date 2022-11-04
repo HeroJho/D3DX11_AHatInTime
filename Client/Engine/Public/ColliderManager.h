@@ -15,7 +15,7 @@ public:
 private:
 	CColliderManager();
 	virtual ~CColliderManager() = default;
-
+	
 public:
 	void Add_ColGroup(COLLIDERGROUP eGroup, class CGameObject* pObj);
 	void Calcul_ColGroup(COLLIDERGROUP eGroupL, COLLIDERGROUP eGroupR);

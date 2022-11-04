@@ -80,6 +80,8 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	m_pGameInstance->Tick_Engine(fTimeDelta);
 	
+
+
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_MONSTER);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_PUSHMONSTER);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_EM);
@@ -88,6 +90,30 @@ void CMainApp::Tick(_float fTimeDelta)
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_SWORD, CColliderManager::COLLIDER_MONSTER);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_SWORD, CColliderManager::COLLIDER_PUSHMONSTER);
 	m_pGameInstance->Clear_ColGroup();
+
+
+
+
+
+	if (m_pGameInstance->Key_Down(DIK_TAB))
+	{
+		if (m_bTap)
+			m_bTap = false;
+		else
+			m_bTap = true;
+	}
+
+	if (m_bTap)
+	{
+		RECT Clip;
+		GetClientRect(g_hWnd, &Clip);
+		ClientToScreen(g_hWnd, (LPPOINT)&Clip);
+		ClientToScreen(g_hWnd, (LPPOINT)(&Clip.right));
+		ClipCursor(&Clip);
+	}
+	else
+		ClipCursor(nullptr);
+
 }
 
 HRESULT CMainApp::Render()

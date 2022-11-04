@@ -156,6 +156,21 @@ _bool CNavigation::isGround(_fvector vPosition, _float* OutfCellY, _float fMagic
 	return false;
 }
 
+_int CNavigation::Find_NaviIndex(_fvector vPos)
+{
+	_int iTemp = 0;
+	for (auto& pCell : m_Cells)
+	{
+		if (pCell->isIn(vPos, &iTemp))
+		{
+			iTemp = pCell->Get_Index();
+			return iTemp;
+		}
+	}
+
+	return -1;
+}
+
 void CNavigation::Ready_CellCollision(CGameObject* pGameObject)
 {
 	if (pGameObject->Get_Colliders()->empty())

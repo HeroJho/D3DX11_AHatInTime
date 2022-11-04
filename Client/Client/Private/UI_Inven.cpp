@@ -141,6 +141,16 @@ void CUI_Inven::LoadItemMgr_ItemUI()
 			lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_Icon_WitchHat"));
 			Make_ChildUI(vPos.x, vPos.y, 256.f / 3.f, 256.f / 3.f, TEXT("Prototype_UI_ItemButton"), &IconDesc);
 		}
+		else if (!lstrcmp(Desc.szModelName, TEXT("Mask_Cat")))
+		{
+			lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_DwellerMask"));
+			Make_ChildUI(vPos.x, vPos.y, 256.f / 3.f, 256.f / 3.f, TEXT("Prototype_UI_ItemButton"), &IconDesc);
+		}
+		else if (!lstrcmp(Desc.szModelName, TEXT("Mask_Fox")))
+		{
+			lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_Foxmask"));
+			Make_ChildUI(vPos.x, vPos.y, 256.f / 3.f, 256.f / 3.f, TEXT("Prototype_UI_ItemButton"), &IconDesc);
+		}
 
 
 	}

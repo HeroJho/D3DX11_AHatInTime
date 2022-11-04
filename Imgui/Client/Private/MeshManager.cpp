@@ -333,6 +333,14 @@ void CMeshManager::Comput_AllObjNaviMesh()
 					XMStoreFloat3(&vPoss[2], vTemp_3);
 					Add_Cell(vPoss);
 				}
+				else if(0.f > fDot )
+				{
+					_float3 vPoss[3];
+					XMStoreFloat3(&vPoss[0], vTemp_3);
+					XMStoreFloat3(&vPoss[1], vTemp_2);
+					XMStoreFloat3(&vPoss[2], vTemp_1);
+					Add_Cell(vPoss, false);
+				}
 
 			}
 

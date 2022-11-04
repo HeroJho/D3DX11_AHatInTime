@@ -10,6 +10,7 @@ IMPLEMENT_SINGLETON(CGameManager)
 
 CGameManager::CGameManager()
 {
+	ZeroMemory(&m_vNaviPos, sizeof(_float3));
 }
 
 
@@ -26,6 +27,8 @@ void CGameManager::Set_Wisp(_bool bWispBool, _float fWispRatio, _float3 vWispPos
 	m_vWispPos = vWispPos;
 }
 
+
+
 _bool CGameManager::Check_IsInWisp(_fvector vPos)
 {
 	if (!m_bWispBool)
@@ -33,6 +36,25 @@ _bool CGameManager::Check_IsInWisp(_fvector vPos)
 
 	_vector vWispPos = XMLoadFloat3(&m_vWispPos);
 	_float fDis = XMVectorGetX(XMVector3Length(vPos - vWispPos));
+
+	if (m_fWispRatio > fDis)
+		return true;
+
+	return false;
+}
+
+_bool CGameManager::Check_IsInWispX(_fvector vPos)
+{
+	if (!m_bWispBool)
+		return false;
+
+	_vector vWispPos = XMLoadFloat3(&m_vWispPos);
+	_vector vVPos = vPos;
+
+	vVPos = XMVectorSetY(vVPos, 0.f);
+	vWispPos = XMVectorSetY(vWispPos, 0.f);
+
+	_float fDis = XMVectorGetX(XMVector3Length(vVPos - vWispPos));
 
 	if (m_fWispRatio > fDis)
 		return true;
@@ -62,7 +84,7 @@ void CGameManager::Dec_Diamond(_uint iNum)
 
 _bool CGameManager::Check_Stage_1()
 {
-	if(m_bModVault && m_bJumpMapvalut)
+	if(m_bModVault && m_bJumpMapvalut && m_bJumpMapvalut2)
 		return true;
 
 	return false;
@@ -79,6 +101,26 @@ _bool CGameManager::Check_MonsterVaultCount()
 {
 	return 0 >= m_iMonsterVaultCount;
 }
+
+
+
+
+
+
+
+void CGameManager::Set_SavePoint(_uint iNaviIndex, _float3 vNaviPos)
+{
+	m_iNaviIndex = iNaviIndex;
+	m_vNaviPos = vNaviPos;
+}
+
+void CGameManager::Get_NaviPoint(_uint* iNaviIndex, _float3* vNaviPos)
+{
+	*iNaviIndex = m_iNaviIndex;
+	*vNaviPos = m_vNaviPos;
+}
+
+
 
 void CGameManager::Free()
 {

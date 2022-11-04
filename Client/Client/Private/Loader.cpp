@@ -21,6 +21,7 @@
 #include "Yarn.h"
 #include "Flask.h"
 #include "Vault.h"
+#include "Vault_2.h"
 #include "Diamond.h"
 #include "MonsterVault.h"
 #include "SubconEye.h"
@@ -265,6 +266,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Vault"),
 		CVault::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_Vault*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Vault_2"),
+		CVault_2::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 	/* For.Prototype_GameObject_MonsterVault*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MonsterVault"),
 		CMonsterVault::Create(m_pDevice, m_pContext))))
@@ -395,6 +400,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Ori_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Sprint_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Witch_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Mask_Cat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Mask_Fox"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Umbrella"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
@@ -440,6 +447,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CNavigation::Create(m_pDevice, m_pContext, &Cells))))
 		return E_FAIL;
 
+	if (FAILED(CToolManager::Get_Instance()->Clone_Navi()))
+		return E_FAIL;
 
 
 
@@ -513,6 +522,15 @@ HRESULT CLoader::Loading_UI()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_WitchHat"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/witch_hat.dds"), 1))))
 		return E_FAIL;
+	/* For.Prototype_Component_Texture_DwellerMask */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_DwellerMask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/DwellerMask_Flair_1.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Foxmask */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Foxmask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/itemicon_foxmask.dds"), 1))))
+		return E_FAIL;
+
 	/* For.Prototype_Component_Texture_Selector */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Selector"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/Selector.dds"), 1))))

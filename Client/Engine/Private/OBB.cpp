@@ -229,13 +229,14 @@ void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTra
 				pTran->Push_Dir(vNorPushDir, fPreToCurDis + 0.1f, pNavi);
 			}
 			break;
-			case Engine::COBB::COL_BLOCK:
+			case Engine::COBB::COL_BLOCK:			
 			{
 				// 벽과 부딪혔다면 그대로 밀어낸다
 				_vector vPreToCurDir = XMLoadFloat3(&pTran->Get_PrePos()) - pTran->Get_State(CTransform::STATE_POSITION);
 				_float fPreToCurDis = fabs(XMVectorGetX(XMVector3Length(vPreToCurDir)));
 
-				pTran->ResetGravity();
+				// pTran->ResetGravity();
+				pTran->Set_CurSpeed(0.f);
 
 				// 충돌 풀릴때까지 조금씩 밀자..
 				while (DontTouchMe(pStaticOBB) && 0.01f < (XMVectorGetX(XMVector3Length(vNorPushDir))))
@@ -388,6 +389,8 @@ _bool COBB::Collision_OBB(CCollider * pTargetCollider, CTransform* pTran, _float
 		// On이였는데 0.2f라면 None
 		if (0.5f > fDot)
 		{
+			((COBB*)pTargetCollider)->m_eColState = COL_NONE;
+
 			// 너무 가파르다 -> 벽이다
 			if (0.2f > fDot)
 			{
@@ -613,7 +616,8 @@ void COBB::Compute_Pigi(CGameObject * pObj, CNavigation* pNavi, CTransform* pTra
 				_vector vPreToCurDir = XMLoadFloat3(&pTran->Get_PrePos()) - pTran->Get_State(CTransform::STATE_POSITION);
 				_float fPreToCurDis = fabs(XMVectorGetX(XMVector3Length(vPreToCurDir)));
 
-				pTran->ResetGravity();
+				// pTran->ResetGravity();
+				pTran->Set_CurSpeed(0.f);
 
 				// 충돌 풀릴때까지 조금씩 밀자..
 				while (DontTouchMe(pStaticOBB) && 0.01f < (XMVectorGetX(XMVector3Length(vNorPushDir))))

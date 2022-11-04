@@ -37,6 +37,8 @@ private:
 	_uint			m_iNumDraw = 0;
 #endif // _DEBUG
 
+	_bool			m_bTap = false;
+
 private:
 	HRESULT Open_Level(LEVEL eLevelID);
 

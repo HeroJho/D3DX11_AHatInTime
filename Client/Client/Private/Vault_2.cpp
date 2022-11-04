@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\Public\Vault.h"
+#include "..\Public\Vault_2.h"
 
 #include "GameInstance.h"
 #include "ToolManager.h"
@@ -10,24 +10,24 @@
 #include "Player.h"
 
 
-CVault::CVault(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CVault_2::CVault_2(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CItem(pDevice, pContext)
 {
 
 }
 
-CVault::CVault(const CVault & rhs)
+CVault_2::CVault_2(const CVault_2 & rhs)
 	: CItem(rhs)
 {
 
 }
 
-HRESULT CVault::Initialize_Prototype()
+HRESULT CVault_2::Initialize_Prototype()
 {
 	return __super::Initialize_Prototype();
 }
 
-HRESULT CVault::Initialize(void * pArg)
+HRESULT CVault_2::Initialize(void * pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
@@ -36,12 +36,12 @@ HRESULT CVault::Initialize(void * pArg)
 
 	lstrcpy(m_InvenDesc.szModelName, Desc->szModelName);
 	m_InvenDesc.iCount = Desc->iCount;
-	
+
 	if (nullptr == Desc->pDesc)
 		return E_FAIL;
 	VAULTDESC* VaultDesc = (VAULTDESC*)Desc->pDesc;
 	m_iNaviIndex = VaultDesc->iNaviIndex;
-	
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -64,7 +64,7 @@ HRESULT CVault::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CVault::Tick(_float fTimeDelta)
+void CVault_2::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 	__super::Tick(fTimeDelta);
@@ -72,20 +72,20 @@ void CVault::Tick(_float fTimeDelta)
 
 	switch (m_eState)
 	{
-	case Client::CVault::STATE_IDLE:
+	case Client::CVault_2::STATE_IDLE:
 		Idle_Tick(fTimeDelta);
 		break;
-	case Client::CVault::STATE_OPEN:
+	case Client::CVault_2::STATE_OPEN:
 		Open_Tick(fTimeDelta);
 		break;
-	case Client::CVault::STATE_OPENED:
+	case Client::CVault_2::STATE_OPENED:
 		Opened_Tick(fTimeDelta);
 		break;
 	}
 
 }
 
-void CVault::LateTick(_float fTimeDelta)
+void CVault_2::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
@@ -114,7 +114,7 @@ void CVault::LateTick(_float fTimeDelta)
 
 }
 
-HRESULT CVault::Render()
+HRESULT CVault_2::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -125,7 +125,7 @@ HRESULT CVault::Render()
 	return S_OK;
 }
 
-HRESULT CVault::SetUp_State(_fmatrix StateMatrix)
+HRESULT CVault_2::SetUp_State(_fmatrix StateMatrix)
 {
 	if (FAILED(__super::SetUp_State(StateMatrix)))
 		return E_FAIL;
@@ -134,13 +134,13 @@ HRESULT CVault::SetUp_State(_fmatrix StateMatrix)
 }
 
 
-void CVault::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+void CVault_2::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
 		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
-				
+
 			m_bStartOpenning = true;
 
 			//CPlayer* pPlayer = (CPlayer*)Desc.pOther;
@@ -152,7 +152,7 @@ void CVault::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 }
 
-void CVault::Set_State(VAULT_STATE eState)
+void CVault_2::Set_State(VAULT_STATE eState)
 {
 	m_ePreState = m_eState;
 	m_eState = eState;
@@ -162,8 +162,8 @@ void CVault::Set_State(VAULT_STATE eState)
 	{
 		switch (m_eState)
 		{
-		//case Client::CMad_Crow::MONSTER_ATTACKED:
-		//	break;
+			//case Client::CMad_Crow::MONSTER_ATTACKED:
+			//	break;
 		default:
 			break;
 		}
@@ -174,25 +174,25 @@ void CVault::Set_State(VAULT_STATE eState)
 
 
 
-void CVault::Set_Anim()
+void CVault_2::Set_Anim()
 {
 	switch (m_eState)
 	{
-	case Client::CVault::STATE_IDLE:
+	case Client::CVault_2::STATE_IDLE:
 		m_pModelCom->Set_AnimIndex(0);
 		break;
-	case Client::CVault::STATE_OPEN:
+	case Client::CVault_2::STATE_OPEN:
 		m_pModelCom->Set_AnimIndex(2);
 		break;
-	case Client::CVault::STATE_OPENED:
+	case Client::CVault_2::STATE_OPENED:
 		m_pModelCom->Set_AnimIndex(1);
 		break;
 	}
 }
 
 
- 
-void CVault::Idle_Tick(_float fTimeDelta)
+
+void CVault_2::Idle_Tick(_float fTimeDelta)
 {
 
 	if (Check_OpenIf())
@@ -203,7 +203,7 @@ void CVault::Idle_Tick(_float fTimeDelta)
 
 }
 
-void CVault::Open_Tick(_float fTimeDelta)
+void CVault_2::Open_Tick(_float fTimeDelta)
 {
 
 	m_fSprintItemTimeAcc += fTimeDelta;
@@ -213,13 +213,13 @@ void CVault::Open_Tick(_float fTimeDelta)
 		m_bIsSprintItem = true;
 		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 30);
-		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 2);
-		CGameManager::Get_Instance()->Set_JumpVault();
+		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 2);
+		CGameManager::Get_Instance()->Set_JumpVault2();
 	}
 
 }
 
-void CVault::Opened_Tick(_float fTimeDelta)
+void CVault_2::Opened_Tick(_float fTimeDelta)
 {
 
 }
@@ -228,7 +228,7 @@ void CVault::Opened_Tick(_float fTimeDelta)
 
 
 
-void CVault::Use_Item()
+void CVault_2::Use_Item()
 {
 
 
@@ -240,7 +240,7 @@ void CVault::Use_Item()
 
 
 
-HRESULT CVault::Ready_Components()
+HRESULT CVault_2::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -292,40 +292,40 @@ HRESULT CVault::Ready_Components()
 	return S_OK;
 }
 
-_bool CVault::Check_OpenIf()
+_bool CVault_2::Check_OpenIf()
 {
 	// 상자가 열리는 조건
 
 	return m_bStartOpenning;
 }
 
-CVault * CVault::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CVault_2 * CVault_2::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CVault*		pInstance = new CVault(pDevice, pContext);
+	CVault_2*		pInstance = new CVault_2(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CVault"));
+		MSG_BOX(TEXT("Failed To Created : CVault_2"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CVault::Clone(void * pArg)
+CGameObject * CVault_2::Clone(void * pArg)
 {
-	CVault*		pInstance = new CVault(*this);
+	CVault_2*		pInstance = new CVault_2(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CVault"));
+		MSG_BOX(TEXT("Failed To Cloned : CVault_2"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CVault::Free()
+void CVault_2::Free()
 {
 	__super::Free();
 

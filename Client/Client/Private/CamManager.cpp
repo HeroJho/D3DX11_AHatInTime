@@ -5,7 +5,6 @@
 #include "ToolManager.h"
 #include "DataManager.h"
 
-
 #include "Camera_Free.h"
 
 #include "ColorCube.h"

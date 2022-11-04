@@ -405,24 +405,33 @@ void CTransform::Push_Dir(_fvector vDir, _float fDis, CNavigation* pNavigation)
 
 	vPosition += vDir*fDis;
 
+	_bool isMove = false;
+
 	// CurCell 다시 설정
 	if (nullptr != pNavigation)
-		pNavigation->isMove(vPosition);
+		isMove = pNavigation->isMove(vPosition);
 
-	XMStoreFloat3(&m_vPrePos, Get_State(STATE_POSITION));
-	Set_State(CTransform::STATE_POSITION, vPosition);
+	if (true == isMove)
+	{
+		XMStoreFloat3(&m_vPrePos, Get_State(STATE_POSITION));
+		Set_State(CTransform::STATE_POSITION, vPosition);
+	}
 }
 
-void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _float fGravity, _float fMagicNum)
+void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _float fGravity, _float fMagicNum, _bool bIsWiap)
 {
 	_float3 vPos;
 	XMStoreFloat3(&vPos, Get_State(CTransform::STATE_POSITION));
 
 	_float fCellY = 0.f;
-	if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY, fMagicNum) && (1.f > m_fVelocity))
+	
+	// Wiap 안에 있다면 셀은 타지 않는다.
+	if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY, fMagicNum) && (1.f > m_fVelocity) && !bIsWiap)
 	{
 		m_fGravityAcc = 0.f;
 		m_fVelocity = 0.f;
+
+		// 여기서 태운다.
 		vPos.y = fCellY + fMagicNum;
 	}
 	else
@@ -433,7 +442,7 @@ void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _floa
 		m_fVelocity -= m_fGravityAcc * fTimeDelta;
 	}
 
-	vPos.y += m_fVelocity * fTimeDelta;
+	vPos.y += m_fVelocity * fTimeDelta;					
 
 	m_vPrePos.y += vPos.y;
 	XMStoreFloat3(&m_vPrePos, Get_State(STATE_POSITION));

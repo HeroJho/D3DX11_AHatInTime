@@ -126,16 +126,32 @@ void CYarn::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
+
 		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
-			if (Get_Dead())
-				return;
+			if (m_Desc.bIsPigic && m_bStop)
+			{
+				if (Get_Dead())
+					return;
 
-			CPlayer* pPlayer = (CPlayer*)Desc.pOther;
+				CPlayer* pPlayer = (CPlayer*)Desc.pOther;
 
-			pPlayer->Get_Item(m_InvenDesc);
+				pPlayer->Get_Item(m_InvenDesc);
 
-			Set_Dead(true);
+				Set_Dead(true);
+			}
+			else if(!m_Desc.bIsPigic)
+			{
+				if (Get_Dead())
+					return;
+
+				CPlayer* pPlayer = (CPlayer*)Desc.pOther;
+
+				pPlayer->Get_Item(m_InvenDesc);
+
+				Set_Dead(true);
+			}
+
 		}
 	}
 }

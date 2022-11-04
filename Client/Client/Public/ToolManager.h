@@ -2,6 +2,12 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+BEGIN(Engine)
+
+class CNavigation;
+
+END
+
 BEGIN(Client)
 
 class CToolManager final : public CBase
@@ -66,6 +72,15 @@ public:
 private:
 	_float m_fTimeRatios[TIME_END];
 
+
+	// For. Get_Navi
+public:
+	_uint Find_NaviIndex(_fvector vPos);
+	HRESULT Clone_Navi();
+
+
+private:
+	class CNavigation* m_pNavi = nullptr;
 
 
 public:

@@ -139,9 +139,6 @@
     <Filter Include="02.GameObjects\Monster\SubconEye">
       <UniqueIdentifier>{3e29e01a-993e-4c29-a694-a3388147bfad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\Monster\BellMount">
-      <UniqueIdentifier>{ac377386-6e29-4bf9-b3bc-3e3b2af34215}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96.Managers\CutSceneManager">
       <UniqueIdentifier>{766cf107-b7b6-4b20-aa86-05de3f72daab}</UniqueIdentifier>
     </Filter>
@@ -154,11 +151,17 @@
     <Filter Include="02.GameObjects\Map\RollingBarrel">
       <UniqueIdentifier>{aa701a76-7461-4deb-a2e3-2f963258b9ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\Map\Wisp">
-      <UniqueIdentifier>{e81ed800-48e9-4a3b-bcfb-45267b5daef3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\Map\SpikeBlock">
       <UniqueIdentifier>{2042427f-db67-4a1a-b0f9-0f5999322df8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Item\vault\Vault_2">
+      <UniqueIdentifier>{5ba86743-66b7-4b23-97d5-92d9f86dd9f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\BellMount">
+      <UniqueIdentifier>{ac377386-6e29-4bf9-b3bc-3e3b2af34215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Player\Wisp">
+      <UniqueIdentifier>{e81ed800-48e9-4a3b-bcfb-45267b5daef3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -334,16 +337,19 @@
       <Filter>02.GameObjects\Monster\SubconEye</Filter>
     </ClInclude>
     <ClInclude Include="..\public\Wisp.h">
-      <Filter>02.GameObjects\Map\Wisp</Filter>
+      <Filter>02.GameObjects\Player\Wisp</Filter>
     </ClInclude>
     <ClInclude Include="..\public\BellMount.h">
-      <Filter>02.GameObjects\Monster\BellMount</Filter>
+      <Filter>02.GameObjects\Map\BellMount</Filter>
     </ClInclude>
     <ClInclude Include="..\public\CutSceneManager.h">
       <Filter>96.Managers\CutSceneManager</Filter>
     </ClInclude>
     <ClInclude Include="..\public\SpikeBlock.h">
       <Filter>02.GameObjects\Map\SpikeBlock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Vault_2.h">
+      <Filter>02.GameObjects\Item\vault\Vault_2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -504,16 +510,19 @@
       <Filter>02.GameObjects\Monster\SubconEye</Filter>
     </ClCompile>
     <ClCompile Include="..\private\Wisp.cpp">
-      <Filter>02.GameObjects\Map\Wisp</Filter>
+      <Filter>02.GameObjects\Player\Wisp</Filter>
     </ClCompile>
     <ClCompile Include="..\private\BellMount.cpp">
-      <Filter>02.GameObjects\Monster\BellMount</Filter>
+      <Filter>02.GameObjects\Map\BellMount</Filter>
     </ClCompile>
     <ClCompile Include="..\private\CutSceneManager.cpp">
       <Filter>96.Managers\CutSceneManager</Filter>
     </ClCompile>
     <ClCompile Include="..\private\SpikeBlock.cpp">
       <Filter>02.GameObjects\Map\SpikeBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Vault_2.cpp">
+      <Filter>02.GameObjects\Item\vault\Vault_2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

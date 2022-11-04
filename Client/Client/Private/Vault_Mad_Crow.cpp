@@ -171,7 +171,7 @@ void CVault_Mad_Crow::Tick_FindPlace(_float fTimeDelta)
 	_vector vDestPos = XMLoadFloat3(&m_vDestPos);
 	_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	_float fDis = XMVectorGetX(XMVector3Length(vDestPos - vMyPos));
-	if (1.f > fDis)
+	if (3.f > fDis)
 	{
 		Set_State(MONSTER_IDLE);
 		return;

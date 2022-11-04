@@ -36,6 +36,8 @@ public:
 
 	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
 
+	void OnDipY();
+
 public:
 	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
 
@@ -76,6 +78,7 @@ private:
 
 
 
+	void State_Input(_float fTimeDelta);
 	
 	void Idle_Input(_float fTimeDelta);
 	void Move_Input(_float fTimeDelta);
@@ -118,6 +121,7 @@ public:
 
 
 	CGameObject* Get_NearstMonster() { return m_pNearstMonster; }
+	void Find_NearstMonster();
 
 
 private:
@@ -168,17 +172,19 @@ private:
 	_float				m_fMageTimeAcc = 0.f;
 
 
-
 	// For. FaceAnim
 	_int				m_FaceAnimIndex[2];
 	_float				m_fAnimFaceAcc = 0.f;
 	_bool				m_bWingk = false;
 
 
-
 	// For. NearMonster
 	vector<CGameObject*> m_pNearMonsters;
 	CGameObject* m_pNearstMonster = nullptr;
+
+
+	// For. Wisp
+	class CWisp* m_pWisp = nullptr;
 
 private:
 	HRESULT Ready_Components();

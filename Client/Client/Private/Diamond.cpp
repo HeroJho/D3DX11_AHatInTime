@@ -143,7 +143,7 @@ void CDiamond::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
-		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag) && m_bStop)
 		{
 			if (Get_Dead())
 				return;

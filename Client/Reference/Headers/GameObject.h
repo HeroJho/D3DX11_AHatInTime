@@ -51,6 +51,7 @@ public:
 
 	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) {};
 	
+
 	void Tick_Col(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr, _float fMagicNum = 0.f, _bool bIsinWisp = false);
 	void Render_Col();
 

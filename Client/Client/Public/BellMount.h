@@ -16,6 +16,7 @@ public:
 	{
 		_float fRatio;
 		_float3 vPos;
+
 	}WISPDESC;
 
 private:
@@ -50,6 +51,12 @@ private:
 	_float	m_fRatio = 0.f;
 	_float m_fMaxRatio = 0.f;
 	STATE m_eState = STATE_END;
+
+	_uint m_iNaviIndex = 0;
+
+	_float m_fSpeed = 0.f;
+
+	_bool m_bFirstHit = false;
 
 public:
 	static CBellMount* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
