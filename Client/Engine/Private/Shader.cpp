@@ -74,12 +74,15 @@ HRESULT CShader::Set_RawValue(const char* pContantName, const void* pData, _uint
 		return E_FAIL;
 
 	/* 특정 이름을 가진 셰이더 전역변수의 핸들을 얻어온다. */	
-	ID3DX11EffectVariable*		pVariable = m_pEffect->GetVariableByName(pContantName);
+	ID3DX11EffectVariable*		pVariable = nullptr;
+	pVariable = m_pEffect->GetVariableByName(pContantName);
+
 	if (nullptr == pVariable)
 		return E_FAIL;
-
+	
 	return pVariable->SetRawValue(pData, 0, iByteLength);	
 }
+
 
 HRESULT CShader::Set_ShaderResourceView(const char * pContantName, ID3D11ShaderResourceView * pSRV)
 {
@@ -93,9 +96,55 @@ HRESULT CShader::Set_ShaderResourceView(const char * pContantName, ID3D11ShaderR
 	ID3DX11EffectShaderResourceVariable* pShaderResource = pVariable->AsShaderResource();
 	if (nullptr == pShaderResource)
 		return E_FAIL;
-
+	
 	return pShaderResource->SetResource(pSRV);
 }
+
+HRESULT CShader::Set_BoolValue(const char * pContantName, const void * pData, _uint iCount)
+{
+	if (nullptr == m_pEffect)
+		return E_FAIL;
+
+	/* 특정 이름을 가진 셰이더 전역변수의 핸들을 얻어온다. */
+	ID3DX11EffectScalarVariable* pVariables = nullptr;
+	pVariable = m_pEffect->GetVariableByName(pContantName);
+
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	return pVariable->SetRawValue(pData, 0, iByteLength);
+}
+
+HRESULT CShader::Set_FloatValue(const char * pContantName, const void * pData, _uint iCount)
+{
+	if (nullptr == m_pEffect)
+		return E_FAIL;
+
+	/* 특정 이름을 가진 셰이더 전역변수의 핸들을 얻어온다. */
+	ID3DX11EffectScalarVariable* pVariables = nullptr;
+	pVariable = m_pEffect->GetVariableByName(pContantName);
+
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	return pVariable->SetRawValue(pData, 0, iByteLength);
+}
+
+HRESULT CShader::Set_VectorValue(const char * pContantName, const void * pData, _uint iCount)
+{
+	if (nullptr == m_pEffect)
+		return E_FAIL;
+
+	/* 특정 이름을 가진 셰이더 전역변수의 핸들을 얻어온다. */
+	ID3DX11EffectScalarVariable* pVariables = nullptr;
+	pVariable = m_pEffect->GetVariableByName(pContantName);
+
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	return pVariable->SetRawValue(pData, 0, iByteLength);
+}
+
 
 HRESULT CShader::Begin(_uint iPassIndex)
 {

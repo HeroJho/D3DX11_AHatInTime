@@ -1939,9 +1939,9 @@ HRESULT CPlayer::Ready_Components()
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wisp"), LEVEL_GAMEPLAY, TEXT("Layer_Wisp"), &pObj, &WispDesc)))
 		return E_FAIL;
-	RELEASE_INSTANCE(CGameInstance);
 	m_pWisp = (CWisp*)pObj;
 	Safe_AddRef(m_pWisp);
+	RELEASE_INSTANCE(CGameInstance);
 
 
 	return S_OK;

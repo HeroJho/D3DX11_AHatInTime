@@ -42,7 +42,6 @@ HRESULT CWisp::Initialize(void * pArg)
 
 
 	m_pOwner = pDesc->pOwner;
-	Safe_AddRef(m_pOwner);
 
 	m_fRatio = 0.f;
 	m_fMaxRatio = pDesc->fMaxRatio;
@@ -94,7 +93,7 @@ void CWisp::Tick(_float fTimeDelta)
 			m_fRatio += fTimeDelta * 20.f;
 			_float3 vPos;
 			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-			CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
+			CGameManager::Get_Instance()->Set_Wisp(false, m_fRatio, vPos);
 		}
 
 	}
@@ -112,7 +111,7 @@ void CWisp::Tick(_float fTimeDelta)
 			m_fRatio -= fTimeDelta * m_fSpeed;
 			_float3 vPos;
 			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-			CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
+			CGameManager::Get_Instance()->Set_Wisp(false, m_fRatio, vPos);
 		}
 
 	}
@@ -242,11 +241,7 @@ void CWisp::Free()
 {
 	__super::Free();
 
-	
-	Safe_Release(m_pOwner);
-	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pModelCom);
 
 }

@@ -97,7 +97,7 @@ void CSpikeBlock::LateTick(_float fTimeDelta)
 
 
 
-	if (CGameManager::Get_Instance()->Get_WispBool())
+	if (CGameManager::Get_Instance()->Get_WispInfoNum())
 	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 
@@ -129,20 +129,20 @@ HRESULT CSpikeBlock::Render()
 
 
 	_uint iPassIndex = 0;
-	if (CGameManager::Get_Instance()->Get_WispBool())
+	if (CGameManager::Get_Instance()->Get_WispInfoNum())
 	{
-		iPassIndex = 3;
+		// iPassIndex = 3;
 
-		_float3 vWispPos = CGameManager::Get_Instance()->Get_WispPos();
-		_float fWispRatio = CGameManager::Get_Instance()->Get_WispRatio();
+		//_float3 vWispPos = CGameManager::Get_Instance()->Get_WispPos();
+		//_float fWispRatio = CGameManager::Get_Instance()->Get_WispRatio();
 
-		if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatio", &fWispRatio, sizeof(_float))))
-			return E_FAIL;
-		if (FAILED(m_pShaderCom->Set_RawValue("g_WispPos", &vWispPos, sizeof(_float3))))
-			return E_FAIL;
-		_bool bWall = true;
-		if (FAILED(m_pShaderCom->Set_RawValue("g_Wall", &bWall, sizeof(_bool))))
-			return E_FAIL;
+		//if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatio", &fWispRatio, sizeof(_float))))
+		//	return E_FAIL;
+		//if (FAILED(m_pShaderCom->Set_RawValue("g_WispPos", &vWispPos, sizeof(_float3))))
+		//	return E_FAIL;
+		//_bool bWall = true;
+		//if (FAILED(m_pShaderCom->Set_RawValue("g_Wall", &bWall, sizeof(_bool))))
+		//	return E_FAIL;
 
 	}
 	else

@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 
 #include "GameManager.h"
+#include "ToolManager.h"
 
 
 CStaticModel_Instance::CStaticModel_Instance(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -52,7 +53,7 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 
 
 
-	if(m_bWall && CGameManager::Get_Instance()->Get_WispBool())
+	if(m_bWall && CGameManager::Get_Instance()->Get_WispInfoNum())
 	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 	}
@@ -83,19 +84,39 @@ HRESULT CStaticModel_Instance::Render()
 
 
 	_uint iPassIndex = 0;
-	if (CGameManager::Get_Instance()->Get_WispBool())
+	_int iWispNum = CGameManager::Get_Instance()->Get_WispInfoNum();
+
+	if (iWispNum)
 	{
 		iPassIndex = 1;
 
-		_float3 vWispPos = CGameManager::Get_Instance()->Get_WispPos();
-		_float fWispRatio = CGameManager::Get_Instance()->Get_WispRatio();
+		
+		_bool* pIsDeleteSubCons = CGameManager::Get_Instance()->Get_DeleteSubCons();
+		_float* pWispRatios = CGameManager::Get_Instance()->Get_WispRatios();
+		_float3* pWispPoss = CGameManager::Get_Instance()->Get_WispPoss();
 
-		if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatio", &fWispRatio, sizeof(_float))))
+
+		char cTamp[MAX_PATH];
+		CToolManager::Get_Instance()->TCtoC(m_cModelTag, cTamp);
+
+		_bool bIsSubCon = false;
+		if (!strcmp("SubCon_Instance", cTamp))
+			bIsSubCon = true;
+		
+		if (FAILED(m_pShaderCom->Set_RawValue("g_WispInfoNum", &iWispNum, sizeof(_int))))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Set_RawValue("g_WispPos", &vWispPos, sizeof(_float3))))
+		if (FAILED(m_pShaderCom->Set_RawValue("g_IsSubCon", &bIsSubCon, sizeof(_bool))))
 			return E_FAIL;
 		if (FAILED(m_pShaderCom->Set_RawValue("g_Wall", &m_bWall, sizeof(_bool))))
 			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Set_RawValue("g_gIsDeleteSubCons", pIsDeleteSubCons, sizeof(_bool) * 256, true)))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatios", pWispRatios, sizeof(_float) * 256, true)))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_WispPoss", pWispPoss, sizeof(_float3) * 256, true)))
+			return E_FAIL;
+
 
 	}
 	else

@@ -14,53 +14,100 @@ CGameManager::CGameManager()
 }
 
 
-
-
-
-
-
-void CGameManager::Set_Wisp(_bool bWispBool, _float fWispRatio, _float3 vWispPos)
+void CGameManager::Tick(_float fTimeDelta)
 {
-	m_bWispBool = bWispBool;
+	_uint iNum = Get_WispInfoNum();
+	if (!iNum)
+		return;
 
-	m_fWispRatio = fWispRatio;
-	m_vWispPos = vWispPos;
+	_uint iCount = 0;
+	for (auto& Wisp : m_WispInfos)
+	{
+		m_IsDeleteSubCons[iCount] = Wisp.bIsDeleteSubCon;
+		m_WispRatios[iCount] = Wisp.fWispRatio;
+		m_WispPoss[iCount] = Wisp.vWispPos;
+		++iCount;
+	}
+
+}
+
+void CGameManager::Clear_Data()
+{
+	m_WispInfos.clear();
+	ZeroMemory(m_IsDeleteSubCons, sizeof(_bool) * 256);
+	ZeroMemory(m_WispRatios, sizeof(_float) * 256);
+	ZeroMemory(m_WispPoss, sizeof(_float3) * 256);
 }
 
 
 
+void CGameManager::Set_Wisp(_bool bIsDeleteSubCon, _float fWispRatio, _float3 vWispPos)
+{
+	WISPDESC Desc;
+	Desc.bIsDeleteSubCon = bIsDeleteSubCon;
+	Desc.fWispRatio = fWispRatio;
+	Desc.vWispPos = vWispPos;
+
+	m_WispInfos.push_back(Desc);
+}
+
+_bool* CGameManager::Get_DeleteSubCons()
+{
+	return m_IsDeleteSubCons;
+}
+_float* CGameManager::Get_WispRatios()
+{
+	return m_WispRatios;
+}
+_float3* CGameManager::Get_WispPoss()
+{
+	return m_WispPoss;
+}
+
 _bool CGameManager::Check_IsInWisp(_fvector vPos)
 {
-	if (!m_bWispBool)
+	if (!Get_WispInfoNum())
 		return false;
 
-	_vector vWispPos = XMLoadFloat3(&m_vWispPos);
-	_float fDis = XMVectorGetX(XMVector3Length(vPos - vWispPos));
+	_bool bIsIn = false;
+	for(auto& Wisp : m_WispInfos)
+	{
+		_vector vWispPos = XMLoadFloat3(&Wisp.vWispPos);
+		_float fDis = XMVectorGetX(XMVector3Length(vPos - vWispPos));
 
-	if (m_fWispRatio > fDis)
-		return true;
+		if (Wisp.fWispRatio > fDis)
+			bIsIn = true;
+	}
 
-	return false;
+	return bIsIn;
 }
 
 _bool CGameManager::Check_IsInWispX(_fvector vPos)
 {
-	if (!m_bWispBool)
+	if (!Get_WispInfoNum())
 		return false;
 
-	_vector vWispPos = XMLoadFloat3(&m_vWispPos);
-	_vector vVPos = vPos;
+	_bool bIsIn = false;
+	for (auto& Wisp : m_WispInfos)
+	{
+		_vector vWispPos = XMLoadFloat3(&Wisp.vWispPos);
+		_vector vVPos = vPos;
 
-	vVPos = XMVectorSetY(vVPos, 0.f);
-	vWispPos = XMVectorSetY(vWispPos, 0.f);
+		vVPos = XMVectorSetY(vVPos, 0.f);
+		vWispPos = XMVectorSetY(vWispPos, 0.f);
 
-	_float fDis = XMVectorGetX(XMVector3Length(vVPos - vWispPos));
+		_float fDis = XMVectorGetX(XMVector3Length(vPos - vWispPos));
 
-	if (m_fWispRatio > fDis)
-		return true;
+		if (Wisp.fWispRatio > fDis)
+			bIsIn = true;
+	}
 
-	return false;
+	return bIsIn;
 }
+
+
+
+
 
 void CGameManager::Inc_Diamond(_uint iNum)
 {
@@ -127,3 +174,4 @@ void CGameManager::Free()
 
 
 }
+

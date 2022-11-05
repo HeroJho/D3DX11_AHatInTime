@@ -8,28 +8,51 @@ BEGIN(Client)
 class CGameManager final : public CBase
 {
 	DECLARE_SINGLETON(CGameManager)
+public:
+	typedef struct tagWispDesc
+	{
+
+		_bool		bIsDeleteSubCon;
+		_float		fWispRatio;
+		_float3		vWispPos;
+
+	}WISPDESC;
+
 
 private:
 	CGameManager();
 	virtual ~CGameManager() = default;
 
+	// For. Static
+public:
+	void Tick(_float fTimeDelta);
+	void Clear_Data();
+
+
 
 
 	// Wisp
 public:
-	void Set_Wisp(_bool bWispBool, _float fWispRatio, _float3 vWispPos);
+	void Set_Wisp(_bool bIsDeleteSubCon, _float fWispRatio, _float3 vWispPos);
 
-	_bool Get_WispBool() { return m_bWispBool; }
-	_float Get_WispRatio() { return m_fWispRatio; }
-	_float3 Get_WispPos() { return m_vWispPos; }
+	_uint Get_WispInfoNum() { return m_WispInfos.size(); }
+	_bool* Get_DeleteSubCons();
+	_float* Get_WispRatios();
+	_float3* Get_WispPoss();
 
 	_bool Check_IsInWisp(_fvector vPos);
 	_bool Check_IsInWispX(_fvector vPos);
 
+
+
 private:
-	_bool	m_bWispBool = false;
-	_float m_fWispRatio = 0.f;
-	_float3 m_vWispPos;
+	list<WISPDESC>	m_WispInfos;
+	_bool			m_IsDeleteSubCons[256];
+	_float			m_WispRatios[256];
+	_float3			m_WispPoss[256];
+
+
+
 
 
 	// Diamond
@@ -41,6 +64,10 @@ public:
 
 private:
 	_uint m_iDiamond = 0;
+
+
+
+
 
 
 	// Stage_1

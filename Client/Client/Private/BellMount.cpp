@@ -110,7 +110,7 @@ void CBellMount::Tick(_float fTimeDelta)
 			if (0.f > m_fRatio)
 			{
 				m_fRatio = 0.f;
-				CGameManager::Get_Instance()->Set_Wisp(false, 0, _float3(0.f, 0.f, 0.f));
+				CGameManager::Get_Instance()->Set_Wisp(true, 0, _float3(0.f, 0.f, 0.f));
 				m_eState = STATE_IDLE;
 			}
 			else

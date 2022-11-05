@@ -92,6 +92,7 @@ void CMainApp::Tick(_float fTimeDelta)
 	m_pGameInstance->Clear_ColGroup();
 
 
+	CGameManager::Get_Instance()->Tick(fTimeDelta);
 
 
 
@@ -127,6 +128,7 @@ HRESULT CMainApp::Render()
 	
 	m_pRenderer->Draw();
 	m_pGameInstance->Render_Level();
+	CGameManager::Get_Instance()->Clear_Data();
 
 	m_pGameInstance->Present();
 
