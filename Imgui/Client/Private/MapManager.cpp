@@ -217,6 +217,7 @@ void CMapManager::Load_MapData()
 		Desc.vRotation = DataObj.vRotation;
 		Desc.vSize = DataObj.vSize;
 		Desc.bWall = DataObj.bWall;
+		Desc.iTagID = DataObj.iTagID;
 
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -455,6 +456,20 @@ void CMapManager::Set_ClickedWall(_bool bWall)
 {
 	CCollider::COLLIDERDESC Desc = Get_ClikedColDesc();
 	Desc.bWall = bWall;
+	Set_ClikedColDesc(Desc);
+}
+
+_int CMapManager::Get_ClickedTagID()
+{
+	CCollider::COLLIDERDESC Desc = Get_ClikedColDesc();
+
+	return Desc.iTagID;
+}
+
+void CMapManager::Set_ClickedTagID(_int iTagID)
+{
+	CCollider::COLLIDERDESC Desc = Get_ClikedColDesc();
+	Desc.iTagID = iTagID;
 	Set_ClikedColDesc(Desc);
 }
 

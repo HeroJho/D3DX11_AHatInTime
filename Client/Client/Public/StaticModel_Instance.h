@@ -20,6 +20,7 @@ public:
 	{
 		TCHAR		cModelTag[MAX_PATH];
 		_bool		bWall = false;
+		_int		iTagID = 0;
 
 	}STATICMODELDESC;
 
@@ -48,6 +49,7 @@ private:
 private:
 	TCHAR					m_cModelTag[MAX_PATH];
 	_bool					m_bWall = false;
+	_int					m_iTagID = 0;
 	_float3					m_vAxis;
 
 private:

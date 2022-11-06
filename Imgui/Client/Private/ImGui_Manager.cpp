@@ -892,6 +892,9 @@ void CImGui_Manager::Window_Col()
 	if (ImGui::Checkbox("isWall", &bWall))
 		CMapManager::Get_Instance()->Set_ClickedWall(bWall);
 
+	_int iTagID = CMapManager::Get_Instance()->Get_ClickedTagID();
+	if (ImGui::InputInt("TagID", &iTagID))
+		CMapManager::Get_Instance()->Set_ClickedTagID(iTagID);
 
 	ImGui::End();
 }

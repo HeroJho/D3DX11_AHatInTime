@@ -86,7 +86,8 @@ protected:
 
 protected:
 	HRESULT Add_Component(_uint iLevelIndex, const _tchar* pPrototypeTag, const _tchar* pComponentTag, class CComponent** ppOut, void* pArg = nullptr);
-	
+	HRESULT Compute_CamZ(_fvector vWorldPos);
+
 
 private:
 	class CComponent* Find_Component(const _tchar* pComponentTag);

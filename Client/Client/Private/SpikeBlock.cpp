@@ -128,21 +128,31 @@ HRESULT CSpikeBlock::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+
 	_uint iPassIndex = 0;
+	_int iWispNum = CGameManager::Get_Instance()->Get_WispInfoNum();
+
 	if (CGameManager::Get_Instance()->Get_WispInfoNum())
 	{
-		// iPassIndex = 3;
+		 iPassIndex = 3;
 
-		//_float3 vWispPos = CGameManager::Get_Instance()->Get_WispPos();
-		//_float fWispRatio = CGameManager::Get_Instance()->Get_WispRatio();
+		 _bool* pIsDeleteSubCons = CGameManager::Get_Instance()->Get_DeleteSubCons();
+		 _float* pWispRatios = CGameManager::Get_Instance()->Get_WispRatios();
+		 _float4* pWispPoss = CGameManager::Get_Instance()->Get_WispPoss();
 
-		//if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatio", &fWispRatio, sizeof(_float))))
-		//	return E_FAIL;
-		//if (FAILED(m_pShaderCom->Set_RawValue("g_WispPos", &vWispPos, sizeof(_float3))))
-		//	return E_FAIL;
-		//_bool bWall = true;
-		//if (FAILED(m_pShaderCom->Set_RawValue("g_Wall", &bWall, sizeof(_bool))))
-		//	return E_FAIL;
+
+		 if (FAILED(m_pShaderCom->Set_RawValue("g_WispInfoNum", &iWispNum, sizeof(_int))))
+			 return E_FAIL;
+		 _bool bWall = true;
+		 if (FAILED(m_pShaderCom->Set_RawValue("g_Wall", &bWall, sizeof(_bool))))
+			 return E_FAIL;
+
+		 if (FAILED(m_pShaderCom->Set_RawValue("g_gIsDeleteSubCons", pIsDeleteSubCons, 256, 1)))
+			 return E_FAIL;
+		 if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatios", pWispRatios, 256, 2)))
+			 return E_FAIL;
+		 if (FAILED(m_pShaderCom->Set_RawValue("g_WispPoss", pWispPoss, 256, 3)))
+			 return E_FAIL;
 
 	}
 	else

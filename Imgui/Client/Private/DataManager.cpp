@@ -545,6 +545,7 @@ HRESULT CDataManager::Save_Map(_int iMapID)
 		ofs.write((char*)&ColDesc.vRotation, sizeof(_float3));
 		ofs.write((char*)&ColDesc.vSize, sizeof(_float3));
 		ofs.write((char*)&ColDesc.bWall, sizeof(_bool));
+		ofs.write((char*)&ColDesc.iTagID, sizeof(_int));
 	}
 
 
@@ -590,6 +591,9 @@ CDataManager::DATA_MAP* CDataManager::Load_Map(_int iMapID)
 		ifs.read((char*)&DMJ->vRotation, sizeof(_float3));
 		ifs.read((char*)&DMJ->vSize, sizeof(_float3));
 		ifs.read((char*)&DMJ->bWall, sizeof(_bool));
+		ifs.read((char*)&DMJ->iTagID, sizeof(_int));
+		// DMJ->iTagID = 0;
+		_int adsf = 0;
 	}
 
 

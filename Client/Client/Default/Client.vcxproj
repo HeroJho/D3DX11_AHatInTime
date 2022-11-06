@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp" />
     <ClInclude Include="..\public\BellMount.h" />
+    <ClInclude Include="..\public\BellMountEye.h" />
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\public\CamManager.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
@@ -231,6 +232,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\private\BellMount.cpp" />
+    <ClCompile Include="..\private\BellMountEye.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\private\CamManager.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />

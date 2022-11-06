@@ -144,6 +144,9 @@ public:
 	_bool Get_ClickedWall();
 	void Set_ClickedWall(_bool bWall);
 
+	_int Get_ClickedTagID();
+	void Set_ClickedTagID(_int iTagID);
+
 private:
 	_bool m_bColMode = false;
 

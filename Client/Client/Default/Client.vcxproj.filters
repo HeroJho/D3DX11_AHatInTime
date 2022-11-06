@@ -163,6 +163,9 @@
     <Filter Include="02.GameObjects\Player\Wisp">
       <UniqueIdentifier>{e81ed800-48e9-4a3b-bcfb-45267b5daef3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Map\BellMountEye">
+      <UniqueIdentifier>{d86011a4-c10a-43fe-bbeb-05311c36b85d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -351,6 +354,9 @@
     <ClInclude Include="..\public\Vault_2.h">
       <Filter>02.GameObjects\Item\vault\Vault_2</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\BellMountEye.h">
+      <Filter>02.GameObjects\Map\BellMountEye</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -523,6 +529,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Vault_2.cpp">
       <Filter>02.GameObjects\Item\vault\Vault_2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BellMountEye.cpp">
+      <Filter>02.GameObjects\Map\BellMountEye</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

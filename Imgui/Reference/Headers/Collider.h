@@ -17,6 +17,7 @@ public:
 		_float3			vSize;
 		_float3			vRotation;
 		_bool			bWall;
+		_int			iTagID;
 	}COLLIDERDESC;
 
 protected:

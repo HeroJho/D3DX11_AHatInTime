@@ -30,11 +30,14 @@ public:
 
 public:
 	virtual void Attacked(_int iAT) override;
+	void Dead_Tick(_float fTimeDelta);
 
+	void StartDisApear() { m_bStartDisApear = true; }
 
 private:
 	STATE m_eState = STATE_END;
-
+	_bool m_bStartDisApear = false;
+	_float m_fAlpa = 1.f;
 
 private:
 	virtual HRESULT Ready_Components() override;

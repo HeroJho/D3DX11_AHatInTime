@@ -378,6 +378,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		ifs.read((char*)&DMJ->vRotation, sizeof(_float3));
 		ifs.read((char*)&DMJ->vSize, sizeof(_float3));
 		ifs.read((char*)&DMJ->bWall, sizeof(_bool));
+		ifs.read((char*)&DMJ->iTagID, sizeof(_int));
 	}
 
 	ifs.close();
@@ -393,6 +394,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 	map<string, list<_float4x4>> TempMap;
 	map<string, _bool> TempWall;
+	map<string, _int> TempTagID;
 
 	for (_int i = 0; i < pData_Map->iNumObj; ++i)
 	{
@@ -404,8 +406,8 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 		string sTemp = DataObj.cName;
 
-		if ("SubCon" != sTemp)			
-			continue;
+		//if ("SubCon" != sTemp)			
+		//	continue;
 
 		CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
 		Desc.vPos = DataObj.vPos;
@@ -416,6 +418,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		Desc.vRotation = DataObj.vRotation;
 		Desc.vSize = DataObj.vSize;
 		Desc.bWall = DataObj.bWall;
+		Desc.iTagID = DataObj.iTagID;
 
 		if (0.01f < Desc.vSize.x)
 		{
@@ -450,6 +453,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 			TempMap.insert({ sTemp, flist });
 			TempWall.insert({ sTemp, DataObj.bWall });
+			TempTagID.insert({ sTemp, DataObj.iTagID });
 		}
 		else
 		{
@@ -525,6 +529,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		CStaticModel_Instance::STATICMODELDESC ModelInsDesc;
 		memcpy(ModelInsDesc.cModelTag, Desc.cModelTag, sizeof(TCHAR) * MAX_PATH);
 		ModelInsDesc.bWall = TempWall[Pair.first];
+		ModelInsDesc.iTagID = TempTagID[Pair.first];
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel_Instance"), eLEVEL, TEXT("Layer_Model"), &ModelInsDesc)))
 		{
 			RELEASE_INSTANCE(CGameInstance);

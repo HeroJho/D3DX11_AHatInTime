@@ -129,6 +129,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar * pLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 {
+	if (FAILED(CDataManager::Get_Instance()->Load_Map(0, LEVEL_GAMEPLAY)))
+		return E_FAIL;
+
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
@@ -162,9 +165,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
 		return E_FAIL;
 
-
-	if (FAILED(CDataManager::Get_Instance()->Load_Map(0, LEVEL_GAMEPLAY)))
-		return E_FAIL;
 
 
 	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
@@ -212,9 +212,12 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	WispDesc.fRatio = 100;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
+	WispDesc.vPos = _float3(-28.0f, 1.55f, 44.84f);
+	WispDesc.fRatio = 20;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMountEye"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
+		return E_FAIL;
+
 	
-
-
 	CGameObject::CREATUREINFODESC ObjDesc;
 	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
 	ObjDesc.iAT = 1;
@@ -222,8 +225,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	ObjDesc.iHP = 1;
 
 
-
-	ObjDesc.vPos = _float3(-26.8f, -0.59f, 44.14f);
+	ObjDesc.vPos = _float3(-27.9f, 0.148f, 45.04f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubconEye"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
 

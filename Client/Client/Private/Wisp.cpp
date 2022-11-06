@@ -87,6 +87,9 @@ void CWisp::Tick(_float fTimeDelta)
 		{
 			m_fRatio = m_fMaxRatio;
 			m_eState = STATE_RING_DOWN;
+			_float3 vPos;
+			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CGameManager::Get_Instance()->Set_Wisp(false, m_fRatio, vPos);
 		}
 		else
 		{

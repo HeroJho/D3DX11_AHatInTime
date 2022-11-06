@@ -282,15 +282,12 @@ void CPlayer::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_PLAYER);
 
+	State_Input(fTimeDelta);
+
 	Anim_Face(fTimeDelta);
 	Check_Attacked(fTimeDelta);
 
-
-
-
-	State_Input(fTimeDelta);
-
-
+	FoxMask_Tick(fTimeDelta);
 
 	switch (m_eState)
 	{
@@ -545,6 +542,8 @@ void CPlayer::JumpAttack_Tick(_float fTimeDelta)
 {
 	Find_NearstMonster();
 
+	if (nullptr == m_pNearstMonster)
+		return;
 
 	// 몬스터의 머리 방향으로 내려 꼳는다
 	CTransform* pMonsterTran = (CTransform*)m_pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform"));
@@ -627,15 +626,39 @@ void CPlayer::MageDrow_Tick(_float fTimeDelta)
 	MageDrow_Input(fTimeDelta);
 }
 
+void CPlayer::FoxMask_Tick(_float fTimeDelta)
+{
+	if (!m_bFoxMask)
+		return;
+	
+
+	m_fFoxMaskTimeAcc += fTimeDelta;
+	if (10.f < m_fFoxMaskTimeAcc || "Mask_Fox" != m_pSockatCom->Get_SlotTag(SLOT_HAT))
+	{
+		m_bFoxMask = false;
+		m_fFoxMaskTimeAcc = 0.f;
+		CToolManager::Get_Instance()->Set_All(1.f);
+	}
+	
+}
+
 
 
 void CPlayer::State_Input(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	if (pGameInstance->Key_Down(DIK_B))
+	if (pGameInstance->Key_Down(DIK_LSHIFT))
 	{
-		m_pWisp->Start();
+		if ("Mask_Cat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+			m_pWisp->Start();
+		else if ("Mask_Fox" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+		{
+			m_bFoxMask = true;
+			m_fFoxMaskTimeAcc = 0.f;
+			CToolManager::Get_Instance()->Set_WithOutPlayer(0.2f);
+		}
+
 	}
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -687,7 +710,10 @@ void CPlayer::Move_Input(_float fTimeDelta)
 		}
 		else
 		{
-			m_TickStates.push_back(STATE_WALK);
+			if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) || "" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_TickStates.push_back(STATE_WALK);
+			else
+				m_TickStates.push_back(STATE_RUN);
 		}
 	}
 	else if (pGameInstance->Key_Pressing(DIK_S))
@@ -705,7 +731,10 @@ void CPlayer::Move_Input(_float fTimeDelta)
 		}
 		else
 		{
-			m_TickStates.push_back(STATE_WALK);
+			if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) || "" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_TickStates.push_back(STATE_WALK);
+			else
+				m_TickStates.push_back(STATE_RUN);
 		}
 	}
 
@@ -725,7 +754,10 @@ void CPlayer::Move_Input(_float fTimeDelta)
 		}
 		else
 		{
-			m_TickStates.push_back(STATE_WALK);
+			if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) || "" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_TickStates.push_back(STATE_WALK);
+			else
+				m_TickStates.push_back(STATE_RUN);
 		}
 	}
 	else if (pGameInstance->Key_Pressing(DIK_D))
@@ -743,7 +775,10 @@ void CPlayer::Move_Input(_float fTimeDelta)
 		}
 		else
 		{
-			m_TickStates.push_back(STATE_WALK);
+			if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) || "" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_TickStates.push_back(STATE_WALK);
+			else
+				m_TickStates.push_back(STATE_RUN);
 		}
 	}
 
@@ -774,7 +809,7 @@ void CPlayer::Move_Input(_float fTimeDelta)
 	}
 
 
-	if (pGameInstance->Mouse_Down(DIMK_LBUTTON))
+	if (pGameInstance->Mouse_Down(DIMK_LBUTTON) && !pGameInstance->Key_Pressing(DIK_TAB))
 	{
 		m_TickStates.push_back(STATE_ATTACK_1);
 	}
@@ -862,7 +897,13 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 				m_eJumpState = STATE_RUN;
 		}
 		else
-			m_eJumpState = STATE_WALK;
+		{
+			if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) || "" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_WALK;
+			else
+				m_eJumpState = STATE_RUN;
+		}
+
 	}
 	else if (pGameInstance->Key_Pressing(DIK_S))
 	{
@@ -878,7 +919,12 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 				m_eJumpState = STATE_RUN;
 		}
 		else
-			m_eJumpState = STATE_WALK;
+		{
+			if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) || "" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_WALK;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 	}
 
 
@@ -896,7 +942,12 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 				m_eJumpState = STATE_RUN;
 		}
 		else
-			m_eJumpState = STATE_WALK;
+		{
+			if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) || "" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_WALK;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 	}
 	else if (pGameInstance->Key_Pressing(DIK_D))
 	{
@@ -912,7 +963,12 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 				m_eJumpState = STATE_RUN;
 		}
 		else
-			m_eJumpState = STATE_WALK;
+		{
+			if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) || "" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+				m_eJumpState = STATE_WALK;
+			else
+				m_eJumpState = STATE_RUN;
+		}
 	}
 
 
@@ -1329,7 +1385,6 @@ void CPlayer::MageRun_Input(_float fTimeDelta)
 			m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("science_owlbrew_remade"));
 		}
 
-		
 		RELEASE_INSTANCE(CGameInstance);
 		return;
 	}
@@ -1542,7 +1597,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 
 	// 착지 했다면
 	_float fTemp = 0.f;
-	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp, 0.f) || COBB::COL_ON == Get_StaticOBB()->Get_ColState() || COBB::COL_SLIDE == Get_StaticOBB()->Get_ColState())
+	if ((m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp, 0.f) && !bisIsWispX) || COBB::COL_ON == Get_StaticOBB()->Get_ColState() || COBB::COL_SLIDE == Get_StaticOBB()->Get_ColState())
 	{
 		if (STATE_JUMP == m_eState || STATE_RUNJUMP == m_eState || STATE_SPRINTJUMP == m_eState || STATE_DOUBLEJUMP == m_eState)
 		{
@@ -2033,9 +2088,9 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		else if(SLOT_HAT == eSlot)
 		{
 			lstrcpy(PartsDesc.m_szModelName, TEXT("Witch_Hat")); 
-			PartsDesc.vPos = _float3(0.f, -0.03f, -0.72f);
+			PartsDesc.vPos = _float3(0.f, -0.01f, -0.81f);
 			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
-			PartsDesc.vRot = _float3(-82.9f, 0.f, -0.f);
+			PartsDesc.vRot = _float3(-90.f, 0.f, -0.f);
 			PartsDesc.pOwner = this;
 		}
 	}

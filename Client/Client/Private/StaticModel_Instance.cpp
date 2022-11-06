@@ -31,6 +31,7 @@ HRESULT CStaticModel_Instance::Initialize(void * pArg)
 	STATICMODELDESC* Desc = (STATICMODELDESC*)pArg;
 	wcscpy_s(m_cModelTag, Desc->cModelTag);
 	m_bWall = Desc->bWall;
+	m_iTagID = Desc->iTagID;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -55,11 +56,17 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 
 	if(m_bWall && CGameManager::Get_Instance()->Get_WispInfoNum())
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		if(2 == m_iTagID)
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+		else
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 	}
 	else if (!m_bWall)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		if (2 == m_iTagID)
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+		else
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 	}
 
 }
@@ -86,14 +93,16 @@ HRESULT CStaticModel_Instance::Render()
 	_uint iPassIndex = 0;
 	_int iWispNum = CGameManager::Get_Instance()->Get_WispInfoNum();
 
-	if (iWispNum)
+	if (iWispNum && 1 != m_iTagID)
 	{
 		iPassIndex = 1;
 
 		
 		_bool* pIsDeleteSubCons = CGameManager::Get_Instance()->Get_DeleteSubCons();
 		_float* pWispRatios = CGameManager::Get_Instance()->Get_WispRatios();
-		_float3* pWispPoss = CGameManager::Get_Instance()->Get_WispPoss();
+		_float4* pWispPoss = CGameManager::Get_Instance()->Get_WispPoss();
+
+		
 
 
 		char cTamp[MAX_PATH];
@@ -110,13 +119,12 @@ HRESULT CStaticModel_Instance::Render()
 		if (FAILED(m_pShaderCom->Set_RawValue("g_Wall", &m_bWall, sizeof(_bool))))
 			return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Set_RawValue("g_gIsDeleteSubCons", pIsDeleteSubCons, sizeof(_bool) * 256, true)))
+		if (FAILED(m_pShaderCom->Set_RawValue("g_gIsDeleteSubCons", pIsDeleteSubCons, 256, 1)))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatios", pWispRatios, sizeof(_float) * 256, true)))
+		if (FAILED(m_pShaderCom->Set_RawValue("g_WispRatios", pWispRatios, 256, 2)))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Set_RawValue("g_WispPoss", pWispPoss, sizeof(_float3) * 256, true)))
+		if (FAILED(m_pShaderCom->Set_RawValue("g_WispPoss", pWispPoss, 256, 3)))
 			return E_FAIL;
-
 
 	}
 	else

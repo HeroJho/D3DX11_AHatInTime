@@ -27,6 +27,7 @@
 #include "SubconEye.h"
 #include "Wisp.h"
 #include "BellMount.h"
+#include "BellMountEye.h"
 
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
@@ -204,7 +205,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BellMount"),
 		CBellMount::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-
+	/* For.Prototype_GameObject_BellMountEye */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BellMountEye"),
+		CBellMountEye::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 

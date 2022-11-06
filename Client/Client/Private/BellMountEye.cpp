@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\Public\BellMount.h"
+#include "..\Public\BellMountEye.h"
 #include "GameInstance.h"
 
 #include "ToolManager.h"
@@ -7,12 +7,12 @@
 #include "GameManager.h"
 #include "CutSceneManager.h"
 
-CBellMount::CBellMount(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CBellMountEye::CBellMountEye(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
 {
 }
 
-CBellMount::CBellMount(const CBellMount & rhs)
+CBellMountEye::CBellMountEye(const CBellMountEye & rhs)
 	: CMonster(rhs)
 {
 }
@@ -22,12 +22,12 @@ CBellMount::CBellMount(const CBellMount & rhs)
 
 
 
-HRESULT CBellMount::Initialize_Prototype()
+HRESULT CBellMountEye::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CBellMount::Initialize(void * pArg)
+HRESULT CBellMountEye::Initialize(void * pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
@@ -56,7 +56,10 @@ HRESULT CBellMount::Initialize(void * pArg)
 
 	m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(XMLoadFloat3(&pDesc->vPos));
 
-	m_eState = STATE_IDLE;
+	m_eState = STATE_NONE;
+	m_fAlpa = 0.f;
+
+	m_fSpeed = 1.f;
 	
 
 	return S_OK;
@@ -71,61 +74,82 @@ HRESULT CBellMount::Initialize(void * pArg)
 
 
 
-void CBellMount::Tick(_float fTimeDelta)
+void CBellMountEye::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
-	if (CGameManager::Get_Instance()->Get_JumpVault2())
-		m_fSpeed = 50.f;
-	else
-		m_fSpeed = 1.f;
 
 
 	switch (m_eState)
 	{
-	case Client::CBellMount::STATE_IDLE:
-		{
-			m_pModelCom->Set_AnimIndex(1);
-		}
-		break;
-	case Client::CBellMount::STATE_RING_UP:
-		{
-			if (m_fMaxRatio < m_fRatio)
-			{
-				m_fRatio = m_fMaxRatio;
-				m_eState = STATE_RING_DOWN;
-				_float3 vPos;
-				XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
-			}
-			else
-			{
-				m_fRatio += fTimeDelta * 20.f;
-				_float3 vPos;
-				XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
-			}
+	case Client::CBellMountEye::STATE_NONE:
+	{
+		m_pModelCom->Set_AnimIndex(1);
+		if(CCutSceneManager::CUT_EYE == CCutSceneManager::Get_Instance()->Get_CurCutScene())
+			m_eState = STATE_APP;
+	}
+	break;
+	case Client::CBellMountEye::STATE_APP:
+	{
+		m_pModelCom->Set_AnimIndex(1);
 
-		}
-		break;
-	case Client::CBellMount::STATE_RING_DOWN:
-		{
-			if (0.f > m_fRatio)
-			{
-				m_fRatio = 0.f;
-				CGameManager::Get_Instance()->Set_Wisp(true, 0, _float3(0.f, 0.f, 0.f));
-				m_eState = STATE_IDLE;
-			}
-			else
-			{
-				m_fRatio -= fTimeDelta * m_fSpeed;
-				_float3 vPos;
-				XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
-			}
+		CCutSceneManager::Get_Instance()->Add_Obj(this, 1);
 
+		if (!m_bStartDisApear)
+			return;
+
+		m_fAlpa += fTimeDelta;
+
+		if (1.f < m_fAlpa)
+		{
+			m_fAlpa = 1.f;
+			m_eState = STATE_IDLE;
 		}
-		break;
+	}
+	break;
+	case Client::CBellMountEye::STATE_IDLE:
+	{
+		m_pModelCom->Set_AnimIndex(1);
+	}
+	break;
+	case Client::CBellMountEye::STATE_RING_UP:
+	{
+		if (m_fMaxRatio < m_fRatio)
+		{
+			m_fRatio = m_fMaxRatio;
+			m_eState = STATE_RING_DOWN;
+			_float3 vPos;
+			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CGameManager::Get_Instance()->Set_Wisp(false, m_fRatio, vPos);
+		}
+		else
+		{
+			m_fRatio += fTimeDelta * 20.f;
+			_float3 vPos;
+			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CGameManager::Get_Instance()->Set_Wisp(false, m_fRatio, vPos);
+		}
+
+	}
+	break;
+	case Client::CBellMountEye::STATE_RING_DOWN:
+	{
+		if (0.f > m_fRatio)
+		{
+			m_fRatio = 0.f;
+			CGameManager::Get_Instance()->Set_Wisp(false, 0, _float3(0.f, 0.f, 0.f));
+			m_eState = STATE_IDLE;
+		}
+		else
+		{
+			m_fRatio -= fTimeDelta * m_fSpeed;
+			_float3 vPos;
+			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CGameManager::Get_Instance()->Set_Wisp(false, m_fRatio, vPos);
+		}
+
+	}
+	break;
 	}
 
 
@@ -134,7 +158,7 @@ void CBellMount::Tick(_float fTimeDelta)
 
 
 
-void CBellMount::LateTick(_float fTimeDelta)
+void CBellMountEye::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_MONSTER);
 
@@ -151,28 +175,33 @@ void CBellMount::LateTick(_float fTimeDelta)
 
 	if (m_pModelCom->Play_Animation(fTimeDelta))
 	{
-		if(STATE_RING_UP == m_eState || STATE_RING_DOWN == m_eState)
+		if (STATE_RING_UP == m_eState || STATE_RING_DOWN == m_eState)
 			m_pModelCom->Set_AnimIndex(1);
 	}
 
 
 
-
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
-
+	if (STATE_APP != m_eState && STATE_NONE != m_eState)
+		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
 
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
-	RELEASE_INSTANCE(CGameInstance);
-
 	if (true == isDraw)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+		if (STATE_APP == m_eState || STATE_NONE == m_eState)
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+			Compute_CamZ(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		}
+		else
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 	}
 
+
+	RELEASE_INSTANCE(CGameInstance);
 }
 
-HRESULT CBellMount::Render()
+HRESULT CBellMountEye::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -190,6 +219,13 @@ HRESULT CBellMount::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+	_uint iPassIndex = 0;
+	if (STATE_APP == m_eState || STATE_NONE == m_eState)
+	{
+		iPassIndex = 3;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_AlpaValue", &m_fAlpa, sizeof(_float))))
+			return E_FAIL;
+	}
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -198,7 +234,7 @@ HRESULT CBellMount::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 0)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 
@@ -210,31 +246,24 @@ HRESULT CBellMount::Render()
 	return S_OK;
 }
 
-void CBellMount::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+void CBellMountEye::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 
 
 }
 
-void CBellMount::Attacked(_int iAT)
+void CBellMountEye::Attacked(_int iAT)
 {
 	m_pModelCom->Set_AnimIndex(0, true);
 
-	// 퀘를 완료하면 더이상 열리지 않는다
-	if (CGameManager::Get_Instance()->Get_JumpVault2())
-		return;
 
 	m_eState = STATE_RING_UP;
-	
+
 	// 세이브 포인트
 	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	CGameManager::Get_Instance()->Set_SavePoint(m_iNaviIndex, vPos);
 
-	if (!m_bFirstHit)
-		CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM3);
-	m_bFirstHit = true;
 }
- 
 
 
 
@@ -248,12 +277,13 @@ void CBellMount::Attacked(_int iAT)
 
 
 
-void CBellMount::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
+
+void CBellMountEye::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
 {
 	m_pModelCom->Push_AnimLinearData(LinearData);
 }
 
-HRESULT CBellMount::Ready_Components()
+HRESULT CBellMountEye::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -300,33 +330,33 @@ HRESULT CBellMount::Ready_Components()
 
 
 
-CBellMount * CBellMount::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CBellMountEye * CBellMountEye::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CBellMount*		pInstance = new CBellMount(pDevice, pContext);
+	CBellMountEye*		pInstance = new CBellMountEye(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CBellMount"));
+		MSG_BOX(TEXT("Failed To Created : CBellMountEye"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CBellMount::Clone(void * pArg)
+CGameObject * CBellMountEye::Clone(void * pArg)
 {
-	CBellMount*		pInstance = new CBellMount(*this);
+	CBellMountEye*		pInstance = new CBellMountEye(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CBellMount"));
+		MSG_BOX(TEXT("Failed To Cloned : CBellMountEye"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBellMount::Free()
+void CBellMountEye::Free()
 {
 	__super::Free();
 

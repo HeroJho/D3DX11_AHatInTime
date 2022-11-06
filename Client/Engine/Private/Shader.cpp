@@ -68,19 +68,44 @@ HRESULT CShader::Initialize(void * pArg)
 	return S_OK;
 }
 
-HRESULT CShader::Set_RawValue(const char* pContantName, const void* pData, _uint iByteLength)
+HRESULT CShader::Set_RawValue(const char* pContantName, const void* pData, _uint iByteLength, _uint iType)
 {
 	if (nullptr == m_pEffect)
 		return E_FAIL;
 
-	/* 특정 이름을 가진 셰이더 전역변수의 핸들을 얻어온다. */	
-	ID3DX11EffectVariable*		pVariable = nullptr;
-	pVariable = m_pEffect->GetVariableByName(pContantName);
-
-	if (nullptr == pVariable)
-		return E_FAIL;
 	
-	return pVariable->SetRawValue(pData, 0, iByteLength);	
+	//if (nullptr == pVariable)
+	//	return E_FAIL;
+
+	switch (iType)
+	{
+	case 0:
+	{
+		ID3DX11EffectVariable*				pVariable = m_pEffect->GetVariableByName(pContantName);
+		return pVariable->SetRawValue(pData, 0, iByteLength);
+	}
+	case 1:
+	{
+		ID3DX11EffectScalarVariable*		 pVariable = m_pEffect->GetVariableByName(pContantName)->AsScalar();
+		return pVariable->SetBoolArray((bool*)pData, 0, iByteLength);
+	}
+	case 2:
+	{
+		ID3DX11EffectScalarVariable*		 pVariable = m_pEffect->GetVariableByName(pContantName)->AsScalar();
+		return pVariable->SetFloatArray((float*)pData, 0, iByteLength);
+	}
+	case 3:
+	{
+		ID3DX11EffectVectorVariable*		 pVariable = m_pEffect->GetVariableByName(pContantName)->AsVector();
+		return pVariable->SetFloatVectorArray((float*)pData, 0, iByteLength);
+	}
+
+	default:
+		return E_FAIL;
+	}
+
+	//return S_OK;
+
 }
 
 
@@ -98,51 +123,6 @@ HRESULT CShader::Set_ShaderResourceView(const char * pContantName, ID3D11ShaderR
 		return E_FAIL;
 	
 	return pShaderResource->SetResource(pSRV);
-}
-
-HRESULT CShader::Set_BoolValue(const char * pContantName, const void * pData, _uint iCount)
-{
-	if (nullptr == m_pEffect)
-		return E_FAIL;
-
-	/* 특정 이름을 가진 셰이더 전역변수의 핸들을 얻어온다. */
-	ID3DX11EffectScalarVariable* pVariables = nullptr;
-	pVariable = m_pEffect->GetVariableByName(pContantName);
-
-	if (nullptr == pVariable)
-		return E_FAIL;
-
-	return pVariable->SetRawValue(pData, 0, iByteLength);
-}
-
-HRESULT CShader::Set_FloatValue(const char * pContantName, const void * pData, _uint iCount)
-{
-	if (nullptr == m_pEffect)
-		return E_FAIL;
-
-	/* 특정 이름을 가진 셰이더 전역변수의 핸들을 얻어온다. */
-	ID3DX11EffectScalarVariable* pVariables = nullptr;
-	pVariable = m_pEffect->GetVariableByName(pContantName);
-
-	if (nullptr == pVariable)
-		return E_FAIL;
-
-	return pVariable->SetRawValue(pData, 0, iByteLength);
-}
-
-HRESULT CShader::Set_VectorValue(const char * pContantName, const void * pData, _uint iCount)
-{
-	if (nullptr == m_pEffect)
-		return E_FAIL;
-
-	/* 특정 이름을 가진 셰이더 전역변수의 핸들을 얻어온다. */
-	ID3DX11EffectScalarVariable* pVariables = nullptr;
-	pVariable = m_pEffect->GetVariableByName(pContantName);
-
-	if (nullptr == pVariable)
-		return E_FAIL;
-
-	return pVariable->SetRawValue(pData, 0, iByteLength);
 }
 
 

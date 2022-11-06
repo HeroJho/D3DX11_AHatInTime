@@ -224,6 +224,13 @@ HRESULT CStaticModel::Render()
 		nullptr == m_pShaderCom)
 		return E_FAIL;
 
+	if (!lstrcmp(m_cModelTag, TEXT("Fiona")))
+	{
+		if (CMapManager::Get_Instance()->Get_ColMode())
+			Render_Col();
+		return S_OK;
+	}
+
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
 	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
@@ -280,8 +287,6 @@ HRESULT CStaticModel::Render()
 
 	m_pContext->RSSetState(nullptr);
 
-	if(CMapManager::Get_Instance()->Get_ColMode())
-		Render_Col();
 
 	return S_OK;
 }
@@ -343,6 +348,7 @@ HRESULT CStaticModel::Ready_Components(STATICMODELDESC* Desc)
 	ColDesc.vRotation = Desc->vRotation;
 	ColDesc.vSize = Desc->vSize;
 	ColDesc.bWall = Desc->bWall;
+	ColDesc.iTagID = Desc->iTagID;
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 

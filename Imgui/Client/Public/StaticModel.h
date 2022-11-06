@@ -27,6 +27,7 @@ public:
 		_float3 vRotation;
 		_float3 vSize;
 		_bool	bWall;
+		_int	iTagID;
 
 	}STATICMODELDESC;
 

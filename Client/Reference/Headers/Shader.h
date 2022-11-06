@@ -23,9 +23,9 @@ public:
 
 public:
 	/* 셰이더 전역변수에 데이터를 던진다. */
-	HRESULT Set_RawValue(const char* pContantName, const void* pData, _uint iByteLength, _bool bArray = false);
+	HRESULT Set_RawValue(const char* pContantName, const void* pData, _uint iByteLength, _uint iCount = 0);
 	HRESULT Set_ShaderResourceView(const char* pContantName, ID3D11ShaderResourceView* pSRV);
-
+	
 
 
 public: /* 이 셰이더의 특정 패스로 그린다. */

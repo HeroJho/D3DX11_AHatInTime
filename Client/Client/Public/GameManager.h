@@ -14,7 +14,7 @@ public:
 
 		_bool		bIsDeleteSubCon;
 		_float		fWispRatio;
-		_float3		vWispPos;
+		_float4		vWispPos;
 
 	}WISPDESC;
 
@@ -38,7 +38,7 @@ public:
 	_uint Get_WispInfoNum() { return m_WispInfos.size(); }
 	_bool* Get_DeleteSubCons();
 	_float* Get_WispRatios();
-	_float3* Get_WispPoss();
+	_float4* Get_WispPoss();
 
 	_bool Check_IsInWisp(_fvector vPos);
 	_bool Check_IsInWispX(_fvector vPos);
@@ -49,7 +49,7 @@ private:
 	list<WISPDESC>	m_WispInfos;
 	_bool			m_IsDeleteSubCons[256];
 	_float			m_WispRatios[256];
-	_float3			m_WispPoss[256];
+	_float4			m_WispPoss[256];
 
 
 
@@ -84,10 +84,11 @@ public:
 	void Set_JumpVault2() { m_bJumpMapvalut2 = true; }
 
 private:
-	_uint m_iMonsterVaultCount = 7;
+	_uint m_iMonsterVaultCount = 1; // 7
 	_bool m_bModVault = false;
 	_bool m_bJumpMapvalut = false;
 	_bool m_bJumpMapvalut2 = false;
+
 
 
 

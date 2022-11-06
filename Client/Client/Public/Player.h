@@ -76,6 +76,7 @@ private:
 	void MageJump_Tick(_float fTimeDelta);
 	void MageDrow_Tick(_float fTimeDelta);
 
+	void FoxMask_Tick(_float fTimeDelta);
 
 
 	void State_Input(_float fTimeDelta);
@@ -171,6 +172,9 @@ private:
 	_float				m_fMageGageTime = 2.f;
 	_float				m_fMageTimeAcc = 0.f;
 
+	// For. FoxMask
+	_float				m_fFoxMaskTimeAcc = 0.f;
+	_bool				m_bFoxMask = false;
 
 	// For. FaceAnim
 	_int				m_FaceAnimIndex[2];

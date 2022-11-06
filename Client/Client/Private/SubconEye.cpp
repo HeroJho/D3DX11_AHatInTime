@@ -4,6 +4,7 @@
 
 #include  "ToolManager.h"
 #include "GameManager.h"
+#include "CutSceneManager.h"
 
 #include "Player.h"
 
@@ -54,6 +55,25 @@ void CSubconEye::Attacked(_int iAT)
 	m_eState = STATE_ATTACKED;
 }
 
+void CSubconEye::Dead_Tick(_float fTimeDelta)
+{
+	CCutSceneManager::Get_Instance()->Add_Obj(this, 0);
+
+	if (!m_bStartDisApear)
+		return;
+
+	
+
+	m_fAlpa -= fTimeDelta;
+
+	if (0.f > m_fAlpa)
+	{
+		m_fAlpa = 0.f;
+		Set_Dead(true);
+	}
+
+}
+
 
 
 
@@ -80,7 +100,7 @@ void CSubconEye::Tick(_float fTimeDelta)
 	break;
 	case STATE_DEAD:
 	{
-		Set_Dead(true);
+		Dead_Tick(fTimeDelta);
 	}
 		break;
 	default:
@@ -123,7 +143,14 @@ void CSubconEye::LateTick(_float fTimeDelta)
 
 	if (true == isDraw)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		if (STATE_DEAD == m_eState)
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+			Compute_CamZ(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		}
+
+		else
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 	}
 
 }
@@ -146,6 +173,14 @@ HRESULT CSubconEye::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+	_uint iPassIndex = 0;
+	if (STATE_DEAD == m_eState)
+	{
+		iPassIndex = 3;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_AlpaValue", &m_fAlpa, sizeof(_float))))
+			return E_FAIL;
+	}
+
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)
@@ -154,7 +189,7 @@ HRESULT CSubconEye::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 2)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 
@@ -172,8 +207,12 @@ void CSubconEye::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 	{
 		if (!strcmp("ChaseSphere", Desc.MyDesc.sTag))
 		{
-			if (CGameManager::Get_Instance()->Check_Stage_1())
+			// if (CGameManager::Get_Instance()->Check_Stage_1())
+			{
+				CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_EYE);
 				m_eState = STATE_DEAD;
+			}
+
 		}
 	}
 }
@@ -219,7 +258,7 @@ HRESULT CSubconEye::Ready_Components()
 	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	ColDesc.vSize = _float3(.5f, .5f, .5f);
-	strcpy(ColDesc.sTag, "Attacked_Sphere");
+	strcpy_s(ColDesc.sTag, "Attacked_Sphere");
 	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
 		return E_FAIL;
 
@@ -227,7 +266,7 @@ HRESULT CSubconEye::Ready_Components()
 	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
 	ColDesc.vSize = _float3(10.f, 10.f, 10.f);
-	strcpy(ColDesc.sTag, "ChaseSphere");
+	strcpy_s(ColDesc.sTag, "ChaseSphere");
 	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
 		return E_FAIL;
 
