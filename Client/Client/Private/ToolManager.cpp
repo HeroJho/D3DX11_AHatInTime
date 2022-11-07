@@ -187,6 +187,30 @@ void CToolManager::ClearManagedChar()
 		Safe_Delete(pChar);
 }
 
+
+void CToolManager::Render_Fonts(const _tchar * pFontTag, const _tchar * pTextm, _float2 vPosition, _fvector vColor, _float fAngle, _float2 vOrigin, _float2 vScale, _bool bSentor)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_int iLenthNum = lstrlen(pTextm);
+
+	_float fLeft = vScale.x * 10.f * ((_float)iLenthNum);
+	_float fUp = vScale.y * 10.f;
+	if (bSentor)
+	{
+		pGameInstance->Render_Fonts(pFontTag, pTextm,
+			_float2(vPosition.x - fLeft, vPosition.y - fUp), vColor, fAngle, vOrigin, vScale);
+	}
+	else
+	{
+		pGameInstance->Render_Fonts(pFontTag, pTextm,
+			_float2(vPosition.x, vPosition.y), vColor, fAngle, vOrigin, vScale);
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
 void CToolManager::Free()
 {
 	Safe_Release(m_pNavi);

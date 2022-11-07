@@ -168,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp" />
+    <ClInclude Include="..\public\BadgeS_Base.h" />
     <ClInclude Include="..\public\BellMount.h" />
     <ClInclude Include="..\public\BellMountEye.h" />
     <ClInclude Include="..\Public\Camera_Free.h" />
@@ -217,6 +218,10 @@
     <ClInclude Include="..\Public\UI_Item_Inven.h" />
     <ClInclude Include="..\public\UI_Item_Inven_Slot.h" />
     <ClInclude Include="..\public\UI_Number.h" />
+    <ClInclude Include="..\public\UI_Shop.h" />
+    <ClInclude Include="..\public\UI_ShopMenu.h" />
+    <ClInclude Include="..\public\UI_Shop_Slot.h" />
+    <ClInclude Include="..\public\UI_Shop_SlotItem.h" />
     <ClInclude Include="..\Public\UI_TextLife.h" />
     <ClInclude Include="..\public\UI_X.h" />
     <ClInclude Include="..\Public\Umbrella.h" />
@@ -231,6 +236,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\private\BadgeS_Base.cpp" />
     <ClCompile Include="..\private\BellMount.cpp" />
     <ClCompile Include="..\private\BellMountEye.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
@@ -279,6 +285,10 @@
     <ClCompile Include="..\Private\UI_Item_Inven.cpp" />
     <ClCompile Include="..\private\UI_Item_Inven_Slot.cpp" />
     <ClCompile Include="..\private\UI_Number.cpp" />
+    <ClCompile Include="..\private\UI_Shop.cpp" />
+    <ClCompile Include="..\private\UI_ShopMenu.cpp" />
+    <ClCompile Include="..\private\UI_Shop_Slot.cpp" />
+    <ClCompile Include="..\private\UI_Shop_SlotItem.cpp" />
     <ClCompile Include="..\Private\UI_TextLife.cpp" />
     <ClCompile Include="..\private\UI_X.cpp" />
     <ClCompile Include="..\Private\Umbrella.cpp" />

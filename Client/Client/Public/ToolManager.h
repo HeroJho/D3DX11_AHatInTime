@@ -83,6 +83,10 @@ private:
 	class CNavigation* m_pNavi = nullptr;
 
 
+	// For. Font
+public:
+	void Render_Fonts(const _tchar * pFontTag, const _tchar * pTextm, _float2 vPosition, _fvector vColor, _float fAngle, _float2 vOrigin, _float2 vScale, _bool bSentor = false);
+
 public:
 	virtual void Free() override;
 

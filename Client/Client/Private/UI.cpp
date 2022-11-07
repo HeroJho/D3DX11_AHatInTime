@@ -2,6 +2,8 @@
 #include "..\Public\UI.h"
 #include "GameInstance.h"
 
+#include "ToolManager.h"
+
 CUI::CUI(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -93,7 +95,7 @@ void CUI::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+	// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
 	for (auto& pChildUI : m_pChildUIs)
 		pChildUI->LateTick(fTimeDelta);
@@ -205,6 +207,81 @@ void CUI::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 
 	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CUI::UI_RenderDebug()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	string sTemp = to_string(m_UiInfo.fX);
+	TCHAR cTemp[MAX_PATH];
+	CToolManager::Get_Instance()->CtoTC(sTemp.data(), cTemp);
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 10.f));
+
+	sTemp = to_string(m_UiInfo.fY);
+	CToolManager::Get_Instance()->CtoTC(sTemp.data(), cTemp);
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 30.f));
+
+	sTemp = to_string(m_UiInfo.fSizeX);
+	CToolManager::Get_Instance()->CtoTC(sTemp.data(), cTemp);
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 50.f));
+
+	sTemp = to_string(m_UiInfo.fSizeY);
+	CToolManager::Get_Instance()->CtoTC(sTemp.data(), cTemp);
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 70.f));
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CUI::UI_InputDebug(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Pressing(DIK_UP))
+	{
+		m_UiInfo.fY -= 50.f * fTimeDelta;
+	}
+	else if (pGameInstance->Key_Pressing(DIK_DOWN))
+	{
+		m_UiInfo.fY += 50.f  * fTimeDelta;
+	}
+	else if (pGameInstance->Key_Pressing(DIK_LEFT))
+	{
+		m_UiInfo.fX -= 50.f  * fTimeDelta;
+	}
+	else if (pGameInstance->Key_Pressing(DIK_RIGHT))
+	{
+		m_UiInfo.fX += 50.f  * fTimeDelta;
+	}
+	else if (pGameInstance->Key_Pressing(DIK_X))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+			m_UiInfo.fSizeX -= 50.f  * fTimeDelta;
+		else
+			m_UiInfo.fSizeX += 50.f  * fTimeDelta;
+	}
+	else if (pGameInstance->Key_Pressing(DIK_Y))
+	{
+		if (pGameInstance->Key_Pressing(DIK_LSHIFT))
+			m_UiInfo.fSizeY -= 50.f  * fTimeDelta;
+		else
+			m_UiInfo.fSizeY += 50.f  * fTimeDelta;
+	}
+	else if (pGameInstance->Key_Pressing(DIK_U))
+	{
+		m_UiInfo.fSizeX += 50.f  * fTimeDelta;
+		m_UiInfo.fSizeY += 50.f  * fTimeDelta;
+	}
+	else if (pGameInstance->Key_Pressing(DIK_D))
+	{
+		m_UiInfo.fSizeX -= 50.f  * fTimeDelta;
+		m_UiInfo.fSizeY -= 50.f  * fTimeDelta;
+	}
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
 }
 
 

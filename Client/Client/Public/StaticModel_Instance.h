@@ -42,7 +42,7 @@ private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
-	
+	CTexture*				m_pTextureCom = nullptr;
 	
 	CModel_Instance*		m_pModelCom = nullptr;
 

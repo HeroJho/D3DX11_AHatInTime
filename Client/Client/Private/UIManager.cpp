@@ -8,6 +8,7 @@
 #include "UI_Inven.h"
 #include "UI_Item_Inven.h"
 #include "UI_DiamondScore.h"
+#include "UI_Shop.h"
 
 
 
@@ -33,8 +34,8 @@ HRESULT CUIManager::Make_InvenUI()
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Inven"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), &pObj, nullptr)))
 		return E_FAIL;
 
-	pInven = (CUI_Inven*)pObj;
-	Safe_AddRef(pInven);
+	m_pInven = (CUI_Inven*)pObj;
+	Safe_AddRef(m_pInven);
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -60,8 +61,8 @@ HRESULT CUIManager::Make_ItemInvenUI()
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Item_Inven"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
 		return E_FAIL;
 
-	pItem_Inven = (CUI_Item_Inven*)pObj;
-	Safe_AddRef(pItem_Inven);
+	m_pItem_Inven = (CUI_Item_Inven*)pObj;
+	Safe_AddRef(m_pItem_Inven);
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -86,8 +87,36 @@ HRESULT CUIManager::Make_DiamondUI()
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_DiamondScore"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
 		return E_FAIL;
 
-	pDiamondScore = (CUI_DiamondScore*)pObj;
-	Safe_AddRef(pDiamondScore);
+	m_pDiamondScore = (CUI_DiamondScore*)pObj;
+	Safe_AddRef(m_pDiamondScore);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+	return S_OK;
+}
+
+HRESULT CUIManager::Make_ShopUI()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	CUI::UIINFODESC UiInfoDesc;
+	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+
+	UiInfoDesc.fSizeX = 391.7f;
+	UiInfoDesc.fSizeY = 391.7;
+	UiInfoDesc.fX = 946.96f;
+	UiInfoDesc.fY = 228.17f;
+	UiInfoDesc.pDesc = nullptr;
+
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Shop"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+		return E_FAIL;
+
+	m_pShop = (CUI_Shop*)pObj;
+	Safe_AddRef(m_pShop);
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -101,10 +130,10 @@ HRESULT CUIManager::Make_DiamondUI()
 
 HRESULT CUIManager::Update_HatInvenSlot()
 {
-	if (nullptr == pInven)
+	if (nullptr == m_pInven)
 		return E_FAIL;
 
-	pInven->LoadItemMgr_ItemUI();
+	m_pInven->LoadItemMgr_ItemUI();
 
 
 	return S_OK;
@@ -112,10 +141,10 @@ HRESULT CUIManager::Update_HatInvenSlot()
 
 HRESULT CUIManager::Update_ItemInvenSlot()
 {
-	if (nullptr == pItem_Inven)
+	if (nullptr == m_pItem_Inven)
 		return E_FAIL;
 
-	pItem_Inven->LoadItemMgr_ItemUI();
+	m_pItem_Inven->LoadItemMgr_ItemUI();
 
 
 	return S_OK;
@@ -124,7 +153,7 @@ HRESULT CUIManager::Update_ItemInvenSlot()
 HRESULT CUIManager::Set_Score(_uint iNum)
 {
 
-	pDiamondScore->Set_Score(iNum);
+	m_pDiamondScore->Set_Score(iNum);
 
 	return S_OK;
 }
@@ -136,7 +165,8 @@ HRESULT CUIManager::Set_Score(_uint iNum)
 
 void CUIManager::Free()
 {
-	Safe_Release(pDiamondScore);
-	Safe_Release(pInven);
-	Safe_Release(pItem_Inven);
+	Safe_Release(m_pDiamondScore);
+	Safe_Release(m_pInven);
+	Safe_Release(m_pItem_Inven);
+	Safe_Release(m_pShop);
 }

@@ -17,6 +17,7 @@ public:
 	HRESULT Make_InvenUI();
 	HRESULT Make_ItemInvenUI();
 	HRESULT Make_DiamondUI();
+	HRESULT Make_ShopUI();
 
 	// For. Inven
 public:
@@ -30,9 +31,10 @@ public:
 
 
 private:
-	class CUI_Inven*		pInven = nullptr;
-	class CUI_Item_Inven*	pItem_Inven = nullptr;
-	class CUI_DiamondScore* pDiamondScore = nullptr;
+	class CUI_Inven*		m_pInven = nullptr;
+	class CUI_Item_Inven*	m_pItem_Inven = nullptr;
+	class CUI_DiamondScore* m_pDiamondScore = nullptr;
+	class CUI_Shop*			m_pShop = nullptr;
 
 public:
 	virtual void Free() override;

@@ -1664,7 +1664,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
 	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PLAYER, this);

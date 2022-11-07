@@ -89,7 +89,7 @@ HRESULT CStaticModel_Instance::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
-
+	
 	_uint iPassIndex = 0;
 	_int iWispNum = CGameManager::Get_Instance()->Get_WispInfoNum();
 
@@ -110,7 +110,13 @@ HRESULT CStaticModel_Instance::Render()
 
 		_bool bIsSubCon = false;
 		if (!strcmp("SubCon_Instance", cTamp))
+		{
 			bIsSubCon = true;
+
+			if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_GlassTexture", 0)))
+				return E_FAIL;
+		}
+
 		
 		if (FAILED(m_pShaderCom->Set_RawValue("g_WispInfoNum", &iWispNum, sizeof(_int))))
 			return E_FAIL;
@@ -158,9 +164,15 @@ HRESULT CStaticModel_Instance::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model_Instance"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
+	/* For.Com_Texture */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Grass"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
+
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
+
+
 
 
 	return S_OK;
@@ -196,7 +208,7 @@ void CStaticModel_Instance::Free()
 {
 	__super::Free();
 
-
+	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);

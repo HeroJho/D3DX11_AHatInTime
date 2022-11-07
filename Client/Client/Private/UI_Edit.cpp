@@ -52,6 +52,7 @@ void CUI_Edit::LateTick(_float fTimeDelta)
 
 
 	__super::LateTick(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 }
 
 HRESULT CUI_Edit::Render()

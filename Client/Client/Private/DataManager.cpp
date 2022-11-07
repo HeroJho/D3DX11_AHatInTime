@@ -406,7 +406,10 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 		string sTemp = DataObj.cName;
 
-		//if ("SubCon" != sTemp)			
+		if ("SubCon" != sTemp)			
+			continue;
+
+		//if ("Tree1" == sTemp || "tree2" == sTemp || "Tree3" == sTemp)
 		//	continue;
 
 		CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);

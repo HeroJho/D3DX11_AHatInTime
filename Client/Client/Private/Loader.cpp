@@ -29,6 +29,8 @@
 #include "BellMount.h"
 #include "BellMountEye.h"
 
+#include "BadgeS_Base.h"
+
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
 #include "UI_Health.h"
@@ -42,6 +44,11 @@
 #include "UI_Diamond.h"
 #include "UI_X.h"
 #include "UI_DiamondScore.h"
+
+#include "UI_Shop.h"
+#include "UI_Shop_Slot.h"
+#include "UI_Shop_SlotItem.h"
+#include "UI_ShopMenu.h"
 
 #include "RollingBarrel.h"
 #include "RectBarrel.h"
@@ -287,6 +294,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CSpikeBlock::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_BadgeS_Base*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BadgeS_Base"),
+		CBadgeS_Base::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	
 	/* For.Prototype_GameObject_ColorCube*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ColorCube"),
@@ -329,7 +341,26 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_X"),
 		CUI_X::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-	
+
+	/* For.Prototype_UI_Shop*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Shop"),
+		CUI_Shop::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_UI_Shop*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Shop_Slot"),
+		CUI_Shop_Slot::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_UI_Shop*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Shop_SlotItem"),
+		CUI_Shop_SlotItem::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_UI_ShopMenu*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_ShopMenu"),
+		CUI_ShopMenu::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+
 	/* For.Prototype_UI_TextLife*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_Test"),
 		CTest::Create(m_pDevice, m_pContext))))
@@ -361,6 +392,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Grass_%d.dds"), 2))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_Grass */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Grass"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Meshes/NonAnim/SubCon/Grass.dds"), 1))))
+		return E_FAIL;
 
 
 	// ==================== UI=====================
@@ -398,6 +433,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("vault"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("SubconEye"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("BellMount"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("BadgeS_Base"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 
 
 	/* For. PartsModel */
@@ -566,6 +602,22 @@ HRESULT CLoader::Loading_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/locked_screen_x.dds"), 1))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_ShopWindow */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_ShopWindow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Shop/ShopWindow.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_ShopWindowItem */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_ShopWindowItem"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Shop/ShopWindowItem.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_ShopMenu_costbg */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_ShopMenu_costbg"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Shop/ShopMenu_costbg.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_shop_stand */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_shop_stand"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Shop/shop_stand_%d.dds"), 2))))
+		return E_FAIL;
 
 
 	RELEASE_INSTANCE(CGameInstance);

@@ -166,6 +166,21 @@
     <Filter Include="02.GameObjects\Map\BellMountEye">
       <UniqueIdentifier>{d86011a4-c10a-43fe-bbeb-05311c36b85d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\NPC">
+      <UniqueIdentifier>{f0c5fb88-c918-4814-97da-b437ceea0e62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\Shop">
+      <UniqueIdentifier>{8c809fe3-b42e-4de0-a7dc-5c69a8770931}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\Shop\Slot">
+      <UniqueIdentifier>{122a014b-12a9-4ac1-9487-736ec8be5cef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\Shop\SlotItem">
+      <UniqueIdentifier>{0e21b572-9b08-455a-8ebe-93e4fb133ac0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\Shop\ShopMenu">
+      <UniqueIdentifier>{b280949d-41a8-4cbb-b7c2-ef55cd2268cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -357,6 +372,21 @@
     <ClInclude Include="..\public\BellMountEye.h">
       <Filter>02.GameObjects\Map\BellMountEye</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\BadgeS_Base.h">
+      <Filter>02.GameObjects\NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Shop.h">
+      <Filter>03.UI\Shop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Shop_Slot.h">
+      <Filter>03.UI\Shop\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_Shop_SlotItem.h">
+      <Filter>03.UI\Shop\SlotItem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_ShopMenu.h">
+      <Filter>03.UI\Shop\ShopMenu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -532,6 +562,21 @@
     </ClCompile>
     <ClCompile Include="..\private\BellMountEye.cpp">
       <Filter>02.GameObjects\Map\BellMountEye</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\BadgeS_Base.cpp">
+      <Filter>02.GameObjects\NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Shop.cpp">
+      <Filter>03.UI\Shop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Shop_Slot.cpp">
+      <Filter>03.UI\Shop\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Shop_SlotItem.cpp">
+      <Filter>03.UI\Shop\SlotItem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_ShopMenu.cpp">
+      <Filter>03.UI\Shop\ShopMenu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -14,6 +14,7 @@
 #include "MonsterVault.h"
 #include "BellMount.h"
 #include "SpikeBlock.h"
+#include "BadgeS_Base.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -39,6 +40,9 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_NPC(TEXT("Layer_Npc"))))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
 		return E_FAIL;
 
@@ -49,8 +53,8 @@ HRESULT CLevel_GamePlay::Initialize()
 
 	// CCamManager::Get_Instance()->Play_CutScene(0, true);
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
-	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
-	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
+	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
+	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
 
 
 	return S_OK;
@@ -212,8 +216,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	WispDesc.fRatio = 100;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
-	WispDesc.vPos = _float3(-28.0f, 1.55f, 44.84f);
-	WispDesc.fRatio = 20;
+	WispDesc.vPos = _float3(-28.0f, 1.4f, 44.84f);
+	WispDesc.fRatio = 15;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMountEye"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
 
@@ -279,7 +283,28 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 	CUIManager::Get_Instance()->Make_InvenUI();
 	CUIManager::Get_Instance()->Make_ItemInvenUI();
 	CUIManager::Get_Instance()->Make_DiamondUI();
+	CUIManager::Get_Instance()->Make_ShopUI();
 
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Layer_NPC(const _tchar * pLayerTag)
+{
+	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+
+	CBadgeS_Base::BADGES_BASEDESC Desc;
+	ZeroMemory(&Desc, sizeof(CBadgeS_Base::BADGES_BASEDESC));
+	Desc.vPos = _float3(-68.97f, 11.04f, 121.20f);
+	Desc.vAngle = _float3(0.f, 0.f, 0.f);
+
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BadgeS_Base"), LEVEL_GAMEPLAY, pLayerTag, &Desc)))
+		return E_FAIL;
+
+
+	Safe_Release(pGameInstance);
 
 	return S_OK;
 }

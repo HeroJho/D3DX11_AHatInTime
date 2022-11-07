@@ -52,8 +52,8 @@ void CUI_DiamondScore::Tick(_float fTimeDelta)
 void CUI_DiamondScore::LateTick(_float fTimeDelta)
 {
 
-
 	__super::LateTick(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 }
 
 HRESULT CUI_DiamondScore::Render()

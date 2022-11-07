@@ -44,8 +44,11 @@ public:
 
 	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
 
+	void UI_InputDebug(_float fTimeDelta);
+	void UI_RenderDebug();
+
 public:
-	UIINFODESC	Get_Info() { return m_UiInfo; };
+	UIINFODESC	Get_Info() { return m_TotalInfo; };
 	HRESULT Make_ChildUI(_float fX, _float fY, _float fSizeX, _float fSizeY, _tchar* pTag, void* pArg = nullptr);
 	void Delete_AllChildUI();
 

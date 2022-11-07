@@ -84,11 +84,13 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_MONSTER);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_PUSHMONSTER);
+	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_NPC);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_EM);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PLAYER, CColliderManager::COLLIDER_ITEM);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_PUSHMONSTER, CColliderManager::COLLIDER_PUSHMONSTER);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_SWORD, CColliderManager::COLLIDER_MONSTER);
 	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_SWORD, CColliderManager::COLLIDER_PUSHMONSTER);
+	m_pGameInstance->Calcul_ColGroup(CColliderManager::COLLIDER_SWORD, CColliderManager::COLLIDER_NPC);
 	m_pGameInstance->Clear_ColGroup();
 
 

@@ -79,7 +79,6 @@ void CBellMountEye::Tick(_float fTimeDelta)
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
 
-
 	switch (m_eState)
 	{
 	case Client::CBellMountEye::STATE_NONE:
@@ -124,7 +123,7 @@ void CBellMountEye::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			m_fRatio += fTimeDelta * 20.f;
+			m_fRatio += fTimeDelta * 10.f;
 			_float3 vPos;
 			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 			CGameManager::Get_Instance()->Set_Wisp(false, m_fRatio, vPos);

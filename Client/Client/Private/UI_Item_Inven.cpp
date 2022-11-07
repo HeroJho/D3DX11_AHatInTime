@@ -65,6 +65,7 @@ void CUI_Item_Inven::LateTick(_float fTimeDelta)
 
 
 	__super::LateTick(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 }
 
 HRESULT CUI_Item_Inven::Render()
@@ -94,7 +95,6 @@ void CUI_Item_Inven::LoadItemMgr_ItemUI()
 				break;
 			}
 		}
-
 	}
 
 }
