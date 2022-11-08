@@ -214,7 +214,7 @@ void CStaticModel::LateTick(_float fTimeDelta)
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 	RELEASE_INSTANCE(CGameInstance);
 
-	if (true == isDraw || !lstrcmp(m_cModelTag, TEXT("SubCon")))
+	if (true == isDraw || !lstrcmp(m_cModelTag, TEXT("SubCon")) || !lstrcmp(m_cModelTag, TEXT("SubCon_Navi")))
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
@@ -287,6 +287,9 @@ HRESULT CStaticModel::Render()
 
 	m_pContext->RSSetState(nullptr);
 
+
+	if (CMapManager::Get_Instance()->Get_ColMode())
+		Render_Col();
 
 	return S_OK;
 }

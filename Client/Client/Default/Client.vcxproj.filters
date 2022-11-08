@@ -181,6 +181,12 @@
     <Filter Include="03.UI\Shop\ShopMenu">
       <UniqueIdentifier>{b280949d-41a8-4cbb-b7c2-ef55cd2268cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Map\PuzzleCube">
+      <UniqueIdentifier>{d6717db1-2de4-4a01-a497-d30f88912553}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Item\vault\Vault_State">
+      <UniqueIdentifier>{fad272a1-8973-4cd0-a1a8-2eb119ece32f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -387,6 +393,12 @@
     <ClInclude Include="..\public\UI_ShopMenu.h">
       <Filter>03.UI\Shop\ShopMenu</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\PuzzleCube.h">
+      <Filter>02.GameObjects\Map\PuzzleCube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Vault_State.h">
+      <Filter>02.GameObjects\Item\vault\Vault_State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -577,6 +589,12 @@
     </ClCompile>
     <ClCompile Include="..\private\UI_ShopMenu.cpp">
       <Filter>03.UI\Shop\ShopMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PuzzleCube.cpp">
+      <Filter>02.GameObjects\Map\PuzzleCube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Vault_State.cpp">
+      <Filter>02.GameObjects\Item\vault\Vault_State</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

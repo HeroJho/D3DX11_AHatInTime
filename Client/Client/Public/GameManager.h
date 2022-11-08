@@ -42,6 +42,7 @@ public:
 
 	_bool Check_IsInWisp(_fvector vPos);
 	_bool Check_IsInWispX(_fvector vPos);
+	_bool Check_IsInWispWithOutSubCon(_fvector vPos);
 
 
 

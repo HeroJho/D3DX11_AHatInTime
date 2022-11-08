@@ -37,10 +37,6 @@ HRESULT CVault::Initialize(void * pArg)
 	lstrcpy(m_InvenDesc.szModelName, Desc->szModelName);
 	m_InvenDesc.iCount = Desc->iCount;
 	
-	if (nullptr == Desc->pDesc)
-		return E_FAIL;
-	VAULTDESC* VaultDesc = (VAULTDESC*)Desc->pDesc;
-	m_iNaviIndex = VaultDesc->iNaviIndex;
 	
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -60,6 +56,8 @@ HRESULT CVault::Initialize(void * pArg)
 
 	m_sTag = "Tag_Vault";
 	Set_State(STATE_IDLE);
+
+	m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 
 	return S_OK;
 }

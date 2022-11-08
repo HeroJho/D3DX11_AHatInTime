@@ -22,12 +22,14 @@
 #include "Flask.h"
 #include "Vault.h"
 #include "Vault_2.h"
+#include "Vault_State.h"
 #include "Diamond.h"
 #include "MonsterVault.h"
 #include "SubconEye.h"
 #include "Wisp.h"
 #include "BellMount.h"
 #include "BellMountEye.h"
+#include "PuzzleCube.h"
 
 #include "BadgeS_Base.h"
 
@@ -217,8 +219,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CBellMountEye::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-
-
+	/* For.Prototype_GameObject_PuzzleCube */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_PuzzleCube"),
+		CPuzzleCube::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
 	/* For.Prototype_GameObject_RollingBarrel */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_RollingBarrel"),
 		CRollingBarrel::Create(m_pDevice, m_pContext))))
@@ -284,6 +289,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_MonsterVault*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MonsterVault"),
 		CMonsterVault::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_Vault_State*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Vault_State"),
+		CVault_State::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	/* For.Prototype_GameObject_Diamond*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Diamond"),

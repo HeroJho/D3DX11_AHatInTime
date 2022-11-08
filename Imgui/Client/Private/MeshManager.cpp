@@ -630,43 +630,43 @@ _bool CMeshManager::Check_Cell(_float3 * vPoss)
 }
 void CMeshManager::Sort_Cell(_float3 * vPoss)
 {
-	_float3 vTempPoss[3];
+	//_float3 vTempPoss[3];
 
-	memcpy(vTempPoss, vPoss, sizeof(_float3) * 3);
+	//memcpy(vTempPoss, vPoss, sizeof(_float3) * 3);
 
-	// 정렬
-	for (_uint i = 0; i < 2; ++i)
-	{
-		_uint iMinIndex = i;
-		for (_uint j = i+1; j < 3; ++j)
-		{
-			if (vTempPoss[iMinIndex].x > vTempPoss[j].x)
-			{
-				iMinIndex = j;
-			}
-		}
+	//// 정렬
+	//for (_uint i = 0; i < 2; ++i)
+	//{
+	//	_uint iMinIndex = i;
+	//	for (_uint j = i+1; j < 3; ++j)
+	//	{
+	//		if (vTempPoss[iMinIndex].x > vTempPoss[j].x)
+	//		{
+	//			iMinIndex = j;
+	//		}
+	//	}
 
-		_float3 Temp;
-		Temp = vTempPoss[i];
-		vTempPoss[i] = vTempPoss[iMinIndex];
-		vTempPoss[iMinIndex] = Temp;
-	}
+	//	_float3 Temp;
+	//	Temp = vTempPoss[i];
+	//	vTempPoss[i] = vTempPoss[iMinIndex];
+	//	vTempPoss[iMinIndex] = Temp;
+	//}
 
-	// 중간 x값을 찾는다. [1]  
-	// 작은 x값을 찾는다. [0]
-	// 만약 작은 x값의 z값이 중간 x값의 z값보다 작다면 반대로
-	if (vTempPoss[0].z < vTempPoss[1].z)
-	{
-		vPoss[0] = vTempPoss[1];
-		vPoss[1] = vTempPoss[2];
-		vPoss[2] = vTempPoss[0];
-	}
-	else
-	{
-		vPoss[0] = vTempPoss[1];
-		vPoss[1] = vTempPoss[0];
-		vPoss[2] = vTempPoss[2];
-	}
+	//// 중간 x값을 찾는다. [1]  
+	//// 작은 x값을 찾는다. [0]
+	//// 만약 작은 x값의 z값이 중간 x값의 z값보다 작다면 반대로
+	//if (vTempPoss[0].z < vTempPoss[1].z)
+	//{
+	//	vPoss[0] = vTempPoss[1];
+	//	vPoss[1] = vTempPoss[2];
+	//	vPoss[2] = vTempPoss[0];
+	//}
+	//else
+	//{
+	//	vPoss[0] = vTempPoss[1];
+	//	vPoss[1] = vTempPoss[0];
+	//	vPoss[2] = vTempPoss[2];
+	//}
 
 }
 void CMeshManager::Sort_CellByDot(_float3 * vPoss)

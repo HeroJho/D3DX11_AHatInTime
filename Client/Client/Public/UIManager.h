@@ -29,6 +29,10 @@ public:
 	HRESULT Set_Score(_uint iNum);
 
 
+public:
+	void Open_Shop();
+	void Close_Shop();
+
 
 private:
 	class CUI_Inven*		m_pInven = nullptr;

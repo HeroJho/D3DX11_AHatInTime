@@ -158,6 +158,20 @@ HRESULT CUIManager::Set_Score(_uint iNum)
 	return S_OK;
 }
 
+void CUIManager::Open_Shop()
+{
+	if (nullptr == m_pShop)
+		return;
+	m_pShop->Open();
+}
+
+void CUIManager::Close_Shop()
+{
+	if (nullptr == m_pShop)
+		return;
+	m_pShop->Close();
+}
+
 
 
 

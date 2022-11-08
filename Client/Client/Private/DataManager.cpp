@@ -401,15 +401,16 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		CDataManager::DATA_MAP_OBJ DataObj = pData_Map->pObjDatas[i];
 
 
+
 		CStaticModel_Col::STATICMODELDESC Desc;
 		ZeroMemory(&Desc, sizeof(CStaticModel_Col::STATICMODELDESC));
 
 		string sTemp = DataObj.cName;
 
-		if ("SubCon" != sTemp)			
-			continue;
+		//if ("SubCon" != sTemp)			
+		//	continue;
 
-		//if ("Tree1" == sTemp || "tree2" == sTemp || "Tree3" == sTemp)
+		//if ("Tree1" == sTemp || "tree2" == sTemp || "Tree3" == sTemp || "forest_plant" == sTemp)
 		//	continue;
 
 		CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);

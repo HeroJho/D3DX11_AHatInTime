@@ -19,7 +19,7 @@ BEGIN(Client)
 class CPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_JUMPATTACK, STATE_JUMPATTACKRENDING, STATE_HILLDOWN, STATE_STARTGETITEM, STATE_IDLEGETITEM, STATE_ENDGETITEM, STATE_MAGEIDLE, STATE_MAGERUN, STATE_MAGEJUMP, STATE_MAGEIDLEJUMPRENDING, STATE_MAGERUNJUMPRENDING, STATE_MAGEDROW, STATE_ATTACKED, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_JUMPATTACK, STATE_JUMPATTACKRENDING, STATE_HILLDOWN, STATE_STARTGETITEM, STATE_IDLEGETITEM, STATE_ENDGETITEM, STATE_MAGEIDLE, STATE_MAGERUN, STATE_MAGEJUMP, STATE_MAGEIDLEJUMPRENDING, STATE_MAGERUNJUMPRENDING, STATE_MAGEDROW, STATE_ATTACKED, STATE_TALK, STATE_END };
 	enum SLOT { SLOT_HAT, SLOT_HAND, SLOT_END };
 
 private:
@@ -45,6 +45,8 @@ public:
 	STATE Get_PreState() { return m_ePreState; }
 
 	_bool Get_Attacked() { return m_bAttacked; }
+
+	void Set_Talk() { m_TickStates.push_back(STATE_TALK); }
 
 private:
 	void Set_State();
@@ -78,6 +80,10 @@ private:
 
 	void FoxMask_Tick(_float fTimeDelta);
 
+	void Talk_Tick(_float fTimeDelta);
+
+
+
 
 	void State_Input(_float fTimeDelta);
 	
@@ -103,6 +109,7 @@ private:
 	void MageJump_Input(_float fTimeDelta);
 	void MageDrow_Input(_float fTimeDelta);
 
+	void Talk_Input(_float fTimeDelta);
 
 	void Check_EndAnim();
 	void Calcul_State(_float fTimeDelta);
@@ -124,6 +131,7 @@ public:
 	CGameObject* Get_NearstMonster() { return m_pNearstMonster; }
 	void Find_NearstMonster();
 
+	void SlowSpeed(_float fSlowSpeed) { m_fSlowSpeed = fSlowSpeed; }
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -181,6 +189,8 @@ private:
 	_float				m_fAnimFaceAcc = 0.f;
 	_bool				m_bWingk = false;
 
+	// For. DeBuff
+	_float				m_fSlowSpeed = 1.f;
 
 	// For. NearMonster
 	vector<CGameObject*> m_pNearMonsters;

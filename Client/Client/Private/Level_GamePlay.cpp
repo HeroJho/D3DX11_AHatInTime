@@ -15,6 +15,7 @@
 #include "BellMount.h"
 #include "SpikeBlock.h"
 #include "BadgeS_Base.h"
+#include "PuzzleCube.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -54,7 +55,7 @@ HRESULT CLevel_GamePlay::Initialize()
 	// CCamManager::Get_Instance()->Play_CutScene(0, true);
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
 	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
-	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
+	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
 
 
 	return S_OK;
@@ -139,6 +140,13 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
+
+	CPuzzleCube::PUZZLECUBEDESC PuzzleCubeDesc;
+	PuzzleCubeDesc.vPos = _float3(-56.1f, 5.f, 9.66f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
+		return E_FAIL;
+
+
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
 
@@ -185,19 +193,21 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	
 
 
-	CMonsterVault::VAULTDESC Desc;
-	Desc.iNaviIndex = 2411;
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_MonsterVault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-10.43f, 8.f, 118.47f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc)))
-		return E_FAIL;
 
-	Desc.iNaviIndex = 2420;
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-21.02f, 32.53f, 126.75f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc)))
-		return E_FAIL;
-	Desc.iNaviIndex = 13446;
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault_2"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-35.11f, 32.59f, 149.31f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc)))
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_MonsterVault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-10.43f, 8.f, 118.47f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
 		return E_FAIL;
 
 
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-21.02f, 32.53f, 126.75f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
+		return E_FAIL;
+
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault_2"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-35.11f, 32.59f, 149.31f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
+		return E_FAIL;
+
+
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault_State"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-44.3f, -0.74f, 3.19f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
+		return E_FAIL;
+	
 
 
 	Safe_Release(pGameInstance);
@@ -216,6 +226,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	WispDesc.fRatio = 100;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
+
+
 	WispDesc.vPos = _float3(-28.0f, 1.4f, 44.84f);
 	WispDesc.fRatio = 15;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMountEye"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
@@ -294,10 +306,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_NPC(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-
+	
 	CBadgeS_Base::BADGES_BASEDESC Desc;
 	ZeroMemory(&Desc, sizeof(CBadgeS_Base::BADGES_BASEDESC));
-	Desc.vPos = _float3(-68.97f, 11.04f, 121.20f);
+	Desc.vPos = _float3(-62.9f, -0.97f, -2.63f);
 	Desc.vAngle = _float3(0.f, 0.f, 0.f);
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BadgeS_Base"), LEVEL_GAMEPLAY, pLayerTag, &Desc)))

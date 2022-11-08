@@ -37,10 +37,7 @@ HRESULT CMonsterVault::Initialize(void * pArg)
 	lstrcpy(m_InvenDesc.szModelName, Desc->szModelName);
 	m_InvenDesc.iCount = Desc->iCount;
 
-	if (nullptr == Desc->pDesc)
-		return E_FAIL;
-	VAULTDESC* VaultDesc = (VAULTDESC*)Desc->pDesc;
-	m_iNaviIndex = VaultDesc->iNaviIndex;
+
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -72,6 +69,8 @@ HRESULT CMonsterVault::Initialize(void * pArg)
 	ObjDesc.iMaxHP = 3;
 	ObjDesc.iHP = 3;
 
+	m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
 	for (_uint i = 0; i < 7; ++i)
 	{
 		XMStoreFloat3(&ObjDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
@@ -81,7 +80,6 @@ HRESULT CMonsterVault::Initialize(void * pArg)
 	}
 
 	RELEASE_INSTANCE(CGameInstance);
-
 
 
 	return S_OK;

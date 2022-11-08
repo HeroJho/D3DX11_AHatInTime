@@ -109,6 +109,25 @@ _bool CGameManager::Check_IsInWispX(_fvector vPos)
 	return bIsIn;
 }
 
+_bool CGameManager::Check_IsInWispWithOutSubCon(_fvector vPos)
+{
+	if (!Get_WispInfoNum())
+		return false;
+
+	_bool bIsIn = false;
+	for (auto& Wisp : m_WispInfos)
+	{
+		if (!Wisp.bIsDeleteSubCon)
+			continue;
+		_vector vWispPos = XMLoadFloat4(&Wisp.vWispPos);
+		_float fDis = XMVectorGetX(XMVector3Length(vPos - vWispPos));
+
+		if (Wisp.fWispRatio > fDis)
+			bIsIn = true;
+	}
+
+	return bIsIn;
+}
 
 
 

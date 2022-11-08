@@ -195,6 +195,7 @@
     <ClInclude Include="..\public\MonsterVault.h" />
     <ClInclude Include="..\public\Parts.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\public\PuzzleCube.h" />
     <ClInclude Include="..\public\RectBarrel.h" />
     <ClInclude Include="..\public\RollingBarrel.h" />
     <ClInclude Include="..\public\SkyModel.h" />
@@ -228,6 +229,7 @@
     <ClInclude Include="..\public\Vault.h" />
     <ClInclude Include="..\public\Vault_2.h" />
     <ClInclude Include="..\public\Vault_Mad_Crow.h" />
+    <ClInclude Include="..\public\Vault_State.h" />
     <ClInclude Include="..\public\Wisp.h" />
     <ClInclude Include="..\public\Yarn.h" />
     <ClInclude Include="Client.h" />
@@ -262,6 +264,7 @@
     <ClCompile Include="..\private\MonsterVault.cpp" />
     <ClCompile Include="..\private\Parts.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\private\PuzzleCube.cpp" />
     <ClCompile Include="..\private\RectBarrel.cpp" />
     <ClCompile Include="..\private\RollingBarrel.cpp" />
     <ClCompile Include="..\private\SkyModel.cpp" />
@@ -295,6 +298,7 @@
     <ClCompile Include="..\private\Vault.cpp" />
     <ClCompile Include="..\private\Vault_2.cpp" />
     <ClCompile Include="..\private\Vault_Mad_Crow.cpp" />
+    <ClCompile Include="..\private\Vault_State.cpp" />
     <ClCompile Include="..\private\Wisp.cpp" />
     <ClCompile Include="..\private\Yarn.cpp" />
     <ClCompile Include="Client.cpp" />

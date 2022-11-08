@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 #include  "ToolManager.h"
 #include "DataManager.h"
+#include "UIManager.h"
+#include "Player.h"
 
 CBadgeS_Base::CBadgeS_Base(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -83,6 +85,27 @@ void CBadgeS_Base::Tick(_float fTimeDelta)
 
 void CBadgeS_Base::Idle_Tick(_float fTimeDelta)
 {
+	if (nullptr == m_pPlayer)
+		return;
+
+	CTransform* pTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+
+	_vector vPlayerPos = pTran->Get_State(CTransform::STATE_POSITION);
+	_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	_float fDis = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
+	if (2.f > fDis)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		if (pGameInstance->Key_Down(DIK_E))
+		{
+			Set_State(STATE_OPEN);
+			((CPlayer*)m_pPlayer)->Set_Talk();
+		}
+
+		RELEASE_INSTANCE(CGameInstance);
+	}
 }
 
 void CBadgeS_Base::Talk_Tick(_float fTimeDelta)
@@ -101,6 +124,28 @@ void CBadgeS_Base::Talk_Tick(_float fTimeDelta)
 
 void CBadgeS_Base::Open_Tick(_float fTimeDelta)
 {
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_E))
+	{
+		Set_State(STATE_IDLE);
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+	if (CPlayer::STATE_TALK != ((CPlayer*)m_pPlayer)->Get_State())
+		Set_State(STATE_IDLE);
+
+	CTransform* pTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+
+	_vector vPlayerPos = pTran->Get_State(CTransform::STATE_POSITION);
+	_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	_float fDis = XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos));
+	if (5.f < fDis)
+		Set_State(STATE_IDLE);
+
 }
 
 void CBadgeS_Base::Attacked_Tick(_float fTimeDelta)
@@ -202,15 +247,11 @@ void CBadgeS_Base::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 	if ("Tag_Player" == Desc.pOther->Get_Tag() && !strcmp("Sphere", Desc.OtherDesc.sTag))
 	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		if (pGameInstance->Key_Down(DIK_T) && STATE_IDLE == m_eState)
+		if (STATE_IDLE == m_eState)
 		{
-			Set_State(STATE_TALK);
 			m_pPlayer = Desc.pOther;
 		}
 
-
-		RELEASE_INSTANCE(CGameInstance);
 	}
 
 }
@@ -277,10 +318,12 @@ void CBadgeS_Base::Set_State(STATE eState)
 		switch (eState)
 		{
 		case Client::CBadgeS_Base::STATE_IDLE:
+			CUIManager::Get_Instance()->Close_Shop();
 			break;
 		case Client::CBadgeS_Base::STATE_TALK:
 			break;
 		case Client::CBadgeS_Base::STATE_OPEN:
+			CUIManager::Get_Instance()->Open_Shop();
 			break;
 		}
 	}
@@ -301,7 +344,8 @@ void CBadgeS_Base::Set_Anim()
 		m_pModelCom->Set_AnimIndex(1);
 		break;
 	case Client::CBadgeS_Base::STATE_OPEN:
-		m_pModelCom->Set_AnimIndex(2);
+		// m_pModelCom->Set_AnimIndex(2);
+		m_pModelCom->Set_AnimIndex(1);
 		break;
 	}
 }

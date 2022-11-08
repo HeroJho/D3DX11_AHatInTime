@@ -70,7 +70,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 	_int iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(XMLoadFloat3(&vPos));
 	CGameManager::Get_Instance()->Set_SavePoint(iNaviIndex, vPos);
 
-
+	_uint iNavi = CToolManager::Get_Instance()->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	m_pNavigationCom->Set_NaviIndex(iNavi);
 
 	return S_OK;
 }
@@ -265,6 +266,9 @@ void CPlayer::Set_Anim()
 	case STATE_ATTACKED:
 		m_pModelCom->Set_AnimIndex(77);
 		break;
+	case STATE_TALK:
+		m_pModelCom->Set_AnimIndex(113);
+		break;
 	}
 }
 
@@ -362,6 +366,9 @@ void CPlayer::Tick(_float fTimeDelta)
 		break;
 	case STATE_ATTACKED:
 		Attacked_Tick(fTimeDelta);
+		break;
+	case STATE_TALK:
+		Talk_Tick(fTimeDelta);
 		break;
 	}
 }
@@ -640,6 +647,12 @@ void CPlayer::FoxMask_Tick(_float fTimeDelta)
 		CToolManager::Get_Instance()->Set_All(1.f);
 	}
 	
+}
+
+void CPlayer::Talk_Tick(_float fTimeDelta)
+{
+
+	Talk_Input(fTimeDelta);
 }
 
 
@@ -1516,6 +1529,19 @@ void CPlayer::MageDrow_Input(_float fTimeDelta)
 {
 }
 
+void CPlayer::Talk_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_E))
+	{
+		m_TickStates.push_back(STATE_IDLE);
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
+}
+
 
 
 
@@ -1737,7 +1763,8 @@ void CPlayer::Calcul_State(_float fTimeDelta)
 		m_pTransformCom->Set_CurSpeed(0.f);
 	}
 
-	m_pTransformCom->Go_Straight(m_pTransformCom->Get_CurSpeed(), fTimeDelta, m_pNavigationCom);
+	m_pTransformCom->Go_Straight(m_pTransformCom->Get_CurSpeed() * m_fSlowSpeed, fTimeDelta, m_pNavigationCom);
+	m_fSlowSpeed = 1.f;
 }
 
 void CPlayer::Check_EndAnim()
@@ -1979,7 +2006,7 @@ HRESULT CPlayer::Ready_Components()
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
 	//NaviDesc.iCurrentIndex = 13444;
 	//NaviDesc.iCurrentIndex = 5841;
-	NaviDesc.iCurrentIndex = 2254;
+	NaviDesc.iCurrentIndex = 0;
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 		return E_FAIL;
 	
@@ -2234,7 +2261,7 @@ void CPlayer::Find_NearstMonster()
 
 void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	if("Tag_Barrel" == Desc.pOther->Get_Tag() && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag))
+	if(("Tag_PuzzleCube" == Desc.pOther->Get_Tag() || "Tag_Barrel" == Desc.pOther->Get_Tag()) && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag))
 		Get_StaticOBB()->Compute_Pigi(Desc.pOther, m_pNavigationCom, m_pTransformCom, CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
 
 

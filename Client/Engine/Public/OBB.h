@@ -44,6 +44,8 @@ public:
 
 	_float3* Get_HillPoss() { return m_vHillPoss; }
 
+	void Set_IsWall(_bool bIsWall) { m_ColliderDesc.bWall = bIsWall; }
+
 public:
 	virtual HRESULT Initialize_Prototype(CCollider::TYPE eColliderType);
 	virtual HRESULT Initialize(void* pArg);

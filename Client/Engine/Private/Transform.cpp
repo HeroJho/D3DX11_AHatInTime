@@ -484,7 +484,7 @@ void CTransform::PushMe(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _flo
 	_vector vPosition = Get_State(CTransform::STATE_POSITION);
 	vPosition += vDir * fDipDis;
 
-	_bool		isMove = true;
+	_bool		isMove = false;
 	if (nullptr != pNavigation)
 		isMove = pNavigation->isMove(vPosition);
 
@@ -494,6 +494,38 @@ void CTransform::PushMe(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _flo
 		Set_State(STATE_POSITION, vPosition);
 	}
 
+}
+
+void CTransform::PushMeX(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation * pNavigation)
+{
+	_vector vDir = vMyPos - vOtherPos;
+
+	_float fDis = XMVectorGetX(XMVector3Length(vDir));
+	_float fRadDis = fMyRad + fOtherRad;
+
+	_float fDipDis = fRadDis - fDis;
+	if (0.f > fDipDis)
+		return;
+
+	fDipDis *= 0.5f;
+	vDir = XMVector3Normalize(vDir);
+
+	_float fDot = XMVectorGetX(XMVector3Dot(vDir, XMVectorSet(0.f, 1.f, 0.f, 0.f)));
+	if (0.5f < fDot || -0.5f > fDot)
+		return;
+
+	_vector vPosition = Get_State(CTransform::STATE_POSITION);
+	vPosition += vDir * fDipDis;
+
+	_bool		isMove = false;
+	if (nullptr != pNavigation)
+		isMove = pNavigation->isMove(vPosition);
+
+	if (true == isMove)
+	{
+		XMStoreFloat3(&m_vPrePos, Get_State(STATE_POSITION));
+		Set_State(STATE_POSITION, vPosition);
+	}
 }
 
 void CTransform::ReSet_AttackedAnim()
