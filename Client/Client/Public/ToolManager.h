@@ -5,6 +5,7 @@
 BEGIN(Engine)
 
 class CNavigation;
+class CGameObject;
 
 END
 
@@ -77,7 +78,7 @@ private:
 public:
 	_uint Find_NaviIndex(_fvector vPos);
 	HRESULT Clone_Navi();
-
+	void Ready_CellCollision(class CGameObject* pObj, _int* iIndexs, _int iSize);
 
 private:
 	class CNavigation* m_pNavi = nullptr;

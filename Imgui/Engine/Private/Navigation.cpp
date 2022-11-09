@@ -3,6 +3,10 @@
 #include "Shader.h"
 #include "PipeLine.h"
 
+#include "GameObject.h"
+#include "OBB.h"
+#include "Transform.h"
+
 CNavigation::CNavigation(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CComponent(pDevice, pContext)
 {
@@ -97,6 +101,37 @@ HRESULT CNavigation::Initialize(void * pArg)
 	return S_OK;
 }
 
+void CNavigation::Push_Cell(CCell * pCell)
+{
+	m_Cells.push_back(pCell);
+}
+
+void CNavigation::Ready_CellCollision(CGameObject* pGameObject)
+{
+	if (pGameObject->Get_Colliders().empty())
+		return;
+	pGameObject->Clear_CellCulIndex();
+
+
+	_matrix TransformMatrix = ((CTransform*)pGameObject->Get_ComponentPtr(TEXT("Com_Transform")))->Get_WorldMatrix();
+
+	COBB* pObb = (COBB*)(pGameObject->Get_Colliders()).front();
+
+	for (auto& pCell : m_Cells)
+	{
+		_vector vA = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_A)), 1.f);
+		_vector vB = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_B)), 1.f);
+		_vector vC = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_C)), 1.f);
+
+
+		if (pObb->Collision_Cell(vA, vB, vC, TransformMatrix))
+		{
+			 _int iIndex = pCell->Get_Index();
+			 pGameObject->Push_CellCulIndex(iIndex);
+		}
+	}
+}
+
 
 _float CNavigation::Compute_Height(_fvector vPos)
 {
@@ -180,6 +215,7 @@ _bool CNavigation::isGround(_fvector vPosition, _float* OutfCellY)
 }
 
 
+
 #ifdef _DEBUG
 
 HRESULT CNavigation::Render()
@@ -255,8 +291,8 @@ void CNavigation::Free()
 {
 	__super::Free();
 
-	for (auto& pCell : m_Cells)
-		Safe_Release(pCell);
+	/*for (auto& pCell : m_Cells)
+		Safe_Release(pCell);*/
 
 	Safe_Release(m_pShader);
 

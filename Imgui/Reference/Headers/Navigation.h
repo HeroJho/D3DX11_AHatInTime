@@ -21,6 +21,12 @@ public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 
+	void Push_Cell(class CCell* pCell);
+	void Clear_Cell() { m_Cells.clear(); };
+
+public:
+	void Ready_CellCollision(class CGameObject* pGameObject);
+
 public:
 	// 나의 셀에 대해 y값을 얻어온다
 	_float Compute_Height(_fvector  vPos);

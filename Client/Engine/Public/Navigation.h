@@ -22,7 +22,7 @@ public:
 
 
 public:
-	void Ready_CellCollision(class CGameObject* pGameObject);
+	void Ready_CellCollision(class CGameObject* pGameObject, _int* iIndexs, _int iSize);
 
 public:
 	const vector<class CGameObject*>* Get_CurCellColliders();

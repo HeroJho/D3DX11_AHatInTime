@@ -324,7 +324,7 @@ void CUI_Shop::Tick_Close(_float fTimeDelta)
 
 void CUI_Shop::Tick_Open(_float fTimeDelta)
 {
-	if (0.01f > m_fRatio && -0.01f < m_fRatio)
+	if (0.2f > m_fRatio && -0.2f < m_fRatio)
 	{
 		m_UiInfo.fY = m_vOpenPos.y;
 		Set_State(STATE_IDLE);

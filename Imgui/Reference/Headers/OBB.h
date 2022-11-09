@@ -50,6 +50,8 @@ private:
 	_float Compute_Height(_fvector vPos, _float3* vPoss);
 	_bool Compute_LayPlane(_fvector vPos, _fvector vDir, _float3* Out_pPoss);
 
+	_float3 Compute_MaxRad(_fvector vA, _fvector vB, _fvector vC, _float* Out_MaxRad);
+
 	virtual void Edit_Col(COLLIDERDESC Desc) override;
 
 #ifdef _DEBUG

@@ -7,6 +7,7 @@
 #include "CamManager.h"
 #include "ItemManager.h"
 #include "GameManager.h"
+#include "UIManager.h"
 
 #include "Camera_Free.h"
 
@@ -125,7 +126,7 @@ void CPlayer::Set_State()
 			break;
 		case STATE_MAGEDROW:
 		{
-			CItemManager::Get_Instance()->Make_Flask(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_pTransformCom->Get_State(CTransform::STATE_LOOK), 5.f, 3.f, m_pNavigationCom->Get_CurCellIndex());
+			CItemManager::Get_Instance()->Make_Flask(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_pTransformCom->Get_State(CTransform::STATE_LOOK), 7.f, 5.f, m_pNavigationCom->Get_CurCellIndex());
 		}
 			break;
 		default:
@@ -1854,8 +1855,18 @@ HRESULT CPlayer::Render()
 	}
 
 
-	if(CToolManager::Get_Instance()->Get_Debug())
+	if (CToolManager::Get_Instance()->Get_Debug())
+	{
 		Render_Col();
+		
+		_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		_float fX = XMVectorGetX(vPos);
+		_float fY = XMVectorGetY(vPos);
+		_float fZ = XMVectorGetZ(vPos);
+		wstring str = to_wstring(fX) + TEXT(" / ") + to_wstring(fY) + TEXT(" / ") + to_wstring(fZ);
+		CToolManager::Get_Instance()->Render_Fonts(TEXT("Font_Nexon"), str.data(), _float2(50.f, 50.f), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(1.f, 1.f), false);
+	}
+
 
 
 	return S_OK;
@@ -2302,6 +2313,8 @@ void CPlayer::OnDipY()
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vNaviPos), 1.f));
 
 		m_pTransformCom->ResetGravity();
+
+		m_TickStates.push_back(STATE_IDLE);
 	}
 
 }

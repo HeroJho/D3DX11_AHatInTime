@@ -54,7 +54,8 @@ HRESULT CLevel_GamePlay::Initialize()
 
 	// CCamManager::Get_Instance()->Play_CutScene(0, true);
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
-	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
+	CItemManager::Get_Instance()->Add_Hat(TEXT("Witch_Hat"));
+	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
 
 
@@ -142,7 +143,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 
 	CPuzzleCube::PUZZLECUBEDESC PuzzleCubeDesc;
-	PuzzleCubeDesc.vPos = _float3(-56.1f, 5.f, 9.66f);
+	PuzzleCubeDesc.vPos = _float3(-35.7f, 16.f, -8.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
+		return E_FAIL;
+	PuzzleCubeDesc.vPos = _float3(-46.7f, 5.f, 6.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
 		return E_FAIL;
 
@@ -159,7 +163,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	CSpikeBlock::SPIKEBLOCKDESC SpikeDesc;
 	SpikeDesc.vPos = _float3(-33.136f, 21.577f, 112.661f);
 	SpikeDesc.vScale = _float3(1.f, 1.f, 1.f);
-	SpikeDesc.vRotation = _float3(-17.3f, -4.2f, 10.8f);
+	SpikeDesc.vRotation = _float3(-17.3f, -4.2f + 90.f, 10.8f);
 	SpikeDesc.vColScale = _float3(8.5f, 2.4f, 2.6f);
 	SpikeDesc.vMyRight = true;
 	SpikeDesc.vAix = _float3(1.f, 0.f, 0.f);
@@ -207,6 +211,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault_State"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-44.3f, -0.74f, 3.19f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
 		return E_FAIL;
+
 	
 
 
@@ -263,6 +268,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
 
+	ObjDesc.vPos = _float3(-44.2f, 9.85f, -27.3f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
+		return E_FAIL;
 	
 
 	Safe_Release(pGameInstance);

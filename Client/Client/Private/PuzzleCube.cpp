@@ -61,13 +61,12 @@ void CPuzzleCube::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
-	if (CGameInstance::Get_Instance()->Key_Down(DIK_U))
-	{
-		/*_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-		vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);*/
-		m_pTransformCom->Jump(7.f);
-	}
+
+	if (m_bInitDrop)
+		return;
+	m_fUpOnTimeAcc += fTimeDelta;
+	if (5.f < m_fUpOnTimeAcc)
+		m_bInitDrop = true;
 
 
 	switch (m_eState)
@@ -101,6 +100,9 @@ void CPuzzleCube::Tick_Out(_float fTimeDelta)
 
 void CPuzzleCube::LateTick(_float fTimeDelta)
 {
+	if (!m_bInitDrop)
+		return;
+
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
 	if (nullptr == m_pRendererCom)
@@ -118,7 +120,7 @@ void CPuzzleCube::LateTick(_float fTimeDelta)
 		m_eState = STATE_OUT;
 	
 	if(STATE_IN != m_eState)
-		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom);
+		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 3.f);
 
 
 	bisIsWisp = CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
@@ -134,7 +136,7 @@ void CPuzzleCube::LateTick(_float fTimeDelta)
 
 
 
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
+	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_EM, this);
 
 
 

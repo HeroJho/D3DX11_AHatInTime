@@ -59,6 +59,7 @@ void CMapManager::Make_PickedModel()
 	string sTemp = CMapManager::Get_Instance()->Get_PickedString();
 	CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
 	Desc.vScale = _float3(1.f, 1.f, 1.f);
+	Desc.vSize = _float3(1.f, 1.f, 1.f);
 	CGameObject* pObj = nullptr;
 	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), LEVEL_MAPTOOL, TEXT("Layer_Model"), &pObj, &Desc);
 
@@ -222,7 +223,8 @@ void CMapManager::Load_MapData()
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 		CGameObject* pObj = nullptr;
-		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), LEVEL_MAPTOOL, TEXT("Layer_Model"), &pObj, &Desc);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), LEVEL_MAPTOOL, TEXT("Layer_Model"), &pObj, &Desc)))
+			return;
 
 		RELEASE_INSTANCE(CGameInstance);
 
@@ -441,6 +443,8 @@ void CMapManager::Check_ClickedColor()
 	if (nullptr == pModel)
 		return;
 
+	if (!pModel->Get_Colliders().size())
+		return;
 	((COBB*)pModel->Get_Colliders().front())->Set_Clicked();
 }
 

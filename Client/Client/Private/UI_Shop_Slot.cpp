@@ -186,7 +186,7 @@ void CUI_Shop_Slot::Idle_Tick(_float fTimeDelta)
 
 void CUI_Shop_Slot::Buy_Tick(_float fTimeDelta)
 {
-	if (0.5f > m_UiInfo.fX && -0.5f < m_UiInfo.fX)
+	if (1.f > m_UiInfo.fX && -1.f < m_UiInfo.fX)
 	{
 		m_UiInfo.fX = 0.f;
 		return;

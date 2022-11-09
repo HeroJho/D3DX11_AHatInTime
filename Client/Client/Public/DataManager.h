@@ -28,6 +28,9 @@ public:
 		_bool	bWall;
 		_int	iTagID;
 
+		_int iNaviIndexSize;
+		_int*	piNaviIndexs;
+
 	}DATA_MAP_OBJ;
 
 	typedef struct dataMap

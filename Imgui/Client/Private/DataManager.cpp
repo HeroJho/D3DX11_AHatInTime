@@ -520,6 +520,14 @@ HRESULT CDataManager::Save_Map(_int iMapID)
 	ofs.write((char*)&iMapID, sizeof(int));		// ID
 	ofs.write((char*)&iNumObj, sizeof(int));	// NumObj
 
+
+	CNavigation* pNavi = CNavigation::Create(m_pDevice, m_pContext);
+	pNavi->Clear_Cell();
+	vector<CCell*>* pCells = CMeshManager::Get_Instance()->Get_Cells();
+	for (auto& pCell : *pCells)
+		pNavi->Push_Cell(pCell);
+
+
 	for (auto& Model : *pMap)
 	{
 		// Name
@@ -546,8 +554,21 @@ HRESULT CDataManager::Save_Map(_int iMapID)
 		ofs.write((char*)&ColDesc.vSize, sizeof(_float3));
 		ofs.write((char*)&ColDesc.bWall, sizeof(_bool));
 		ofs.write((char*)&ColDesc.iTagID, sizeof(_int));
+
+
+		// 내 컬쎌 찾기
+		pNavi->Ready_CellCollision(Model.second);
+		list<_int>* pIndexs = Model.second->Get_CellCulIndex();
+		_int iSize = pIndexs->size();
+		ofs.write((char*)&iSize, sizeof(_int));
+		
+		for (auto& iIndex : *pIndexs)
+			ofs.write((char*)&iIndex, sizeof(_int));
+
 	}
 
+
+	Safe_Release(pNavi);
 
 	ofs.close();
 
@@ -592,8 +613,18 @@ CDataManager::DATA_MAP* CDataManager::Load_Map(_int iMapID)
 		ifs.read((char*)&DMJ->vSize, sizeof(_float3));
 		ifs.read((char*)&DMJ->bWall, sizeof(_bool));
 		ifs.read((char*)&DMJ->iTagID, sizeof(_int));
-		// DMJ->iTagID = 0;
-		_int adsf = 0;
+		
+
+		_int iSize = 0;
+		ifs.read((char*)&iSize, sizeof(_int));
+		DMJ->piNaviIndexs = new _int[iSize];
+		for (_uint i = 0; i < iSize; ++i)
+		{
+			_int iIndex = 0;
+			ifs.read((char*)&iIndex, sizeof(_int));
+			DMJ->piNaviIndexs[i] = iIndex;
+		}
+
 	}
 
 

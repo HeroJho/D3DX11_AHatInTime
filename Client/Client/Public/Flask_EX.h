@@ -35,16 +35,14 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-
+	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
 
 
 protected:
-	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
-	CModel*					m_pModelCom = nullptr;
 
-
+	_bool					m_bTickAttack = false;
 
 protected:
 	HRESULT Ready_Components();

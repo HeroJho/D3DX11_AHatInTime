@@ -45,7 +45,7 @@ HRESULT CStaticModel_Col::Initialize(void * pArg)
 
 
 	// 셀에 등록한다
-	m_pNavigationCom->Ready_CellCollision(this);
+	CToolManager::Get_Instance()->Ready_CellCollision(this, Desc->piNaviIndexs, Desc->iNaviIndexSize);
 
 	return S_OK;
 }
@@ -83,9 +83,6 @@ HRESULT CStaticModel_Col::Ready_Components(STATICMODELDESC* Desc)
 		return E_FAIL;
 
 
-	/* For.Com_Navigation */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom)))
-		return E_FAIL;
 
 
 	/* For.Com_Collider */
@@ -135,7 +132,6 @@ void CStaticModel_Col::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
 }

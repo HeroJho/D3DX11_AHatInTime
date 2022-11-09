@@ -47,6 +47,10 @@ public:
 	HRESULT AddCollider(CCollider::TYPE eType, CCollider::tagColliderDesc Desc);
 
 
+	void Clear_CellCulIndex() { m_CellCuls.clear(); }
+	void Push_CellCulIndex(_int iIndex) { m_CellCuls.push_back(iIndex); }
+	list<_int>* Get_CellCulIndex() { return &m_CellCuls; }
+
 protected:
 	ID3D11Device*			m_pDevice = nullptr;
 	ID3D11DeviceContext*	m_pContext = nullptr;
@@ -58,6 +62,7 @@ protected: /* 객체에게 추가된 컴포넌트들을 키로 분류하여 보관한다. */
 	// 콜라이더 보관
 	list<CCollider*>		m_Colliders;
 	
+	list<_int>				m_CellCuls;
 
 protected:
 	_float				m_fCamDistance = 0.f;

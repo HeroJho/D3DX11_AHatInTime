@@ -66,7 +66,7 @@ void CSpikeBlock::Tick(_float fTimeDelta)
 
 	if (m_Desc.vMyRight)
 	{
-		_vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+		_vector vRight = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
 		m_pTransformCom->Turn(vRight, m_Desc.fSpeed, fTimeDelta);
 	}
 	else
@@ -179,8 +179,14 @@ HRESULT CSpikeBlock::Render()
 
 void CSpikeBlock::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	if ("Tag_Player" == Desc.pOther->Get_Tag() && !strcmp("StaticOBB", Desc.OtherDesc.sTag) && !strcmp("StaticOBB", Desc.MyDesc.sTag))
-		m_pOther = Desc.pOther;
+	if ("Tag_Player" == Desc.pOther->Get_Tag() && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+	{
+		
+		if (((COBB*)Get_StaticOBB())->Collision(Desc.pOther->Get_StaticOBB()))
+			m_pOther = Desc.pOther;
+		
+	}
+
 
 
 }

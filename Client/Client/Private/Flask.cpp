@@ -57,8 +57,14 @@ void CFlask::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	if(!m_bOn)
-		m_pTransformCom->Go_Dir(XMLoadFloat3(&m_Desc.vDir), m_Desc.fDirPow, fTimeDelta, m_pNavigationCom);
+	if (!m_bOn)
+	{
+		_vector vDir = XMLoadFloat3(&m_Desc.vDir);
+		_vector vRightDir =  XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMVector3Normalize(vDir));
+		m_pTransformCom->Go_Dir(vDir, m_Desc.fDirPow, fTimeDelta, m_pNavigationCom);
+		m_pTransformCom->Turn(vRightDir, 10.f, fTimeDelta);
+	}
+
 }
 
 void CFlask::LateTick(_float fTimeDelta)
@@ -67,7 +73,7 @@ void CFlask::LateTick(_float fTimeDelta)
 
 	__super::LateTick(fTimeDelta);
 
-	m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 0.7f);
+	m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 3.f);
 
 
 	_matrix mWorld = m_pTransformCom->Get_OriScaleWorldMatrix();
@@ -81,6 +87,12 @@ void CFlask::LateTick(_float fTimeDelta)
 		|| COBB::COL_BLOCK == Get_StaticOBB()->Get_ColState())
 	{
 		m_bOn = true;
+		m_bEx = true;
+	}
+
+
+	if (m_bEx)
+	{
 
 		CFlask_EX::FLASKEXDESC Desc;
 		XMStoreFloat3(&Desc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
@@ -92,7 +104,7 @@ void CFlask::LateTick(_float fTimeDelta)
 
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_ITEM, this);
+	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PROJECT, this);
 	RELEASE_INSTANCE(CGameInstance);
 }
 
@@ -118,20 +130,8 @@ HRESULT CFlask::SetUp_State(_fmatrix StateMatrix)
 
 void CFlask::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	//if ("Tag_Player" == Desc.pOther->Get_Tag())
-	//{
-	//	if (!strcmp("StaticOBB", Desc.OtherDesc.sTag))
-	//	{
-	//		if (Get_Dead())
-	//			return;
-
-	//		CPlayer* pPlayer = (CPlayer*)Desc.pOther;
-
-	//		pPlayer->Get_Item(m_InvenDesc);
-
-	//		Set_Dead(true);
-	//	}
-	//}
+	if(!strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+		m_bEx = true;
 }
 
 
@@ -176,6 +176,12 @@ HRESULT CFlask::Ready_Components()
 	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
 		return E_FAIL;
 
+	ColDesc.vCenter = _float3(0.f, 0.77f, 0.f);
+	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	ColDesc.vSize = _float3(0.2f, 0.2f, 0.2f);
+	strcpy(ColDesc.sTag, "Attacked_Sphere");
+	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+		return E_FAIL;
 
 
 	return S_OK;

@@ -49,51 +49,28 @@ HRESULT CFlask_EX::Initialize(void * pArg)
 
 void CFlask_EX::Tick(_float fTimeDelta)
 {
-
+	if (m_bTickAttack)
+		Set_Dead(true);
 }
 
 void CFlask_EX::LateTick(_float fTimeDelta)
 {
+	Tick_Col(m_pTransformCom->Get_WorldMatrix());
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PROJECT, this);
+	RELEASE_INSTANCE(CGameInstance);
+
 	if (nullptr == m_pRendererCom)
 		return;
 
-	Tick_Col(m_pTransformCom->Get_WorldMatrix());
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	m_bTickAttack = true;
 }
 
 HRESULT CFlask_EX::Render()
 {
-	//if (nullptr == m_pModelCom ||
-	//	nullptr == m_pShaderCom)
-	//	return E_FAIL;
-
-	//CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
-
-
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldMatrix(), sizeof(_float4x4))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-	//	return E_FAIL;
-
-	//RELEASE_INSTANCE(CGameInstance);
-
-
-
-	//_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-
-	//for (_uint i = 0; i < iNumMeshes; ++i)
-	//{
-	//	if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-	//		return E_FAIL;
-
-	//	if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 0)))
-	//		return E_FAIL;
-	//}
-
 
 
 	Render_Col();
@@ -113,11 +90,6 @@ HRESULT CFlask_EX::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
 
-	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
-		return E_FAIL;
-
-	///* For.Com_Model */
 	//if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, , TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 	//	return E_FAIL;
 
@@ -137,6 +109,23 @@ HRESULT CFlask_EX::Ready_Components()
 
 
 	return S_OK;
+}
+
+
+
+void CFlask_EX::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+{
+	if (!strcmp("EX_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+	{
+		
+		if ("Tag_PuzzleCube" == Desc.pOther->Get_Tag())
+		{
+			CTransform* pTran = (CTransform*)Desc.pOther->Get_ComponentPtr(TEXT("Com_Transform"));
+			pTran->Jump(12.f);
+		}
+
+		m_bTickAttack = true;
+	}
 }
 
 
@@ -173,8 +162,5 @@ void CFlask_EX::Free()
 	__super::Free();
 
 
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
 }

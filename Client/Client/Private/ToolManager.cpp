@@ -173,6 +173,11 @@ HRESULT CToolManager::Clone_Navi()
 	return S_OK;
 }
 
+void CToolManager::Ready_CellCollision(CGameObject * pObj, _int* iIndexs, _int iSize)
+{
+	m_pNavi->Ready_CellCollision(pObj, iIndexs, iSize);
+}
+
 
 
 

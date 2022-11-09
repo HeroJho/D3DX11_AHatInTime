@@ -379,6 +379,17 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		ifs.read((char*)&DMJ->vSize, sizeof(_float3));
 		ifs.read((char*)&DMJ->bWall, sizeof(_bool));
 		ifs.read((char*)&DMJ->iTagID, sizeof(_int));
+
+		_int iSize = 0;
+		ifs.read((char*)&iSize, sizeof(_int));
+		DMJ->piNaviIndexs = new _int[iSize];
+		DMJ->iNaviIndexSize = iSize;
+		for (_uint j = 0; j < iSize; ++j)
+		{
+			_int iIndex = 0;
+			ifs.read((char*)&iIndex, sizeof(_int));
+			DMJ->piNaviIndexs[j] = iIndex;
+		}
 	}
 
 	ifs.close();
@@ -423,6 +434,10 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		Desc.vSize = DataObj.vSize;
 		Desc.bWall = DataObj.bWall;
 		Desc.iTagID = DataObj.iTagID;
+
+		Desc.iNaviIndexSize = DataObj.iNaviIndexSize;
+		Desc.piNaviIndexs = DataObj.piNaviIndexs;
+
 
 		if (0.01f < Desc.vSize.x)
 		{
@@ -474,6 +489,8 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 			(*iter).second.push_back(mStoreLocal);
 		}
 
+
+		Safe_Delete_Array(DataObj.piNaviIndexs);
 	}
 
 

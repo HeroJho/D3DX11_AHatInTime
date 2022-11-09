@@ -52,6 +52,8 @@ private:
 	_float					m_fAlpa = 0.f;
 	STATE					m_eState = STATE_END;
 
+	_float					m_fUpOnTimeAcc = 0.f;
+	_float					m_bInitDrop = false;
 
 private:
 	CShader*				m_pShaderCom = nullptr;

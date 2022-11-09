@@ -27,6 +27,10 @@ public:
 		_bool	bWall;
 		_int	iTagID;
 
+		_int iNaviIndexSize;
+		_int*	piNaviIndexs;
+
+
 	}STATICMODELDESC;
 
 private:
@@ -46,8 +50,7 @@ public:
 private:
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
-	CNavigation*			m_pNavigationCom = nullptr;
-
+	
 private:
 	TCHAR					m_cModelTag[MAX_PATH];
 	_float3					m_vAxis;

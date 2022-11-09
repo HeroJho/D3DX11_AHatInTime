@@ -66,7 +66,8 @@ HRESULT CStaticModel::Initialize(void * pArg)
 	_vector vScale = XMLoadFloat3(&Desc->vScale);
 	vScale = XMVectorSetW(vScale, 1.f);
 
-	if (!lstrcmp(TEXT("Tree1"), m_cModelTag) || !lstrcmp(TEXT("tree2"), m_cModelTag) || !lstrcmp(TEXT("Tree3"), m_cModelTag))
+	if (!lstrcmp(TEXT("Tree1"), m_cModelTag) || !lstrcmp(TEXT("tree2"), m_cModelTag) || !lstrcmp(TEXT("Tree3"), m_cModelTag) ||
+		!lstrcmp(TEXT("tree_thin_01"), m_cModelTag) || !lstrcmp(TEXT("tree_thin_02"), m_cModelTag) || !lstrcmp(TEXT("tree_thin_03"), m_cModelTag) || !lstrcmp(TEXT("tree_thin_04"), m_cModelTag))
 	{
 		if (1.1f > XMVectorGetX(vScale) && 1.1f > XMVectorGetY(vScale) && 1.1f > XMVectorGetZ(vScale))
 		{
@@ -76,7 +77,6 @@ HRESULT CStaticModel::Initialize(void * pArg)
 		}
 
 	}
-
 
 	m_pTransformCom->Set_Scale(vScale);
 
@@ -349,11 +349,21 @@ HRESULT CStaticModel::Ready_Components(STATICMODELDESC* Desc)
 	CCollider::COLLIDERDESC ColDesc;
 	ColDesc.vCenter = Desc->vCenter;
 	ColDesc.vRotation = Desc->vRotation;
-	ColDesc.vSize = Desc->vSize;
 	ColDesc.bWall = Desc->bWall;
 	ColDesc.iTagID = Desc->iTagID;
-	if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
-		return E_FAIL;
+
+	if (0.1f < Desc->vSize.x)
+	{
+		ColDesc.vSize = Desc->vSize;
+		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+			return E_FAIL;
+	}
+	else
+	{
+		ColDesc.vSize = _float3(0.01f, 0.01f, 0.01f);
+		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }

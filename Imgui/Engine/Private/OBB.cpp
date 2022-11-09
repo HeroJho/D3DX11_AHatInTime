@@ -139,36 +139,156 @@ _bool COBB::Collision(CCollider * pTargetCollider)
 
 _bool COBB::Collision_Cell(_fvector vA, _fvector vB, _fvector vC, _fmatrix TransformMatrix)
 {
-	_vector vZeroA = XMVectorSetY(vA, 0.f);
-	_vector vZeroB = XMVectorSetY(vB, 0.f);
-	_vector vZeroC = XMVectorSetY(vC, 0.f);
+	// Ver.3
+	{
+		m_pOriginal_OBB->Transform(*m_pOBB, TransformMatrix);
 
 
-	_matrix mZeroMatrix = TransformMatrix;
-	mZeroMatrix.r[3] = XMVectorSetY(mZeroMatrix.r[3], 0.f);
+		_float3			vPoints[8];
+		m_pOBB->GetCorners(vPoints);
+
+		// 셀의 중점에서 가장 먼 점과의 거리를 알아낸다.
+		_float fCellRad = 0.f;
+		_float3 vCellSentor = Compute_MaxRad(vA, vB, vC, &fCellRad);
+		vCellSentor.y = 0.f;
+
+		// OBB 면의 ""
+		// 201 
+		_float fOBBRad = 0.f;
+		_float3 vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[2]),
+			XMLoadFloat3(&vPoints[0]),
+			XMLoadFloat3(&vPoints[1]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		_float fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 230 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[2]),
+			XMLoadFloat3(&vPoints[3]),
+			XMLoadFloat3(&vPoints[0]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 273 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[2]),
+			XMLoadFloat3(&vPoints[7]),
+			XMLoadFloat3(&vPoints[3]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 267 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[2]),
+			XMLoadFloat3(&vPoints[6]),
+			XMLoadFloat3(&vPoints[7]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 654 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[6]),
+			XMLoadFloat3(&vPoints[5]),
+			XMLoadFloat3(&vPoints[4]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 647 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[6]),
+			XMLoadFloat3(&vPoints[4]),
+			XMLoadFloat3(&vPoints[7]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 154 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[1]),
+			XMLoadFloat3(&vPoints[5]),
+			XMLoadFloat3(&vPoints[4]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 140 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[1]),
+			XMLoadFloat3(&vPoints[4]),
+			XMLoadFloat3(&vPoints[0]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 374 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[3]),
+			XMLoadFloat3(&vPoints[7]),
+			XMLoadFloat3(&vPoints[4]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 340 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[3]),
+			XMLoadFloat3(&vPoints[4]),
+			XMLoadFloat3(&vPoints[0]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 215 
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[2]),
+			XMLoadFloat3(&vPoints[1]),
+			XMLoadFloat3(&vPoints[5]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+		// 256
+		fOBBRad = 0.f;
+		vOBBSentor = Compute_MaxRad(XMLoadFloat3(&vPoints[2]),
+			XMLoadFloat3(&vPoints[5]),
+			XMLoadFloat3(&vPoints[6]), &fOBBRad);
+		vOBBSentor.y = 0.f;
+
+		fDis = XMVectorGetX(XMVector3Length(XMLoadFloat3(&vCellSentor) - XMLoadFloat3(&vOBBSentor)));
+		if (fCellRad + fOBBRad > fDis)
+			return true;
+
+	}
 
 
-	_float3 vCenterTemp = m_pOriginal_OBB->Center;
-
-	m_pOriginal_OBB->Center = _float3(vCenterTemp.x, 0.f, vCenterTemp.z);
-	/* 회전에 대한 상태. */
-	_matrix		RotationMatrix = XMMatrixRotationX(XMConvertToRadians(m_ColliderDesc.vRotation.x)) *
-		XMMatrixRotationY(XMConvertToRadians(m_ColliderDesc.vRotation.y)) *
-		XMMatrixRotationZ(XMConvertToRadians(m_ColliderDesc.vRotation.z));
-
-	RotationMatrix = XMMatrixInverse(nullptr, RotationMatrix);
-	m_pOriginal_OBB->Transform(*m_pOriginal_OBB, RotationMatrix);
-
-
-
-	m_pOriginal_OBB->Transform(*m_pOBB, mZeroMatrix);
-
-	RotationMatrix = XMMatrixInverse(nullptr, RotationMatrix);
-	m_pOriginal_OBB->Transform(*m_pOriginal_OBB, RotationMatrix);
-	m_pOriginal_OBB->Center = vCenterTemp;
-
-
-	return m_pOBB->Intersects(vZeroA, vZeroB, vZeroC);
+	return false;
 }
 
 
@@ -356,6 +476,23 @@ _bool COBB::Compute_LayPlane(_fvector vPos, _fvector vDir, _float3 * Out_pPoss)
 	}
 
 	return bInter;
+}
+
+_float3 COBB::Compute_MaxRad(_fvector vA, _fvector vB, _fvector vC, _float * Out_MaxRad)
+{
+	// 셀의 중점에서 가장 먼 점과의 거리를 알아낸다.
+	// 셀의 중점
+	_fvector vSentor = (vA + vB + vC) / 3.f;
+	_float fA = XMVectorGetX(XMVector3Length(vA - vSentor));
+	_float fB = XMVectorGetX(XMVector3Length(vB - vSentor));
+	_float fC = XMVectorGetX(XMVector3Length(vC - vSentor));
+
+	// 가정 먼 셀과의 거리
+	_float fRad = max(fA, fB);
+	*Out_MaxRad = max(fRad, fC);
+	_float3 vfSentor;
+	XMStoreFloat3(&vfSentor, vSentor);
+	return vfSentor;
 }
 
 void COBB::Edit_Col(COLLIDERDESC Desc)

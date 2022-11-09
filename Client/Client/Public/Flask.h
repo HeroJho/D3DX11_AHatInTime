@@ -54,6 +54,8 @@ private:
 	FLASKDESC m_Desc;
 	_bool m_bOn = false;
 
+	_bool m_bEx = false;
+
 protected:
 	HRESULT Ready_Components();
 

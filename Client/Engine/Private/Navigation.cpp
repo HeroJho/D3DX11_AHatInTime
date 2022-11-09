@@ -171,7 +171,7 @@ _int CNavigation::Find_NaviIndex(_fvector vPos)
 	return -1;
 }
 
-void CNavigation::Ready_CellCollision(CGameObject* pGameObject)
+void CNavigation::Ready_CellCollision(CGameObject* pGameObject, _int* iIndexs, _int iSize)
 {
 	if (pGameObject->Get_Colliders()->empty())
 		return;
@@ -180,8 +180,11 @@ void CNavigation::Ready_CellCollision(CGameObject* pGameObject)
 	
 	COBB* pObb = (COBB*)(*(pGameObject->Get_Colliders())).front();
 
-	for (auto& pCell : m_Cells)
+
+	for (_uint i = 0; i < iSize; ++i)
 	{
+		CCell* pCell = m_Cells[iIndexs[i]];
+
 		_vector vA = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_A)), 1.f);
 		_vector vB = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_B)), 1.f);
 		_vector vC = XMVectorSetW(XMLoadFloat3(&pCell->Get_Point(CCell::POINT_C)), 1.f);
@@ -192,6 +195,7 @@ void CNavigation::Ready_CellCollision(CGameObject* pGameObject)
 			pCell->Set_Color(_float4(1.f, 0.f, 0.f, 1.f));
 			pCell->Add_Collider(pGameObject);
 		}
+
 	}
 }
 
