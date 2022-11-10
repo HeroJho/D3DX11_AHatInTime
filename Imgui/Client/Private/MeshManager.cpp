@@ -355,14 +355,14 @@ HRESULT CMeshManager::Add_Cell(_float3 * vPoss, _bool bCheckOverlap)
 	if (bCheckOverlap)
 	{
 		// 시계 방향으로 정리한다 0 1 2
-		Sort_Cell(vPoss);
+		// Sort_Cell(vPoss);
 		// 마우스 Lay와 Cell의 법선 벡터를 내적하여 2차 Sort를 한다.
 		Sort_CellByDot(vPoss);
 	}
 
-	// 똑같은 셀이 등록되어 있는지 확인한다.
-	if (bCheckOverlap && Check_Cell(vPoss))
-		return S_OK;
+	//// 똑같은 셀이 등록되어 있는지 확인한다.
+	//if (!bCheckOverlap && Check_Cell(vPoss))
+	//	return S_OK;
 
 	if (!bCheckOverlap && !Check_Area(vPoss))
 		return S_OK;

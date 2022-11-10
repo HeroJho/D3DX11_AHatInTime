@@ -121,7 +121,7 @@ void CFlask_EX::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 		if ("Tag_PuzzleCube" == Desc.pOther->Get_Tag())
 		{
 			CTransform* pTran = (CTransform*)Desc.pOther->Get_ComponentPtr(TEXT("Com_Transform"));
-			pTran->Jump(12.f);
+			pTran->Jump(9.f);
 		}
 
 		m_bTickAttack = true;

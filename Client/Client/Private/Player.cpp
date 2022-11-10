@@ -518,6 +518,11 @@ void CPlayer::HillDown_Tick(_float fTimeDelta)
 
 		m_pTransformCom->Set_Up(vPlan);
 	}
+	else if(1.f > m_fHillDownTimeAcc)
+	{
+		HillDown_Input(fTimeDelta);
+		return;
+	}
 
 
 	// 만약에 vDot 값이 1.99가 넘어간다면 평평한 곳에 왔다는 것
@@ -664,13 +669,13 @@ void CPlayer::State_Input(_float fTimeDelta)
 
 	if (pGameInstance->Key_Down(DIK_LSHIFT))
 	{
-		if ("Mask_Cat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+		if ("Mask_Cat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) && CWisp::STATE_IDLE == m_pWisp->Get_State())
 			m_pWisp->Start();
-		else if ("Mask_Fox" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+		else if ("Mask_Fox" == m_pSockatCom->Get_SlotTag(SLOT_HAT) && !m_bFoxMask)
 		{
 			m_bFoxMask = true;
 			m_fFoxMaskTimeAcc = 0.f;
-			CToolManager::Get_Instance()->Set_WithOutPlayer(0.2f);
+			CToolManager::Get_Instance()->Set_WithOutPlayer(0.15f);
 		}
 
 	}

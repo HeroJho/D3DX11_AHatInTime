@@ -130,7 +130,7 @@ private:
 
 	// For. Data
 public:
-	HRESULT Save_Map(_int iMapID);
+	HRESULT Save_Map(_int iMapID, _bool bCul = false);
 	DATA_MAP* Load_Map(_int iMapID);
 
 	HRESULT Save_Anim(char* pFileName, list<ANIM_LINEAR_DATA> Datas);

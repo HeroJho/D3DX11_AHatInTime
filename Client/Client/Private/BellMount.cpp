@@ -53,6 +53,10 @@ HRESULT CBellMount::Initialize(void * pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&pDesc->vPos), 1.f));
 	m_pTransformCom->Set_CurSpeed(0.f);
 
+	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), pDesc->vAngle.x
+		, XMVectorSet(0.f, 1.f, 0.f, 0.f), pDesc->vAngle.y
+		, XMVectorSet(0.f, 0.f, 1.f, 0.f), pDesc->vAngle.z);
+
 
 	m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(XMLoadFloat3(&pDesc->vPos));
 
@@ -230,8 +234,8 @@ void CBellMount::Attacked(_int iAT)
 	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	CGameManager::Get_Instance()->Set_SavePoint(m_iNaviIndex, vPos);
 
-	if (!m_bFirstHit)
-		CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM3);
+	//if (!m_bFirstHit)
+	//	CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM3);
 	m_bFirstHit = true;
 }
  

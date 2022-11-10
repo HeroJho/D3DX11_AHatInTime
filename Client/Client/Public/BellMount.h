@@ -16,6 +16,7 @@ public:
 	{
 		_float fRatio;
 		_float3 vPos;
+		_float3 vAngle;
 
 	}WISPDESC;
 

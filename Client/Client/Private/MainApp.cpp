@@ -108,7 +108,7 @@ void CMainApp::Tick(_float fTimeDelta)
 
 
 
-	if (m_pGameInstance->Key_Down(DIK_TAB))
+	if (m_pGameInstance->Key_Down(DIK_Q))
 	{
 		if (m_bTap)
 			m_bTap = false;

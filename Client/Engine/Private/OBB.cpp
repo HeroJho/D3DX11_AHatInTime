@@ -163,30 +163,46 @@ void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTra
 
 		pStaticOBB = ((COBB*)pObj->Get_Colliders()->front());
 
+		// 웹 안에 있다
+		if (bIsInWisp)
+		{
+			// 충돌체가 Wall아니면 노충돌
+			if (!pStaticOBB->Get_Desc().bWall)
+				continue;
+		}
+		// 웹 밖에 있다
+		else
+		{
+			// 충돌체가 Wall아니면 충돌
+			if (pStaticOBB->Get_Desc().bWall)
+				continue;
+		}
+
+
 		// 충돌했따 -> 방향으로 민다
 		if (pStaticOBB->Collision_OBB(this, pTran, &vPushDir, &fDis))
 		{
 
 			// 웹 안에 있다
-			if (bIsInWisp)
-			{
-				// 충돌체가 Wall아니면 노충돌
-				if (!pStaticOBB->Get_Desc().bWall)
-				{
-					m_eColState = COL_NONE;
-					continue;
-				}
-			}
-			// 웹 밖에 있다
-			else
-			{
-				// 충돌체가 Wall아니면 충돌
-				if (pStaticOBB->Get_Desc().bWall)
-				{
-					m_eColState = COL_NONE;
-					continue;
-				}
-			}
+			//if (bIsInWisp)
+			//{
+			//	// 충돌체가 Wall아니면 노충돌
+			//	if (!pStaticOBB->Get_Desc().bWall)
+			//	{
+			//		m_eColState = COL_NONE;
+			//		continue;
+			//	}
+			//}
+			//// 웹 밖에 있다
+			//else
+			//{
+			//	// 충돌체가 Wall아니면 충돌
+			//	if (pStaticOBB->Get_Desc().bWall)
+			//	{
+			//		m_eColState = COL_NONE;
+			//		continue;
+			//	}
+			//}
 
 
 
@@ -537,6 +553,22 @@ void COBB::Compute_Pigi(CGameObject * pObj, CNavigation* pNavi, CTransform* pTra
 		pStaticOBB = ((COBB*)pOBB);
 
 
+		if (bIsInWisp)
+		{
+			// 충돌체가 Wall아니면 노충돌
+			if (!pStaticOBB->Get_Desc().bWall)
+				continue;
+		}
+		// 웹 밖에 있다
+		else
+		{
+			// 충돌체가 Wall아니면 충돌
+			if (pStaticOBB->Get_Desc().bWall)
+				continue;
+
+		}
+
+
 		// 충돌했따 -> 방향으로 민다
 		if (pStaticOBB->Collision_OBB(this, pTran, &vPushDir, &fDis, true))
 		{
@@ -567,14 +599,8 @@ void COBB::Compute_Pigi(CGameObject * pObj, CNavigation* pNavi, CTransform* pTra
 
 			if (COL_ON == m_eColState)
 			{
-				m_eColState = COL_ON;
-
-				// 점프를 했다면 면을 안 탄다.
-				if (!(0.001f > pTran->Get_Velocity()))
-				{
-					m_eColState = COL_ON;
-				}
-
+				if (0.01f < pTran->Get_Velocity())
+					m_eColState = COL_NONE;
 			}
 			else if (COL_DOWN == m_eColState)
 			{

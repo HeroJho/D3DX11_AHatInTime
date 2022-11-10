@@ -3,35 +3,32 @@
 #include "Client_Defines.h"
 #include "GameObject.h"
 
-
 BEGIN(Engine)
 class CShader;
-class CTexture;
 class CRenderer;
 class CTransform;
 class CModel;
 END
 
-
 BEGIN(Client)
 
-class CWisp final : public CGameObject
+class CRotateBarrel final : public CGameObject
 {
 public:
-	typedef struct tagWispDesc
+	typedef struct tagRotateBarrelDesc
 	{
-		CGameObject* pOwner = nullptr;
-		_float fMaxRatio;
-		_float fSpeed;
-	}WISPDESC;
+		_float3 vPos;
+		_float3 vRotation;
 
-public:
-	enum STATE { STATE_IDLE, STATE_RING_UP, STATE_RING_DOWN, STATE_END };
+
+		_float fSpeed;
+
+	}ROTATEBARRELDESC;
 
 private:
-	CWisp(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CWisp(const CWisp& rhs);
-	virtual ~CWisp() = default;
+	CRotateBarrel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CRotateBarrel(const CRotateBarrel& rhs);
+	virtual ~CRotateBarrel() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -40,32 +37,27 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-public:
-	void Start();
-	STATE Get_State() { return m_eState; };
+	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
+
 
 private:
 	HRESULT Ready_Components();
 
+	class CGameObject* m_pOther = nullptr;
+
 
 private:
-	CGameObject* m_pOwner = nullptr;
+	ROTATEBARRELDESC m_Desc;
 
-	_float	m_fRatio = 0.f;
-	_float m_fMaxRatio = 0.f;
-	STATE m_eState = STATE_END;
-
-	_float m_fSpeed = 0.f;
-
-	
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
 	CTransform*				m_pTransformCom = nullptr;
 	CModel*					m_pModelCom = nullptr;
 
+
 public:
-	static CWisp* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CRotateBarrel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

@@ -16,6 +16,8 @@
 #include "SpikeBlock.h"
 #include "BadgeS_Base.h"
 #include "PuzzleCube.h"
+#include "RotateBarrel.h"
+#include "StatuePosed.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -34,11 +36,10 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
+	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
 
-
-	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
+	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_NPC(TEXT("Layer_Npc"))))
@@ -135,13 +136,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar * pLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 {
-	if (FAILED(CDataManager::Get_Instance()->Load_Map(0, LEVEL_GAMEPLAY)))
+	if (FAILED(CDataManager::Get_Instance()->Load_Map(1, LEVEL_GAMEPLAY)))
 		return E_FAIL;
 
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
 
+	
 	CPuzzleCube::PUZZLECUBEDESC PuzzleCubeDesc;
 	PuzzleCubeDesc.vPos = _float3(-35.7f, 16.f, -8.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
@@ -149,6 +151,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	PuzzleCubeDesc.vPos = _float3(-46.7f, 5.f, 6.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
 		return E_FAIL;
+	PuzzleCubeDesc.vPos = _float3(-70.6f, 25.f, -14.8f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
+		return E_FAIL;
+
 
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))
@@ -157,8 +163,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
 	
-	/*if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RollingBarrel"), LEVEL_GAMEPLAY, pLayerTag)))
-		return E_FAIL; */
+
+
+
+
 	
 	CSpikeBlock::SPIKEBLOCKDESC SpikeDesc;
 	SpikeDesc.vPos = _float3(-33.136f, 21.577f, 112.661f);
@@ -170,7 +178,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	SpikeDesc.fSpeed = 0.4f;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
 		return E_FAIL;
-
 	SpikeDesc.vPos = _float3(-41.5f, 29.35f, 128.9f);
 	SpikeDesc.vScale = _float3(1.5f, 0.5f, 0.5f);
 	SpikeDesc.vRotation = _float3(0.f, 0.f, 0.f);
@@ -180,6 +187,23 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	SpikeDesc.fSpeed = 0.2f;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
 		return E_FAIL;
+
+	SpikeDesc.vPos = _float3(-42.24f, 5.47f, 9.72f);
+	SpikeDesc.vScale = _float3(1.f, 1.f, 1.f);
+	SpikeDesc.vRotation = _float3(0.f, 31.8f, -21.5f);
+	SpikeDesc.vColScale = _float3(8.5f, 2.4f, 2.6f);
+	SpikeDesc.vMyRight = true;
+	SpikeDesc.vAix = _float3(1.f, 0.f, 0.f);
+	SpikeDesc.fSpeed = 2.f;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
+		return E_FAIL;
+	CRotateBarrel::ROTATEBARRELDESC RotateDesc;
+	RotateDesc.vPos = _float3(-62.43f, 16.68f, 13.52f);
+	RotateDesc.vRotation = _float3(-39.9f, -2.9f, 78.7f);
+	RotateDesc.fSpeed = 5.f;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RotateBarrel"), LEVEL_GAMEPLAY, pLayerTag, &RotateDesc)))
+		return E_FAIL;
+
 
 
 
@@ -227,16 +251,42 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 
 
 	CBellMount::WISPDESC WispDesc;
-	WispDesc.vPos = _float3(-41.75f, 6.43f, 83.f);
-	WispDesc.fRatio = 100;
+	WispDesc.vPos = _float3(-62.4f, 4.42f, -25.11f);
+	WispDesc.vAngle = _float3(0.f, 103.1f, 0.f);
+	WispDesc.fRatio = 70;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
-
-
+	WispDesc.vPos = _float3(-41.75f, 6.43f, 83.f);
+	WispDesc.vAngle = _float3(0.f, 0.f, 0.f);
+	WispDesc.fRatio = 70;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
+		return E_FAIL;
 	WispDesc.vPos = _float3(-28.0f, 1.4f, 44.84f);
-	WispDesc.fRatio = 15;
+	WispDesc.vAngle = _float3(0.f, 0.f, 0.f);
+	WispDesc.fRatio = 20;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMountEye"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
+
+
+
+
+	CStatuePosed::STATUEDESC StatueDesc;
+	CGameObject* pObj = nullptr;
+	StatueDesc.vPos = _float3(-62.f, 10.5f, -24.7f);
+	StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StatuePosed"), LEVEL_GAMEPLAY, pLayerTag, &pObj, &StatueDesc)))
+		return E_FAIL;
+	StatueDesc.vPos = _float3(-62.f, 10.5f, -26.7f);
+	StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StatuePosed"), LEVEL_GAMEPLAY, pLayerTag, &pObj, &StatueDesc)))
+		return E_FAIL;
+	StatueDesc.vPos = _float3(-62.f, 10.5f, -28.7f);
+	StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StatuePosed"), LEVEL_GAMEPLAY, pLayerTag, &pObj, &StatueDesc)))
+		return E_FAIL;
+
+
+
 
 	
 	CGameObject::CREATUREINFODESC ObjDesc;
@@ -255,19 +305,15 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	ObjDesc.vPos = _float3(-11.9f, 22.2f, 93.417f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
-
 	ObjDesc.vPos = _float3(-15.18f, 24.72f, 108.52f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
-
 	ObjDesc.vPos = _float3(-17.7f, 26.22f, 114.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
-
 	ObjDesc.vPos = _float3(-19.45f, 28.9f, 120.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;
-
 	ObjDesc.vPos = _float3(-44.2f, 9.85f, -27.3f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SubSpider"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
 		return E_FAIL;

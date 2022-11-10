@@ -119,8 +119,12 @@ void CPuzzleCube::LateTick(_float fTimeDelta)
 	else
 		m_eState = STATE_OUT;
 	
-	if(STATE_IN != m_eState)
-		m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 3.f);
+	if (STATE_IN != m_eState)
+	{
+		if (0.2f > fTimeDelta)
+			m_pTransformCom->Tick_Gravity(fTimeDelta, m_pNavigationCom, 3.f);
+	}
+
 
 
 	bisIsWisp = CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION));

@@ -187,6 +187,12 @@
     <Filter Include="02.GameObjects\Item\vault\Vault_State">
       <UniqueIdentifier>{fad272a1-8973-4cd0-a1a8-2eb119ece32f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Map\RotateBarrel">
+      <UniqueIdentifier>{ab413709-c668-4713-b9ac-b85194894f72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Monster\StatuePosed">
+      <UniqueIdentifier>{d78b5e62-bf20-4022-bdf8-19bd4bf249d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -399,6 +405,12 @@
     <ClInclude Include="..\public\Vault_State.h">
       <Filter>02.GameObjects\Item\vault\Vault_State</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\RotateBarrel.h">
+      <Filter>02.GameObjects\Map\RotateBarrel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\StatuePosed.h">
+      <Filter>02.GameObjects\Monster\StatuePosed</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -595,6 +607,12 @@
     </ClCompile>
     <ClCompile Include="..\private\Vault_State.cpp">
       <Filter>02.GameObjects\Item\vault\Vault_State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\RotateBarrel.cpp">
+      <Filter>02.GameObjects\Map\RotateBarrel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\StatuePosed.cpp">
+      <Filter>02.GameObjects\Monster\StatuePosed</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -494,7 +494,7 @@ HRESULT CDataManager::LoadModelPass()
 
 
 
-HRESULT CDataManager::Save_Map(_int iMapID)
+HRESULT CDataManager::Save_Map(_int iMapID, _bool bCul)
 {
 	char cPullName[MAX_PATH];
 	char cName[MAX_PATH];
@@ -556,14 +556,18 @@ HRESULT CDataManager::Save_Map(_int iMapID)
 		ofs.write((char*)&ColDesc.iTagID, sizeof(_int));
 
 
-		// 내 컬쎌 찾기
-		pNavi->Ready_CellCollision(Model.second);
-		list<_int>* pIndexs = Model.second->Get_CellCulIndex();
-		_int iSize = pIndexs->size();
-		ofs.write((char*)&iSize, sizeof(_int));
-		
-		for (auto& iIndex : *pIndexs)
-			ofs.write((char*)&iIndex, sizeof(_int));
+		// if (bCul)
+		{
+			// 내 컬쎌 찾기
+			pNavi->Ready_CellCollision(Model.second);
+			list<_int>* pIndexs = Model.second->Get_CellCulIndex();
+			_int iSize = pIndexs->size();
+			ofs.write((char*)&iSize, sizeof(_int));
+
+			for (auto& iIndex : *pIndexs)
+				ofs.write((char*)&iIndex, sizeof(_int));
+		}
+
 
 	}
 

@@ -344,7 +344,11 @@ _bool CMapManager::Check_CulList(TCHAR* czName)
 	for (auto& Cull : m_CullList)
 	{
 		TCHAR szTemp[MAX_PATH];
-		CToolManager::Get_Instance()->CtoTC(Cull.data(), szTemp);
+		char sTemp[MAX_PATH];
+		ZeroMemory(szTemp, sizeof(TCHAR) * MAX_PATH);
+		ZeroMemory(sTemp, sizeof(char) * MAX_PATH);
+		strcpy_s(sTemp, Cull.data());
+		CToolManager::Get_Instance()->CtoTC(sTemp, szTemp);
 
 		if (!lstrcmp(czName, szTemp))
 			return true;

@@ -198,10 +198,12 @@
     <ClInclude Include="..\public\PuzzleCube.h" />
     <ClInclude Include="..\public\RectBarrel.h" />
     <ClInclude Include="..\public\RollingBarrel.h" />
+    <ClInclude Include="..\public\RotateBarrel.h" />
     <ClInclude Include="..\public\SkyModel.h" />
     <ClInclude Include="..\public\SpikeBlock.h" />
     <ClInclude Include="..\Public\StaticModel_Col.h" />
     <ClInclude Include="..\public\StaticModel_Instance.h" />
+    <ClInclude Include="..\public\StatuePosed.h" />
     <ClInclude Include="..\public\SubconEye.h" />
     <ClInclude Include="..\public\SubSpider.h" />
     <ClInclude Include="..\Public\Terrain.h" />
@@ -267,10 +269,12 @@
     <ClCompile Include="..\private\PuzzleCube.cpp" />
     <ClCompile Include="..\private\RectBarrel.cpp" />
     <ClCompile Include="..\private\RollingBarrel.cpp" />
+    <ClCompile Include="..\private\RotateBarrel.cpp" />
     <ClCompile Include="..\private\SkyModel.cpp" />
     <ClCompile Include="..\private\SpikeBlock.cpp" />
     <ClCompile Include="..\Private\StaticModel_Col.cpp" />
     <ClCompile Include="..\private\StaticModel_Instance.cpp" />
+    <ClCompile Include="..\private\StatuePosed.cpp" />
     <ClCompile Include="..\private\SubconEye.cpp" />
     <ClCompile Include="..\private\SubSpider.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
