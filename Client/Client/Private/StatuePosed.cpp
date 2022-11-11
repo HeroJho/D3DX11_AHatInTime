@@ -56,6 +56,10 @@ HRESULT CStatuePosed::Initialize(void * pArg)
 
 	Set_State(STATE_IDLE);
 
+	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), Desc->vRotation.x
+		, XMVectorSet(0.f, 1.f, 0.f, 0.f), Desc->vRotation.y
+		, XMVectorSet(0.f, 0.f, 1.f, 0.f), Desc->vRotation.z);
+
 
 	m_pTransformCom->Set_RealOriScale(XMVectorSet(1.f, 1.f, 1.f, 1.f));
 

@@ -16,7 +16,7 @@ class CCutSceneManager final : public CBase
 	DECLARE_SINGLETON(CCutSceneManager)
 
 public:
-	enum CUT_STATE { CUT_CAM3, CUT_EYE, CUT_END };
+	enum CUT_STATE { CUT_CAM3, CUT_EYE, CUT_CAM4, CUT_END };
 
 private:
 	CCutSceneManager();
@@ -53,6 +53,13 @@ private:
 	_float m_fEndTimeAcc = 0.f;
 	_float m_fDisAppearEyeTimeAcc = 0.f;
 
+
+	// Cam_4
+public:
+	void Tick_Cam4(_float fTimeDelta);
+
+private:
+	_uint m_i4Index = 4;
 
 public:
 	virtual void Free() override;

@@ -150,6 +150,8 @@ void CPuzzleCube::LateTick(_float fTimeDelta)
 
 
 	RELEASE_INSTANCE(CGameInstance);
+
+	Compute_CamZ(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 }
 
 HRESULT CPuzzleCube::Render()

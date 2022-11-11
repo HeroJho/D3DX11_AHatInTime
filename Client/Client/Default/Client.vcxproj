@@ -181,6 +181,7 @@
     <ClInclude Include="..\public\Flask.h" />
     <ClInclude Include="..\public\Flask_EX.h" />
     <ClInclude Include="..\public\GameManager.h" />
+    <ClInclude Include="..\public\IceBox.h" />
     <ClInclude Include="..\public\Item.h" />
     <ClInclude Include="..\public\ItemManager.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
@@ -208,6 +209,7 @@
     <ClInclude Include="..\public\SubSpider.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\Test.h" />
+    <ClInclude Include="..\public\TimeObject.h" />
     <ClInclude Include="..\public\ToolManager.h" />
     <ClInclude Include="..\Public\UI.h" />
     <ClInclude Include="..\Public\UIManager.h" />
@@ -232,6 +234,7 @@
     <ClInclude Include="..\public\Vault_2.h" />
     <ClInclude Include="..\public\Vault_Mad_Crow.h" />
     <ClInclude Include="..\public\Vault_State.h" />
+    <ClInclude Include="..\public\VSnatcher.h" />
     <ClInclude Include="..\public\Wisp.h" />
     <ClInclude Include="..\public\Yarn.h" />
     <ClInclude Include="Client.h" />
@@ -252,6 +255,7 @@
     <ClCompile Include="..\private\Flask.cpp" />
     <ClCompile Include="..\private\Flask_EX.cpp" />
     <ClCompile Include="..\private\GameManager.cpp" />
+    <ClCompile Include="..\private\IceBox.cpp" />
     <ClCompile Include="..\private\Item.cpp" />
     <ClCompile Include="..\private\ItemManager.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
@@ -279,6 +283,7 @@
     <ClCompile Include="..\private\SubSpider.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\Test.cpp" />
+    <ClCompile Include="..\private\TimeObject.cpp" />
     <ClCompile Include="..\private\ToolManager.cpp" />
     <ClCompile Include="..\Private\UI.cpp" />
     <ClCompile Include="..\Private\UIManager.cpp" />
@@ -303,6 +308,7 @@
     <ClCompile Include="..\private\Vault_2.cpp" />
     <ClCompile Include="..\private\Vault_Mad_Crow.cpp" />
     <ClCompile Include="..\private\Vault_State.cpp" />
+    <ClCompile Include="..\private\VSnatcher.cpp" />
     <ClCompile Include="..\private\Wisp.cpp" />
     <ClCompile Include="..\private\Yarn.cpp" />
     <ClCompile Include="Client.cpp" />

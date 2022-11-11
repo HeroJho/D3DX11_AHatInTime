@@ -116,10 +116,12 @@ _bool CNavigation::isMove(_fvector vPosition)
 	else
 	{
 		/* 나간방향에 이웃이 있었다면. */
+		_uint iCount = 0;
 		if (0 <= iNeighborIndex)
 		{
-			while (true)
+			while (10 > iCount)
 			{
+				++iCount;
 				if (0 > iNeighborIndex)
 					return false;
 
@@ -132,6 +134,7 @@ _bool CNavigation::isMove(_fvector vPosition)
 				}
 			}
 
+			m_NavigationDesc.iCurrentIndex = Find_NaviIndex(vPosition);
 		}
 
 		/* 나간방향에 이웃이 없었다면. */

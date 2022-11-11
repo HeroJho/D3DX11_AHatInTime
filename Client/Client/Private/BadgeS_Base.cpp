@@ -6,6 +6,8 @@
 #include "UIManager.h"
 #include "Player.h"
 
+#include "IceBox.h"
+
 CBadgeS_Base::CBadgeS_Base(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -54,6 +56,21 @@ HRESULT CBadgeS_Base::Initialize(void * pArg)
 	m_pTransformCom->Set_RealOriScale(XMVectorSet(1.5f, 1.5f, 1.5f, 1.f));
 
 	Set_State(STATE_IDLE);
+	m_pModelCom->Play_Animation(0.1f);
+
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	
+	CIceBox::ICEBOXDESC IceDesc;
+	IceDesc.pOwner = this;
+	IceDesc.vPos = pDesc->vPos;
+	IceDesc.vScale = _float3(1.5f, 1.5f, 1.5f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_IceBox"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &IceDesc)))
+		return E_FAIL;
+	
+	RELEASE_INSTANCE(CGameInstance);
+
 
 	return S_OK;
 }
@@ -181,23 +198,19 @@ void CBadgeS_Base::LateTick(_float fTimeDelta)
 	Tick_Col(mWorld, nullptr, nullptr);
 
 
-	if (m_pModelCom->Play_Animation(fTimeDelta))
-	{
-		// if (MONSTER_DIE == m_eState)
-
-	}
-
-
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_NPC, this);
+
+	if (m_bIsIce)
+	{
+		m_pModelCom->Play_Animation(fTimeDelta);
+		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_NPC, this);
+	}
 
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
-	RELEASE_INSTANCE(CGameInstance);
 	if (true == isDraw)
-	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-	}
 
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 HRESULT CBadgeS_Base::Render()

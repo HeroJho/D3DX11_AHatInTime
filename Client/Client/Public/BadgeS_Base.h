@@ -53,6 +53,8 @@ public:
 
 	virtual void Attacked(_int iAT);
 
+	void Set_Ice() { m_bIsIce = true; }
+
 private:
 	virtual HRESULT Ready_Components();
 
@@ -72,6 +74,9 @@ private:
 	STATE m_eState = STATE_END;
 	
 	CGameObject* m_pPlayer = nullptr;
+
+	_bool m_bIsIce = false;
+
 
 public:
 	static CBadgeS_Base* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

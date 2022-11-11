@@ -21,6 +21,7 @@ public:
 	{
 		CGameObject* pTarget = nullptr;
 		_float3 vPos;
+		_float3 vRotation;
 	}STATUEDESC;
 
 public:

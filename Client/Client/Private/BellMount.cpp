@@ -225,8 +225,8 @@ void CBellMount::Attacked(_int iAT)
 	m_pModelCom->Set_AnimIndex(0, true);
 
 	// 퀘를 완료하면 더이상 열리지 않는다
-	if (CGameManager::Get_Instance()->Get_JumpVault2())
-		return;
+	//if (CGameManager::Get_Instance()->Get_JumpVault2())
+	//	return;
 
 	m_eState = STATE_RING_UP;
 	

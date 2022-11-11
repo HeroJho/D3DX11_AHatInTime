@@ -2,6 +2,8 @@
 #include "..\Public\Flask_EX.h"
 #include "GameInstance.h"
 
+#include "IceBox.h"
+
 CFlask_EX::CFlask_EX(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -122,6 +124,11 @@ void CFlask_EX::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 		{
 			CTransform* pTran = (CTransform*)Desc.pOther->Get_ComponentPtr(TEXT("Com_Transform"));
 			pTran->Jump(9.f);
+		}
+		else if ("Tag_IceBox" == Desc.pOther->Get_Tag())
+		{
+			CIceBox* pIce = (CIceBox*)Desc.pOther;
+			pIce->Attacked();
 		}
 
 		m_bTickAttack = true;

@@ -32,6 +32,10 @@ void CCutSceneManager::Tick(_float fTimeDelta)
 		break;
 	case CUT_EYE:
 		Tick_Eye(fTimeDelta);
+		break;
+	case CUT_CAM4:
+		Tick_Cam4(fTimeDelta);
+		break;
 	default:
 		break;
 	}
@@ -115,6 +119,18 @@ void CCutSceneManager::Tick_Eye(_float fTimeDelta)
 	}
 
 
+}
+
+void CCutSceneManager::Tick_Cam4(_float fTimeDelta)
+{
+	if (7 < m_i4Index)
+		m_eState = CUT_END;
+
+	if (CCamManager::Get_Instance()->Get_IsEnd())
+	{
+		CCamManager::Get_Instance()->Play_CutScene(m_i4Index, true);
+		++m_i4Index;
+	}
 }
 
 void CCutSceneManager::Free()

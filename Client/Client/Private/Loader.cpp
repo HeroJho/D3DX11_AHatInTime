@@ -34,6 +34,10 @@
 
 #include "StatuePosed.h"
 #include "BadgeS_Base.h"
+#include "IceBox.h"
+#include "TimeObject.h"
+#include "VSnatcher.h"
+
 
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
@@ -318,6 +322,22 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_StatuePosed"),
 		CStatuePosed::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	/* For.Prototype_GameObject_IceBox*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_IceBox"),
+		CIceBox::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_TimeObject*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_TimeObject"),
+		CTimeObject::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_VSnatcher*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_VSnatcher"),
+		CVSnatcher::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
 	
 	
 	/* For.Prototype_GameObject_ColorCube*/
@@ -455,6 +475,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("BellMount"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("BadgeS_Base"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("StatuePosed"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("TimeObject"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("VSnatcher"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 
 
 	/* For. PartsModel */
@@ -501,7 +523,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
 
-	vector<CCell*> Cells = CDataManager::Get_Instance()->Load_Navi(1);
+	vector<CCell*> Cells = CDataManager::Get_Instance()->Load_Navi(3);
 
 	/* For.Prototype_Component_Navigation */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),

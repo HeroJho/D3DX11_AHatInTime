@@ -193,6 +193,12 @@
     <Filter Include="02.GameObjects\Monster\StatuePosed">
       <UniqueIdentifier>{d78b5e62-bf20-4022-bdf8-19bd4bf249d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Item\TimeObject">
+      <UniqueIdentifier>{ff6aec29-ec60-48f9-af10-d425c1373062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\VSnatcher">
+      <UniqueIdentifier>{73063b42-8f8d-4a38-9f9d-fefdf73cce4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -411,6 +417,15 @@
     <ClInclude Include="..\public\StatuePosed.h">
       <Filter>02.GameObjects\Monster\StatuePosed</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\IceBox.h">
+      <Filter>02.GameObjects\NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\TimeObject.h">
+      <Filter>02.GameObjects\Item\TimeObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\VSnatcher.h">
+      <Filter>02.GameObjects\VSnatcher</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -613,6 +628,15 @@
     </ClCompile>
     <ClCompile Include="..\private\StatuePosed.cpp">
       <Filter>02.GameObjects\Monster\StatuePosed</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\IceBox.cpp">
+      <Filter>02.GameObjects\NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\TimeObject.cpp">
+      <Filter>02.GameObjects\Item\TimeObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\VSnatcher.cpp">
+      <Filter>02.GameObjects\VSnatcher</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

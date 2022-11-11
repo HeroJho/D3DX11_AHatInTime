@@ -8,6 +8,7 @@
 #include "ItemManager.h"
 #include "GameManager.h"
 #include "UIManager.h"
+#include "CutSceneManager.h"
 
 #include "Camera_Free.h"
 
@@ -407,6 +408,7 @@ void CPlayer::Jump_Tick(_float fTimeDelta)
 {
 	m_eJumpState = STATE_IDLE;
 
+
 	Jump_Input(fTimeDelta);
 
 	m_pTransformCom->LinearTurn(m_vDestLook, 0.1f, 0.3f, fTimeDelta, false);
@@ -680,8 +682,15 @@ void CPlayer::State_Input(_float fTimeDelta)
 
 	}
 
-	RELEASE_INSTANCE(CGameInstance);
+	if (pGameInstance->Key_Down(DIK_L))
+	{
+		CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM4);
+	}
 
+	
+
+	RELEASE_INSTANCE(CGameInstance);
+	 
 }
 
 void CPlayer::Idle_Input(_float fTimeDelta)
@@ -1276,8 +1285,16 @@ void CPlayer::Rend_Input(_float fTimeDleta)
 		}
 		else
 		{
-			m_TickStates.push_back(STATE_JUMP);
-			m_pTransformCom->Set_CurSpeed(m_fWalkSpeed);
+			if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) || "" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+			{
+				m_TickStates.push_back(STATE_JUMP);
+				m_pTransformCom->Set_CurSpeed(m_fWalkSpeed);
+			}
+			else
+			{
+				m_TickStates.push_back(STATE_RUNJUMP);
+				m_pTransformCom->Set_CurSpeed(m_fRunSpeed);
+			}
 		}
 	}
 
@@ -2277,7 +2294,7 @@ void CPlayer::Find_NearstMonster()
 
 void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	if(("Tag_PuzzleCube" == Desc.pOther->Get_Tag() || "Tag_Barrel" == Desc.pOther->Get_Tag()) && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag))
+	if(("Tag_PuzzleCube" == Desc.pOther->Get_Tag() || "Tag_Barrel" == Desc.pOther->Get_Tag() || "Tag_IceBox" == Desc.pOther->Get_Tag()) && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag))
 		Get_StaticOBB()->Compute_Pigi(Desc.pOther, m_pNavigationCom, m_pTransformCom, CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
 
 

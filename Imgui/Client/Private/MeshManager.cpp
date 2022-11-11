@@ -364,7 +364,7 @@ HRESULT CMeshManager::Add_Cell(_float3 * vPoss, _bool bCheckOverlap)
 	//if (!bCheckOverlap && Check_Cell(vPoss))
 	//	return S_OK;
 
-	if (!bCheckOverlap && !Check_Area(vPoss))
+	if (bCheckOverlap && !Check_Area(vPoss))
 		return S_OK;
 
 	// 추가한다.
