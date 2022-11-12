@@ -46,7 +46,7 @@ HRESULT CCamManager::Create_Cam()
 	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 
 	CGameObject* pObj = nullptr;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_GAMEPLAY, TEXT("Layer_Cam"), &pObj, &CameraDesc)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Camera_Free"), LEVEL_STATIC, TEXT("Layer_Cam"), &pObj, &CameraDesc)))
 		return E_FAIL;
 
 	m_pCamTool = (CCamera_Free*)pObj;

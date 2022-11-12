@@ -32,19 +32,29 @@ HRESULT CToolManager::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	return S_OK;
 }
 
-HRESULT CToolManager::Change_Level(LEVEL eLevel)
+HRESULT CToolManager::Change_Level()
 {
+	if (LEVEL_END == m_eLEVEL)
+		return S_OK;
+
 	CGameInstance* pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 	if (nullptr == pGameInstance)
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, eLevel))))
+	if (FAILED(pGameInstance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eLEVEL))))
 		return E_FAIL;
 
 	Safe_Release(pGameInstance);
 
+	m_eLEVEL = LEVEL_END;
+
 	return S_OK;
+}
+
+void CToolManager::Resul_Level(LEVEL eLevel)
+{
+	m_eLEVEL = eLevel;
 }
 
 _float3 CToolManager::GetBesierPos(_float3 vPos1, _float3 vPos2, _float fT)
@@ -156,13 +166,13 @@ _uint CToolManager::Find_NaviIndex(_fvector vPos)
 	return m_pNavi->Find_NaviIndex(vPos);
 }
 
-HRESULT CToolManager::Clone_Navi()
+HRESULT CToolManager::Clone_Navi(LEVEL eLevel)
 {
 
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	CComponent*			pComponent = pGameInstance->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"));
+	CComponent*			pComponent = pGameInstance->Clone_Component(eLevel, TEXT("Prototype_Component_Navigation"));
 	if (nullptr == pComponent)
 		return E_FAIL;
 

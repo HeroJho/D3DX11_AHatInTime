@@ -126,7 +126,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar * pLayerTag)
 	ObjDesc.iMaxHP = 4;
 	ObjDesc.iHP = 4;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_GAMEPLAY, pLayerTag, &ObjDesc)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_STATIC, pLayerTag, &ObjDesc)))
 		return E_FAIL;
 
 
@@ -137,7 +137,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar * pLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 {
-	if (FAILED(CDataManager::Get_Instance()->Load_Map(5, LEVEL_GAMEPLAY)))   // 3 5
+	if (FAILED(CDataManager::Get_Instance()->Load_Map(3, LEVEL_GAMEPLAY)))   // 3 5
 		return E_FAIL;
 
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
@@ -295,17 +295,17 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	CGameObject* pObj = nullptr;
 	StatueDesc.vPos = _float3(-54.7f, -0.83f, 3.9f);
 	StatueDesc.vRotation = _float3(0.f, -122.2f, 0.f);
-	StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StatuePosed"), LEVEL_GAMEPLAY, pLayerTag, &pObj, &StatueDesc)))
 		return E_FAIL;
 	StatueDesc.vPos = _float3(-62.14f, -1.0f, -2.21f);
 	StatueDesc.vRotation = _float3(0.f, 26.1f, 0.f);
-	StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StatuePosed"), LEVEL_GAMEPLAY, pLayerTag, &pObj, &StatueDesc)))
 		return E_FAIL;
 	StatueDesc.vPos = _float3(-55.9f, -.4f, -17.95f);
 	StatueDesc.vRotation = _float3(0.f, -15.1f, 0.f);
-	StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StatuePosed"), LEVEL_GAMEPLAY, pLayerTag, &pObj, &StatueDesc)))
 		return E_FAIL;
 

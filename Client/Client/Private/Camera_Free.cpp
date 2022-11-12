@@ -53,7 +53,7 @@ void CCamera_Free::Tick(_float fTimeDelta)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-		m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+		m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 		Safe_AddRef(m_pPlayer);
 
 

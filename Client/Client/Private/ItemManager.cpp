@@ -113,7 +113,7 @@ HRESULT CItemManager::Make_Hat(TCHAR * pHatModelName, TCHAR* pItemModelName)
 		if (!lstrcmp(pItem.szModelName, pItemModelName) && 0 < pItem.iCount)
 		{
 			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-			CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+			CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 			RELEASE_INSTANCE(CGameInstance);
 
 			pPlayer->Get_Hat(pHatModelName);
@@ -141,7 +141,7 @@ void CItemManager::Change_Hat(TCHAR * pHatModelName)
 		if (!lstrcmp(Hat.szModelName, pHatModelName))
 		{
 			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-			CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+			CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 			RELEASE_INSTANCE(CGameInstance);
 
 			char temp[MAX_PATH];

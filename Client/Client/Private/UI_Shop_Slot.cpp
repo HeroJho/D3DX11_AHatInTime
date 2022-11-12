@@ -102,7 +102,7 @@ void CUI_Shop_Slot::Buy_Item()
 	Delete_AllChildUI();
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 	RELEASE_INSTANCE(CGameInstance);
 
 	pPlayer->Get_Hat(m_cItemTag);

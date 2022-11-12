@@ -61,8 +61,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_vDestLook = _float3{ 0.f, 0.f, 1.f };
 	m_pTransformCom->Set_Look(XMLoadFloat3(&m_vDestLook));
 	m_pTransformCom->Set_DestLook();
-	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-68.97f, 11.04f, 121.20f, 1.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-60.6f, -0.031f, -90.23f, 1.f));  // Boss
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-68.97f, 11.04f, 121.20f, 1.f));
+	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-60.6f, -0.031f, -90.23f, 1.f));  // Boss
 
 	m_pTransformCom->Set_CurSpeed(m_fWalkSpeed);
 
@@ -670,6 +670,16 @@ void CPlayer::State_Input(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	// TEST
+	if (pGameInstance->Key_Down(DIK_1))
+	{
+		CToolManager::Get_Instance()->Resul_Level(LEVEL_BOSS);
+		RELEASE_INSTANCE(CGameInstance);
+		return;
+	}
+
+
+
 	if (pGameInstance->Key_Down(DIK_LSHIFT))
 	{
 		if ("Mask_Cat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) && CWisp::STATE_IDLE == m_pWisp->Get_State())
@@ -688,7 +698,6 @@ void CPlayer::State_Input(_float fTimeDelta)
 		CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM4);
 	}
 
-	
 
 	RELEASE_INSTANCE(CGameInstance);
 	 
@@ -2282,6 +2291,24 @@ void CPlayer::Find_NearstMonster()
 	}
 
 }
+
+void CPlayer::SetPosNavi(LEVEL eLevel, _fvector vPos)
+{
+	Safe_Release(m_pNavigationCom);
+
+	/* For.Com_Navigation */
+	CNavigation::NAVIGATIONDESC NaviDesc;
+	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
+	NaviDesc.iCurrentIndex = 0;
+	if (FAILED(__super::Add_Component(eLevel, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+		return;
+
+	_vector vVPos = XMVectorSetW(vPos, 1.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vVPos);
+	_uint iIndex =  CToolManager::Get_Instance()->Find_NaviIndex(vVPos);
+	m_pNavigationCom->Set_NaviIndex(iIndex);
+}
+
 
 
 

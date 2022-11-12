@@ -97,6 +97,9 @@ _uint APIENTRY LoadingMain(void* pArg)
 	case LEVEL_GAMEPLAY:
 		pLoader->Loading_ForGamePlayLevel();
 		break;
+	case LEVEL_BOSS:
+		pLoader->Loading_ForBossLevel();
+		break;
 	}
 
 	LeaveCriticalSection(&pLoader->Get_CS());
@@ -528,7 +531,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
 
-	vector<CCell*> Cells = CDataManager::Get_Instance()->Load_Navi(5); // 3 5
+	vector<CCell*> Cells = CDataManager::Get_Instance()->Load_Navi(3); // 3 5
 
 	/* For.Prototype_Component_Navigation */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
@@ -536,6 +539,76 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 	if (FAILED(CToolManager::Get_Instance()->Clone_Navi()))
+		return E_FAIL;
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니ㅏㄷ.  "));
+
+	Safe_Release(pGameInstance);
+
+	m_isFinished = true;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_ForBossLevel()
+{
+	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+	lstrcpy(m_szLoadingText, TEXT("객체원형을 로딩중입니다. "));
+	/* 개ㅑㄱ체원형 로드한다. */
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다. "));
+	/* 텍스쳐를 로드한다. */
+
+
+
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다. "));
+	/* 모델를 로드한다. */
+
+
+
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩중입니다. "));
+
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
+
+	vector<CCell*> Cells = CDataManager::Get_Instance()->Load_Navi(5); // 3 5
+
+																	   /* For.Prototype_Component_Navigation */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_BOSS, TEXT("Prototype_Component_Navigation"),
+		CNavigation::Create(m_pDevice, m_pContext, &Cells))))
+		return E_FAIL;
+
+	if (FAILED(CToolManager::Get_Instance()->Clone_Navi(LEVEL_BOSS)))
 		return E_FAIL;
 
 

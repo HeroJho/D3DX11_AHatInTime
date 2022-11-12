@@ -202,6 +202,9 @@
     <Filter Include="02.GameObjects\Map\Toilet_SentorWall">
       <UniqueIdentifier>{8d1f24d5-8270-417b-9c9d-87f8918d4093}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\03.Boss">
+      <UniqueIdentifier>{eaef2e8b-06ac-4895-9965-760f40f1b1a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -432,6 +435,9 @@
     <ClInclude Include="..\public\Toilet_SentorWall.h">
       <Filter>02.GameObjects\Map\Toilet_SentorWall</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Level_Boss.h">
+      <Filter>01.Levels\03.Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -646,6 +652,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Toilet_SentorWall.cpp">
       <Filter>02.GameObjects\Map\Toilet_SentorWall</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_Boss.cpp">
+      <Filter>01.Levels\03.Boss</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

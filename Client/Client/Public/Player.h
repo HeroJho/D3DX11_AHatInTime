@@ -133,6 +133,8 @@ public:
 
 	void SlowSpeed(_float fSlowSpeed) { m_fSlowSpeed = fSlowSpeed; }
 
+	void SetPosNavi(LEVEL eLevel, _fvector vPos);
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;

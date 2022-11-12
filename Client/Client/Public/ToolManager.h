@@ -28,7 +28,8 @@ public:
 	void Set_Debug(_bool bDebug) { m_bDebug = bDebug; }
 
 public:
-	HRESULT Change_Level(LEVEL eLevel);
+	HRESULT Change_Level();
+	void  Resul_Level(LEVEL eLevel);
 
 public:
 	// FOR. Math
@@ -58,6 +59,8 @@ private:
 	list<char*> m_ManagedChar;
 	_bool m_bDebug = false;
 
+	LEVEL m_eLEVEL = LEVEL_END;
+
 
 	// For. TimeManager
 public:
@@ -77,7 +80,7 @@ private:
 	// For. Get_Navi
 public:
 	_uint Find_NaviIndex(_fvector vPos);
-	HRESULT Clone_Navi();
+	HRESULT Clone_Navi(LEVEL eLevel = LEVEL_GAMEPLAY);
 	void Ready_CellCollision(class CGameObject* pObj, _int* iIndexs, _int iSize);
 
 private:

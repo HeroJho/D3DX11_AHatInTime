@@ -19,6 +19,18 @@ HRESULT CTerrain::Initialize_Prototype()
 
 HRESULT CTerrain::Initialize(void * pArg)
 {
+	if (nullptr == pArg)
+	{
+		m_eLevel = LEVEL_GAMEPLAY;
+	}
+	else
+	{
+		TERRAINDESCs* pDesc = (TERRAINDESCs*)pArg;
+		m_eLevel = pDesc->eLevel;
+	}
+	
+
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 	
@@ -104,7 +116,7 @@ HRESULT CTerrain::Ready_Components()
 		return E_FAIL;
 
 	/* For.m_pNavigation */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigation)))
+	if (FAILED(__super::Add_Component(m_eLevel, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigation)))
 		return E_FAIL;
 
 

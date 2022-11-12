@@ -16,6 +16,13 @@ BEGIN(Client)
 
 class CTerrain final : public CGameObject
 {
+public:
+	typedef struct tagTerrainDesc
+	{
+		LEVEL eLevel;
+	}TERRAINDESCs;
+
+
 public: 
 	enum TEXTURETYPE { TYPE_DIFFUSE, TYPE_BRUSH, TYPE_FILTER, TYPE_END };
 private:
@@ -42,6 +49,8 @@ private:
 	ID3D11ShaderResourceView*		m_pFilterSRV = nullptr;
 
 	_bool	m_bTest = false;
+
+	LEVEL m_eLevel = LEVEL_END;
 
 private:
 	HRESULT Ready_Components();

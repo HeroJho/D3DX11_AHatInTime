@@ -157,7 +157,7 @@ void CMad_Crow::Tick_Idle(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	CGameObject* pPlayer = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	CGameObject* pPlayer = pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 	if (nullptr == pPlayer)
 	{
 		RELEASE_INSTANCE(CGameInstance);
@@ -189,7 +189,7 @@ void CMad_Crow::Tick_Chase(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	CGameObject* pPlayer = pGameInstance->Get_GameObjectPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), 0);
+	CGameObject* pPlayer = pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 	if (nullptr == pPlayer)
 	{
 		RELEASE_INSTANCE(CGameInstance);

@@ -158,6 +158,7 @@ HRESULT CMainApp::Render()
 #endif // _DEBUG
 
 	
+	CToolManager::Get_Instance()->Change_Level();
 
 	return S_OK;
 }
