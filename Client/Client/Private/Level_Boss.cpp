@@ -116,7 +116,7 @@ HRESULT CLevel_Boss::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-
+	// sss
 
 	CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 	pPlayer->SetPosNavi(LEVEL_BOSS, XMVectorSet(-60.6f, -0.031f, -90.23f, 1.f));
