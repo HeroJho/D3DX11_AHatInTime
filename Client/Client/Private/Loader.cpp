@@ -39,6 +39,7 @@
 #include "VSnatcher.h"
 
 
+
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
 #include "UI_Health.h"
@@ -68,7 +69,7 @@
 
 
 #include "Flask_EX.h"
-
+#include "Toilet_SentorWall.h"
 
 #include "Test.h"
 
@@ -247,6 +248,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CWisp::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_Toilet_SentorWall */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Toilet_SentorWall"),
+		CToilet_SentorWall::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
 	
 	/* For.Prototype_GameObject_Camera_Free */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Free"),
@@ -478,7 +484,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("TimeObject"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("VSnatcher"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 
-
 	/* For. PartsModel */
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Ori_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Sprint_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
@@ -523,7 +528,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
 
-	vector<CCell*> Cells = CDataManager::Get_Instance()->Load_Navi(3);
+	vector<CCell*> Cells = CDataManager::Get_Instance()->Load_Navi(5); // 3 5
 
 	/* For.Prototype_Component_Navigation */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),

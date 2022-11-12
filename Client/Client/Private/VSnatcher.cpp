@@ -40,13 +40,13 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 	for (auto& Data : LinearDatas)
 		Set_AnimLinearData(Data);
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-67.97f, 9.5f, 107.70f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
 	m_pTransformCom->Set_CurSpeed(1.f);
 
 	m_pTransformCom->Set_RealOriScale(XMVectorSet(2.f, 2.f, 2.f, 1.f));
 
 
-	Set_State(STATE_IDLE);
+	// Set_State(STATE_IDLE);
 	
 
 	m_iIndexs.push_back(9);
@@ -105,8 +105,30 @@ void CVSnatcher::Set_Anim()
 
 	switch (m_eState)
 	{
-
-
+	case STATE_APPEAR:
+		break;
+	case STATE_SOFTAPPEAR:
+		break;
+	case STATE_DISAPPEAR:
+		break;
+	case STATE_CURSE:
+		break;
+	case STATE_CURSELOOP:
+		break;
+	case STATE_HANDHOLD:
+		break;
+	case STATE_STEALHAT:
+		break;
+	case STATE_TALKIDLE:
+		break;
+	case STATE_TALKING:
+		break;
+	case STATE_THINKING:
+		break;
+	case STATE_END:
+		break;
+	default:
+		break;
 	}
 
 }

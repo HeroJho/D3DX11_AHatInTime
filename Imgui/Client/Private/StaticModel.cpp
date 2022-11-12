@@ -139,7 +139,7 @@ void CStaticModel::Tick(_float fTimeDelta)
 		if (CMapManager::Get_Instance()->Check_CulList(m_cModelTag))
 		{
 
-			if (!lstrcmp(TEXT("SubCon"), m_cModelTag) && m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
+			if ((!lstrcmp(TEXT("SubCon"), m_cModelTag) || !lstrcmp(TEXT("SubConBoss"), m_cModelTag)) && m_pModelCom->Picking(m_pTransformCom, &fMinDis, vPoss))
 			{
 				
 				_vector vMouseDir = XMVector3Normalize(XMLoadFloat3(&CGameInstance::Get_Instance()->Get_MouseDir()));
@@ -214,7 +214,7 @@ void CStaticModel::LateTick(_float fTimeDelta)
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 	RELEASE_INSTANCE(CGameInstance);
 
-	if (true == isDraw || !lstrcmp(m_cModelTag, TEXT("SubCon")) || !lstrcmp(m_cModelTag, TEXT("SubCon_Navi")))
+	if (true == isDraw || !lstrcmp(m_cModelTag, TEXT("SubCon")) || !lstrcmp(m_cModelTag, TEXT("SubConBoss")) || !lstrcmp(m_cModelTag, TEXT("SubCon_Navi")) || !lstrcmp(m_cModelTag, TEXT("SubConBoss_Navi")))
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 

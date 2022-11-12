@@ -11,6 +11,7 @@
 CLevel_Loading::CLevel_Loading(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
+	// D3D11_RASTERIZER_DESC
 }
 
 HRESULT CLevel_Loading::Initialize(LEVEL eNextLevel)

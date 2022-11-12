@@ -61,7 +61,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_vDestLook = _float3{ 0.f, 0.f, 1.f };
 	m_pTransformCom->Set_Look(XMLoadFloat3(&m_vDestLook));
 	m_pTransformCom->Set_DestLook();
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-68.97f, 11.04f, 121.20f, 1.f));
+	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-68.97f, 11.04f, 121.20f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-60.6f, -0.031f, -90.23f, 1.f));  // Boss
 
 	m_pTransformCom->Set_CurSpeed(m_fWalkSpeed);
 

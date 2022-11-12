@@ -199,6 +199,9 @@
     <Filter Include="02.GameObjects\VSnatcher">
       <UniqueIdentifier>{73063b42-8f8d-4a38-9f9d-fefdf73cce4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Map\Toilet_SentorWall">
+      <UniqueIdentifier>{8d1f24d5-8270-417b-9c9d-87f8918d4093}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -426,6 +429,9 @@
     <ClInclude Include="..\public\VSnatcher.h">
       <Filter>02.GameObjects\VSnatcher</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Toilet_SentorWall.h">
+      <Filter>02.GameObjects\Map\Toilet_SentorWall</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -637,6 +643,9 @@
     </ClCompile>
     <ClCompile Include="..\private\VSnatcher.cpp">
       <Filter>02.GameObjects\VSnatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Toilet_SentorWall.cpp">
+      <Filter>02.GameObjects\Map\Toilet_SentorWall</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

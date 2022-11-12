@@ -210,6 +210,7 @@
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\Test.h" />
     <ClInclude Include="..\public\TimeObject.h" />
+    <ClInclude Include="..\public\Toilet_SentorWall.h" />
     <ClInclude Include="..\public\ToolManager.h" />
     <ClInclude Include="..\Public\UI.h" />
     <ClInclude Include="..\Public\UIManager.h" />
@@ -284,6 +285,7 @@
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\Test.cpp" />
     <ClCompile Include="..\private\TimeObject.cpp" />
+    <ClCompile Include="..\private\Toilet_SentorWall.cpp" />
     <ClCompile Include="..\private\ToolManager.cpp" />
     <ClCompile Include="..\Private\UI.cpp" />
     <ClCompile Include="..\Private\UIManager.cpp" />
