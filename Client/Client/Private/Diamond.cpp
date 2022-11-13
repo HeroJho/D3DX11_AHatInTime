@@ -176,7 +176,7 @@ void CDiamond::Get_Tick(_float fTimeDelta)
 	
 	_vector vVPos = XMLoadFloat3(&vDir);
 	_vector vRatioDir = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	_vector vPlayerRight = ((CTransform*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_Transform"), 0))->Get_State(CTransform::STATE_RIGHT);
+	_vector vPlayerRight = ((CTransform*)pGameInstance->Get_ComponentPtr(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform"), 0))->Get_State(CTransform::STATE_RIGHT);
 	vRatioDir += vPlayerRight;
 
 	m_fRatio += fTimeDelta * 2.f;

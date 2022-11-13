@@ -205,6 +205,12 @@
     <Filter Include="01.Levels\03.Boss">
       <UniqueIdentifier>{eaef2e8b-06ac-4895-9965-760f40f1b1a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\VSnatcher\SKill">
+      <UniqueIdentifier>{80a8334e-00fd-4c7b-a9eb-5cff305d0342}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\VSnatcher\SKill\ExPlo">
+      <UniqueIdentifier>{99580741-e8c7-46db-830d-056f20861203}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -438,6 +444,9 @@
     <ClInclude Include="..\public\Level_Boss.h">
       <Filter>01.Levels\03.Boss</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\ExPlo.h">
+      <Filter>02.GameObjects\VSnatcher\SKill\ExPlo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -655,6 +664,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Level_Boss.cpp">
       <Filter>01.Levels\03.Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ExPlo.cpp">
+      <Filter>02.GameObjects\VSnatcher\SKill\ExPlo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

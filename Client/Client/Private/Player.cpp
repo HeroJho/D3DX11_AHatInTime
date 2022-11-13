@@ -287,6 +287,9 @@ void CPlayer::Set_Anim()
 
 void CPlayer::Tick(_float fTimeDelta)
 {
+	if (CToolManager::Get_Instance()->Get_IsLoading())
+		return;
+
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_PLAYER);
 
 	State_Input(fTimeDelta);
@@ -558,11 +561,10 @@ void CPlayer::JumpAttack_Tick(_float fTimeDelta)
 {
 	Find_NearstMonster();
 
-	if (nullptr == m_pNearstMonster)
-		return;
-
 	// 몬스터의 머리 방향으로 내려 꼳는다
 	CTransform* pMonsterTran = (CTransform*)m_pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform"));
+
+
 	_float3 vCenter = m_pNearstMonster->Get_Colliders(string("Attacked_Sphere"))->Get_Desc().vCenter;
 	vCenter.y += m_pNearstMonster->Get_Colliders(string("Attacked_Sphere"))->Get_Desc().vSize.y;
 	_vector vMonsterHeadPos = pMonsterTran->Get_State(CTransform::STATE_POSITION) + XMLoadFloat3(&vCenter);
@@ -1122,8 +1124,21 @@ void CPlayer::DoubleJump_Input(_float fTimeDelta)
 	{
 		// 내 주변에 몬스터가 있는지 확인한다.
 		// 몬스터가 있따면 GO
-		if(!m_pNearMonsters.empty())
-			m_TickStates.push_back(STATE_JUMPATTACK);
+		if (!m_pNearMonsters.empty())
+		{
+			Find_NearstMonster();
+			CTransform* pMonsterTran = (CTransform*)m_pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform"));
+
+			_vector vMonsterPos = pMonsterTran->Get_State(CTransform::STATE_POSITION);
+			_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+			_float fDis = XMVectorGetX(XMVector3Length(vMonsterPos - vMyPos));
+			if (5.f > fDis)
+			{
+				m_TickStates.push_back(STATE_JUMPATTACK);
+			}
+
+		}
+
 	}
 
 
@@ -1631,6 +1646,9 @@ void CPlayer::Check_Attacked(_float fTimeDelta)
 
 void CPlayer::LateTick(_float fTimeDelta)
 {
+	if (CToolManager::Get_Instance()->Get_IsLoading())
+		return;
+
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_PLAYER);
 	
 	if (nullptr == m_pRendererCom)
@@ -1862,6 +1880,9 @@ void CPlayer::Check_EndAnim()
 
 HRESULT CPlayer::Render()
 {
+	if (CToolManager::Get_Instance()->Get_IsLoading())
+		return S_OK;
+
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
 		return E_FAIL;
@@ -2030,7 +2051,7 @@ HRESULT CPlayer::Ready_Components()
 
 	ColDesc.vCenter = _float3(0.f, 0.5f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(5.f, 5.f, 5.f);
+	ColDesc.vSize = _float3(10.f, 10.f, 10.f);
 	strcpy(ColDesc.sTag, "Sphere");
 	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
 		return E_FAIL;
@@ -2283,6 +2304,7 @@ void CPlayer::Find_NearstMonster()
 		_vector vMonsterPos = pMonsterTran->Get_State(CTransform::STATE_POSITION);
 		_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 		_float fDis = XMVectorGetX(XMVector3Length(vMonsterPos - vMyPos));
+
 		if (fMinDis > fDis)
 		{
 			m_pNearstMonster = pMonster;
@@ -2300,7 +2322,7 @@ void CPlayer::SetPosNavi(LEVEL eLevel, _fvector vPos)
 	CNavigation::NAVIGATIONDESC NaviDesc;
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
 	NaviDesc.iCurrentIndex = 0;
-	if (FAILED(__super::Add_Component(eLevel, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+	if (FAILED(__super::Add_Component(eLevel, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation1"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
 		return;
 
 	_vector vVPos = XMVectorSetW(vPos, 1.f);
@@ -2325,8 +2347,8 @@ void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 	if(("Tag_PuzzleCube" == Desc.pOther->Get_Tag() || "Tag_Barrel" == Desc.pOther->Get_Tag() || "Tag_IceBox" == Desc.pOther->Get_Tag()) && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag))
 		Get_StaticOBB()->Compute_Pigi(Desc.pOther, m_pNavigationCom, m_pTransformCom, CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
 
-
-	if ("Tag_Monster" == Desc.pOther->Get_Tag())
+	
+	if ("Tag_Monster" == Desc.pOther->Get_Tag() || "Tag_Snatcher" == Desc.pOther->Get_Tag())
 	{
 		if(!strcmp("Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 			m_pNearMonsters.push_back(Desc.pOther);

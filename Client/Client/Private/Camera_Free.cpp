@@ -70,6 +70,7 @@ void CCamera_Free::Tick(_float fTimeDelta)
 	{
 	case CAM_GAME:
 	case CAM_FOCUS:
+	case CAM_BOSS:
 		Game_Mode(fTimeDelta);
 		break;
 	case CAM_CUTSCENE:
@@ -118,7 +119,6 @@ void CCamera_Free::Look_Player()
 
 void CCamera_Free::Look_NearMonster()
 {
-
 	m_pPlayer->Find_NearstMonster();
 	CGameObject* pNearstMonster = m_pPlayer->Get_NearstMonster();
 	if (nullptr == pNearstMonster)
@@ -129,7 +129,7 @@ void CCamera_Free::Look_NearMonster()
 
 	_vector vPos = ((CTransform*)pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
 
-	Set_Target(XMVectorSetY(vPos, XMVectorGetY(vPos) + 0.5f) );
+	Set_Target(XMVectorSetY(vPos, XMVectorGetY(vPos) + 0.5f));
 
 	Dis_TwoPos(((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION), vPos);
 }
@@ -138,7 +138,62 @@ void CCamera_Free::Dis_TwoPos(_fvector vPosL, _fvector vPosR)
 {
 	_float fDis = XMVectorGetX(XMVector3Length(vPosL - vPosR));
 
-	m_fDis = m_fOriDis - 2.f + fDis * 1.5f;
+	m_fDis = m_fOriDis - 3.f + fDis * 0.8f;
+}
+
+void CCamera_Free::Look_Target()
+{
+	if (nullptr == m_pTarget)
+		return;
+
+	m_pPlayer->Find_NearstMonster();
+	CGameObject* pNearstMonster = m_pTarget;
+
+
+	_vector vPos = ((CTransform*)pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+
+	Set_Target(XMVectorSetY(vPos, XMVectorGetY(vPos) + 0.5f));
+
+	Dis_TwoPos(((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION), vPos);
+
+}
+void CCamera_Free::FocuseTarget(_float fDeltaTime)
+{
+	if (nullptr == m_pTarget)
+		return;
+
+
+	CGameObject* pNearstMonster = m_pTarget;
+	if (nullptr == pNearstMonster)
+		return;
+
+	CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+	_vector vPlayerPos = pPlayerTran->Get_State(CTransform::STATE_POSITION);
+	_vector vNearstMonsterPos = ((CTransform*)pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+	_vector vDir = XMVector3Normalize(vPlayerPos - vNearstMonsterPos);
+
+
+	// x, y 회전 행렬
+	_matrix mX = XMMatrixRotationAxis(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.x));
+	_vector vCamDirY = XMVector3Normalize(XMVector3TransformNormal(XMVectorSet(0.f, 1.f, 0.f, 0.f), mX));
+
+	_float fDot = XMVectorGetX(XMVector3Dot(vDir, vCamDirY));
+	// 둔각이다
+	if (0.f > fDot)
+	{
+		_matrix mX = XMMatrixRotationAxis(XMVectorSet(-1.f, 0.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.x));
+		vCamDirY = XMVector3Normalize(XMVector3TransformNormal(XMVectorSet(0.f, 1.f, 0.f, 0.f), mX));
+	}
+
+	// 멀어질 방향
+	_vector vCamDir = XMVector3Normalize(vCamDirY + vDir);
+	// X, Y회전
+
+	_vector vCamPos = vCamDir * m_fDis;
+	_vector vDestPos = pPlayerTran->Get_State(CTransform::STATE_POSITION) + vCamPos;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDestPos);
+
 }
 
 
@@ -159,6 +214,11 @@ void CCamera_Free::Game_Mode(_float fTimeDelta)
 		OriCamPos(fTimeDelta);
 		Look_NearMonster();
 		Game_Mode_Input(fTimeDelta);
+		break;
+	case CAM_BOSS:
+		Boss_Mode_Input(fTimeDelta);
+		Look_Target();
+		FocuseTarget(fTimeDelta);
 		break;
 	}
 
@@ -181,6 +241,31 @@ void CCamera_Free::OriCamPos(_float fDeltaTime)
 	// X, Y회전
 	vCamDir = XMVector3TransformNormal(vCamDir, mX);
 	vCamDir = XMVector3TransformNormal(vCamDir, mY);
+	_vector vCamPos = vCamDir * m_fDis;
+	_vector vDestPos = pPlayerTran->Get_State(CTransform::STATE_POSITION) + vCamPos;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDestPos);
+}
+
+void CCamera_Free::FocusePos(_float fDeltaTime)
+{
+	m_pPlayer->Find_NearstMonster();
+	CGameObject* pNearstMonster = m_pPlayer->Get_NearstMonster();
+	if (nullptr == pNearstMonster)
+	{
+		m_eState = CAM_GAME;
+		return;
+	}
+
+	CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+	_vector vPlayerPos = pPlayerTran->Get_State(CTransform::STATE_POSITION);
+	_vector vNearstMonsterPos = ((CTransform*)pNearstMonster->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+	_vector vDir = XMVector3Normalize(vPlayerPos - vNearstMonsterPos);
+	
+	// 멀어질 방향
+	_vector vCamDir = XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f) + vDir);
+
+
 	_vector vCamPos = vCamDir * m_fDis;
 	_vector vDestPos = pPlayerTran->Get_State(CTransform::STATE_POSITION) + vCamPos;
 
@@ -236,7 +321,6 @@ void CCamera_Free::Game_Mode_Input(_float fTimeDelta)
 			m_vAngle.x = 0.f;
 		else if (0.f >= m_vAngle.x)
 			m_vAngle.x = 360.f;
-
 	}
 
 	if (MouseMove = pGameInstance->Get_DIMMoveState(DIMM_X))
@@ -265,6 +349,30 @@ void CCamera_Free::Game_Mode_Input(_float fTimeDelta)
 
 
 	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CCamera_Free::Boss_Mode_Input(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_long	MouseMove = 0;
+
+	if (MouseMove = pGameInstance->Get_DIMMoveState(DIMM_Y))
+	{
+		m_vAngle.x += MouseMove * fTimeDelta * 2.f;
+		if (360.f <= m_vAngle.x)
+			m_vAngle.x = 0.f;
+		else if (0.f >= m_vAngle.x)
+			m_vAngle.x = 360.f;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CCamera_Free::Boss_Mode_Rotation(_float fTimeDelta)
+{
+	
+
 }
 
 

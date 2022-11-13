@@ -1,45 +1,38 @@
 #include "stdafx.h"
-#include "..\Public\Flask_EX.h"
+#include "..\Public\ExPlo.h"
 #include "GameInstance.h"
 
 #include "IceBox.h"
 
-CFlask_EX::CFlask_EX(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CExPlo::CExPlo(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
 }
 
-CFlask_EX::CFlask_EX(const CFlask_EX& rhs)
+CExPlo::CExPlo(const CExPlo& rhs)
 	: CGameObject(rhs)
 {
 }
 
-HRESULT CFlask_EX::Initialize_Prototype()
+HRESULT CExPlo::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CFlask_EX::Initialize(void * pArg)
+HRESULT CExPlo::Initialize(void * pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
 
-	
+
 
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	FLASKEXDESC* Desc = (FLASKEXDESC*)pArg;
+	EXPLODESC* Desc = (EXPLODESC*)pArg;
 
 
-
-
-	//m_pTransformCom->Set_Scale(XMLoadFloat3(&Desc->vScale));
-
-	//m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), Desc->vAngle.x
-	//	, XMVectorSet(0.f, 1.f, 0.f, 0.f), Desc->vAngle.y
-	//	, XMVectorSet(0.f, 0.f, 1.f, 0.f), Desc->vAngle.z);
 
 	_vector vPos = XMLoadFloat3(&Desc->vPos);
 	vPos = XMVectorSetW(vPos, 1.f);
@@ -49,13 +42,13 @@ HRESULT CFlask_EX::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CFlask_EX::Tick(_float fTimeDelta)
+void CExPlo::Tick(_float fTimeDelta)
 {
 	if (m_bTickAttack)
 		Set_Dead(true);
 }
 
-void CFlask_EX::LateTick(_float fTimeDelta)
+void CExPlo::LateTick(_float fTimeDelta)
 {
 	Tick_Col(m_pTransformCom->Get_WorldMatrix());
 
@@ -71,7 +64,7 @@ void CFlask_EX::LateTick(_float fTimeDelta)
 	m_bTickAttack = true;
 }
 
-HRESULT CFlask_EX::Render()
+HRESULT CExPlo::Render()
 {
 
 
@@ -82,7 +75,7 @@ HRESULT CFlask_EX::Render()
 
 
 
-HRESULT CFlask_EX::Ready_Components()
+HRESULT CExPlo::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -115,21 +108,11 @@ HRESULT CFlask_EX::Ready_Components()
 
 
 
-void CFlask_EX::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+void CExPlo::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if (!strcmp("EX_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 	{
-		
-		if ("Tag_PuzzleCube" == Desc.pOther->Get_Tag())
-		{
-			CTransform* pTran = (CTransform*)Desc.pOther->Get_ComponentPtr(TEXT("Com_Transform"));
-			pTran->Jump(9.f);
-		}
-		else if ("Tag_IceBox" == Desc.pOther->Get_Tag())
-		{
-			CIceBox* pIce = (CIceBox*)Desc.pOther;
-			pIce->Attacked();
-		}
+
 
 		m_bTickAttack = true;
 	}
@@ -137,26 +120,26 @@ void CFlask_EX::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 
 
-CFlask_EX * CFlask_EX::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CExPlo * CExPlo::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CFlask_EX*		pInstance = new CFlask_EX(pDevice, pContext);
+	CExPlo*		pInstance = new CExPlo(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CFlask_EX"));
+		MSG_BOX(TEXT("Failed To Created : CExPlo"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CFlask_EX::Clone(void * pArg)
+CGameObject * CExPlo::Clone(void * pArg)
 {
-	CFlask_EX*		pInstance = new CFlask_EX(*this);
+	CExPlo*		pInstance = new CExPlo(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CFlask_EX"));
+		MSG_BOX(TEXT("Failed To Cloned : CExPlo"));
 		Safe_Release(pInstance);
 	}
 
@@ -164,7 +147,7 @@ CGameObject * CFlask_EX::Clone(void * pArg)
 }
 
 
-void CFlask_EX::Free()
+void CExPlo::Free()
 {
 	__super::Free();
 

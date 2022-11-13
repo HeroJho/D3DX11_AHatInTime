@@ -17,7 +17,7 @@ BEGIN(Client)
 class CVSnatcher final : public CGameObject
 {
 public:
-	enum STATE { STATE_APPEAR, STATE_SOFTAPPEAR, STATE_DISAPPEAR, STATE_CURSE, STATE_CURSELOOP, STATE_HANDHOLD, STATE_STEALHAT, STATE_TALKIDLE, STATE_TALKING, STATE_THINKING, STATE_END };
+	enum STATE { STATE_APPEAR, STATE_SOFTAPPEAR, STATE_DISAPPEAR, STATE_IDLE, STATE_TALKING, STATE_CURSESTART, STATE_CURSE, STATE_MINON, STATE_END };
 
 private:
 	CVSnatcher(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -39,15 +39,38 @@ public:
 	void Set_Anim();
 
 
+public:
+	void Tick_Appear(_float fTimeDelta);
+	void Tick_SoftAppear(_float fTimeDelta);
+	void Tick_DisAppear(_float fTimeDelta);
+	void Tick_Idle(_float fTimeDelta);
+	void Tick_Talking(_float fTimeDelta);
+	void Tick_CurseStart(_float fTimeDelta);
+	void Tick_Curse(_float fTimeDelta);
+	void Tick_Minon(_float fTimeDelta);
+
+private:
+	void Compute_Pattern(_float fTimeDelta);
+	void End_Anim();
+
+	void Create_ExPlo(_fvector vPos);
 
 
 
 private:
+	// For. Common
 	STATE			m_eState = STATE_END;
 	STATE			m_ePreState = STATE_END;
 
-	_uint			m_iIndex = 0;
-	vector<_uint> m_iIndexs;
+	class CPlayer*		m_pPlayer = nullptr;
+
+
+	// For. Curse
+	_float m_fCurseTimeAcc = 0.f;
+	_int	m_iCurseCount = 0;
+
+	// For. Minon
+	_float m_fMinonTimeAcc = 0.f;
 
 private:
 	CShader*				m_pShaderCom = nullptr;

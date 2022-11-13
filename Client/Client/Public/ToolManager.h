@@ -31,6 +31,9 @@ public:
 	HRESULT Change_Level();
 	void  Resul_Level(LEVEL eLevel);
 
+	_bool Get_IsLoading() { return m_bLoading; }
+	void Set_IsLoading(_bool bLoading) { m_bLoading = bLoading; }
+
 public:
 	// FOR. Math
 	_float3 GetBesierPos(_float3 vPos1, _float3 vPos2, _float fT);
@@ -46,6 +49,7 @@ public:
 	char* Get_ManagedChar();
 
 	_float Get_RendomNum(_float fMin, _float fMax);
+	_int Get_RendomNum_Int(_int iMin, _int iMax);
 
 private:
 	void ClearManagedChar();
@@ -60,6 +64,7 @@ private:
 	_bool m_bDebug = false;
 
 	LEVEL m_eLEVEL = LEVEL_END;
+	_bool m_bLoading = false;
 
 
 	// For. TimeManager

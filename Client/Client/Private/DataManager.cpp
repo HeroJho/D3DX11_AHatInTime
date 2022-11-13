@@ -424,7 +424,9 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		//if ("Tree1" == sTemp || "tree2" == sTemp || "Tree3" == sTemp || "forest_plant" == sTemp)
 		//	continue;
 
-		CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
+		char cTemp[MAX_PATH];
+		strcpy(cTemp, sTemp.data());
+		CToolManager::Get_Instance()->CtoTC(cTemp, Desc.cModelTag);
 		Desc.vPos = DataObj.vPos;
 		Desc.vAngle = DataObj.vAngle;
 		Desc.vScale = DataObj.vScale;

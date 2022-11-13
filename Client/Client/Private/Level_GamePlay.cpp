@@ -43,11 +43,11 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
-	//if (FAILED(Ready_Layer_NPC(TEXT("Layer_Npc"))))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_NPC(TEXT("Layer_Npc"))))
+		return E_FAIL;
 
-	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
 		return E_FAIL;
@@ -143,9 +143,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
-		return E_FAIL;
-
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Sky"), LEVEL_GAMEPLAY, pLayerTag)))
 		return E_FAIL;
@@ -157,87 +154,87 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		return E_FAIL;
 
 	
-	//CPuzzleCube::PUZZLECUBEDESC PuzzleCubeDesc;
-	//PuzzleCubeDesc.vPos = _float3(-35.7f, 16.f, -8.f);
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
-	//	return E_FAIL;
-	//PuzzleCubeDesc.vPos = _float3(-46.7f, 5.f, 6.f);
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
-	//	return E_FAIL;
-	//PuzzleCubeDesc.vPos = _float3(-70.6f, 25.f, -14.8f);
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
-	//	return E_FAIL;
+	CPuzzleCube::PUZZLECUBEDESC PuzzleCubeDesc;
+	PuzzleCubeDesc.vPos = _float3(-35.7f, 16.f, -8.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
+		return E_FAIL;
+	PuzzleCubeDesc.vPos = _float3(-46.7f, 5.f, 6.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
+		return E_FAIL;
+	PuzzleCubeDesc.vPos = _float3(-70.6f, 25.f, -14.8f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube"), LEVEL_GAMEPLAY, pLayerTag, &PuzzleCubeDesc)))
+		return E_FAIL;
 
 
 
-	//
-	//CSpikeBlock::SPIKEBLOCKDESC SpikeDesc;
-	//SpikeDesc.vPos = _float3(-33.136f, 21.577f, 112.661f);
-	//SpikeDesc.vScale = _float3(1.f, 1.f, 1.f);
-	//SpikeDesc.vRotation = _float3(-17.3f, -4.2f + 90.f, 10.8f);
-	//SpikeDesc.vColScale = _float3(8.5f, 2.4f, 2.6f);
-	//SpikeDesc.vMyRight = true;
-	//SpikeDesc.vAix = _float3(1.f, 0.f, 0.f);
-	//SpikeDesc.fSpeed = 0.4f;
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
-	//	return E_FAIL;
-	//SpikeDesc.vPos = _float3(-41.5f, 29.35f, 128.9f);
-	//SpikeDesc.vScale = _float3(1.5f, 0.5f, 0.5f);
-	//SpikeDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	//SpikeDesc.vColScale = _float3(25.4f, 2.f, 0.9f);
-	//SpikeDesc.vMyRight = false;
-	//SpikeDesc.vAix = _float3(0.f, 1.f, 0.f);
-	//SpikeDesc.fSpeed = 0.2f;
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
-	//	return E_FAIL;
+	
+	CSpikeBlock::SPIKEBLOCKDESC SpikeDesc;
+	SpikeDesc.vPos = _float3(-33.136f, 21.577f, 112.661f);
+	SpikeDesc.vScale = _float3(1.f, 1.f, 1.f);
+	SpikeDesc.vRotation = _float3(-17.3f, -4.2f + 90.f, 10.8f);
+	SpikeDesc.vColScale = _float3(8.5f, 2.4f, 2.6f);
+	SpikeDesc.vMyRight = true;
+	SpikeDesc.vAix = _float3(1.f, 0.f, 0.f);
+	SpikeDesc.fSpeed = 0.4f;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
+		return E_FAIL;
+	SpikeDesc.vPos = _float3(-41.5f, 29.35f, 128.9f);
+	SpikeDesc.vScale = _float3(1.5f, 0.5f, 0.5f);
+	SpikeDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	SpikeDesc.vColScale = _float3(25.4f, 2.f, 0.9f);
+	SpikeDesc.vMyRight = false;
+	SpikeDesc.vAix = _float3(0.f, 1.f, 0.f);
+	SpikeDesc.fSpeed = 0.2f;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
+		return E_FAIL;
 
-	//SpikeDesc.vPos = _float3(-42.24f, 5.47f, 9.72f);
-	//SpikeDesc.vScale = _float3(1.f, 1.f, 1.f);
-	//SpikeDesc.vRotation = _float3(0.f, 31.8f, -21.5f);
-	//SpikeDesc.vColScale = _float3(8.5f, 2.4f, 2.6f);
-	//SpikeDesc.vMyRight = true;
-	//SpikeDesc.vAix = _float3(1.f, 0.f, 0.f);
-	//SpikeDesc.fSpeed = 2.f;
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
-	//	return E_FAIL;
-	//CRotateBarrel::ROTATEBARRELDESC RotateDesc;
-	//RotateDesc.vPos = _float3(-62.43f, 16.68f, 13.52f);
-	//RotateDesc.vRotation = _float3(-39.9f, -2.9f, 78.7f);
-	//RotateDesc.fSpeed = 5.f;
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RotateBarrel"), LEVEL_GAMEPLAY, pLayerTag, &RotateDesc)))
-	//	return E_FAIL;
-
-
-
-
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_ice"), LEVEL_GAMEPLAY, _float3(-41.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_hover"), LEVEL_GAMEPLAY, _float3(-42.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, _float3(-43.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("Umbrella"), LEVEL_GAMEPLAY, _float3(-44.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
-
-	//
+	SpikeDesc.vPos = _float3(-42.24f, 5.47f, 9.72f);
+	SpikeDesc.vScale = _float3(1.f, 1.f, 1.f);
+	SpikeDesc.vRotation = _float3(0.f, 31.8f, -21.5f);
+	SpikeDesc.vColScale = _float3(8.5f, 2.4f, 2.6f);
+	SpikeDesc.vMyRight = true;
+	SpikeDesc.vAix = _float3(1.f, 0.f, 0.f);
+	SpikeDesc.fSpeed = 2.f;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SpikeBlock"), LEVEL_GAMEPLAY, pLayerTag, &SpikeDesc)))
+		return E_FAIL;
+	CRotateBarrel::ROTATEBARRELDESC RotateDesc;
+	RotateDesc.vPos = _float3(-62.43f, 16.68f, 13.52f);
+	RotateDesc.vRotation = _float3(-39.9f, -2.9f, 78.7f);
+	RotateDesc.fSpeed = 5.f;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_RotateBarrel"), LEVEL_GAMEPLAY, pLayerTag, &RotateDesc)))
+		return E_FAIL;
 
 
 
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_MonsterVault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-10.43f, 8.f, 118.47f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
-	//	return E_FAIL;
+
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_ice"), LEVEL_GAMEPLAY, _float3(-41.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_hover"), LEVEL_GAMEPLAY, _float3(-42.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, _float3(-43.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("Umbrella"), LEVEL_GAMEPLAY, _float3(-44.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+
+	
 
 
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-21.02f, 32.53f, 126.75f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
-	//	return E_FAIL;
 
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault_2"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-35.11f, 32.59f, 149.31f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
-	//	return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_MonsterVault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-10.43f, 8.f, 118.47f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
+		return E_FAIL;
 
 
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault_State"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-44.3f, -0.74f, 3.19f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
-	//	return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-21.02f, 32.53f, 126.75f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
+		return E_FAIL;
+
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault_2"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-35.11f, 32.59f, 149.31f), _float3(0.f, 90.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
+		return E_FAIL;
+
+
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Vault_State"), TEXT("vault"), LEVEL_GAMEPLAY, _float3(-44.3f, -0.74f, 3.19f), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1)))
+		return E_FAIL;
 
 	
 

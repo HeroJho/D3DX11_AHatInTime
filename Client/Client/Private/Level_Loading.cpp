@@ -2,6 +2,8 @@
 #include "..\Public\Level_Loading.h"
 #include "GameInstance.h"
 
+#include "ToolManager.h"
+
 #include "Level_Logo.h"
 #include "Level_GamePlay.h"
 #include "Level_Boss.h"
@@ -61,6 +63,7 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 			if (FAILED(pGameInstance->Open_Level(m_eNextLevel, pNewLevel)))
 				goto except;
 
+			CToolManager::Get_Instance()->Set_IsLoading(false);
 
 			except:
 			Safe_Release(pGameInstance);

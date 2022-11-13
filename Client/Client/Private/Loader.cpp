@@ -36,7 +36,9 @@
 #include "BadgeS_Base.h"
 #include "IceBox.h"
 #include "TimeObject.h"
+
 #include "VSnatcher.h"
+#include "ExPlo.h"
 
 
 
@@ -560,7 +562,10 @@ HRESULT CLoader::Loading_ForBossLevel()
 	lstrcpy(m_szLoadingText, TEXT("객체원형을 로딩중입니다. "));
 	/* 개ㅑㄱ체원형 로드한다. */
 
-
+	/* For.Prototype_GameObject_ExPlo*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ExPlo"),
+		CExPlo::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
