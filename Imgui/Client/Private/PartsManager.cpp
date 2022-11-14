@@ -86,7 +86,8 @@ void CPartsManager::Delete_Parts()
 void CPartsManager::Create_Player()
 {
 	
-	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("HatGirl"), LEVEL_PARTSTOOL, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("VSnatcher"), LEVEL_PARTSTOOL, CDataManager::DATA_ANIM);
+	// CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("HatGirl"), LEVEL_PARTSTOOL, CDataManager::DATA_ANIM);
 
 	if (m_pPlayer != nullptr)
 	{
@@ -98,7 +99,8 @@ void CPartsManager::Create_Player()
 
 	CAnimModel::ANIMMODELDESC Desc;
 	ZeroMemory(&Desc, sizeof(CAnimModel::ANIMMODELDESC));
-	memcpy(Desc.cModelTag, TEXT("HatGirl"), sizeof(_tchar)*MAX_PATH);
+	memcpy(Desc.cModelTag, TEXT("VSnatcher"), sizeof(_tchar)*MAX_PATH);
+	// memcpy(Desc.cModelTag, TEXT("HatGirl"), sizeof(_tchar)*MAX_PATH);
 
 	CGameObject* pObj = nullptr;
 	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Player"), LEVEL_PARTSTOOL, TEXT("Layer_Player"), &pObj, &Desc);

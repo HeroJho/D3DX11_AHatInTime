@@ -56,9 +56,9 @@ HRESULT CLevel_GamePlay::Initialize()
 
 	// CCamManager::Get_Instance()->Play_CutScene(0, true);
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
-	//CItemManager::Get_Instance()->Add_Hat(TEXT("Witch_Hat"));
-	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
-	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
+	CItemManager::Get_Instance()->Add_Hat(TEXT("Witch_Hat"));
+	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
+	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
 
 
 	return S_OK;

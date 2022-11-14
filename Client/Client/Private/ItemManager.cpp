@@ -165,7 +165,7 @@ HRESULT CItemManager::Make_Flask(_fvector vPos, _fvector vDir, _float fDirPow, _
 	Desc.iNaviIndex = iNaviIndex;
 
 	vVPos.y += 0.5f;
-	CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Flask"), TEXT("science_owlbrew_remade"), LEVEL_GAMEPLAY, vVPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc);
+	CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Flask"), TEXT("science_owlbrew_remade"), LEVEL_STATIC, vVPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, &Desc);
 
 	return S_OK;
 }
@@ -197,6 +197,53 @@ void CItemManager::Add_Hat(TCHAR* szItemName)
 	// 인벤을 갱신한다
 	CUIManager::Get_Instance()->Update_HatInvenSlot();
 }
+
+void CItemManager::Delete_Hat(TCHAR * szItemName)
+{
+	for (list<HATINFODESC>::iterator iter = m_pHats.begin(); iter != m_pHats.end();)
+	{
+		if (!lstrcmp(szItemName, (*iter).szModelName))
+		{
+			m_pHats.erase(iter);
+
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+			CSockat* pSockat = (CSockat*)pGameInstance->Get_ComponentPtr(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Sockat"), 0);
+			
+			char cTemp[MAX_PATH];
+			TCHAR szTemp[MAX_PATH];
+			strcpy_s(cTemp, pSockat->Get_SlotTag(CPlayer::SLOT_HAT).data());
+			
+			CToolManager::Get_Instance()->CtoTC(cTemp, szTemp);
+			
+			if (!lstrcmp(szItemName, szTemp))
+				pSockat->Remove_Sockat(CPlayer::SLOT_HAT);
+
+			RELEASE_INSTANCE(CGameInstance);
+
+
+			break;
+		}
+		else
+			++iter;
+	}
+
+	// 인벤을 갱신한다
+	CUIManager::Get_Instance()->Update_HatInvenSlot();
+
+}
+
+_bool CItemManager::Check_Hat(TCHAR * szItemName)
+{
+	for (auto& pDesc : m_pHats)
+	{
+		if (!lstrcmp(szItemName, pDesc.szModelName))
+			return true;
+	}
+
+	return false;
+}
+
 
 void CItemManager::Add_Item(TCHAR* szItemName, _uint iCount)
 {
@@ -262,4 +309,5 @@ TCHAR* CItemManager::Match_TextureWithModelName(TCHAR* pTextureName)
 	}
 
 }
+
 

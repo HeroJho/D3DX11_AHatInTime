@@ -80,6 +80,7 @@ public:
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void Turn(_fvector vAxis, _float fRotationPerSce, _float fTimeDelta);
 	void TurnBack();
+	void Turn_Sentor(_fvector vAxis, _fvector vPos, _float fRotationPerSce, _float fTimeDelta);
 	void Rotation(_fvector vAxis, _float fRadian);
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2);
 	void Rotation(_fvector vAxis1, _float fAngle1, _fvector vAxis2, _float fAngle2, _fvector vAxis3, _float fAngle3);

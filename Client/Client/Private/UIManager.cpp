@@ -31,7 +31,7 @@ HRESULT CUIManager::Make_InvenUI()
 
 
 	CGameObject* pObj = nullptr;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Inven"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), &pObj, nullptr)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Inven"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, nullptr)))
 		return E_FAIL;
 
 	m_pInven = (CUI_Inven*)pObj;
@@ -58,7 +58,7 @@ HRESULT CUIManager::Make_ItemInvenUI()
 
 
 	CGameObject* pObj = nullptr;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Item_Inven"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Item_Inven"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
 		return E_FAIL;
 
 	m_pItem_Inven = (CUI_Item_Inven*)pObj;
@@ -84,7 +84,7 @@ HRESULT CUIManager::Make_DiamondUI()
 	UiInfoDesc.pDesc = nullptr;
 
 	CGameObject* pObj = nullptr;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_DiamondScore"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_DiamondScore"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
 		return E_FAIL;
 
 	m_pDiamondScore = (CUI_DiamondScore*)pObj;
@@ -112,7 +112,7 @@ HRESULT CUIManager::Make_ShopUI()
 	UiInfoDesc.pDesc = nullptr;
 
 	CGameObject* pObj = nullptr;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Shop"), LEVEL_GAMEPLAY, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Shop"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
 		return E_FAIL;
 
 	m_pShop = (CUI_Shop*)pObj;

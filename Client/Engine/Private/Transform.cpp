@@ -185,6 +185,8 @@ void CTransform::Set_Scale(_fvector vScaleInfo)
 	if (0.001f > XMVectorGetX(vScaleInfo) || 0.001f > XMVectorGetY(vScaleInfo) || 0.001f > XMVectorGetZ(vScaleInfo))
 		return;
 
+	XMStoreFloat3(&m_vOriScale, vScaleInfo);
+
 	Set_State(CTransform::STATE_RIGHT,
 		XMVector3Normalize(Get_State(CTransform::STATE_RIGHT)) * XMVectorGetX(vScaleInfo));
 	Set_State(CTransform::STATE_UP,
@@ -215,6 +217,8 @@ void CTransform::Turn(_fvector vAxis, _float fRotationPerSce, _float fTimeDelta)
 {
 	_matrix		RotationMatrix = XMMatrixRotationAxis(vAxis, fRotationPerSce * fTimeDelta);
 
+	// _vector vScale = XMLoadFloat3(&m_vOriScale);
+
 	Set_State(CTransform::STATE_RIGHT, XMVector3TransformNormal(Get_State(CTransform::STATE_RIGHT), RotationMatrix));
 	Set_State(CTransform::STATE_UP, XMVector3TransformNormal(Get_State(CTransform::STATE_UP), RotationMatrix));
 	Set_State(CTransform::STATE_LOOK, XMVector3TransformNormal(Get_State(CTransform::STATE_LOOK), RotationMatrix));
@@ -226,6 +230,22 @@ void CTransform::TurnBack()
 	vMyLook *= -1.f;
 	XMStoreFloat3(&m_vDest, vMyLook);
 	Set_DestLook();
+}
+
+void CTransform::Turn_Sentor(_fvector vAxis, _fvector vPos, _float fRotationPerSce, _float fTimeDelta)
+{
+	_matrix		RotationMatrix = XMMatrixRotationAxis(vAxis, fRotationPerSce * fTimeDelta);
+
+	_vector vMyPos = Get_State(STATE_POSITION);
+	_vector vDir = vMyPos - vPos;
+	
+	_vector vNorDir = XMVector3Normalize(vDir);
+	_float fDis = XMVectorGetX(XMVector3Length(vDir));
+
+	vNorDir = XMVector3Normalize(XMVector3TransformNormal(vNorDir, RotationMatrix));
+
+	vMyPos = vPos + vNorDir * fDis;
+	Set_State(STATE_POSITION, XMVectorSetW(vMyPos, 1.f));
 }
 
 void CTransform::Rotation(_fvector vAxis, _float fRadian)
@@ -425,14 +445,24 @@ void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _floa
 
 	_float fCellY = 0.f;
 	
-	// Wiap 안에 있다면 셀은 타지 않는다.
-	if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY, fMagicNum) && (1.f > m_fVelocity) && !bIsWiap)
+	if (nullptr != pNavigation)
 	{
-		m_fGravityAcc = 0.f;
-		m_fVelocity = 0.f;
+		// Wiap 안에 있다면 셀은 타지 않는다.
+		if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY, fMagicNum) && (1.f > m_fVelocity) && !bIsWiap)
+		{
+			m_fGravityAcc = 0.f;
+			m_fVelocity = 0.f;
 
-		// 여기서 태운다.
-		vPos.y = fCellY + fMagicNum;
+			// 여기서 태운다.
+			vPos.y = fCellY + fMagicNum;
+		}
+		else
+		{
+			m_fGravityAcc += fGravity * fTimeDelta;
+			if (0.5f < m_fGravityAcc)
+				m_fGravityAcc = 15.f;
+			m_fVelocity -= m_fGravityAcc * fTimeDelta;
+		}
 	}
 	else
 	{
@@ -441,6 +471,7 @@ void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _floa
 			m_fGravityAcc = 15.f;
 		m_fVelocity -= m_fGravityAcc * fTimeDelta;
 	}
+
 
 	vPos.y += m_fVelocity * fTimeDelta;					
 

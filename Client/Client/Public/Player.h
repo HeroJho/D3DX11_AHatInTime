@@ -121,7 +121,7 @@ private:
 
 public:
 	void Get_Item(CItem::ITEMINVENDESC Desc);
-	void Get_Hat(TCHAR* szModelName);
+	void Get_Hat(TCHAR* szModelName, _bool bAction = false);
 
 	HRESULT Equip_Sockat(string sItemName, SLOT eSlot);
 

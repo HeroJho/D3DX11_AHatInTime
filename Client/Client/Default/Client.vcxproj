@@ -182,6 +182,7 @@
     <ClInclude Include="..\public\Flask.h" />
     <ClInclude Include="..\public\Flask_EX.h" />
     <ClInclude Include="..\public\GameManager.h" />
+    <ClInclude Include="..\public\Hat.h" />
     <ClInclude Include="..\public\IceBox.h" />
     <ClInclude Include="..\public\Item.h" />
     <ClInclude Include="..\public\ItemManager.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\public\LookCube.h" />
     <ClInclude Include="..\public\Mad_Crow.h" />
+    <ClInclude Include="..\public\Magic.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\public\MarkCube.h" />
     <ClInclude Include="..\Public\Monster.h" />
@@ -259,6 +261,7 @@
     <ClCompile Include="..\private\Flask.cpp" />
     <ClCompile Include="..\private\Flask_EX.cpp" />
     <ClCompile Include="..\private\GameManager.cpp" />
+    <ClCompile Include="..\private\Hat.cpp" />
     <ClCompile Include="..\private\IceBox.cpp" />
     <ClCompile Include="..\private\Item.cpp" />
     <ClCompile Include="..\private\ItemManager.cpp" />
@@ -269,6 +272,7 @@
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\private\LookCube.cpp" />
     <ClCompile Include="..\private\Mad_Crow.cpp" />
+    <ClCompile Include="..\private\Magic.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\private\MarkCube.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />

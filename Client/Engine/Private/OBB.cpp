@@ -160,6 +160,8 @@ void COBB::Update(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTra
 	COBB* pStaticOBB = nullptr;
 	for (auto& pObj : *pColliders)
 	{
+		if (pObj->Get_Colliders()->empty())
+			continue;
 
 		pStaticOBB = ((COBB*)pObj->Get_Colliders()->front());
 

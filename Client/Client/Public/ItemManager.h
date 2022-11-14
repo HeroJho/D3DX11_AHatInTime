@@ -72,6 +72,8 @@ public:
 public:
 	// 이름에 맞는 모자를 추가한다 UI 갱신
 	void Add_Hat(TCHAR* szItemName);
+	void Delete_Hat(TCHAR* szItemName);
+	_bool Check_Hat(TCHAR* szItemName);
 
 	void Add_Item(TCHAR* szItemName, _uint iCount);
 

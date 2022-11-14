@@ -10,6 +10,7 @@ class CRenderer;
 class CTransform;
 class CModel;
 class CNavigation;
+class CSockat;
 END
 
 BEGIN(Client)
@@ -17,7 +18,8 @@ BEGIN(Client)
 class CVSnatcher final : public CGameObject
 {
 public:
-	enum STATE { STATE_APPEAR, STATE_SOFTAPPEAR, STATE_DISAPPEAR, STATE_IDLE, STATE_TALKING, STATE_CURSESTART, STATE_CURSE, STATE_MINON, STATE_END };
+	enum STATE { STATE_APPEAR, STATE_SOFTAPPEAR, STATE_DISAPPEAR, STATE_IDLE, STATE_TALKING, STATE_CURSESTART, STATE_CURSE, STATE_MINON, STATE_MAGICSTART, STATE_MAGIC, STATE_HOITSTART, STATE_HOIT, STATE_SNAPHAT, STATE_END };
+	enum SLOT { SLOT_HAND, SLOT_HEAD, SLOT_END };
 
 private:
 	CVSnatcher(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -49,13 +51,24 @@ public:
 	void Tick_Curse(_float fTimeDelta);
 	void Tick_Minon(_float fTimeDelta);
 
+	void Tick_MagicStart(_float fTimeDelta);
+	void Tick_Magic(_float fTimeDelta);
+
+	void Tick_HoItStart(_float fTimeDelta);
+	void Tick_HoIt(_float fTimeDelta);
+
+	void Tick_SnapHat(_float fTimeDelta);
+
+
 private:
 	void Compute_Pattern(_float fTimeDelta);
 	void End_Anim();
 
 	void Create_ExPlo(_fvector vPos);
+	void Create_Magic(_uint iCount);
 
-
+	void Choose_SnapHat();
+	void Drop_Hat();
 
 private:
 	// For. Common
@@ -64,13 +77,35 @@ private:
 
 	class CPlayer*		m_pPlayer = nullptr;
 
+	_uint m_iNaviIndex = 0;
 
 	// For. Curse
 	_float m_fCurseTimeAcc = 0.f;
+	_float m_fCurseDelayTime = 1.f;
 	_int	m_iCurseCount = 0;
+	_int	m_iCurseMaxCount = 5;
+
+	// For. Magic
+	_float m_fMagicTimeAcc = 0.f;
+	_float m_fMagicEndTime = 10.f;
+
+	// For. HoIt
+	_float3 m_vSentorPos;
+	_int m_iHoItCount = 0;
+	_int m_iHoItMaxCount = 5;
+	_bool m_bIsUp = true;
+	_float m_fHoItTimeAcc = 0.f;
 
 	// For. Minon
 	_float m_fMinonTimeAcc = 0.f;
+
+	// For. SnapHat
+	_float m_fSnapHatTimeAcc = 0.f;
+	_int m_iSnapIndex = -1;
+	string   m_sSnapTag = "";
+
+
+
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -78,11 +113,13 @@ private:
 	CTransform*				m_pTransformCom = nullptr;
 	CModel*					m_pModelCom = nullptr;
 	CNavigation*			m_pNavigationCom = nullptr;
-
+	CSockat*				m_pSockatCom = nullptr;
 
 private:
 	virtual HRESULT Ready_Components();
+	HRESULT Ready_Sockat();
 
+	HRESULT Equip_Sockat(string sItemName, SLOT eSlot);
 
 public:
 	static CVSnatcher* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

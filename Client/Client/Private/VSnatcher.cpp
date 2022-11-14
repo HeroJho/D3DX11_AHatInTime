@@ -2,14 +2,15 @@
 #include "..\Public\VSnatcher.h"
 #include "GameInstance.h"
 
-#include  "ToolManager.h"
 #include "DataManager.h"
 #include "ToolManager.h"
 #include "CamManager.h"
+#include "ItemManager.h"
 
 #include "Player.h"
 #include "Camera_Free.h"
 #include "ExPlo.h"
+#include "Magic.h"
 
 CVSnatcher::CVSnatcher(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -47,8 +48,9 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
 	m_pTransformCom->Set_CurSpeed(1.f);
 
-	m_pTransformCom->Set_RealOriScale(XMVectorSet(2.f, 2.f, 2.f, 1.f));
+	m_pTransformCom->Set_RealOriScale(XMVectorSet(1.5f, 1.5f, 1.5f, 1.f));
 
+	XMStoreFloat3(&m_vSentorPos, XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
 
 	 Set_State(STATE_DISAPPEAR);
 	
@@ -56,6 +58,9 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 	 m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 	 Safe_AddRef(m_pPlayer);
 	 RELEASE_INSTANCE(CGameInstance);
+
+
+	 m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
 
 	return S_OK;
 }
@@ -93,13 +98,30 @@ void CVSnatcher::Set_State(STATE eState)
 			break;
 		case STATE_CURSESTART:
 			m_fCurseTimeAcc = 0.f;
-			m_iCurseCount = 5;
+			m_iCurseCount = m_iCurseMaxCount;
 			break;
 		case STATE_CURSE:
 			break;
 		case STATE_MINON:
 			m_fMinonTimeAcc = 0.f;
 			break;
+		case STATE_MAGICSTART:
+			break;
+		case STATE_MAGIC:
+			m_fMagicTimeAcc = 0.f;
+			Create_Magic(50);
+			break;
+		case STATE_HOITSTART:
+			break;
+		case STATE_HOIT:
+			m_iHoItCount = m_iHoItMaxCount;
+			m_fHoItTimeAcc = 0.f;
+			m_bIsUp = true;
+			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
+			break;
+		case STATE_SNAPHAT:
+			Choose_SnapHat();
+			m_fSnapHatTimeAcc = 0.f;
 		default:
 			break;
 		}
@@ -136,6 +158,22 @@ void CVSnatcher::Set_Anim()
 		break;
 	case STATE_MINON:
 		m_pModelCom->Set_AnimIndex(11);
+		break;
+	case STATE_MAGICSTART:
+		m_pModelCom->Set_AnimIndex(24);
+		break;
+	case STATE_MAGIC:
+		m_pModelCom->Set_AnimIndex(24);
+		break;
+	case STATE_HOITSTART:
+		m_pModelCom->Set_AnimIndex(24);
+		break;
+	case STATE_HOIT:
+		m_pModelCom->Set_AnimIndex(24);
+		break;
+	case STATE_SNAPHAT:
+		m_pModelCom->Set_AnimIndex(21, true);
+		break;
 	default:
 		break;
 	}
@@ -146,15 +184,18 @@ void CVSnatcher::Set_Anim()
 
 void CVSnatcher::Compute_Pattern(_float fTimeDelta)
 {
-	_uint iRendNum = CToolManager::Get_Instance()->Get_RendomNum_Int(0, 1);
+	_uint iRendNum = CToolManager::Get_Instance()->Get_RendomNum_Int(0, 2);
 
 	switch (iRendNum)
 	{
 	case 0:
-		Set_State(STATE_CURSESTART);
+		 // Set_State(STATE_CURSESTART);
 		break;
 	case 1:
-		Set_State(STATE_MINON);
+		// Set_State(STATE_MAGICSTART);
+		break;
+	case 2:
+		Set_State(STATE_SNAPHAT);
 		break;
 	default:
 		break;
@@ -192,6 +233,21 @@ void CVSnatcher::Tick(_float fTimeDelta)
 		break;
 	case STATE_MINON:
 		Tick_Minon(fTimeDelta);
+		break;
+	case STATE_MAGICSTART:
+		Tick_MagicStart(fTimeDelta);
+		break;
+	case STATE_MAGIC:
+		Tick_Magic(fTimeDelta);
+		break;
+	case STATE_HOITSTART:
+		Tick_HoItStart(fTimeDelta);
+		break;
+	case STATE_HOIT:
+		Tick_HoIt(fTimeDelta);
+		break;
+	case STATE_SNAPHAT:
+		Tick_SnapHat(fTimeDelta);
 		break;
 	default:
 		break;
@@ -243,6 +299,8 @@ void CVSnatcher::Tick_Talking(_float fTimeDelta)
 
 void CVSnatcher::Tick_CurseStart(_float fTimeDelta)
 {
+	_vector vPlayerPos = ((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+	m_pTransformCom->LookAt_ForLandObject(vPlayerPos);
 }
 
 void CVSnatcher::Tick_Curse(_float fTimeDelta)
@@ -259,7 +317,7 @@ void CVSnatcher::Tick_Curse(_float fTimeDelta)
 
 	_vector vPlayerPos = ((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
 
-	if (2.f < m_fCurseTimeAcc)
+	if (m_fCurseDelayTime < m_fCurseTimeAcc)
 	{
 		Create_ExPlo(vPlayerPos);
 		m_fCurseTimeAcc = 0.f;
@@ -279,6 +337,132 @@ void CVSnatcher::Tick_Minon(_float fTimeDelta)
 		m_fMinonTimeAcc = 0.f;
 	}
 
+}
+
+void CVSnatcher::Tick_MagicStart(_float fTimeDelta)
+{
+	// 모자를 바꾼다
+}
+
+void CVSnatcher::Tick_Magic(_float fTimeDelta)
+{
+	m_fMagicTimeAcc += fTimeDelta;
+
+	if (m_fMagicEndTime < m_fMagicTimeAcc)
+	{
+		Set_State(STATE_IDLE);
+		m_fMagicTimeAcc = 0.f;
+	}
+
+}
+
+void CVSnatcher::Tick_HoItStart(_float fTimeDelta)
+{
+	_vector vPlayerPos = ((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+	m_pTransformCom->LookAt_ForLandObject(vPlayerPos);
+}
+
+void CVSnatcher::Tick_HoIt(_float fTimeDelta)
+{
+	_vector vPlayerPos = ((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+	m_pTransformCom->LookAt_ForLandObject(vPlayerPos);
+
+	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	if (m_bIsUp)
+	{
+		if (-10.f < XMVectorGetY(vPos))
+		{
+			m_pTransformCom->Go_Dir(XMVectorSet(0.f, -1.f, 0.f, 0.f), 10.f, fTimeDelta);
+			m_fHoItTimeAcc = 0.f;
+		}
+		else
+		{
+			vPos = XMVectorSetY(vPos, -10.f);
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPos, 1.f));
+			
+			m_fHoItTimeAcc += fTimeDelta;
+			if (1.f < m_fHoItTimeAcc)
+			{
+				m_bIsUp = false;
+				m_fHoItTimeAcc = 0.f;
+				if (0 != m_iHoItCount)
+				{
+					_float fX = CToolManager::Get_Instance()->Get_RendomNum(-100.f, 100.f);
+					_float fZ = CToolManager::Get_Instance()->Get_RendomNum(-100.f, 100.f);
+					_float fDis = CToolManager::Get_Instance()->Get_RendomNum(4.f, 12.f);
+					_vector vNorDir = XMVector3Normalize(XMVectorSet(fX, -10.f, fZ, 0.f));
+
+					_vector vPos = XMLoadFloat3(&m_vSentorPos) + vNorDir * fDis;
+					m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPos, 1.f));
+				}
+				else
+				{
+					_vector vPos = XMLoadFloat3(&m_vSentorPos);
+					vPos = XMVectorSetY(vPos, -10.f);
+					m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPos, 1.f));
+				}
+
+			}
+
+		}
+	}
+	else
+	{
+		if (0.f > XMVectorGetY(vPos))
+		{
+			m_pTransformCom->Go_Dir(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, fTimeDelta);
+			m_fHoItTimeAcc = 0.f;
+		}
+		else
+		{
+			vPos = XMVectorSetY(vPos, 0.f);
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPos, 1.f));
+			m_fHoItTimeAcc += fTimeDelta;
+			if (1.f < m_fHoItTimeAcc)
+			{
+				m_bIsUp = true;
+				m_fHoItTimeAcc = 0.f;
+				--m_iHoItCount;
+
+				if (0 > m_iHoItCount)
+				{
+					CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_BOSS);
+					Set_State(STATE_IDLE);
+					m_bIsUp = true;
+					m_iHoItCount = 0;
+					m_fHoItTimeAcc = 0.f;
+				}
+
+			}
+		}
+	}
+}
+
+void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
+{
+	_vector vPlayerPos = ((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+	m_pTransformCom->LookAt_ForLandObject(vPlayerPos);
+
+	m_fSnapHatTimeAcc += fTimeDelta;
+
+	if (3.f < m_fSnapHatTimeAcc && 9.f > m_fSnapHatTimeAcc)
+	{
+		char cTemp[MAX_PATH];
+		TCHAR szTemp[MAX_PATH];
+		strcpy_s(cTemp, m_sSnapTag.data());
+		CToolManager::Get_Instance()->CtoTC(cTemp, szTemp);
+		CItemManager::Get_Instance()->Delete_Hat(szTemp);
+
+		Equip_Sockat(m_sSnapTag, SLOT_HAND);
+		m_fSnapHatTimeAcc = 10.f;
+	}
+	else if (11.5f < m_fSnapHatTimeAcc && 19.f > m_fSnapHatTimeAcc)
+	{
+		Drop_Hat();
+		m_pSockatCom->Remove_Sockat(SLOT_HAND);
+		Equip_Sockat(m_sSnapTag, SLOT_HEAD);
+		m_fSnapHatTimeAcc = 20.f;
+	}
 }
 
 
@@ -305,6 +489,10 @@ void CVSnatcher::LateTick(_float fTimeDelta)
 		End_Anim();
 	}
 
+
+	// 소켓 갱신
+	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
+	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -337,6 +525,40 @@ void CVSnatcher::End_Anim()
 		break;
 	case STATE_CURSE:
 		break;
+	case STATE_MAGICSTART:
+		Set_State(STATE_MAGIC);
+		break;
+	case STATE_MAGIC:
+		break;
+	case STATE_HOITSTART:
+		Set_State(STATE_HOIT);
+		break;
+	case STATE_HOIT:
+		break;
+	case STATE_SNAPHAT:
+	{
+		if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HEAD))
+		{
+			Set_State(STATE_CURSESTART);
+		}
+		else if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HEAD))
+		{
+			Set_State(STATE_HOITSTART);
+		}
+		else if ("Witch_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HEAD))
+		{
+			Set_State(STATE_MAGICSTART);
+		}
+		else if ("Mask_Cat" == m_pSockatCom->Get_SlotTag(SLOT_HEAD))
+		{
+			Set_State(STATE_IDLE);
+		}
+		else if ("Mask_Fox" == m_pSockatCom->Get_SlotTag(SLOT_HEAD))
+		{
+			Set_State(STATE_IDLE);
+		}
+	}
+		break;
 	}
 }
 
@@ -359,6 +581,118 @@ void CVSnatcher::Create_ExPlo(_fvector vPos)
 	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_ExPlo"), LEVEL_BOSS, TEXT("Layer_Ex"), &Desc);
 
 	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CVSnatcher::Create_Magic(_uint iCount)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CMagic::MAGICDESC Desc;
+	_float3 vPos;
+	XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	vPos.y += 5.f;
+	Desc.vSentorPos = vPos;
+
+	_float fGoTime = 3.f;
+	_float fAngle = 0.f; 
+	for (_uint i = 0; i < iCount; ++i)
+	{
+		_matrix		RotationMatrix = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(fAngle));
+		_vector vNorDir = XMVector3Normalize(XMVector3TransformNormal(XMVectorSet(1.f, 0.f, 0.f, 0.f), RotationMatrix));
+		_vector vStartPos = XMLoadFloat3(&vPos) + vNorDir * 30.f;
+
+		Desc.fGoTime = fGoTime;
+		XMStoreFloat3(&Desc.vStartPos, vStartPos);
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Magic"), LEVEL_BOSS, TEXT("Layer_Ex"), &Desc);
+		
+		fGoTime += 0.05f;
+		fAngle += 360.f / iCount;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CVSnatcher::Choose_SnapHat()
+{
+	if (CItemManager::Get_Instance()->Get_Hats()->empty())
+	{
+		Set_State(STATE_IDLE);
+		return;
+	}
+
+	_int iSnapIndex = m_iSnapIndex;
+	_bool bIsHave = false;
+	while (true)
+	{
+		iSnapIndex = CToolManager::Get_Instance()->Get_RendomNum_Int(0, 4);
+		if (m_iSnapIndex != iSnapIndex)
+		{
+			switch (iSnapIndex)
+			{
+			case 0:
+				bIsHave = CItemManager::Get_Instance()->Check_Hat(TEXT("Ori_Hat"));
+				if (bIsHave)
+					m_sSnapTag = "Ori_Hat";
+				break;
+			case 1:
+				bIsHave = CItemManager::Get_Instance()->Check_Hat(TEXT("Sprint_Hat"));
+				if (bIsHave)
+					m_sSnapTag = "Sprint_Hat";
+				break;
+			case 2:
+				bIsHave = CItemManager::Get_Instance()->Check_Hat(TEXT("Witch_Hat"));
+				if (bIsHave)
+					m_sSnapTag = "Witch_Hat";
+				break;
+			case 3:
+				bIsHave = CItemManager::Get_Instance()->Check_Hat(TEXT("Mask_Cat"));
+				if (bIsHave)
+					m_sSnapTag = "Mask_Cat";
+				break;
+			case 4:
+				bIsHave = CItemManager::Get_Instance()->Check_Hat(TEXT("Mask_Fox"));
+				if (bIsHave)
+					m_sSnapTag = "Mask_Fox";
+				break;
+			}
+		}
+
+		if (bIsHave)
+			break;
+	}
+
+
+	m_iSnapIndex = iSnapIndex;
+	
+
+}
+
+void CVSnatcher::Drop_Hat()
+{
+	string sTemp = m_pSockatCom->Get_SlotTag(SLOT_HEAD);
+
+	if ("" == sTemp)
+		return;
+
+	char cTempName[MAX_PATH];
+	strcpy_s(cTempName, sTemp.data());
+	TCHAR czTempName[MAX_PATH];
+	CToolManager::Get_Instance()->CtoTC(cTempName, czTempName);
+
+	_float3 vPos;
+	XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	vPos.y += 5.f;
+
+	_float3 vDir;
+	_float fPow;
+	_float fX = CToolManager::Get_Instance()->Get_RendomNum(-100.f, 100.f);
+	_float fY = 0.f;
+	_float fZ = CToolManager::Get_Instance()->Get_RendomNum(-100.f, 100.f);
+	XMStoreFloat3(&vDir, XMVector3Normalize(XMVectorSet(fX, fY, fZ, 0.f)));
+	fPow = CToolManager::Get_Instance()->Get_RendomNum(2.f, 3.f);
+
+	CItemManager::Get_Instance()->Make_DrowItem(TEXT("Prototype_GameObject_Hat"), czTempName, LEVEL_BOSS, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, vDir, fPow, 5.f, m_iNaviIndex);
+
 }
 
 
@@ -445,6 +779,8 @@ HRESULT CVSnatcher::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("VSnatcher"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Sockat()))
+		return E_FAIL;
 
 
 	/* For.Com_Collider */
@@ -465,10 +801,159 @@ HRESULT CVSnatcher::Ready_Components()
 
 
 
+HRESULT CVSnatcher::Ready_Sockat()
+{
+	/* For.Com_Sockat */
+	CSockat::SOCATDESC SockatDesc;
+	ZeroMemory(&SockatDesc, sizeof(CSockat::SOCATDESC));
+	XMStoreFloat4x4(&SockatDesc.mPivot, m_pModelCom->Get_PivotMatrix());
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sockat"), TEXT("Com_Sockat"), (CComponent**)&m_pSockatCom, &SockatDesc)))
+		return E_FAIL;
+
+
+	if (FAILED(m_pSockatCom->Match_Enum_BoneName("Head4", SLOT_HEAD)))
+		return E_FAIL;
+	if (FAILED(m_pSockatCom->Match_Enum_BoneName("R-Hand-Finger01", SLOT_HAND)))
+		return E_FAIL;
 
 
 
 
+	// Equip_Sockat(string("Witch_Hat"), SLOT_HEAD);
+
+
+
+	return S_OK;
+}
+
+
+
+HRESULT CVSnatcher::Equip_Sockat(string sItemName, SLOT eSlot)
+{
+
+	// 중복으로 착용하려고 그럼 나간다
+	if (m_pSockatCom->Check_IsHaveSocket(eSlot, sItemName))
+		return S_OK;
+
+	// Item을 착용 중이냐
+	// 그럼 기존거를 삭제하고 끼운다
+	if (!m_pSockatCom->Check_Sockat(eSlot))
+		m_pSockatCom->Remove_Sockat(eSlot);
+
+
+	TCHAR cItemName[MAX_PATH];
+	CToolManager::Get_Instance()->CtoTC(sItemName.data(), cItemName);
+
+
+	CSockat::PARTSDESC PartsDesc;
+	ZeroMemory(&PartsDesc, sizeof(CSockat::PARTSDESC));
+
+
+	if (!lstrcmp(cItemName, TEXT("Ori_Hat")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Ori_Hat"));
+			PartsDesc.vPos = _float3(-3.81, 0.24f, -5.68f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-90.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+		else if (SLOT_HEAD == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Ori_Hat"));
+			PartsDesc.vPos = _float3(0.37f, 0.f, -6.74f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-86.6f, -41.9f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
+	else if (!lstrcmp(cItemName, TEXT("Sprint_Hat")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Sprint_Hat"));
+			PartsDesc.vPos = _float3(-3.81, 0.24f, -5.68f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-90.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+		else if (SLOT_HEAD == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Sprint_Hat"));
+			PartsDesc.vPos = _float3(0.37f, 0.f, -6.74f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-86.6f, -41.9f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+
+	}
+	else if (!lstrcmp(cItemName, TEXT("Witch_Hat")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Witch_Hat"));
+			PartsDesc.vPos = _float3(-3.81, 0.24f, -5.68f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-90.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+		else if (SLOT_HEAD == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Witch_Hat"));
+			PartsDesc.vPos = _float3(0.37f, 0.f, -6.74f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-86.6f, -41.9f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
+	else if (!lstrcmp(cItemName, TEXT("Mask_Cat")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Mask_Cat"));
+			PartsDesc.vPos = _float3(-3.81, 0.24f, -5.68f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-90.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+		else if (SLOT_HEAD == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Mask_Cat"));
+			PartsDesc.vPos = _float3(0.37f, 0.f, -6.74f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-86.6f, -41.9f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
+	else if (!lstrcmp(cItemName, TEXT("Mask_Fox")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Mask_Fox"));
+			PartsDesc.vPos = _float3(-3.81, 0.24f, -5.68f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-90.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+		else if (SLOT_HEAD == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Mask_Fox"));
+			PartsDesc.vPos = _float3(0.37f, 0.f, -6.74f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-86.6f, -41.9f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
+
+
+
+
+	if (!FAILED(m_pSockatCom->Add_Sockat(eSlot, m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
+		return E_FAIL;
+
+	return S_OK;
+}
 
 
 
@@ -506,6 +991,7 @@ void CVSnatcher::Free()
 
 	Safe_Release(m_pPlayer);
 
+	Safe_Release(m_pSockatCom);
 	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);

@@ -211,6 +211,12 @@
     <Filter Include="02.GameObjects\VSnatcher\SKill\ExPlo">
       <UniqueIdentifier>{99580741-e8c7-46db-830d-056f20861203}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\VSnatcher\SKill\Magic">
+      <UniqueIdentifier>{b8ff844a-622b-4491-878d-1946fba3e182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Item\Hat">
+      <UniqueIdentifier>{fad36621-fd73-4bb9-965d-f76cd75f6033}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -447,6 +453,12 @@
     <ClInclude Include="..\public\ExPlo.h">
       <Filter>02.GameObjects\VSnatcher\SKill\ExPlo</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Magic.h">
+      <Filter>02.GameObjects\VSnatcher\SKill\Magic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Hat.h">
+      <Filter>02.GameObjects\Item\Hat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -667,6 +679,12 @@
     </ClCompile>
     <ClCompile Include="..\private\ExPlo.cpp">
       <Filter>02.GameObjects\VSnatcher\SKill\ExPlo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Magic.cpp">
+      <Filter>02.GameObjects\VSnatcher\SKill\Magic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Hat.cpp">
+      <Filter>02.GameObjects\Item\Hat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

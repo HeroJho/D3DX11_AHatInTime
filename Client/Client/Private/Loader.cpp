@@ -39,6 +39,8 @@
 
 #include "VSnatcher.h"
 #include "ExPlo.h"
+#include "Magic.h"
+#include "Hat.h"
 
 
 
@@ -290,6 +292,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_Yarn*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Yarn"),
 		CYarn::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_Hat*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Hat"),
+		CHat::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	/* For.Prototype_GameObject_Flask*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Flask"),
@@ -566,7 +572,10 @@ HRESULT CLoader::Loading_ForBossLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ExPlo"),
 		CExPlo::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-
+	/* For.Prototype_GameObject_Magic*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Magic"),
+		CMagic::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 

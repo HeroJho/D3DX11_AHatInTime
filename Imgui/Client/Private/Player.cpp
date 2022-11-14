@@ -31,7 +31,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_fTurnSpeed = 1.f;
 	m_fRotationSpeed = 3.5f;
 	
-	m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
+	m_pTransformCom->Set_Scale(XMVectorSet(0.015f, 0.015f, 0.015f, 1.f));
+	// m_pTransformCom->Set_Scale(XMVectorSet(0.01f, 0.01f, 0.01f, 1.f));
 
 	return S_OK;
 }
@@ -259,8 +260,10 @@ HRESULT CPlayer::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_PARTSTOOL, TEXT("HatGirl"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_PARTSTOOL, TEXT("VSnatcher"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
+	//if (FAILED(__super::Add_Component(LEVEL_PARTSTOOL, TEXT("HatGirl"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	//	return E_FAIL;
 
 
 

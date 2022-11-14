@@ -1974,16 +1974,18 @@ void CPlayer::Get_Item(CItem::ITEMINVENDESC Desc)
 
 }
 
-void CPlayer::Get_Hat(TCHAR * szModelName)
+void CPlayer::Get_Hat(TCHAR * szModelName, _bool bAction)
 {
-	m_TickStates.push_back(STATE_STARTGETITEM);
 
 	char szName[MAX_PATH];
 	CToolManager::Get_Instance()->TCtoC(szModelName, szName);
 
-	Equip_Sockat(szName, SLOT_HAND);
-
-	CCamManager::Get_Instance()->Play_CutScene(1, false, m_pTransformCom);
+	if (!bAction)
+	{
+		Equip_Sockat(szName, SLOT_HAND);
+		m_TickStates.push_back(STATE_STARTGETITEM);
+		CCamManager::Get_Instance()->Play_CutScene(1, false, m_pTransformCom);
+	}
 
 	CItemManager::Get_Instance()->Add_Hat(szModelName);
 }

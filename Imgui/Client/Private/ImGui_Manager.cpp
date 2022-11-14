@@ -374,6 +374,7 @@ void CImGui_Manager::Render_AnimTool()
 		Window_IsDelete();
 
 
+
 }
 void CImGui_Manager::Render_PartsTool()
 {
