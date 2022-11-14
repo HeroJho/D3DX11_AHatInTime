@@ -8,7 +8,7 @@ BEGIN(Client)
 class CCamera_Free final : public CCamera
 {
 public:
-	enum CAM_STATE { CAM_GAME, CAM_FOCUS, CAM_BOSS, CAM_CUTSCENE, CAM_END };
+	enum CAM_STATE { CAM_GAME, CAM_FOCUS, CAM_BOSS, CAM_FREE, CAM_CUTSCENE, CAM_END };
 
 private:
 	CCamera_Free(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -48,6 +48,7 @@ public:
 	void OriCamPos(_float fDeltaTime);
 	void FocusePos(_float fDeltaTime);
 	void SmoothLook(_float fDeltaTime);
+	void SmoothPos(_float fDeltaTime);
 
 	void Look_Player();
 
@@ -66,6 +67,12 @@ private:
 
 	void Boss_Mode_Rotation(_float fTimeDelta);
 
+	// For. CamFree
+public:
+	void Set_CamFreeValue(_float3 vPos, _float3 vLookPos, _bool bIsFirst);
+
+private:
+
 
 private:
 	class CPlayer*		m_pPlayer = nullptr;
@@ -73,8 +80,11 @@ private:
 	_float3				m_vAngle;
 	_float				m_fOriDis = 0;
 	_float				m_fDis = 0.f;
+
 	_float3				m_vDestLookPos;
 	_float3				m_vPreLookPos;
+
+	_float3				m_vDestPos;
 
 	CAM_STATE			m_eState = CAM_GAME;
 

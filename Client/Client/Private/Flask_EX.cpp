@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 
 #include "IceBox.h"
+#include "StatuePosed_Boss.h"
+#include "PuzzleCube_Boss.h"
 
 CFlask_EX::CFlask_EX(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -125,11 +127,22 @@ void CFlask_EX::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 			CTransform* pTran = (CTransform*)Desc.pOther->Get_ComponentPtr(TEXT("Com_Transform"));
 			pTran->Jump(9.f);
 		}
+		else if ("Tag_PuzzleCube_Boss" == Desc.pOther->Get_Tag())
+		{
+			CPuzzleCube_Boss* pPuzzleCube = (CPuzzleCube_Boss*)Desc.pOther;
+			pPuzzleCube->Attacked();
+		}
 		else if ("Tag_IceBox" == Desc.pOther->Get_Tag())
 		{
 			CIceBox* pIce = (CIceBox*)Desc.pOther;
 			pIce->Attacked();
 		}
+		else if ("Tag_Statue" == Desc.pOther->Get_Tag())
+		{
+			CStatuePosed_Boss* pStatue = (CStatuePosed_Boss*)Desc.pOther;
+			pStatue->Attacked(0);
+		}
+		
 
 		m_bTickAttack = true;
 	}

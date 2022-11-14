@@ -109,7 +109,7 @@ HRESULT CStaticModel_Instance::Render()
 		CToolManager::Get_Instance()->TCtoC(m_cModelTag, cTamp);
 
 		_bool bIsSubCon = false;
-		if (!strcmp("SubCon_Instance", cTamp))
+		if (!strcmp("SubCon_Instance", cTamp) || !strcmp("SubConBoss_Instance", cTamp))
 		{
 			bIsSubCon = true;
 

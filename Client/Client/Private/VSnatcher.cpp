@@ -11,6 +11,9 @@
 #include "Camera_Free.h"
 #include "ExPlo.h"
 #include "Magic.h"
+#include "Swip.h"
+#include "StatuePosed_Boss.h"
+#include "PuzzleCube_Boss.h"
 
 CVSnatcher::CVSnatcher(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -52,7 +55,8 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 
 	XMStoreFloat3(&m_vSentorPos, XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
 
-	 Set_State(STATE_DISAPPEAR);
+	// Set_State(STATE_DISAPPEAR); 
+	Set_State(STATE_CUT_1);
 	
 	 CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	 m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
@@ -119,9 +123,26 @@ void CVSnatcher::Set_State(STATE eState)
 			m_bIsUp = true;
 			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
 			break;
+		case STATE_SWIPSTART:
+			Create_Statue();
+			Create_CubeBox();
+			break;
+		case STATE_SWIPS:
+			m_fSwipTimeAcc = 0.f;
+			break;
 		case STATE_SNAPHAT:
 			Choose_SnapHat();
 			m_fSnapHatTimeAcc = 0.f;
+			break;
+
+
+		case STATE_CUT_1:
+			// À§Ä¡
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-67.41f, 10.f, 111.f, 1.f));
+			break;
+		case STATE_CUT_2:
+			break;
+
 		default:
 			break;
 		}
@@ -169,6 +190,12 @@ void CVSnatcher::Set_Anim()
 		m_pModelCom->Set_AnimIndex(24);
 		break;
 	case STATE_HOIT:
+		m_pModelCom->Set_AnimIndex(24);
+		break;
+	case STATE_SWIPSTART:
+		m_pModelCom->Set_AnimIndex(24);
+		break;
+	case STATE_SWIPS:
 		m_pModelCom->Set_AnimIndex(24);
 		break;
 	case STATE_SNAPHAT:
@@ -248,6 +275,19 @@ void CVSnatcher::Tick(_float fTimeDelta)
 		break;
 	case STATE_SNAPHAT:
 		Tick_SnapHat(fTimeDelta);
+		break;
+	case STATE_SWIPSTART:
+		Tick_SwipStart(fTimeDelta);
+		break;
+	case STATE_SWIPS:
+		Tick_Swip(fTimeDelta);
+		break;
+
+	case STATE_CUT_1:
+		Tick_Cut_1(fTimeDelta);
+		break;
+	case STATE_CUT_2:
+		Tick_Cut_2(fTimeDelta);
 		break;
 	default:
 		break;
@@ -438,6 +478,30 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 	}
 }
 
+void CVSnatcher::Tick_SwipStart(_float fTimeDelta)
+{
+
+
+}
+
+void CVSnatcher::Tick_Swip(_float fTimeDelta)
+{
+	m_fSwipTimeAcc += fTimeDelta;
+
+	if (20.f < m_fSwipTimeAcc && 29.f > m_fSwipTimeAcc)
+	{
+		if (CSwip::STATE_IDLE == m_pSwip->Get_State())
+			m_pSwip->Start();
+		m_fSwipTimeAcc = 30.f;
+	}
+	else if (40.f < m_fSwipTimeAcc && 49.f > m_fSwipTimeAcc)
+	{
+		Set_State(STATE_IDLE);
+		m_fSwipTimeAcc = 50.f;
+	}
+
+}
+
 void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 {
 	_vector vPlayerPos = ((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
@@ -463,6 +527,14 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 		Equip_Sockat(m_sSnapTag, SLOT_HEAD);
 		m_fSnapHatTimeAcc = 20.f;
 	}
+}
+
+void CVSnatcher::Tick_Cut_1(_float fTimeDelta)
+{
+}
+
+void CVSnatcher::Tick_Cut_2(_float fTimeDelta)
+{
 }
 
 
@@ -551,13 +623,18 @@ void CVSnatcher::End_Anim()
 		}
 		else if ("Mask_Cat" == m_pSockatCom->Get_SlotTag(SLOT_HEAD))
 		{
-			Set_State(STATE_IDLE);
+			Set_State(STATE_SWIPSTART);
 		}
 		else if ("Mask_Fox" == m_pSockatCom->Get_SlotTag(SLOT_HEAD))
 		{
 			Set_State(STATE_IDLE);
 		}
 	}
+		break;
+	case STATE_SWIPSTART:
+		Set_State(STATE_SWIPS);
+		break;
+	case STATE_SWIPS:
 		break;
 	}
 }
@@ -607,6 +684,58 @@ void CVSnatcher::Create_Magic(_uint iCount)
 		
 		fGoTime += 0.05f;
 		fAngle += 360.f / iCount;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CVSnatcher::Create_Statue()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	for (_uint i = 0; i < 3; ++i)
+	{
+		_float fX = CToolManager::Get_Instance()->Get_RendomNum(-100.f, 100.f);
+		_float fZ = CToolManager::Get_Instance()->Get_RendomNum(-100.f, 100.f);
+		_float fDis = CToolManager::Get_Instance()->Get_RendomNum(4.f, 12.f);
+		_vector vNorDir = XMVector3Normalize(XMVectorSet(fX, -10.f, fZ, 0.f));
+
+		_vector vPos = XMLoadFloat3(&m_vSentorPos) + vNorDir * fDis;
+
+
+		CStatuePosed_Boss::STATUEDESC StatueDesc;
+		XMStoreFloat3(&StatueDesc.vPos, vPos);
+		StatueDesc.vPos.y += 3.f;
+		StatueDesc.vRotation = _float3(0.f, fX, 0.f);
+		StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
+
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StatuePosed_Boss"), LEVEL_BOSS, TEXT("Layer_Monster"), &StatueDesc);
+
+
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CVSnatcher::Create_CubeBox()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	for (_uint i = 0; i < 6; ++i)
+	{
+		_float fX = CToolManager::Get_Instance()->Get_RendomNum(-100.f, 100.f);
+		_float fZ = CToolManager::Get_Instance()->Get_RendomNum(-100.f, 100.f);
+		_float fDis = CToolManager::Get_Instance()->Get_RendomNum(4.f, 12.f);
+		_vector vNorDir = XMVector3Normalize(XMVectorSet(fX, -10.f, fZ, 0.f));
+
+		_vector vPos = XMLoadFloat3(&m_vSentorPos) + vNorDir * fDis;
+
+
+		CPuzzleCube_Boss:: PUZZLECUBEDESC StatueDesc;
+		XMStoreFloat3(&StatueDesc.vPos, vPos);
+		StatueDesc.vPos.y += 3.f;
+
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube_Boss"), LEVEL_BOSS, TEXT("Layer_Cube"), &StatueDesc);
 	}
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -689,10 +818,41 @@ void CVSnatcher::Drop_Hat()
 	_float fY = 0.f;
 	_float fZ = CToolManager::Get_Instance()->Get_RendomNum(-100.f, 100.f);
 	XMStoreFloat3(&vDir, XMVector3Normalize(XMVectorSet(fX, fY, fZ, 0.f)));
-	fPow = CToolManager::Get_Instance()->Get_RendomNum(2.f, 3.f);
+	fPow = CToolManager::Get_Instance()->Get_RendomNum(1.5f, 2.f);
 
 	CItemManager::Get_Instance()->Make_DrowItem(TEXT("Prototype_GameObject_Hat"), czTempName, LEVEL_BOSS, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, vDir, fPow, 5.f, m_iNaviIndex);
 
+}
+
+_float3 CVSnatcher::Get_PacePos()
+{
+	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_vector vNorLookDir = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+	_vector vNorRightDir = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+	
+	_matrix mUp = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(45.f));
+	_matrix mRight = XMMatrixRotationAxis(-vNorRightDir, XMConvertToRadians(45.f));
+
+	_matrix mTotal = mUp * mRight;
+
+	vNorLookDir = XMVector3Normalize(XMVector3TransformNormal(vNorLookDir, mTotal));
+
+	_float3 vVPos;
+	vPos += vNorLookDir * 5.f;
+	XMStoreFloat3(&vVPos, vPos);
+	return vVPos;
+}
+
+_float3 CVSnatcher::Get_PaceLook()
+{
+	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
+
+
+	_float3 vVPos;
+	XMStoreFloat3(&vVPos, vPos);
+	return vVPos;
 }
 
 
@@ -745,6 +905,17 @@ void CVSnatcher::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
 
+		if (!strcmp("Near_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+		{
+
+			_float3 vCamPos, vLookPos;
+			vCamPos = Get_PacePos();
+			vLookPos = Get_PaceLook();
+
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(vCamPos, vLookPos, false);
+
+		}
+
 	}
 }
 
@@ -794,6 +965,29 @@ HRESULT CVSnatcher::Ready_Components()
 	strcpy(ColDesc.sTag, "Attacked_Sphere");
 	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
 		return E_FAIL;
+
+	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	ColDesc.vSize = _float3(5.f, 5.f, 5.f);
+	strcpy(ColDesc.sTag, "Near_Sphere");
+	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
+		return E_FAIL;
+
+
+
+
+	CSwip::WISPDESC WispDesc;
+	WispDesc.pOwner = this;
+	WispDesc.fMaxRatio = 15.f;
+	WispDesc.fSpeed = 0.5f;
+
+	CGameObject* pObj = nullptr;
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Swip"), LEVEL_STATIC, TEXT("Layer_Swip"), &pObj, &WispDesc)))
+		return E_FAIL;
+	m_pSwip = (CSwip*)pObj;
+	Safe_AddRef(m_pSwip);
+	RELEASE_INSTANCE(CGameInstance);
 
 
 	return S_OK;
@@ -990,6 +1184,7 @@ void CVSnatcher::Free()
 	__super::Free();
 
 	Safe_Release(m_pPlayer);
+	Safe_Release(m_pSwip);
 
 	Safe_Release(m_pSockatCom);
 	Safe_Release(m_pNavigationCom);

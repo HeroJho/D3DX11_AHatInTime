@@ -52,7 +52,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 	}
 
 
-	m_eState = STATE_IDLE;
+	m_eState = STATE_NONE;
+	m_TickStates.push_back(STATE_NONE);
 
 	m_fWalkSpeed = 1.f;
 	m_fRunSpeed = 2.5f;
@@ -153,6 +154,9 @@ void CPlayer::Set_Anim()
 {
 	switch (m_eState)
 	{
+	case STATE_APPEAR:
+		m_pModelCom->Set_AnimIndex(111);
+		break;
 	case STATE_IDLE:
 		m_pModelCom->Set_AnimIndex(113);
 		break;
@@ -697,7 +701,8 @@ void CPlayer::State_Input(_float fTimeDelta)
 
 	if (pGameInstance->Key_Down(DIK_L))
 	{
-		CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM4);
+		// CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM4);
+		m_TickStates.push_back(STATE_APPEAR);
 	}
 
 
@@ -1741,12 +1746,14 @@ void CPlayer::LateTick(_float fTimeDelta)
 	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
 	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	if (STATE_NONE != m_eState)
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PLAYER, this);
-	RELEASE_INSTANCE(CGameInstance);
-
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PLAYER, this);
+		RELEASE_INSTANCE(CGameInstance);
+	}
 
 
 	// ============== Clear Tick ===========
@@ -1813,6 +1820,14 @@ void CPlayer::Calcul_State(_float fTimeDelta)
 	{
 		m_pTransformCom->Set_CurSpeed(0.f);
 	}
+	else if (STATE_NONE == m_eState)
+	{
+		m_pTransformCom->Set_CurSpeed(0.f);
+	}
+	else if (STATE_APPEAR == m_eState)
+	{
+		m_pTransformCom->Set_CurSpeed(0.f);
+	}
 
 	m_pTransformCom->Go_Straight(m_pTransformCom->Get_CurSpeed() * m_fSlowSpeed, fTimeDelta, m_pNavigationCom);
 	m_fSlowSpeed = 1.f;
@@ -1826,6 +1841,9 @@ void CPlayer::Check_EndAnim()
 
 	switch (m_eState)
 	{
+	case STATE_APPEAR:
+		m_TickStates.push_back(STATE_IDLE);
+		break;
 	case STATE_ATTACK_1:
 		m_TickStates.push_back(STATE_READYATTACK);
 		break;
@@ -2085,7 +2103,7 @@ HRESULT CPlayer::Ready_Components()
 
 	CGameObject* pObj = nullptr;
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wisp"), LEVEL_GAMEPLAY, TEXT("Layer_Wisp"), &pObj, &WispDesc)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wisp"), LEVEL_STATIC, TEXT("Layer_Wisp"), &pObj, &WispDesc)))
 		return E_FAIL;
 	m_pWisp = (CWisp*)pObj;
 	Safe_AddRef(m_pWisp);
@@ -2112,7 +2130,7 @@ HRESULT CPlayer::Ready_Sockat()
 
 
 	// Equip_Sockat(string("Ori_Hat"), SLOT_HAT);
-	Equip_Sockat(string("Umbrella"), SLOT_HAND);
+	// Equip_Sockat(string("Umbrella"), SLOT_HAND);
 
 
 
@@ -2346,7 +2364,7 @@ void CPlayer::SetPosNavi(LEVEL eLevel, _fvector vPos)
 
 void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	if(("Tag_PuzzleCube" == Desc.pOther->Get_Tag() || "Tag_Barrel" == Desc.pOther->Get_Tag() || "Tag_IceBox" == Desc.pOther->Get_Tag()) && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag))
+	if(("Tag_PuzzleCube_Boss" == Desc.pOther->Get_Tag() || "Tag_PuzzleCube" == Desc.pOther->Get_Tag() || "Tag_Barrel" == Desc.pOther->Get_Tag() || "Tag_IceBox" == Desc.pOther->Get_Tag()) && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag))
 		Get_StaticOBB()->Compute_Pigi(Desc.pOther, m_pNavigationCom, m_pTransformCom, CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
 
 	

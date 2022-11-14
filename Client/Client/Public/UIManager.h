@@ -18,6 +18,7 @@ public:
 	HRESULT Make_ItemInvenUI();
 	HRESULT Make_DiamondUI();
 	HRESULT Make_ShopUI();
+	HRESULT Make_SpeechBubble();
 
 	// For. Inven
 public:
@@ -28,10 +29,16 @@ public:
 public:
 	HRESULT Set_Score(_uint iNum);
 
-
+	// For. Shop
 public:
 	void Open_Shop();
 	void Close_Shop();
+
+	// For. Text
+public:
+	void On_Text(TCHAR* sText);
+	void Set_Text(TCHAR* sText);
+	void Off_Text();
 
 
 private:
@@ -39,6 +46,7 @@ private:
 	class CUI_Item_Inven*	m_pItem_Inven = nullptr;
 	class CUI_DiamondScore* m_pDiamondScore = nullptr;
 	class CUI_Shop*			m_pShop = nullptr;
+	class CUI_SpeechBubble*	m_pSpeechBubble = nullptr;
 
 public:
 	virtual void Free() override;

@@ -217,6 +217,18 @@
     <Filter Include="02.GameObjects\Item\Hat">
       <UniqueIdentifier>{fad36621-fd73-4bb9-965d-f76cd75f6033}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\VSnatcher\SKill\Swip">
+      <UniqueIdentifier>{0cb4e39e-72ec-4271-8c30-6b8db73739e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\VSnatcher\SKill\StatuePosed_Boss">
+      <UniqueIdentifier>{41ff8066-b31e-4248-bf76-9c5e84505edc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\VSnatcher\SKill\PuzzleCube_Boss">
+      <UniqueIdentifier>{c14a4269-b21f-4859-9b95-d3aeda706eba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\SpeechBubble">
+      <UniqueIdentifier>{87114ba7-536c-416b-bc2d-be4fc744ea83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -459,6 +471,18 @@
     <ClInclude Include="..\public\Hat.h">
       <Filter>02.GameObjects\Item\Hat</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Swip.h">
+      <Filter>02.GameObjects\VSnatcher\SKill\Swip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\StatuePosed_Boss.h">
+      <Filter>02.GameObjects\VSnatcher\SKill\StatuePosed_Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PuzzleCube_Boss.h">
+      <Filter>02.GameObjects\VSnatcher\SKill\PuzzleCube_Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_SpeechBubble.h">
+      <Filter>03.UI\SpeechBubble</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -685,6 +709,18 @@
     </ClCompile>
     <ClCompile Include="..\private\Hat.cpp">
       <Filter>02.GameObjects\Item\Hat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Swip.cpp">
+      <Filter>02.GameObjects\VSnatcher\SKill\Swip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\StatuePosed_Boss.cpp">
+      <Filter>02.GameObjects\VSnatcher\SKill\StatuePosed_Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PuzzleCube_Boss.cpp">
+      <Filter>02.GameObjects\VSnatcher\SKill\PuzzleCube_Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_SpeechBubble.cpp">
+      <Filter>03.UI\SpeechBubble</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

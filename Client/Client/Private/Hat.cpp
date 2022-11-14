@@ -129,7 +129,7 @@ void CHat::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
-			if (m_Desc.bIsPigic && m_bStop)
+			if (m_Desc.bIsPigic)
 			{
 				if (Get_Dead())
 					return;

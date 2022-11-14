@@ -47,6 +47,7 @@ HRESULT CToolManager::Change_Level()
 
 	Safe_Release(pGameInstance);
 
+	m_eCulLevel = m_eLEVEL;
 	m_eLEVEL = LEVEL_END;
 	m_bLoading = true;
 
@@ -238,6 +239,21 @@ void CToolManager::Render_Fonts(const _tchar * pFontTag, const _tchar * pTextm, 
 			_float2(vPosition.x, vPosition.y), vColor, fAngle, vOrigin, vScale);
 	}
 
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CToolManager::Render_FontsY(const _tchar * pFontTag, const _tchar * pTextm, _float2 vPosition, _fvector vColor, _float fAngle, _float2 vOrigin, _float2 vScale)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_int iLenthNum = lstrlen(pTextm);
+
+	// _float fLeft = vScale.x * 10.f * ((_float)iLenthNum);
+	_float fUp = vScale.y * 10.f;
+
+	pGameInstance->Render_Fonts(pFontTag, pTextm,
+		_float2(vPosition.x, vPosition.y - fUp), vColor, fAngle, vOrigin, vScale);
 
 	RELEASE_INSTANCE(CGameInstance);
 }

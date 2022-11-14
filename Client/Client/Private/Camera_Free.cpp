@@ -71,6 +71,7 @@ void CCamera_Free::Tick(_float fTimeDelta)
 	case CAM_GAME:
 	case CAM_FOCUS:
 	case CAM_BOSS:
+	case CAM_FREE:
 		Game_Mode(fTimeDelta);
 		break;
 	case CAM_CUTSCENE:
@@ -209,21 +210,25 @@ void CCamera_Free::Game_Mode(_float fTimeDelta)
 		Game_Mode_Input(fTimeDelta);
 		Look_Player();
 		OriCamPos(fTimeDelta);
+		SmoothLook(fTimeDelta);
 		break;
 	case CAM_FOCUS:
 		OriCamPos(fTimeDelta);
 		Look_NearMonster();
 		Game_Mode_Input(fTimeDelta);
+		SmoothLook(fTimeDelta);
 		break;
 	case CAM_BOSS:
 		Boss_Mode_Input(fTimeDelta);
 		Look_Target();
 		FocuseTarget(fTimeDelta);
+		SmoothLook(fTimeDelta);
+		break;
+	case CAM_FREE:
+		SmoothPos(fTimeDelta);
 		break;
 	}
 
-
-	SmoothLook(fTimeDelta);
 
 }
 
@@ -304,6 +309,21 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 
 }
 
+void CCamera_Free::SmoothPos(_float fDeltaTime)
+{
+	_vector vDestPos = XMLoadFloat3(&m_vDestPos);
+	_vector vCurPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	
+	_vector vDir = vDestPos - vCurPos;
+	_float fDis = XMVectorGetX(XMVector3Length(vDir));
+	_vector vNorDir = XMVector3Normalize(vDir);
+
+	if (0.1f > fDis)
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vDestPos, 1.f));
+	else
+		m_pTransformCom->Go_Dir(vNorDir, 3.f, fDeltaTime);
+}
+
 
 
 void CCamera_Free::Game_Mode_Input(_float fTimeDelta)
@@ -372,6 +392,17 @@ void CCamera_Free::Boss_Mode_Input(_float fTimeDelta)
 void CCamera_Free::Boss_Mode_Rotation(_float fTimeDelta)
 {
 	
+
+}
+
+void CCamera_Free::Set_CamFreeValue(_float3 vPos, _float3 vLookPos, _bool bIsFirst)
+{
+	Set_State(CAM_FREE);
+	m_vDestPos = vPos;
+
+	if (bIsFirst)
+		m_vPreLookPos = vLookPos;
+	m_vDestLookPos = vLookPos;
 
 }
 

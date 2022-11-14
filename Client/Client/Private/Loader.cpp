@@ -15,6 +15,7 @@
 #include "Mad_Crow.h"
 #include "Vault_Mad_Crow.h"
 #include "SubSpider.h"
+#include "StatuePosed_Boss.h"
 
 #include "Parts.h"
 #include "Umbrella.h"
@@ -36,11 +37,13 @@
 #include "BadgeS_Base.h"
 #include "IceBox.h"
 #include "TimeObject.h"
+#include "Swip.h"
 
 #include "VSnatcher.h"
 #include "ExPlo.h"
 #include "Magic.h"
 #include "Hat.h"
+#include "PuzzleCube_Boss.h"
 
 
 
@@ -62,6 +65,7 @@
 #include "UI_Shop_Slot.h"
 #include "UI_Shop_SlotItem.h"
 #include "UI_ShopMenu.h"
+#include "UI_SpeechBubble.h"
 
 #include "RollingBarrel.h"
 #include "RectBarrel.h"
@@ -233,10 +237,22 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CBellMountEye::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_StatuePosed_Boss */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_StatuePosed_Boss"),
+		CStatuePosed_Boss::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
+
 	/* For.Prototype_GameObject_PuzzleCube */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_PuzzleCube"),
 		CPuzzleCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_PuzzleCube_Boss */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_PuzzleCube_Boss"),
+		CPuzzleCube_Boss::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
 	
 	/* For.Prototype_GameObject_RollingBarrel */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_RollingBarrel"),
@@ -253,6 +269,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_Wisp */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Wisp"),
 		CWisp::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_Swip */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Swip"),
+		CSwip::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	/* For.Prototype_GameObject_Toilet_SentorWall */
@@ -416,7 +436,12 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CUI_ShopMenu::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_UI_SpeechBubble*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_SpeechBubble"),
+		CUI_SpeechBubble::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
+	
 
 	/* For.Prototype_UI_TextLife*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_Test"),
@@ -752,6 +777,11 @@ HRESULT CLoader::Loading_UI()
 	/* For.Prototype_Component_Texture_shop_stand */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_shop_stand"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Shop/shop_stand_%d.dds"), 2))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_speech_bubble */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_speech_bubble"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/speech_bubble_gloom.dds"), 1))))
 		return E_FAIL;
 
 

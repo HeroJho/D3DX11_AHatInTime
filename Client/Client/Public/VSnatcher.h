@@ -18,7 +18,12 @@ BEGIN(Client)
 class CVSnatcher final : public CGameObject
 {
 public:
-	enum STATE { STATE_APPEAR, STATE_SOFTAPPEAR, STATE_DISAPPEAR, STATE_IDLE, STATE_TALKING, STATE_CURSESTART, STATE_CURSE, STATE_MINON, STATE_MAGICSTART, STATE_MAGIC, STATE_HOITSTART, STATE_HOIT, STATE_SNAPHAT, STATE_END };
+	enum STATE { STATE_CUT_1, STATE_CUT_2,
+		STATE_APPEAR, STATE_SOFTAPPEAR, STATE_DISAPPEAR, STATE_IDLE, 
+		STATE_TALKING, STATE_CURSESTART, STATE_CURSE, 
+		STATE_MINON, STATE_MAGICSTART, STATE_MAGIC, STATE_HOITSTART, 
+		STATE_HOIT, STATE_SNAPHAT, 
+		STATE_SWIPSTART, STATE_SWIPS, STATE_END };
 	enum SLOT { SLOT_HAND, SLOT_HEAD, SLOT_END };
 
 private:
@@ -57,8 +62,15 @@ public:
 	void Tick_HoItStart(_float fTimeDelta);
 	void Tick_HoIt(_float fTimeDelta);
 
+	void Tick_SwipStart(_float fTimeDelta);
+	void Tick_Swip(_float fTimeDelta);
+
 	void Tick_SnapHat(_float fTimeDelta);
 
+
+
+	void Tick_Cut_1(_float fTimeDelta);
+	void Tick_Cut_2(_float fTimeDelta);
 
 private:
 	void Compute_Pattern(_float fTimeDelta);
@@ -67,8 +79,16 @@ private:
 	void Create_ExPlo(_fvector vPos);
 	void Create_Magic(_uint iCount);
 
+	void Create_Statue();
+	void Create_CubeBox();
+
 	void Choose_SnapHat();
 	void Drop_Hat();
+
+	_float3 Get_PacePos();
+	_float3 Get_PaceLook();
+
+	_bool sdf = false;
 
 private:
 	// For. Common
@@ -95,6 +115,10 @@ private:
 	_int m_iHoItMaxCount = 5;
 	_bool m_bIsUp = true;
 	_float m_fHoItTimeAcc = 0.f;
+
+	// For. Swip
+	class CSwip* m_pSwip = nullptr;
+	_float m_fSwipTimeAcc = 0.f;
 
 	// For. Minon
 	_float m_fMinonTimeAcc = 0.f;

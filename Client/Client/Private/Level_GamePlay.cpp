@@ -250,7 +250,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	Safe_AddRef(pGameInstance);
 
 
-
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
+		return E_FAIL;
 	
 
 
@@ -374,6 +375,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 	CUIManager::Get_Instance()->Make_ItemInvenUI();
 	CUIManager::Get_Instance()->Make_DiamondUI();
 	CUIManager::Get_Instance()->Make_ShopUI();
+	CUIManager::Get_Instance()->Make_SpeechBubble();
 
 
 	return S_OK;

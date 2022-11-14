@@ -9,6 +9,7 @@
 #include "UI_Item_Inven.h"
 #include "UI_DiamondScore.h"
 #include "UI_Shop.h"
+#include "UI_SpeechBubble.h"
 
 
 
@@ -16,6 +17,7 @@ IMPLEMENT_SINGLETON(CUIManager)
 
 CUIManager::CUIManager()
 {
+
 }
 
 
@@ -125,6 +127,34 @@ HRESULT CUIManager::Make_ShopUI()
 	return S_OK;
 }
 
+HRESULT CUIManager::Make_SpeechBubble()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	CUI::UIINFODESC UiInfoDesc;
+	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+
+	UiInfoDesc.fSizeX = 872.73f;
+	UiInfoDesc.fSizeY = 244.75f;
+	UiInfoDesc.fX = g_iWinSizeX * 0.5f;
+	UiInfoDesc.fY = 86.7f;
+	UiInfoDesc.pDesc = nullptr;
+
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_SpeechBubble"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+		return E_FAIL;
+
+	m_pSpeechBubble = (CUI_SpeechBubble*)pObj;
+	Safe_AddRef(m_pSpeechBubble);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+	return S_OK;
+}
+
 
 
 
@@ -172,6 +202,27 @@ void CUIManager::Close_Shop()
 	m_pShop->Close();
 }
 
+void CUIManager::On_Text(TCHAR * sText)
+{
+	if (nullptr == m_pSpeechBubble)
+		return;
+	m_pSpeechBubble->On_Text(sText);
+}
+
+void CUIManager::Set_Text(TCHAR * sText)
+{
+	if (nullptr == m_pSpeechBubble)
+		return;
+	m_pSpeechBubble->Set_Text(sText);
+}
+
+void CUIManager::Off_Text()
+{
+	if (nullptr == m_pSpeechBubble)
+		return;
+	m_pSpeechBubble->Off_Text();
+}
+
 
 
 
@@ -179,6 +230,7 @@ void CUIManager::Close_Shop()
 
 void CUIManager::Free()
 {
+	Safe_Release(m_pSpeechBubble);
 	Safe_Release(m_pDiamondScore);
 	Safe_Release(m_pInven);
 	Safe_Release(m_pItem_Inven);

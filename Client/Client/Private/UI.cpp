@@ -216,19 +216,19 @@ void CUI::UI_RenderDebug()
 	string sTemp = to_string(m_UiInfo.fX);
 	TCHAR cTemp[MAX_PATH];
 	CToolManager::Get_Instance()->CtoTC(sTemp.data(), cTemp);
-	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 10.f));
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 310.f));
 
 	sTemp = to_string(m_UiInfo.fY);
 	CToolManager::Get_Instance()->CtoTC(sTemp.data(), cTemp);
-	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 30.f));
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 330.f));
 
 	sTemp = to_string(m_UiInfo.fSizeX);
 	CToolManager::Get_Instance()->CtoTC(sTemp.data(), cTemp);
-	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 50.f));
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 350.f));
 
 	sTemp = to_string(m_UiInfo.fSizeY);
 	CToolManager::Get_Instance()->CtoTC(sTemp.data(), cTemp);
-	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 70.f));
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), cTemp, _float2(5.f, 370.f));
 
 	RELEASE_INSTANCE(CGameInstance);
 }

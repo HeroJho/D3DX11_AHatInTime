@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 
 #include "IceBox.h"
+#include "Player.h"
 
 CExPlo::CExPlo(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -112,7 +113,11 @@ void CExPlo::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if (!strcmp("EX_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 	{
-
+		if ("Tag_Player" == Desc.pOther->Get_Tag())
+		{
+			CPlayer* pPlayer = (CPlayer*)Desc.pOther;
+			pPlayer->Attacked();
+		}
 
 		m_bTickAttack = true;
 	}

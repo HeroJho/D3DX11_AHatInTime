@@ -30,6 +30,7 @@ public:
 public:
 	HRESULT Change_Level();
 	void  Resul_Level(LEVEL eLevel);
+	LEVEL Get_CulLevel() { return m_eCulLevel; }
 
 	_bool Get_IsLoading() { return m_bLoading; }
 	void Set_IsLoading(_bool bLoading) { m_bLoading = bLoading; }
@@ -51,6 +52,7 @@ public:
 	_float Get_RendomNum(_float fMin, _float fMax);
 	_int Get_RendomNum_Int(_int iMin, _int iMax);
 
+
 private:
 	void ClearManagedChar();
 
@@ -64,6 +66,7 @@ private:
 	_bool m_bDebug = false;
 
 	LEVEL m_eLEVEL = LEVEL_END;
+	LEVEL m_eCulLevel = LEVEL_GAMEPLAY;
 	_bool m_bLoading = false;
 
 
@@ -95,6 +98,7 @@ private:
 	// For. Font
 public:
 	void Render_Fonts(const _tchar * pFontTag, const _tchar * pTextm, _float2 vPosition, _fvector vColor, _float fAngle, _float2 vOrigin, _float2 vScale, _bool bSentor = false);
+	void Render_FontsY(const _tchar * pFontTag, const _tchar * pTextm, _float2 vPosition, _fvector vColor, _float fAngle, _float2 vOrigin, _float2 vScale);
 
 public:
 	virtual void Free() override;

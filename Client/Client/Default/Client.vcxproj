@@ -201,6 +201,7 @@
     <ClInclude Include="..\public\Parts.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\PuzzleCube.h" />
+    <ClInclude Include="..\public\PuzzleCube_Boss.h" />
     <ClInclude Include="..\public\RectBarrel.h" />
     <ClInclude Include="..\public\RollingBarrel.h" />
     <ClInclude Include="..\public\RotateBarrel.h" />
@@ -209,8 +210,10 @@
     <ClInclude Include="..\Public\StaticModel_Col.h" />
     <ClInclude Include="..\public\StaticModel_Instance.h" />
     <ClInclude Include="..\public\StatuePosed.h" />
+    <ClInclude Include="..\public\StatuePosed_Boss.h" />
     <ClInclude Include="..\public\SubconEye.h" />
     <ClInclude Include="..\public\SubSpider.h" />
+    <ClInclude Include="..\public\Swip.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\Test.h" />
     <ClInclude Include="..\public\TimeObject.h" />
@@ -232,6 +235,7 @@
     <ClInclude Include="..\public\UI_ShopMenu.h" />
     <ClInclude Include="..\public\UI_Shop_Slot.h" />
     <ClInclude Include="..\public\UI_Shop_SlotItem.h" />
+    <ClInclude Include="..\Public\UI_SpeechBubble.h" />
     <ClInclude Include="..\Public\UI_TextLife.h" />
     <ClInclude Include="..\public\UI_X.h" />
     <ClInclude Include="..\Public\Umbrella.h" />
@@ -280,6 +284,7 @@
     <ClCompile Include="..\private\Parts.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\PuzzleCube.cpp" />
+    <ClCompile Include="..\private\PuzzleCube_Boss.cpp" />
     <ClCompile Include="..\private\RectBarrel.cpp" />
     <ClCompile Include="..\private\RollingBarrel.cpp" />
     <ClCompile Include="..\private\RotateBarrel.cpp" />
@@ -288,8 +293,10 @@
     <ClCompile Include="..\Private\StaticModel_Col.cpp" />
     <ClCompile Include="..\private\StaticModel_Instance.cpp" />
     <ClCompile Include="..\private\StatuePosed.cpp" />
+    <ClCompile Include="..\private\StatuePosed_Boss.cpp" />
     <ClCompile Include="..\private\SubconEye.cpp" />
     <ClCompile Include="..\private\SubSpider.cpp" />
+    <ClCompile Include="..\private\Swip.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\Test.cpp" />
     <ClCompile Include="..\private\TimeObject.cpp" />
@@ -311,6 +318,7 @@
     <ClCompile Include="..\private\UI_ShopMenu.cpp" />
     <ClCompile Include="..\private\UI_Shop_Slot.cpp" />
     <ClCompile Include="..\private\UI_Shop_SlotItem.cpp" />
+    <ClCompile Include="..\Private\UI_SpeechBubble.cpp" />
     <ClCompile Include="..\Private\UI_TextLife.cpp" />
     <ClCompile Include="..\private\UI_X.cpp" />
     <ClCompile Include="..\Private\Umbrella.cpp" />
