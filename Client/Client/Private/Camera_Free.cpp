@@ -321,7 +321,7 @@ void CCamera_Free::SmoothPos(_float fDeltaTime)
 	if (0.1f > fDis)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vDestPos, 1.f));
 	else
-		m_pTransformCom->Go_Dir(vNorDir, 3.f, fDeltaTime);
+		m_pTransformCom->Go_Dir(XMVectorSetW(vNorDir, 0.f), 3.f, fDeltaTime);
 }
 
 
