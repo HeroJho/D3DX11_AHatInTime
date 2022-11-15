@@ -210,26 +210,23 @@ void CCamera_Free::Game_Mode(_float fTimeDelta)
 		Game_Mode_Input(fTimeDelta);
 		Look_Player();
 		OriCamPos(fTimeDelta);
-		SmoothLook(fTimeDelta);
 		break;
 	case CAM_FOCUS:
 		OriCamPos(fTimeDelta);
 		Look_NearMonster();
 		Game_Mode_Input(fTimeDelta);
-		SmoothLook(fTimeDelta);
 		break;
 	case CAM_BOSS:
 		Boss_Mode_Input(fTimeDelta);
 		Look_Target();
 		FocuseTarget(fTimeDelta);
-		SmoothLook(fTimeDelta);
 		break;
 	case CAM_FREE:
 		SmoothPos(fTimeDelta);
 		break;
 	}
 
-
+	SmoothLook(fTimeDelta);
 }
 
 void CCamera_Free::OriCamPos(_float fDeltaTime)
@@ -318,10 +315,10 @@ void CCamera_Free::SmoothPos(_float fDeltaTime)
 	_float fDis = XMVectorGetX(XMVector3Length(vDir));
 	_vector vNorDir = XMVector3Normalize(vDir);
 
-	if (0.1f > fDis)
+	if (0.5f > fDis)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vDestPos, 1.f));
 	else
-		m_pTransformCom->Go_Dir(XMVectorSetW(vNorDir, 0.f), 3.f, fDeltaTime);
+		m_pTransformCom->Go_Dir(XMVectorSetW(vNorDir, 0.f), 20.f, fDeltaTime);
 }
 
 

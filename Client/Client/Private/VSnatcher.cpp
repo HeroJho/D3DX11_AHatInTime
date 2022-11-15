@@ -6,6 +6,7 @@
 #include "ToolManager.h"
 #include "CamManager.h"
 #include "ItemManager.h"
+#include "UIManager.h"
 
 #include "Player.h"
 #include "Camera_Free.h"
@@ -55,8 +56,8 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 
 	XMStoreFloat3(&m_vSentorPos, XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
 
-	// Set_State(STATE_DISAPPEAR); 
-	Set_State(STATE_CUT_1);
+	Set_State(STATE_DISAPPEAR); 
+	Set_State(STATE_CUT_0);
 	
 	 CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	 m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
@@ -136,9 +137,20 @@ void CVSnatcher::Set_State(STATE eState)
 			break;
 
 
+
+		case STATE_CUT_0:
+			m_pModelCom->Set_AnimIndex(0);
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-67.41f, 10.f, 111.f, 1.f));
+			break;
 		case STATE_CUT_1:
 			// 위치
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-67.41f, 10.f, 111.f, 1.f));
+		{
+			_float3 vCamPos, vLookPos;
+			vCamPos = Get_PacePos(10.f, 10.f, 30.f);
+			vLookPos = Get_PaceLook(4.5f);
+
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(vCamPos, vLookPos, false);
+		}
 			break;
 		case STATE_CUT_2:
 			break;
@@ -531,6 +543,64 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 
 void CVSnatcher::Tick_Cut_1(_float fTimeDelta)
 {
+	m_fCutTimeAcc_1 += fTimeDelta;
+
+	if (1.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
+	{
+		m_pModelCom->Set_AnimIndex(0);
+		m_fCutTimeAcc_1 = 10.f;
+	}
+	else if (11.5f < m_fCutTimeAcc_1)
+	{
+		
+		// m_fCutTimeAcc_1 = 20.f;
+		
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		if (pGameInstance->Key_Down(DIK_E))
+			++m_iTalkCount;
+
+		switch (m_iTalkCount)
+		{
+		case 0:
+			CUIManager::Get_Instance()->On_Text(TEXT("까아아아아아아아아~~~ 꿍!"));
+			break;
+		case 1:
+			CUIManager::Get_Instance()->Set_Text(TEXT(". . . . . ."));
+			break;
+		case 2:
+		{
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f) , Get_PaceLook(5.5f) , false);
+			m_pModelCom->Set_AnimIndex(26);
+			CUIManager::Get_Instance()->Set_Text(TEXT("뭐야"));
+		}
+			break;
+		case 3:
+			CUIManager::Get_Instance()->Set_Text(TEXT("너는 처음 보는 얼굴인데?"));
+			break;
+		case 4:
+			CUIManager::Get_Instance()->Set_Text(TEXT("혹시 이걸 찾고있니?"));
+			break;
+		case 5:
+			CUIManager::Get_Instance()->Set_Text(TEXT("안타깝지만, 여기에 떨어진건 전부 내 소유야."));
+			break;
+		case 6:
+			CUIManager::Get_Instance()->Set_Text(TEXT("하하하하하하하!"));
+			break;
+		case 7:
+			CUIManager::Get_Instance()->Set_Text(TEXT("하지만 넌 운이좋아!"));
+			break;
+		case 8:
+			CUIManager::Get_Instance()->Set_Text(TEXT("마침 내가 굉장히 심심했거든."));
+			break;
+		default:
+			break;
+		}
+
+		RELEASE_INSTANCE(CGameInstance);
+
+	}
+
 }
 
 void CVSnatcher::Tick_Cut_2(_float fTimeDelta)
@@ -570,7 +640,7 @@ void CVSnatcher::LateTick(_float fTimeDelta)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
 
-	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
+	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f);
 	if (true == isDraw)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 
@@ -635,6 +705,12 @@ void CVSnatcher::End_Anim()
 		Set_State(STATE_SWIPS);
 		break;
 	case STATE_SWIPS:
+
+
+	case STATE_CUT_1:
+		//if (0 == m_pModelCom->Get_CurAnimIndex())
+		//	m_pModelCom->Set_AnimIndex(26);
+
 		break;
 	}
 }
@@ -824,32 +900,32 @@ void CVSnatcher::Drop_Hat()
 
 }
 
-_float3 CVSnatcher::Get_PacePos()
+_float3 CVSnatcher::Get_PacePos(_float fLength , _float fUpAngle, _float fRightAngle)
 {
 	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	_vector vNorLookDir = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK));
 	_vector vNorRightDir = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
 	
-	_matrix mUp = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(45.f));
-	_matrix mRight = XMMatrixRotationAxis(-vNorRightDir, XMConvertToRadians(45.f));
+	_matrix mUp = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(fUpAngle));
+	_matrix mRight = XMMatrixRotationAxis(-vNorRightDir, XMConvertToRadians(fRightAngle));
 
 	_matrix mTotal = mUp * mRight;
 
 	vNorLookDir = XMVector3Normalize(XMVector3TransformNormal(vNorLookDir, mTotal));
 
 	_float3 vVPos;
-	vPos += vNorLookDir * 5.f;
+	vPos += vNorLookDir * fLength;
 	XMStoreFloat3(&vVPos, vPos);
 	return vVPos;
 }
 
-_float3 CVSnatcher::Get_PaceLook()
+_float3 CVSnatcher::Get_PaceLook(_float fHight)
 {
 	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
-	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
+	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + fHight);
 
-
+	// 6 5
 	_float3 vVPos;
 	XMStoreFloat3(&vVPos, vPos);
 	return vVPos;
@@ -907,12 +983,12 @@ void CVSnatcher::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 		if (!strcmp("Near_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
+			if (STATE_CUT_0 == m_eState)
+			{
+				Set_State(STATE_CUT_1);
+			}
 
-			_float3 vCamPos, vLookPos;
-			vCamPos = Get_PacePos();
-			vLookPos = Get_PaceLook();
 
-			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(vCamPos, vLookPos, false);
 
 		}
 

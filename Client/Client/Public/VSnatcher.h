@@ -18,7 +18,8 @@ BEGIN(Client)
 class CVSnatcher final : public CGameObject
 {
 public:
-	enum STATE { STATE_CUT_1, STATE_CUT_2,
+	enum STATE {
+		STATE_CUT_0, STATE_CUT_1, STATE_CUT_2,
 		STATE_APPEAR, STATE_SOFTAPPEAR, STATE_DISAPPEAR, STATE_IDLE, 
 		STATE_TALKING, STATE_CURSESTART, STATE_CURSE, 
 		STATE_MINON, STATE_MAGICSTART, STATE_MAGIC, STATE_HOITSTART, 
@@ -85,8 +86,8 @@ private:
 	void Choose_SnapHat();
 	void Drop_Hat();
 
-	_float3 Get_PacePos();
-	_float3 Get_PaceLook();
+	_float3 Get_PacePos(_float fLength, _float fUpAngle, _float fRightAngle);
+	_float3 Get_PaceLook(_float fHight);
 
 	_bool sdf = false;
 
@@ -129,6 +130,10 @@ private:
 	string   m_sSnapTag = "";
 
 
+
+	// For. Cut
+	_float m_fCutTimeAcc_1 = 0.f;
+	_int m_iTalkCount = 0;
 
 
 private:

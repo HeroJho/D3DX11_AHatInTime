@@ -42,6 +42,16 @@ HRESULT CUI_SpeechBubble::Initialize(void * pArg)
 void CUI_SpeechBubble::Tick(_float fTimeDelta)
 {
 
+	if (m_bShake)
+	{
+		
+	}
+	else
+	{
+		m_fX = 0.f;
+		m_fY = 0.f;
+	}
+
 	switch (m_eState)
 	{
 	case STATE_ON:
@@ -77,7 +87,7 @@ void CUI_SpeechBubble::LateTick(_float fTimeDelta)
 
 void CUI_SpeechBubble::Tick_On(_float fTimeDelta)
 {
-	m_fAlpa += fTimeDelta;
+	m_fAlpa += fTimeDelta* 3.f;
 	if (1.f < m_fAlpa)
 	{
 		m_fAlpa = 1.f;
@@ -103,7 +113,7 @@ void CUI_SpeechBubble::Tick_Idle(_float fTimeDelta)
 
 void CUI_SpeechBubble::Tick_Off(_float fTimeDelta)
 {
-	m_fAlpa -= fTimeDelta;
+	m_fAlpa -= fTimeDelta * 3.f;
 	if (0.f > m_fAlpa)
 	{
 		m_fAlpa = 0.f;
@@ -113,23 +123,32 @@ void CUI_SpeechBubble::Tick_Off(_float fTimeDelta)
 	}
 }
 
-void CUI_SpeechBubble::On_Text(TCHAR * sText)
+void CUI_SpeechBubble::On_Text(TCHAR * sText, _bool bShake)
 {
+	if (!lstrcmp(m_sText, sText))
+		return;
+
 	m_eState = STATE_ON;
 	lstrcpy(m_sText, sText);
 	m_iTextCount = 0;
 	m_fTimeAcc = 0.f;
+
 	m_fAlpa = 0.f;
+	m_bShake = bShake;
 }
 
-void CUI_SpeechBubble::Set_Text(TCHAR * sText)
+void CUI_SpeechBubble::Set_Text(TCHAR * sText, _bool bShake)
 {
+	if (!lstrcmp(m_sText, sText))
+		return;
+
 	m_eState = STATE_IDLE;
 	lstrcpy(m_sText, sText);
 	m_iTextCount = 0;
 	m_fTimeAcc = 0.f;
 
 	m_fAlpa = 1.f;
+	m_bShake = bShake;
 }
 
 void CUI_SpeechBubble::Off_Text()
@@ -176,7 +195,7 @@ HRESULT CUI_SpeechBubble::Render()
 			sTempText[i] = m_sText[i];
 		}
 
-		CToolManager::Get_Instance()->Render_FontsY(TEXT("Font_Nexon"), sTempText, _float2(m_UiInfo.fX * 0.5f + 20.f, m_UiInfo.fY), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(0.8f, 0.8f));
+		CToolManager::Get_Instance()->Render_FontsY(TEXT("Font_Nexon"), sTempText, _float2(m_UiInfo.fX * 0.5f + 20.f + m_fX, m_UiInfo.fY + m_fY), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(0.8f, 0.8f));
 	}
 
 

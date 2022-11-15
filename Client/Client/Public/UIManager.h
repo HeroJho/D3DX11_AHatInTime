@@ -36,8 +36,8 @@ public:
 
 	// For. Text
 public:
-	void On_Text(TCHAR* sText);
-	void Set_Text(TCHAR* sText);
+	void On_Text(TCHAR* sText, _bool bShake = false);
+	void Set_Text(TCHAR* sText, _bool bShake = false);
 	void Off_Text();
 
 
@@ -47,6 +47,8 @@ private:
 	class CUI_DiamondScore* m_pDiamondScore = nullptr;
 	class CUI_Shop*			m_pShop = nullptr;
 	class CUI_SpeechBubble*	m_pSpeechBubble = nullptr;
+
+	
 
 public:
 	virtual void Free() override;
