@@ -201,22 +201,22 @@ HRESULT CRenderer::Render_Lights()
 	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_LightAcc"))))
 		return E_FAIL;
 
-	_float4x4			WorldMatrix;
 
+
+	_float4x4			WorldMatrix;
 	_uint				iNumViewport = 1;
 	D3D11_VIEWPORT		ViewportDesc;
-
 	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
-
 	XMStoreFloat4x4(&WorldMatrix,
 		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
-
 	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
 		return E_FAIL;
+
+
 
 	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
 
@@ -338,9 +338,9 @@ HRESULT CRenderer::Render_Debug()
 	m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
 	m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
 
-	/*m_pTarget_Manager->Render_Debug(TEXT("MRT_Deferred"), m_pVIBuffer, m_pShader);
+	m_pTarget_Manager->Render_Debug(TEXT("MRT_Deferred"), m_pVIBuffer, m_pShader);
 	m_pTarget_Manager->Render_Debug(TEXT("MRT_LightAcc"), m_pVIBuffer, m_pShader);
-*/
+
 	for (auto& pDebugCom : m_DebugObject)
 	{
 		pDebugCom->Render();
