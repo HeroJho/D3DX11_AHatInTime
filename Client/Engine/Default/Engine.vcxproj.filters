@@ -487,7 +487,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl">
       <Filter>03.Components\09.Navigation\Cell\Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\..\Imgui\Engine\Bin\ShaderFiles\Shader_Deferred.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
       <Filter>03.Components\01.Renderer\Shader</Filter>
     </FxCompile>
   </ItemGroup>

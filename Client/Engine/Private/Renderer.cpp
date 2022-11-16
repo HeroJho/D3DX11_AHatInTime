@@ -136,8 +136,8 @@ HRESULT CRenderer::Draw()
 #ifdef _DEBUG
 
 
-	if (FAILED(Render_Debug()))
-		return E_FAIL;
+	//if (FAILED(Render_Debug()))
+	//	return E_FAIL;
 
 
 #endif
@@ -277,6 +277,18 @@ HRESULT CRenderer::Render_Blend()
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Specular"), m_pShader, "g_SpecularTexture")))
 		return E_FAIL;
+
+	// 안개를 위한 연산
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+		return E_FAIL;
+
+	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
+	if (FAILED(m_pShader->Set_RawValue("g_vCamPosition", &pPipeLine->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+	RELEASE_INSTANCE(CPipeLine);
+
+
 
 	m_pShader->Begin(3);
 
