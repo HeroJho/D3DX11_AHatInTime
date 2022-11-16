@@ -134,6 +134,8 @@ public:
 
 	void SetPosNavi(LEVEL eLevel, _fvector vPos);
 
+	void Set_RenderSkip(_bool bSkip) { m_bRenderSkip = bSkip; }
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
@@ -200,6 +202,10 @@ private:
 
 	// For. Wisp
 	class CWisp* m_pWisp = nullptr;
+
+
+	// For. CutScene
+	_bool	m_bRenderSkip = false;
 
 private:
 	HRESULT Ready_Components();

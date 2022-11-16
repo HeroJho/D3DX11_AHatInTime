@@ -44,7 +44,8 @@ void CUI_SpeechBubble::Tick(_float fTimeDelta)
 
 	if (m_bShake)
 	{
-		
+		m_fX = CToolManager::Get_Instance()->Get_RendomNum(-m_fPower, m_fPower);
+		m_fY = CToolManager::Get_Instance()->Get_RendomNum(-m_fPower, m_fPower);
 	}
 	else
 	{
@@ -123,7 +124,7 @@ void CUI_SpeechBubble::Tick_Off(_float fTimeDelta)
 	}
 }
 
-void CUI_SpeechBubble::On_Text(TCHAR * sText, _bool bShake)
+void CUI_SpeechBubble::On_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake)
 {
 	if (!lstrcmp(m_sText, sText))
 		return;
@@ -135,9 +136,11 @@ void CUI_SpeechBubble::On_Text(TCHAR * sText, _bool bShake)
 
 	m_fAlpa = 0.f;
 	m_bShake = bShake;
+	m_fPower = fPower;
+	m_fSize = fSize;
 }
 
-void CUI_SpeechBubble::Set_Text(TCHAR * sText, _bool bShake)
+void CUI_SpeechBubble::Set_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake)
 {
 	if (!lstrcmp(m_sText, sText))
 		return;
@@ -149,6 +152,8 @@ void CUI_SpeechBubble::Set_Text(TCHAR * sText, _bool bShake)
 
 	m_fAlpa = 1.f;
 	m_bShake = bShake;
+	m_fPower = fPower;
+	m_fSize = fSize;
 }
 
 void CUI_SpeechBubble::Off_Text()
@@ -195,7 +200,7 @@ HRESULT CUI_SpeechBubble::Render()
 			sTempText[i] = m_sText[i];
 		}
 
-		CToolManager::Get_Instance()->Render_FontsY(TEXT("Font_Nexon"), sTempText, _float2(m_UiInfo.fX * 0.5f + 20.f + m_fX, m_UiInfo.fY + m_fY), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(0.8f, 0.8f));
+		CToolManager::Get_Instance()->Render_FontsY(TEXT("Font_Nexon"), sTempText, _float2(m_UiInfo.fX * 0.5f + 20.f + m_fX, m_UiInfo.fY + m_fY), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(m_fSize, m_fSize));
 	}
 
 

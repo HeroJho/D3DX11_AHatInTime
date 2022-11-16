@@ -24,6 +24,11 @@ string CSockat::Get_SlotTag(_uint eID)
 	return m_PartsName[eID];
 }
 
+CGameObject* CSockat::Get_SlotPos(_uint eID)
+{
+	return m_Parts[eID];
+}
+
 HRESULT CSockat::Initialize_Prototype()
 {
 

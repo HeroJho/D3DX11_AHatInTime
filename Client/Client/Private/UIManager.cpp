@@ -202,18 +202,18 @@ void CUIManager::Close_Shop()
 	m_pShop->Close();
 }
 
-void CUIManager::On_Text(TCHAR * sText, _bool bShake)
+void CUIManager::On_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake)
 {
 	if (nullptr == m_pSpeechBubble)
 		return;
-	m_pSpeechBubble->On_Text(sText, bShake);
+	m_pSpeechBubble->On_Text(sText, fSize, fPower, bShake);
 }
 
-void CUIManager::Set_Text(TCHAR * sText, _bool bShake)
+void CUIManager::Set_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake)
 {
 	if (nullptr == m_pSpeechBubble)
 		return;
-	m_pSpeechBubble->Set_Text(sText, bShake);
+	m_pSpeechBubble->Set_Text(sText, fSize, fPower, bShake);
 }
 
 void CUIManager::Off_Text()

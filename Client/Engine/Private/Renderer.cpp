@@ -245,6 +245,8 @@ HRESULT CRenderer::Render_Lights()
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
 
+	// TODO Waring ÄÚµå 
+
 	return S_OK;
 }
 

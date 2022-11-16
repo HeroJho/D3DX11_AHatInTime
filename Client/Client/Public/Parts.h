@@ -28,6 +28,8 @@ public:
 	virtual HRESULT Render();
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) override;
 
+	_float3 Get_TotalPos();
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;

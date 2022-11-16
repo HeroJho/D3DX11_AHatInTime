@@ -36,8 +36,8 @@ public:
 
 	// For. Text
 public:
-	void On_Text(TCHAR* sText, _bool bShake = false);
-	void Set_Text(TCHAR* sText, _bool bShake = false);
+	void On_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake = false);
+	void Set_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake = false);
 	void Off_Text();
 
 

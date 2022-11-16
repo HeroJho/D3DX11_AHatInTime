@@ -41,7 +41,7 @@ HRESULT CSubconEye::Initialize(void * pArg)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&m_CreatureDesc.vPos), 1.f));
 	m_pTransformCom->Set_CurSpeed(1.f);
-
+	// m_pTransformCom->Set_RealOriScale(XMVectorSet(1.f, 1.f, 1.f, 1.f));
 
 	return S_OK;
 }
@@ -207,7 +207,7 @@ void CSubconEye::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 	{
 		if (!strcmp("ChaseSphere", Desc.MyDesc.sTag))
 		{
-			// if (CGameManager::Get_Instance()->Check_Stage_1())
+			if (CGameManager::Get_Instance()->Check_Stage_1())
 			{
 				CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_EYE);
 				m_eState = STATE_DEAD;

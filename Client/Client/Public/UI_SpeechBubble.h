@@ -33,8 +33,8 @@ private:
 	void Tick_Off(_float fTimeDelta);
 
 public:
-	void On_Text(TCHAR* sText, _bool bShake);
-	void Set_Text(TCHAR* sText, _bool bShake);
+	void On_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake);
+	void Set_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake);
 	void Off_Text();
 
 private:
@@ -52,6 +52,8 @@ private:
 	_bool m_bShake = false;
 	_float m_fX = 0;
 	_float m_fY = 0;
+	_float m_fPower = 0.f;
+	_float m_fSize = 1.f;
 
 private:
 	CShader*				m_pShaderCom = nullptr;

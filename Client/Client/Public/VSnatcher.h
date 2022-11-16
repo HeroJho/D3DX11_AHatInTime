@@ -19,13 +19,13 @@ class CVSnatcher final : public CGameObject
 {
 public:
 	enum STATE {
-		STATE_CUT_0, STATE_CUT_1, STATE_CUT_2,
+		STATE_CUT_0, STATE_CUT_1, STATE_CUT_2, STATE_CUT_3, STATE_CUT_4, STATE_CUT_5,
 		STATE_APPEAR, STATE_SOFTAPPEAR, STATE_DISAPPEAR, STATE_IDLE, 
 		STATE_TALKING, STATE_CURSESTART, STATE_CURSE, 
 		STATE_MINON, STATE_MAGICSTART, STATE_MAGIC, STATE_HOITSTART, 
 		STATE_HOIT, STATE_SNAPHAT, 
-		STATE_SWIPSTART, STATE_SWIPS, STATE_END };
-	enum SLOT { SLOT_HAND, SLOT_HEAD, SLOT_END };
+		STATE_SWIPSTART, STATE_SWIPS, STATE_SIT, STATE_END };
+	enum SLOT { SLOT_HAND, SLOT_HEAD, SLOT_SPIN, SLOT_END };
 
 private:
 	CVSnatcher(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -72,6 +72,9 @@ public:
 
 	void Tick_Cut_1(_float fTimeDelta);
 	void Tick_Cut_2(_float fTimeDelta);
+	void Tick_Cut_3(_float fTimeDelta);
+	void Tick_Cut_4(_float fTimeDelta);
+	void Tick_Cut_5(_float fTimeDelta);
 
 private:
 	void Compute_Pattern(_float fTimeDelta);
@@ -133,7 +136,9 @@ private:
 
 	// For. Cut
 	_float m_fCutTimeAcc_1 = 0.f;
+	_int m_iCutIndex = 0;
 	_int m_iTalkCount = 0;
+	_bool m_bCutBool = false;
 
 
 private:

@@ -113,6 +113,17 @@ HRESULT CParts::SetUp_State(_fmatrix StateMatrix)
 	return S_OK;
 }
 
+_float3 CParts::Get_TotalPos()
+{
+	_matrix mTotal = m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix();
+
+	_vector vPos = mTotal.r[3];
+	_float3 vVPos;
+	XMStoreFloat3(&vVPos, vPos);
+
+	return vVPos;
+}
+
 HRESULT CParts::Ready_Components()
 {
 	/* For.Com_Transform */

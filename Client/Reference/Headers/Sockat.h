@@ -28,7 +28,7 @@ private:
 
 public:
 	string Get_SlotTag(_uint eID);
-
+	CGameObject* Get_SlotPos(_uint eID);
 
 public:
 	virtual HRESULT Initialize_Prototype();

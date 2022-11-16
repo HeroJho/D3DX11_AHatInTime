@@ -534,6 +534,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("science_owlbrew_remade"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("capsule"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("TimeObject_Parts"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("HatKid_statue"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Snatcher_Book"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Snatcher_Chair"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("crown"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
 
 
 	

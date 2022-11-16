@@ -71,8 +71,6 @@ private:
 public:
 	void Set_CamFreeValue(_float3 vPos, _float3 vLookPos, _bool bIsFirst);
 
-private:
-
 
 private:
 	class CPlayer*		m_pPlayer = nullptr;

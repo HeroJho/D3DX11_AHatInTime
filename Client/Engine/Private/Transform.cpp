@@ -185,7 +185,7 @@ void CTransform::Set_Scale(_fvector vScaleInfo)
 	if (0.001f > XMVectorGetX(vScaleInfo) || 0.001f > XMVectorGetY(vScaleInfo) || 0.001f > XMVectorGetZ(vScaleInfo))
 		return;
 
-	XMStoreFloat3(&m_vOriScale, vScaleInfo);
+	// XMStoreFloat3(&m_vOriScale, vScaleInfo);
 
 	Set_State(CTransform::STATE_RIGHT,
 		XMVector3Normalize(Get_State(CTransform::STATE_RIGHT)) * XMVectorGetX(vScaleInfo));

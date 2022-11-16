@@ -42,6 +42,8 @@ HRESULT CCamera_Free::Initialize(void * pArg)
 	ZeroMemory(&m_vDestLookPos, sizeof(_float3));
 	ZeroMemory(&m_vPreLookPos, sizeof(_float3));
 
+	m_vAngle.y = 180.f;
+
 	return S_OK;
 }
 
@@ -402,6 +404,7 @@ void CCamera_Free::Set_CamFreeValue(_float3 vPos, _float3 vLookPos, _bool bIsFir
 	m_vDestLookPos = vLookPos;
 
 }
+
 
 
 void CCamera_Free::CutScene_Mode(_float fTimeDelta)

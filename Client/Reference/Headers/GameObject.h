@@ -75,7 +75,7 @@ protected: /* 객체에게 추가된 컴포넌트들을 키로 분류하여 보관한다. */
 protected:
 	string			m_sTag = "";
 	CGameObject*	m_pOwner = nullptr;
-	_float				m_fCamDistance = 0.f;
+	_float			m_fCamDistance = 0.f;
 
 	_bool			m_bDead = false;
 	

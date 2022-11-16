@@ -53,7 +53,8 @@ HRESULT CPlayer::Initialize(void * pArg)
 
 
 	m_eState = STATE_NONE;
-	m_TickStates.push_back(STATE_NONE);
+	// m_TickStates.push_back(STATE_NONE);
+	m_TickStates.push_back(STATE_APPEAR);
 
 	m_fWalkSpeed = 1.f;
 	m_fRunSpeed = 2.5f;
@@ -699,11 +700,6 @@ void CPlayer::State_Input(_float fTimeDelta)
 
 	}
 
-	if (pGameInstance->Key_Down(DIK_L))
-	{
-		// CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM4);
-		m_TickStates.push_back(STATE_APPEAR);
-	}
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -1746,7 +1742,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
 	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
-	if (STATE_NONE != m_eState)
+	if (STATE_NONE != m_eState && !m_bRenderSkip)
 	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 

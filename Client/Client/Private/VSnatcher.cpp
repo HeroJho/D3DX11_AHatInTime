@@ -7,6 +7,7 @@
 #include "CamManager.h"
 #include "ItemManager.h"
 #include "UIManager.h"
+#include "CutSceneManager.h"
 
 #include "Player.h"
 #include "Camera_Free.h"
@@ -15,6 +16,7 @@
 #include "Swip.h"
 #include "StatuePosed_Boss.h"
 #include "PuzzleCube_Boss.h"
+#include "Parts.h"
 
 CVSnatcher::CVSnatcher(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -56,8 +58,17 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 
 	XMStoreFloat3(&m_vSentorPos, XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
 
-	Set_State(STATE_DISAPPEAR); 
-	Set_State(STATE_CUT_0);
+	if (LEVEL_BOSS == CToolManager::Get_Instance()->Get_CulLevel())
+	{
+		Set_State(STATE_DISAPPEAR);
+		// Set_State(STATE_SIT);
+	} 
+	else
+	{
+		Set_State(STATE_DISAPPEAR);
+		Set_State(STATE_CUT_0);
+	}
+
 	
 	 CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	 m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
@@ -66,6 +77,8 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 
 
 	 m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
+
+	 Equip_Sockat("crown", SLOT_HEAD);
 
 	return S_OK;
 }
@@ -135,6 +148,10 @@ void CVSnatcher::Set_State(STATE eState)
 			Choose_SnapHat();
 			m_fSnapHatTimeAcc = 0.f;
 			break;
+		case STATE_SIT:
+			Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
+			Equip_Sockat("Snatcher_Book", SLOT_HAND);
+			break;
 
 
 
@@ -153,6 +170,43 @@ void CVSnatcher::Set_State(STATE eState)
 		}
 			break;
 		case STATE_CUT_2:
+
+			m_fCutTimeAcc_1 = 0.f;
+			m_iTalkCount = 0;
+			m_iCutIndex = 0;
+
+			m_pModelCom->Set_AnimIndex(14);
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-36.7f, 2.98f, 73.32f, 1.f));
+
+			break;
+		case STATE_CUT_3:
+
+			m_fCutTimeAcc_1 = 0.f;
+			m_iTalkCount = 0;
+			m_iCutIndex = 0;
+
+			m_pModelCom->Set_AnimIndex(18);
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-24.41f, -0.3f, 46.115f, 1.f));
+
+			break;
+		case STATE_CUT_4:
+
+			m_fCutTimeAcc_1 = 0.f;
+			m_iTalkCount = 0;
+			m_iCutIndex = 0;
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-64.93f, 0.076f, 21.48f, 1.f));
+
+			break;
+		case STATE_CUT_5:
+
+			m_fCutTimeAcc_1 = 0.f;
+			m_iTalkCount = 0;
+			m_iCutIndex = 0;
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-60.36f, -10.07f, -71.66f, 1.f));
+			m_pTransformCom->Set_Scale(XMVectorSet(5.f, 5.f, 5.f, 1.f));
+
 			break;
 
 		default:
@@ -212,6 +266,9 @@ void CVSnatcher::Set_Anim()
 		break;
 	case STATE_SNAPHAT:
 		m_pModelCom->Set_AnimIndex(21, true);
+		break;
+	case STATE_SIT:
+		m_pModelCom->Set_AnimIndex(15);
 		break;
 	default:
 		break;
@@ -300,6 +357,15 @@ void CVSnatcher::Tick(_float fTimeDelta)
 		break;
 	case STATE_CUT_2:
 		Tick_Cut_2(fTimeDelta);
+		break;
+	case STATE_CUT_3:
+		Tick_Cut_3(fTimeDelta);
+		break;
+	case STATE_CUT_4:
+		Tick_Cut_4(fTimeDelta);
+		break;
+	case STATE_CUT_5:
+		Tick_Cut_5(fTimeDelta);
 		break;
 	default:
 		break;
@@ -543,68 +609,338 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 
 void CVSnatcher::Tick_Cut_1(_float fTimeDelta)
 {
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
 	m_fCutTimeAcc_1 += fTimeDelta;
 
-	if (1.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
+	if (0 == m_iCutIndex)
 	{
-		m_pModelCom->Set_AnimIndex(0);
+
+		if (1.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
+		{
+			m_pModelCom->Set_AnimIndex(0);
+			m_fCutTimeAcc_1 = 10.f;
+		}
+		else if (11.5f < m_fCutTimeAcc_1)
+		{
+			if (pGameInstance->Key_Down(DIK_E))
+				++m_iTalkCount;
+
+			switch (m_iTalkCount)
+			{
+			case 0:
+				CUIManager::Get_Instance()->On_Text(TEXT("까아아아아아아아아~~~ 꿍!"), 1.f, 2.f, true);
+				break;
+			case 1:
+				CUIManager::Get_Instance()->Set_Text(TEXT(". . . . . ."), 0.8f, 0.5f, true);
+				break;
+			case 2:
+			{
+				CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
+				m_pModelCom->Set_AnimIndex(26);
+				CUIManager::Get_Instance()->Set_Text(TEXT("뭐야"), 0.8f, 0.5f, true);
+			}
+				break;
+			case 3:
+				CUIManager::Get_Instance()->Set_Text(TEXT("너는 처음 보는 얼굴인데?"), 0.8f, 0.5f, true);
+				break;
+			case 4:
+				CUIManager::Get_Instance()->Off_Text();
+				CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(10.f, 10.f, 30.f), Get_PaceLook(4.5f), false);
+				m_pModelCom->Set_AnimIndex(21);
+				m_iCutIndex = 1;
+				m_fCutTimeAcc_1 = 0.f;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	else if (1 == m_iCutIndex)
+	{
+		if (pGameInstance->Key_Down(DIK_E))
+			++m_iTalkCount;
+
+		if (3.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
+		{
+			Equip_Sockat("TimeObject_Parts", SLOT_HAND);
+			m_fCutTimeAcc_1 = 10.f;
+		}
+
+
+		switch (m_iTalkCount)
+		{
+		case 5:
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, -20.f, 50.f), Get_PaceLook(5.f), false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("혹시 이걸 찾고있니?"), 0.8f, 0.5f, true);
+			break;
+		case 6:
+		{
+			// CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			// CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f), pSlotGame->Get_TotalPos(), false);
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
+			m_pModelCom->Set_AnimIndex(26);
+			CUIManager::Get_Instance()->Set_Text(TEXT("뭐? 방금 내가 뺏어갓다고?"), 0.8f, 0.5f, true);
+		}
+			break;
+		case 7:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(8.f, 10.f, 65.f), pSlotGame->Get_TotalPos(), false);
+			m_pModelCom->Set_AnimIndex(5);
+			CUIManager::Get_Instance()->Set_Text(TEXT("하 하 하 하 하 하 하 하 하 하 하 하 하 하 하 하 하!"), 0.8f, 2.f, true);
+		}
+			break;
+		case 8:
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
+			m_pModelCom->Set_AnimIndex(26);
+			CUIManager::Get_Instance()->Set_Text(TEXT("안타깝지만, 여기에 있는건 전부 내 소유야."), 0.8f, 0.5f, true);
+			break;
+		case 9:
+			CUIManager::Get_Instance()->Set_Text(TEXT("하지만 넌 운이 좋아!"), 0.8f, 0.5f, true);
+			break;
+		case 10:
+			CUIManager::Get_Instance()->Set_Text(TEXT("마침 내가 굉장히 심심했거든."), 0.8f, 0.5f, true);
+			break;
+		case 11:
+			CUIManager::Get_Instance()->Set_Text(TEXT("내가 만족할 만큼 놀아준다면 돌려줄 수도 있지."), 0.8f, 0.5f, true);
+			break;
+		case 12:
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(10.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
+			m_pModelCom->Set_AnimIndex(23);
+			CUIManager::Get_Instance()->Set_Text(TEXT("그럼 놀아보자고!!!!"), 1.f, 0.8f, true);
+			break;
+		default:
+			break;
+		}
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+}
+
+void CVSnatcher::Tick_Cut_2(_float fTimeDelta)
+{
+	CTransform* pTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+	m_pTransformCom->LookAt_ForLandObject(pTran->Get_State(CTransform::STATE_POSITION));
+
+
+	m_fCutTimeAcc_1 += fTimeDelta;
+	if (0.5f  < m_fCutTimeAcc_1 &&  9.f > m_fCutTimeAcc_1)
+	{
+		m_pModelCom->Set_AnimIndex(14);
 		m_fCutTimeAcc_1 = 10.f;
 	}
-	else if (11.5f < m_fCutTimeAcc_1)
-	{
-		
-		// m_fCutTimeAcc_1 = 20.f;
-		
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+}
 
+void CVSnatcher::Tick_Cut_3(_float fTimeDelta)
+{
+	CTransform* pTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+	m_pTransformCom->LookAt_ForLandObject(pTran->Get_State(CTransform::STATE_POSITION));
+
+	if (0 == m_iCutIndex)
+		m_iCutIndex = -1;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (1 == m_iCutIndex)
+	{
 		if (pGameInstance->Key_Down(DIK_E))
 			++m_iTalkCount;
 
 		switch (m_iTalkCount)
 		{
 		case 0:
-			CUIManager::Get_Instance()->On_Text(TEXT("까아아아아아아아아~~~ 꿍!"));
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
+			m_pModelCom->Set_AnimIndex(26);
+			CUIManager::Get_Instance()->On_Text(TEXT("너는 이 이상하게 생긴게 뭔지 아니?"), 0.8f, 0.5f, true);
 			break;
 		case 1:
-			CUIManager::Get_Instance()->Set_Text(TEXT(". . . . . ."));
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(3.f, -10.f, 30.f), _float3(-28.0f, 1.4f, 44.84f), false);
+			m_pModelCom->Set_AnimIndex(26);
+			CUIManager::Get_Instance()->Set_Text(TEXT(". . . . . . ."), 0.8f, 0.5f, true);
 			break;
 		case 2:
-		{
-			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f) , Get_PaceLook(5.5f) , false);
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
 			m_pModelCom->Set_AnimIndex(26);
-			CUIManager::Get_Instance()->Set_Text(TEXT("뭐야"));
-		}
+			CUIManager::Get_Instance()->Set_Text(TEXT("맞아..."), 0.8f, 0.5f, true);
 			break;
 		case 3:
-			CUIManager::Get_Instance()->Set_Text(TEXT("너는 처음 보는 얼굴인데?"));
+			CUIManager::Get_Instance()->Set_Text(TEXT("너무 시끄러운 녀석이여서 내가 눈알만 남겨놨어."), 0.8f, 0.5f, true);
 			break;
 		case 4:
-			CUIManager::Get_Instance()->Set_Text(TEXT("혹시 이걸 찾고있니?"));
+			CUIManager::Get_Instance()->Set_Text(TEXT("덕분에 아주 묵묵한 좋은 친구가 됐지."), 0.8f, 0.5f, true);
 			break;
 		case 5:
-			CUIManager::Get_Instance()->Set_Text(TEXT("안타깝지만, 여기에 떨어진건 전부 내 소유야."));
+			CUIManager::Get_Instance()->Set_Text(TEXT("이 친구가 우리 놀이를 도와줄거야."), 0.8f, 0.5f, true);
 			break;
 		case 6:
-			CUIManager::Get_Instance()->Set_Text(TEXT("하하하하하하하!"));
+			CUIManager::Get_Instance()->Set_Text(TEXT("숲에는 금고가 있어."), 0.8f, 0.5f, true);
 			break;
 		case 7:
-			CUIManager::Get_Instance()->Set_Text(TEXT("하지만 넌 운이좋아!"));
+			CUIManager::Get_Instance()->Set_Text(TEXT("금고들을 다 열면 묵묵한 친구가 길을 열어줄거야."), 0.8f, 0.5f, true);
 			break;
 		case 8:
-			CUIManager::Get_Instance()->Set_Text(TEXT("마침 내가 굉장히 심심했거든."));
+			CUIManager::Get_Instance()->Set_Text(TEXT("걱정마. 죽으면 너도 눈알로 만들어 줄게."), 0.8f, 1.f, true);
+			break;
+		case 9:
+			m_pModelCom->Set_AnimIndex(9);
+			CUIManager::Get_Instance()->Off_Text();
+			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
+			++m_iTalkCount;
 			break;
 		default:
 			break;
 		}
-
-		RELEASE_INSTANCE(CGameInstance);
-
 	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
 
 }
 
-void CVSnatcher::Tick_Cut_2(_float fTimeDelta)
+void CVSnatcher::Tick_Cut_4(_float fTimeDelta)
 {
+	CTransform* pTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+	m_pTransformCom->LookAt_ForLandObject(pTran->Get_State(CTransform::STATE_POSITION));
+
+	if (0 == m_iCutIndex)
+		m_iCutIndex = -1;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (1 == m_iCutIndex)
+	{
+		if (pGameInstance->Key_Down(DIK_E))
+			++m_iTalkCount;
+
+		switch (m_iTalkCount)
+		{
+		case 0:
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(10.f, 10.f, 30.f), Get_PaceLook(4.5f), false);
+			m_pModelCom->Set_AnimIndex(0);
+			CUIManager::Get_Instance()->On_Text(TEXT("아아아아주우우우우우우~! 좋아!"), 1.f, 2.f, true);
+			break;
+		case 1:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 30.f), pSlotGame->Get_TotalPos(), false);
+			m_pModelCom->Set_AnimIndex(11);
+			CUIManager::Get_Instance()->Set_Text(TEXT("너 제법이구나!"), 1.f, 0.5f, true);
+		}
+			break;
+		case 2:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 30.f), pSlotGame->Get_TotalPos(), false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("그 짧은 다리로 아둥바둥 거리는게 정말 추해!"), 1.f, 0.5f, true);
+		}
+			break;
+		case 3:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 30.f), pSlotGame->Get_TotalPos(), false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("좋아! 어디 그 콩알만한 뇌도 쓸만한지 볼까?"), 1.f, 0.5f, true);
+		}
+			break;
+		case 4:
+		{
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(30.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
+			m_pModelCom->Set_AnimIndex(23);
+			CUIManager::Get_Instance()->Set_Text(TEXT("쇼 타아아아아아아임~~!!!!!"), 1.5f, 2.f, true);
+		}
+			break;
+		default:
+			break;
+		}
+	}
+	else if (2 == m_iCutIndex)
+	{
+		m_fCutTimeAcc_1 += fTimeDelta;
+		if(30.f < m_fCutTimeAcc_1)
+			m_pModelCom->Set_AnimIndex(9);
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+}
+
+void CVSnatcher::Tick_Cut_5(_float fTimeDelta)
+{
+	CTransform* pTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+	m_pTransformCom->LookAt_ForLandObject(pTran->Get_State(CTransform::STATE_POSITION));
+
+	if (0 == m_iCutIndex)
+	{
+		m_pSockatCom->Remove_Sockat(SLOT_HEAD);
+		m_pSockatCom->Remove_Sockat(SLOT_HAND);
+		m_iCutIndex = -1;
+	}
+
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (2 == m_iCutIndex)
+	{
+		if (pGameInstance->Key_Down(DIK_E))
+			++m_iTalkCount;
+
+		switch (m_iTalkCount)
+		{
+		case 0:
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(_float3(-68.36f, 1.5f, -60.72f), Get_PaceLook(15.f), false);
+			m_pModelCom->Set_AnimIndex(24);
+			CUIManager::Get_Instance()->On_Text(TEXT(". . . . . "), 1.f, 2.f, true);
+			break;
+		case 1:
+		{
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(_float3(-68.36f, 1.5f, -60.72f), Get_PaceLook(15.f), false);
+			m_pModelCom->Set_AnimIndex(24);
+			CUIManager::Get_Instance()->Set_Text(TEXT("우리 잠깐 얘기 좀 할까?"), 1.f, 0.5f, true);
+		}
+		break;
+		case 2:
+		{
+			m_pModelCom->Set_AnimIndex(21);
+			CUIManager::Get_Instance()->Off_Text();
+			++m_iTalkCount;
+		}
+		default:
+			break;
+		}
+
+		if (3 == m_iTalkCount)
+		{
+			m_fCutTimeAcc_1 += fTimeDelta;
+			if (3.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
+			{
+				m_pPlayer->Set_RenderSkip(true);
+				Equip_Sockat("HatKid_statue", SLOT_HAND);
+				m_fCutTimeAcc_1 = 10.f;
+			}
+		}
+	}
+	else if (3 == m_iCutIndex)
+	{
+		m_fCutTimeAcc_1 += fTimeDelta;
+		if (15.f < m_fCutTimeAcc_1 && 19.f > m_fCutTimeAcc_1)
+		{
+			// TODO 맵 이동
+			CToolManager::Get_Instance()->Resul_Level(LEVEL_BOSS);
+			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
+			m_pPlayer->Set_RenderSkip(false);
+			m_fCutTimeAcc_1 = 20.f;
+		}
+		m_pTransformCom->Go_Dir(XMVectorSet(0.f, -1.f, 0.f, 0.f), 50.f, fTimeDelta);
+	}
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 
@@ -640,7 +976,7 @@ void CVSnatcher::LateTick(_float fTimeDelta)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
 
-	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f);
+	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f);
 	if (true == isDraw)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 
@@ -700,18 +1036,72 @@ void CVSnatcher::End_Anim()
 			Set_State(STATE_IDLE);
 		}
 	}
-		break;
+	break;
 	case STATE_SWIPSTART:
 		Set_State(STATE_SWIPS);
 		break;
 	case STATE_SWIPS:
-
+		break;
 
 	case STATE_CUT_1:
-		//if (0 == m_pModelCom->Get_CurAnimIndex())
-		//	m_pModelCom->Set_AnimIndex(26);
-
+	{
+		if (21 == m_pModelCom->Get_CurAnimIndex() && 1 == m_iCutIndex && 4 == m_iTalkCount)
+			++m_iTalkCount;
+		else if (23 == m_pModelCom->Get_CurAnimIndex() && 1 == m_iCutIndex)
+		{
+			m_pModelCom->Set_AnimIndex(9);
+			CUIManager::Get_Instance()->Off_Text();
+			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
+			m_iCutIndex = 2;
+		}
+		else if (9 == m_pModelCom->Get_CurAnimIndex() && 2 == m_iCutIndex)
+		{
+			Set_State(STATE_CUT_2);
+		}
+	}
 		break;
+	case STATE_CUT_2:
+	{
+		if (9 == m_pModelCom->Get_CurAnimIndex())
+			Set_State(STATE_CUT_3);
+	}
+		break;
+	case STATE_CUT_3:
+	{
+		if (18 == m_pModelCom->Get_CurAnimIndex())
+			m_pModelCom->Set_AnimIndex(24);
+		else if (9 == m_pModelCom->Get_CurAnimIndex())
+			Set_State(STATE_CUT_4);
+	}
+		break;
+	case STATE_CUT_4:
+		if (23 == m_pModelCom->Get_CurAnimIndex() && 1 == m_iCutIndex)
+		{
+			m_iCutIndex = 2;
+			CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM4);
+			CUIManager::Get_Instance()->Off_Text();
+			m_pModelCom->Set_AnimIndex(11);
+		}
+		else if (9 == m_pModelCom->Get_CurAnimIndex() && 2 == m_iCutIndex)
+			Set_State(STATE_CUT_5);
+		break;
+	case STATE_CUT_5:
+	{
+		if (18 == m_pModelCom->Get_CurAnimIndex())
+		{
+			m_iCutIndex = 2;
+			m_pModelCom->Set_AnimIndex(24);
+		}
+		else if (21 == m_pModelCom->Get_CurAnimIndex())
+		{
+			// m_pModelCom->Set_AnimIndex(9);
+			m_iCutIndex = 3;
+		}
+	}
+		break;
+		
+
+
 	}
 }
 
@@ -987,10 +1377,35 @@ void CVSnatcher::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 			{
 				Set_State(STATE_CUT_1);
 			}
-
-
+			else if (STATE_CUT_2 == m_eState)
+			{
+				m_pModelCom->Set_AnimIndex(9);
+				// Set_State(STATE_CUT_3);
+			}
+			else if (STATE_CUT_3 == m_eState && -1 == m_iCutIndex)
+			{
+				m_iCutIndex = 1;
+			}
+			else if (STATE_CUT_4 == m_eState && -1 == m_iCutIndex)
+			{
+				m_iCutIndex = 1;
+			}
+			else if (STATE_CUT_5 == m_eState && -1 == m_iCutIndex)
+			{
+				m_iCutIndex = 1;
+				m_pModelCom->Set_AnimIndex(18);
+			}
 
 		}
+		else if (!strcmp("Near_Sphere", Desc.MyDesc.sTag))
+		{
+			if (STATE_CUT_5 == m_eState && -1 == m_iCutIndex)
+			{
+				m_iCutIndex = 1;
+				m_pModelCom->Set_AnimIndex(18);
+			}
+		}
+
 
 	}
 }
@@ -1057,12 +1472,25 @@ HRESULT CVSnatcher::Ready_Components()
 	WispDesc.fMaxRatio = 15.f;
 	WispDesc.fSpeed = 0.5f;
 
-	CGameObject* pObj = nullptr;
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Swip"), LEVEL_STATIC, TEXT("Layer_Swip"), &pObj, &WispDesc)))
-		return E_FAIL;
-	m_pSwip = (CSwip*)pObj;
-	Safe_AddRef(m_pSwip);
+	if (LEVEL_BOSS == CToolManager::Get_Instance()->Get_CulLevel())
+	{
+		CGameObject* pObj = nullptr;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Swip"), LEVEL_BOSS, TEXT("Layer_Swip"), &pObj, &WispDesc)))
+			return E_FAIL;
+		m_pSwip = (CSwip*)pObj;
+		Safe_AddRef(m_pSwip);
+	}
+	else
+	{
+		CGameObject* pObj = nullptr;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Swip"), LEVEL_GAMEPLAY, TEXT("Layer_Swip"), &pObj, &WispDesc)))
+			return E_FAIL;
+		m_pSwip = (CSwip*)pObj;
+		Safe_AddRef(m_pSwip);
+	}
+
 	RELEASE_INSTANCE(CGameInstance);
 
 
@@ -1084,6 +1512,8 @@ HRESULT CVSnatcher::Ready_Sockat()
 	if (FAILED(m_pSockatCom->Match_Enum_BoneName("Head4", SLOT_HEAD)))
 		return E_FAIL;
 	if (FAILED(m_pSockatCom->Match_Enum_BoneName("R-Hand-Finger01", SLOT_HAND)))
+		return E_FAIL;
+	if (FAILED(m_pSockatCom->Match_Enum_BoneName("Spine08", SLOT_SPIN)))
 		return E_FAIL;
 
 
@@ -1215,9 +1645,63 @@ HRESULT CVSnatcher::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.pOwner = this;
 		}
 	}
+	else if (!lstrcmp(cItemName, TEXT("TimeObject_Parts")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("TimeObject_Parts"));
+			PartsDesc.vPos = _float3(-3.62, -0.1f, -5.57f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(0.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
+	else if (!lstrcmp(cItemName, TEXT("HatKid_statue")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("HatKid_statue"));
+			PartsDesc.vPos = _float3(-12.42f, -0.56f, -18.34f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(0.f, -16.5f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
+	else if (!lstrcmp(cItemName, TEXT("Snatcher_Chair")))
+	{
+		if (SLOT_SPIN == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Snatcher_Chair"));
+			PartsDesc.vPos = _float3(-0.26f, 0.26f, -1.81f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-98.8f, -12.f, -15.9f);
+			PartsDesc.pOwner = this;
+		}
+	}
+	else if (!lstrcmp(cItemName, TEXT("Snatcher_Book")))
+	{
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Snatcher_Book"));
+			PartsDesc.vPos = _float3(-4.36f, -0.05f, -5.3f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(46.1f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
+	else if (!lstrcmp(cItemName, TEXT("crown")))
+	{
+		if (SLOT_HEAD == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("crown"));
+			PartsDesc.vPos = _float3(0.22f, 0.f, -6.61f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-90.f, -28.f, 0.f);
+			PartsDesc.pOwner = this;
+		}
+	}
 
-
-
+	
 
 	if (!FAILED(m_pSockatCom->Add_Sockat(eSlot, m_pModelCom, TEXT("Prototype_GameObject_Parts"), PartsDesc)))
 		return E_FAIL;
