@@ -307,7 +307,9 @@ void CVault_Mad_Crow::LateTick(_float fTimeDelta)
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 	RELEASE_INSTANCE(CGameInstance);
-	if (true == isDraw)
+
+
+	if (true == isDraw && !CGameManager::Get_Instance()->Get_CurIndex())
 	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 	}

@@ -15,8 +15,10 @@ CGameInstance::CGameInstance()
 	, m_pColliderManager(CColliderManager::Get_Instance())
 	, m_pFont_Manager(CFont_Manager::Get_Instance())
 	, m_pFrustum(CFrustum::Get_Instance())
+	, m_pTarget_Manager(CTarget_Manager::Get_Instance())
 {	
 
+	Safe_AddRef(m_pTarget_Manager);
 	Safe_AddRef(m_pFrustum);
 	Safe_AddRef(m_pFont_Manager);
 	Safe_AddRef(m_pColliderManager);
@@ -29,6 +31,7 @@ CGameInstance::CGameInstance()
 	Safe_AddRef(m_pLevel_Manager);
 	Safe_AddRef(m_pInput_Device);
 	Safe_AddRef(m_pGraphic_Device);
+
 }
 
 
@@ -416,6 +419,25 @@ void CGameInstance::Get_WinToWorldPos(_float fX, _float fY, _float3* Out_vPos, _
 	m_pPicking->Get_WinToWorldPos(fX, fY, Out_vPos, Out_vDir);
 }
 
+
+void CGameInstance::Set_WipsData(_float * pWispRatios, _float4 * pWispPoss, _int pWispNum)
+{
+	if (nullptr == m_pTarget_Manager)
+		return;
+
+	m_pTarget_Manager->Set_WipsData(pWispRatios, pWispPoss, pWispNum);
+}
+
+void CGameInstance::Set_Dark(_bool bDark)
+{
+	if (nullptr == m_pTarget_Manager)
+		return;
+
+	m_pTarget_Manager->Set_Dark(bDark);
+}
+
+
+
 void CGameInstance::Release_Engine()
 {
 	CFrustum::Get_Instance()->Destroy_Instance();
@@ -449,7 +471,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
-
+	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pFont_Manager);
 	Safe_Release(m_pColliderManager);

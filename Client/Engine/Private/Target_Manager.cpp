@@ -11,6 +11,39 @@ CTarget_Manager::CTarget_Manager()
 
 
 
+void CTarget_Manager::Set_WipsData(_float* pWispRatios, _float4* pWispPoss, _int pWispNum)
+{
+	if (nullptr == pWispRatios || nullptr == pWispPoss)
+	{
+		m_bIsWisp = false;
+		return;
+	}
+
+	m_bIsWisp = true;
+	m_iWispNum = pWispNum;
+	memcpy(m_WispRatios, pWispRatios, sizeof(_float) * 256);
+	memcpy(m_WispPoss, pWispPoss, sizeof(_float4) * 256);
+}
+
+void CTarget_Manager::Get_WispData(_float ** Out_pWispRatios, _float4 ** Out_pWispPoss, _bool* Out_bIsWisp, _int* Out_iWispNum)
+{
+	*Out_bIsWisp = m_bIsWisp;
+	if (!m_bIsWisp)
+	{
+		*Out_iWispNum = 0;
+		*Out_pWispRatios = nullptr;
+		*Out_pWispPoss = nullptr;
+	}
+	else
+	{
+		*Out_iWispNum = m_iWispNum;
+		*Out_pWispRatios = m_WispRatios;
+		*Out_pWispPoss = m_WispPoss;
+	}
+}
+
+
+
 HRESULT CTarget_Manager::Add_RenderTarget(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const _tchar * pTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT eFormat, const _float4 * pClearColor)
 {
 	if (nullptr != Find_RenderTarget(pTargetTag))
@@ -164,4 +197,35 @@ void CTarget_Manager::Free()
 
 	m_RenderTargets.clear();
 
+
+}
+
+
+
+
+
+_float CTarget_Manager::Get_RendomNum(_float fMin, _float fMax)
+{
+	// 시드값을 얻기 위한 random_device 생성.
+	std::random_device rd;
+
+	// random_device 를 통해 난수 생성 엔진을 초기화 한다.
+	std::mt19937 gen(rd());
+
+	// 0 부터 99 까지 균등하게 나타나는 난수열을 생성하기 위해 균등 분포 정의.
+	std::uniform_real_distribution<_float> dis(fMin, fMax);
+	return dis(gen);
+}
+
+_int CTarget_Manager::Get_RendomNum_Int(_int iMin, _int iMax)
+{
+	// 시드값을 얻기 위한 random_device 생성.
+	std::random_device rd;
+
+	// random_device 를 통해 난수 생성 엔진을 초기화 한다.
+	std::mt19937 gen(rd());
+
+	// 0 부터 99 까지 균등하게 나타나는 난수열을 생성하기 위해 균등 분포 정의.
+	std::uniform_int_distribution<_int> dis(iMin, iMax);
+	return dis(gen);
 }

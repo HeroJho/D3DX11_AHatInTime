@@ -94,9 +94,9 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vDiffuse = _float4(0.8f, 0.8f, 0.8f, 1.f);
+	LightDesc.vAmbient = _float4(.4f, .4f, .4f, 1.f);
+	LightDesc.vSpecular = _float4(139.f/255.f, 0.f / 255.f, 255.f / 255.f, 1.f);
 
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
 		return E_FAIL;
@@ -264,24 +264,28 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 
 
 	CBellMount::WISPDESC WispDesc;
+	WispDesc.vPos = _float3(-41.75f, 6.43f, 83.f);
+	WispDesc.vAngle = _float3(0.f, 0.f, 0.f);
+	WispDesc.fRatio = 100;
+	WispDesc.iIndex = 1;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
+		return E_FAIL;
 	WispDesc.vPos = _float3(-62.4f, 4.42f, -25.11f);
 	WispDesc.vAngle = _float3(0.f, 103.1f, 0.f);
 	WispDesc.fRatio = 70;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
-		return E_FAIL;
-	WispDesc.vPos = _float3(-41.75f, 6.43f, 83.f);
-	WispDesc.vAngle = _float3(0.f, 0.f, 0.f);
-	WispDesc.fRatio = 70;
+	WispDesc.iIndex = 2;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
 	WispDesc.vPos = _float3(-72.62f, 15.3f, -14.7f);
 	WispDesc.vAngle = _float3(0.f, 146.9f + 180.f, 0.f);
 	WispDesc.fRatio = 40;
+	WispDesc.iIndex = 3;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
 	WispDesc.vPos = _float3(-28.0f, 1.4f, 44.84f);
 	WispDesc.vAngle = _float3(0.f, 0.f, 0.f);
 	WispDesc.fRatio = 20;
+	WispDesc.iIndex = 4;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMountEye"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
 

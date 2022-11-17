@@ -16,9 +16,16 @@ CGameManager::CGameManager()
 
 void CGameManager::Tick(_float fTimeDelta)
 {
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
 	_uint iNum = Get_WispInfoNum();
 	if (!iNum)
+	{
+		pGameInstance->Set_WipsData(nullptr, nullptr, 0);
+		RELEASE_INSTANCE(CGameInstance);
 		return;
+	}
+
 
 	_uint iCount = 0;
 	for (auto& Wisp : m_WispInfos)
@@ -26,8 +33,15 @@ void CGameManager::Tick(_float fTimeDelta)
 		m_IsDeleteSubCons[iCount] = Wisp.bIsDeleteSubCon;
 		m_WispRatios[iCount] = Wisp.fWispRatio;
 		m_WispPoss[iCount] = Wisp.vWispPos;
+
 		++iCount;
 	}
+
+	// 디퍼드에 정보를 넘겨준다.
+	
+	pGameInstance->Set_WipsData(m_WispRatios, m_WispPoss, iNum);
+
+	RELEASE_INSTANCE(CGameInstance);
 
 }
 
@@ -37,11 +51,12 @@ void CGameManager::Clear_Data()
 	ZeroMemory(m_IsDeleteSubCons, sizeof(_bool) * 256);
 	ZeroMemory(m_WispRatios, sizeof(_float) * 256);
 	ZeroMemory(m_WispPoss, sizeof(_float3) * 256);
+	m_iCurIndex = 0;
 }
 
 
 
-void CGameManager::Set_Wisp(_bool bIsDeleteSubCon, _float fWispRatio, _float3 vWispPos)
+void CGameManager::Set_Wisp(_bool bIsDeleteSubCon, _float fWispRatio, _float3 vWispPos, _uint iCurIndex)
 {
 	WISPDESC Desc;
 	Desc.bIsDeleteSubCon = bIsDeleteSubCon;
@@ -53,6 +68,8 @@ void CGameManager::Set_Wisp(_bool bIsDeleteSubCon, _float fWispRatio, _float3 vW
 	Desc.vWispPos = vPos;
 
 	m_WispInfos.push_back(Desc);
+	if(0 != iCurIndex)
+		m_iCurIndex = iCurIndex;
 }
 
 _bool* CGameManager::Get_DeleteSubCons()

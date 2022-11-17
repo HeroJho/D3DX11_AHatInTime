@@ -52,21 +52,48 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
+	// sub_thorn_wall_bloom, sub_thorn_wall_dead, forest_plant, harbour_fern
+	// yardang_random_1~5
 
-
-	if(m_bWall && CGameManager::Get_Instance()->Get_WispInfoNum())
+	_bool bRender = true;
+	if (1 == CGameManager::Get_Instance()->Get_CurIndex() && 
+		(!lstrcmp(TEXT("sub_thorn_wall_bloom_Instance"), m_cModelTag) ||
+		!lstrcmp(TEXT("sub_thorn_wall_dead_Instance"), m_cModelTag) || 
+		!lstrcmp(TEXT("forest_plant_Instance"), m_cModelTag) ||
+		!lstrcmp(TEXT("harbour_fern_Instance"), m_cModelTag) ||
+		!lstrcmp(TEXT("yardang_random_1_Instance"), m_cModelTag) ||
+		!lstrcmp(TEXT("yardang_random_2_Instance"), m_cModelTag) || 
+		!lstrcmp(TEXT("yardang_random_3_Instance"), m_cModelTag) || 
+		!lstrcmp(TEXT("yardang_random_4_Instance"), m_cModelTag) || 
+		!lstrcmp(TEXT("yardang_random_5_Instance"), m_cModelTag)  ))
 	{
-		if(2 == m_iTagID)
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
-		else
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		bRender = false;
 	}
-	else if (!m_bWall)
+	else if (2 == CGameManager::Get_Instance()->Get_CurIndex())
 	{
-		if (2 == m_iTagID)
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
-		else
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+
+	}
+
+
+
+
+
+	if (bRender)
+	{
+		if (m_bWall && CGameManager::Get_Instance()->Get_WispInfoNum())
+		{
+			if (2 == m_iTagID)
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+			else
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		}
+		else if (!m_bWall)
+		{
+			if (2 == m_iTagID)
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+			else
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		}
 	}
 
 }
@@ -135,6 +162,41 @@ HRESULT CStaticModel_Instance::Render()
 	}
 	else
 		iPassIndex = 0;
+
+
+
+	_bool bSpec = false;
+
+	if (!lstrcmp(m_cModelTag, TEXT("Branch_2_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("Branch_3_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("Branch_4_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("Branch_5_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("BranchG_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("BranchH_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("BranchI_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("Tree1_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("tree2_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("Tree3_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("tree_thin_01_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("tree_thin_02_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("tree_thin_03_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("tree_thin_04_Instance")) ||
+		!lstrcmp(m_cModelTag, TEXT("tree_will_Instance")))
+	{
+		bSpec = true;
+	}
+
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_Spac", &bSpec, sizeof(_bool))))
+		return E_FAIL;
+
+
+
+
+
+
+
+
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 

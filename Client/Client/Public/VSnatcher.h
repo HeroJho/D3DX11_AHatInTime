@@ -141,6 +141,8 @@ private:
 	_bool m_bCutBool = false;
 
 
+	_bool m_bDark = false;
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;

@@ -74,6 +74,9 @@ void CDiamond::Tick(_float fTimeDelta)
 	}
 
 
+	if (CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION)))
+		m_bGet = true;
+
 }
 
 void CDiamond::LateTick(_float fTimeDelta)

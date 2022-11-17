@@ -141,7 +141,7 @@ void CSubconEye::LateTick(_float fTimeDelta)
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 	RELEASE_INSTANCE(CGameInstance);
 
-	if (true == isDraw)
+	if (true == isDraw && !CGameManager::Get_Instance()->Get_CurIndex())
 	{
 		if (STATE_DEAD == m_eState)
 		{
@@ -173,7 +173,7 @@ HRESULT CSubconEye::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
-	_uint iPassIndex = 0;
+	_uint iPassIndex = 5;
 	if (STATE_DEAD == m_eState)
 	{
 		iPassIndex = 3;
@@ -207,7 +207,7 @@ void CSubconEye::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 	{
 		if (!strcmp("ChaseSphere", Desc.MyDesc.sTag))
 		{
-			if (CGameManager::Get_Instance()->Check_Stage_1())
+			// if (CGameManager::Get_Instance()->Check_Stage_1())
 			{
 				CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_EYE);
 				m_eState = STATE_DEAD;

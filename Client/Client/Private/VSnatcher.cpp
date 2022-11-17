@@ -60,8 +60,8 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 
 	if (LEVEL_BOSS == CToolManager::Get_Instance()->Get_CulLevel())
 	{
-		Set_State(STATE_DISAPPEAR);
-		// Set_State(STATE_SIT);
+		// Set_State(STATE_DISAPPEAR);
+		Set_State(STATE_SIT);
 	} 
 	else
 	{
@@ -1348,13 +1348,15 @@ HRESULT CVSnatcher::Render()
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+	_uint iIndex = 0;
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-
+		if (1 == i && m_bDark)
+			iIndex = 6;
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iIndex)))
 			return E_FAIL;
 	}
 
@@ -1541,8 +1543,10 @@ HRESULT CVSnatcher::Equip_Sockat(string sItemName, SLOT eSlot)
 		m_pSockatCom->Remove_Sockat(eSlot);
 
 
+	char cItemNameTemp[MAX_PATH];
+	strcpy_s(cItemNameTemp, sItemName.data());
 	TCHAR cItemName[MAX_PATH];
-	CToolManager::Get_Instance()->CtoTC(sItemName.data(), cItemName);
+	CToolManager::Get_Instance()->CtoTC(cItemNameTemp, cItemName);
 
 
 	CSockat::PARTSDESC PartsDesc;

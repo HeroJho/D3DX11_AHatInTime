@@ -288,9 +288,38 @@ HRESULT CRenderer::Render_Blend()
 		return E_FAIL;
 	RELEASE_INSTANCE(CPipeLine);
 
+	_bool bIsWisp = false;
+	_int iWispNum = 0;
+	_float* fRatios = nullptr;
+	_float4* vPoss = nullptr;
 
+	m_pTarget_Manager->Get_WispData(&fRatios, &vPoss, &bIsWisp, &iWispNum);
 
-	m_pShader->Begin(3);
+	if (FAILED(m_pShader->Set_RawValue("g_IsbWisp", &bIsWisp, sizeof(_bool))))
+		return E_FAIL;
+
+	if (bIsWisp)
+	{
+		if (FAILED(m_pShader->Set_RawValue("g_WispInfoNum", &iWispNum, sizeof(_int))))
+			return E_FAIL;
+		if (FAILED(m_pShader->Set_RawValue("g_WispRatios", fRatios, 256, 2)))
+			return E_FAIL;
+		if (FAILED(m_pShader->Set_RawValue("g_WispPoss", vPoss, 256, 3)))
+			return E_FAIL;
+
+		
+		// _float fRendomNext = m_pTarget_Manager->Get_RendomNum(0.97f, 0.99f);;
+		_float fRendomNext = 1.f;
+
+		if (FAILED(m_pShader->Set_RawValue("g_RendomNext", &fRendomNext, sizeof(_float))))
+			return E_FAIL;
+	}
+
+	if(m_pTarget_Manager->Get_Dark())
+		m_pShader->Begin(4);
+	else
+		m_pShader->Begin(3);
+
 
 	m_pVIBuffer->Render();
 

@@ -24,4 +24,28 @@ namespace Engine
 			return false;
 		}
 	};
+
+
+	class CChar_Finder
+	{
+	private:
+		const char*	m_pSchar;
+
+	public:
+		CChar_Finder(const char* pStr)
+			: m_pSchar(pStr)
+		{
+
+		}
+
+	public:
+		template<typename T>
+		bool	operator()(T& Pair)
+		{
+			if (!strcmp(m_pSchar, Pair.first))
+				return true;
+
+			return false;
+		}
+	};
 }

@@ -33,12 +33,14 @@ public:
 
 	// Wisp
 public:
-	void Set_Wisp(_bool bIsDeleteSubCon, _float fWispRatio, _float3 vWispPos);
+	void Set_Wisp(_bool bIsDeleteSubCon, _float fWispRatio, _float3 vWispPos, _uint iCurIndex);
 
 	_uint Get_WispInfoNum() { return m_WispInfos.size(); }
 	_bool* Get_DeleteSubCons();
 	_float* Get_WispRatios();
 	_float4* Get_WispPoss();
+
+	_uint	Get_CurIndex() { return m_iCurIndex; }
 
 	_bool Check_IsInWisp(_fvector vPos);
 	_bool Check_IsInWispX(_fvector vPos);
@@ -52,6 +54,7 @@ private:
 	_float			m_WispRatios[256];
 	_float4			m_WispPoss[256];
 
+	_uint			m_iCurIndex = 0;
 
 
 

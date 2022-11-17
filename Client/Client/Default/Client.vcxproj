@@ -214,6 +214,7 @@
     <ClInclude Include="..\public\SubconEye.h" />
     <ClInclude Include="..\public\SubSpider.h" />
     <ClInclude Include="..\public\Swip.h" />
+    <ClInclude Include="..\public\SwipsSky.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\Test.h" />
     <ClInclude Include="..\public\TimeObject.h" />
@@ -297,6 +298,7 @@
     <ClCompile Include="..\private\SubconEye.cpp" />
     <ClCompile Include="..\private\SubSpider.cpp" />
     <ClCompile Include="..\private\Swip.cpp" />
+    <ClCompile Include="..\private\SwipsSky.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\Test.cpp" />
     <ClCompile Include="..\private\TimeObject.cpp" />

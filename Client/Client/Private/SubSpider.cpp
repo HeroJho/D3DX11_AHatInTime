@@ -4,6 +4,7 @@
 
 #include  "ToolManager.h"
 #include "DataManager.h"
+#include "GameManager.h"
 
 #include "Player.h"
 
@@ -265,7 +266,7 @@ void CSubSpider::LateTick(_float fTimeDelta)
 		_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 		RELEASE_INSTANCE(CGameInstance);
 
-		if (true == isDraw)
+		if (true == isDraw && !CGameManager::Get_Instance()->Get_CurIndex())
 		{
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 		}

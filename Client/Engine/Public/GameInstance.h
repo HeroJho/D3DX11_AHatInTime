@@ -104,6 +104,9 @@ public: /* For.Frustum */
 public:
 	void Get_WinToWorldPos(_float fX, _float fY, _float3* Out_vPos, _float3* Out_vDir);
 
+public: /* For. Target_Manager */
+	void Set_WipsData(_float* pWispRatios, _float4* pWispPoss, _int pWispNum);
+	void Set_Dark(_bool bDark);
 
 private:
 	CGraphic_Device*				m_pGraphic_Device = nullptr;
@@ -118,6 +121,7 @@ private:
 	CColliderManager*				m_pColliderManager = nullptr;
 	CFont_Manager*					m_pFont_Manager = nullptr;
 	CFrustum*						m_pFrustum = nullptr;
+	CTarget_Manager*				m_pTarget_Manager = nullptr;
 
 
 public:

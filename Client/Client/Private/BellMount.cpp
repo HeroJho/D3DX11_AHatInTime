@@ -7,6 +7,8 @@
 #include "GameManager.h"
 #include "CutSceneManager.h"
 
+#include "SwipsSky.h"
+
 CBellMount::CBellMount(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CMonster(pDevice, pContext)
 {
@@ -62,6 +64,8 @@ HRESULT CBellMount::Initialize(void * pArg)
 
 	m_eState = STATE_IDLE;
 	
+	m_iIndex = pDesc->iIndex;
+
 
 	return S_OK;
 }
@@ -100,14 +104,14 @@ void CBellMount::Tick(_float fTimeDelta)
 				m_eState = STATE_RING_DOWN;
 				_float3 vPos;
 				XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
+				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos, m_iIndex);
 			}
 			else
 			{
 				m_fRatio += fTimeDelta * 20.f;
 				_float3 vPos;
 				XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
+				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos, m_iIndex);
 			}
 
 		}
@@ -117,7 +121,7 @@ void CBellMount::Tick(_float fTimeDelta)
 			if (0.f > m_fRatio)
 			{
 				m_fRatio = 0.f;
-				CGameManager::Get_Instance()->Set_Wisp(true, 0, _float3(0.f, 0.f, 0.f));
+				CGameManager::Get_Instance()->Set_Wisp(true, 0, _float3(0.f, 0.f, 0.f), m_iIndex);
 				m_eState = STATE_IDLE;
 			}
 			else
@@ -125,7 +129,7 @@ void CBellMount::Tick(_float fTimeDelta)
 				m_fRatio -= fTimeDelta * m_fSpeed;
 				_float3 vPos;
 				XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
+				CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos, m_iIndex);
 			}
 
 		}
@@ -202,7 +206,7 @@ HRESULT CBellMount::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 0)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 5)))
 			return E_FAIL;
 	}
 
@@ -234,8 +238,8 @@ void CBellMount::Attacked(_int iAT)
 	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	CGameManager::Get_Instance()->Set_SavePoint(m_iNaviIndex, vPos);
 
-	//if (!m_bFirstHit)
-	//	CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM3);
+	if (!m_bFirstHit)
+		CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM3);
 	m_bFirstHit = true;
 }
  
@@ -289,7 +293,14 @@ HRESULT CBellMount::Ready_Components()
 		return E_FAIL;
 
 
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	CSwipsSky::SWIPSSKYDESC Desc;
+	Desc.pOwner = this;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SwipsSky"), LEVEL_GAMEPLAY, TEXT("Layer_Swips"), &Desc)))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
 
 
 	return S_OK;

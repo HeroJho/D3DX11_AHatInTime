@@ -101,14 +101,14 @@ void CSwip::Tick(_float fTimeDelta)
 			m_eState = STATE_RING_DOWN;
 			_float3 vPos;
 			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-			CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
+			CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos, 0);
 		}
 		else
 		{
 			m_fRatio += fTimeDelta * 20.f;
 			_float3 vPos;
 			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-			CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
+			CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos, 0);
 		}
 
 	}
@@ -118,7 +118,7 @@ void CSwip::Tick(_float fTimeDelta)
 		if (0.f > m_fRatio)
 		{
 			m_fRatio = 0.f;
-			CGameManager::Get_Instance()->Set_Wisp(true, 0, _float3(0.f, 0.f, 0.f));
+			CGameManager::Get_Instance()->Set_Wisp(true, 0, _float3(0.f, 0.f, 0.f), 0);
 			m_eState = STATE_IDLE;
 		}
 		else
@@ -126,7 +126,7 @@ void CSwip::Tick(_float fTimeDelta)
 			m_fRatio -= fTimeDelta * m_fSpeed;
 			_float3 vPos;
 			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-			CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos);
+			CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos, 0);
 		}
 
 	}

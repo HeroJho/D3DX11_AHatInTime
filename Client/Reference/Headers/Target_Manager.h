@@ -7,9 +7,18 @@ BEGIN(Engine)
 class CTarget_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CTarget_Manager)
+private:
+	typedef struct tagValueDataInfoDesc
+	{
+		void* pData;
+		_uint iByte;
+	}VALUEDATAINFODESC;
+
 public:
 	CTarget_Manager();
 	virtual ~CTarget_Manager() = default;
+
+
 
 public:
 	HRESULT Add_RenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT eFormat, const _float4* pClearColor);
@@ -29,6 +38,27 @@ public:
 	HRESULT Initialize_Debug(const _tchar* pTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render_Debug(const _tchar* pMRTTag, class CVIBuffer* pVIBuffer, class CShader* pShader);
 #endif // _DEBUG
+
+
+
+public:
+	void Set_WipsData(_float* pWispRatios, _float4* pWispPoss, _int pWispNum);
+	void Get_WispData(_float** Out_pWispRatios, _float4** Out_pWispPoss, _bool* Out_bIsWisp, _int* Out_iWispNum);
+
+	_float Get_RendomNum(_float fMin, _float fMax);
+	_int Get_RendomNum_Int(_int iMin, _int iMax);
+
+	_bool Get_Dark() { return m_bDark; }
+	void Set_Dark(_bool bDark) { m_bDark = bDark; }
+
+private: // 클라에서 넘어온 셰이더 데이터들
+	_bool			m_bIsWisp = false;
+	_int			m_iWispNum = 0;
+	_float			m_WispRatios[256];
+	_float4			m_WispPoss[256];
+
+	_bool			m_bDark = false;
+
 
 
 private: /* 생성한 렌더타겟들을 전체 다 모아놓는다. */

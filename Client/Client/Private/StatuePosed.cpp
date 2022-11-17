@@ -178,7 +178,7 @@ void CStatuePosed::Tick(_float fTimeDelta)
 
 void CStatuePosed::Tick_IdleNone(_float fTimeDelta)
 {
-	if (m_bIsInWisp)
+	if (m_bIsInWisp && (2 == CGameManager::Get_Instance()->Get_CurIndex() || 0 == CGameManager::Get_Instance()->Get_CurIndex()))
 		Set_State(STATE_IDLE_T);
 }
 
@@ -440,8 +440,6 @@ void CStatuePosed::Render_None()
 			return;
 
 	}
-	else
-		iPassIndex = 0;
 
 
 
@@ -510,8 +508,6 @@ void CStatuePosed::Render_Anim()
 			return;
 
 	}
-	else
-		iPassIndex = 0;
 
 
 

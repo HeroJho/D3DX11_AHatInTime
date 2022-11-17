@@ -684,6 +684,16 @@ void CPlayer::State_Input(_float fTimeDelta)
 		RELEASE_INSTANCE(CGameInstance);
 		return;
 	}
+	else if (pGameInstance->Key_Down(DIK_2))
+	{
+		pGameInstance->Set_Dark(true);
+		m_bDark = true;
+	}
+	else if (pGameInstance->Key_Down(DIK_3))
+	{
+		pGameInstance->Set_Dark(false);
+		m_bDark = false;
+	}
 
 
 
@@ -1739,16 +1749,21 @@ void CPlayer::LateTick(_float fTimeDelta)
 
 
 	// 소켓 갱신
-	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
-	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
-
-	if (STATE_NONE != m_eState && !m_bRenderSkip)
+	if (!m_bRenderSkip)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
+		m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PLAYER, this);
-		RELEASE_INSTANCE(CGameInstance);
+		if (STATE_NONE != m_eState)
+		{
+			if(!m_bDark)
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+			else
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PLAYER, this);
+			RELEASE_INSTANCE(CGameInstance);
+		}
 	}
 
 
@@ -1956,6 +1971,9 @@ HRESULT CPlayer::Choose_Pass(_int iIndex)
 
 
 			iPassIndex = 1;
+
+			if (FAILED(m_pModelCom->Render(m_pShaderCom, iIndex, iPassIndex)))
+				return E_FAIL;
 		}
 		break;
 		default:

@@ -136,6 +136,8 @@ public:
 
 	void Set_RenderSkip(_bool bSkip) { m_bRenderSkip = bSkip; }
 
+	void Set_Dark(_bool bDark) { m_bDark = bDark; }
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;
@@ -206,6 +208,7 @@ private:
 
 	// For. CutScene
 	_bool	m_bRenderSkip = false;
+	_bool   m_bDark = false;
 
 private:
 	HRESULT Ready_Components();

@@ -46,6 +46,9 @@ using namespace DirectX;
 #include "Engine_Functor.h"
 #include "Engine_Function.h"
 
+#include <iostream>
+#include <random>
+
 #ifdef _DEBUG
 
 #define _CRTDBG_MAP_ALLOC

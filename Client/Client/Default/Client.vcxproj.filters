@@ -229,6 +229,9 @@
     <Filter Include="03.UI\SpeechBubble">
       <UniqueIdentifier>{87114ba7-536c-416b-bc2d-be4fc744ea83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Map\SwipsSky">
+      <UniqueIdentifier>{e241b59a-2ee9-4bb7-b0d5-4bcd620fcabb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -483,6 +486,9 @@
     <ClInclude Include="..\Public\UI_SpeechBubble.h">
       <Filter>03.UI\SpeechBubble</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\SwipsSky.h">
+      <Filter>02.GameObjects\Map\SwipsSky</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -721,6 +727,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_SpeechBubble.cpp">
       <Filter>03.UI\SpeechBubble</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SwipsSky.cpp">
+      <Filter>02.GameObjects\Map\SwipsSky</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

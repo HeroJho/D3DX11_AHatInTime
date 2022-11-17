@@ -17,6 +17,7 @@ public:
 		_float fRatio;
 		_float3 vPos;
 		_float3 vAngle;
+		_uint iIndex = 0;
 
 	}WISPDESC;
 
@@ -39,14 +40,17 @@ public:
 	virtual void Attacked(_int iAT) override;
 
 
+	STATE Get_State() { return m_eState; }
+
 	void Set_Ratio(_uint iRatio) { m_fRatio = iRatio; }
+	_float Get_Ratio() { return m_fRatio; }
 
 	void Set_AnimLinearData(ANIM_LINEAR_DATA LinearData);
 
 
 private:
 	HRESULT Ready_Components();
-
+	
 
 private:
 	_float	m_fRatio = 0.f;
@@ -58,6 +62,8 @@ private:
 	_float m_fSpeed = 0.f;
 
 	_bool m_bFirstHit = false;
+
+	_uint m_iIndex = 0;
 
 public:
 	static CBellMount* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
