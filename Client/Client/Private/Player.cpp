@@ -684,17 +684,6 @@ void CPlayer::State_Input(_float fTimeDelta)
 		RELEASE_INSTANCE(CGameInstance);
 		return;
 	}
-	else if (pGameInstance->Key_Down(DIK_2))
-	{
-		pGameInstance->Set_Dark(true);
-		m_bDark = true;
-	}
-	else if (pGameInstance->Key_Down(DIK_3))
-	{
-		pGameInstance->Set_Dark(false);
-		m_bDark = false;
-	}
-
 
 
 	if (pGameInstance->Key_Down(DIK_LSHIFT))
@@ -1752,7 +1741,10 @@ void CPlayer::LateTick(_float fTimeDelta)
 	if (!m_bRenderSkip)
 	{
 		m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
-		m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
+		if(m_bDark)
+			m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom, CRenderer::RENDER_NONLIGHT);
+		else
+			m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
 
 		if (STATE_NONE != m_eState)
 		{

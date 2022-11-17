@@ -58,16 +58,7 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 
 	XMStoreFloat3(&m_vSentorPos, XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
 
-	if (LEVEL_BOSS == CToolManager::Get_Instance()->Get_CulLevel())
-	{
-		// Set_State(STATE_DISAPPEAR);
-		Set_State(STATE_SIT);
-	} 
-	else
-	{
-		Set_State(STATE_DISAPPEAR);
-		Set_State(STATE_CUT_0);
-	}
+
 
 	
 	 CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -79,6 +70,21 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 	 m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(XMVectorSet(-60.57f, 0.101f, -115.45f, 1.f));
 
 	 Equip_Sockat("crown", SLOT_HEAD);
+
+
+
+	 if (LEVEL_BOSS == CToolManager::Get_Instance()->Get_CulLevel())
+	 {
+		 // Set_State(STATE_DISAPPEAR);
+		 Set_State(STATE_CUT_6);
+		 Start_Dark();
+	 }
+	 else
+	 {
+		 Set_State(STATE_DISAPPEAR);
+		 Set_State(STATE_CUT_0);
+	 }
+
 
 	return S_OK;
 }
@@ -206,6 +212,17 @@ void CVSnatcher::Set_State(STATE eState)
 
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-60.36f, -10.07f, -71.66f, 1.f));
 			m_pTransformCom->Set_Scale(XMVectorSet(5.f, 5.f, 5.f, 1.f));
+
+			break;
+		case STATE_CUT_6:
+
+			m_fCutTimeAcc_1 = 0.f;
+			m_iTalkCount = 0;
+			m_iCutIndex = 0;
+
+			Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
+			Equip_Sockat("Snatcher_Book", SLOT_HAND);
+			m_pModelCom->Set_AnimIndex(15);
 
 			break;
 
@@ -366,6 +383,9 @@ void CVSnatcher::Tick(_float fTimeDelta)
 		break;
 	case STATE_CUT_5:
 		Tick_Cut_5(fTimeDelta);
+		break;
+	case STATE_CUT_6:
+		Tick_Cut_6(fTimeDelta);
 		break;
 	default:
 		break;
@@ -943,6 +963,132 @@ void CVSnatcher::Tick_Cut_5(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 }
 
+void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
+{
+	if (0 == m_iCutIndex)
+	{
+		CTransform* pTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+
+		_vector vPlayerPos = pTran->Get_State(CTransform::STATE_POSITION);
+		_vector vMyPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+		_vector vDir = vPlayerPos - vMyPos;
+		_vector vNorDir = XMVector3Normalize(vDir);
+		_float fDis = XMVectorGetX(XMVector3Length(vDir));
+
+		if (16.f > fDis)
+		{
+			m_iCutIndex = 2;
+			m_bDark = false;
+		}
+	}
+
+
+
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (2 == m_iCutIndex)
+	{
+		if (pGameInstance->Key_Down(DIK_E))
+			++m_iTalkCount;
+
+		switch (m_iTalkCount)
+		{
+		case 0:
+			// CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(_float3(-68.36f, 1.5f, -60.72f), Get_PaceLook(15.f), false);
+			CUIManager::Get_Instance()->On_Text(TEXT(". . . . . "), 0.8f, 0.5f, true);
+			break;
+		case 1:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("오늘 참 고된 하루지...?"), 0.8f, 0.5f, true);
+		}
+		break;
+		case 2:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("생각을 해봤는데 말이야."), 0.8f, 0.5f, true);
+		}
+		break;
+		case 3:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("ㅂㅂㅂㅂㅂㅂ"), 0.8f, 0.5f, true);
+		}
+		break;
+		case 4:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("???????"), 0.8f, 0.5f, true);
+		}
+		break;
+		case 5:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(7.f, 0.f, 60.f), vPos, false);
+			m_pModelCom->Set_AnimIndex(11);
+			CUIManager::Get_Instance()->Set_Text(TEXT("!!!!!!!!!!"), 1.f, 1.f, true);
+			m_bDark = true;
+		}
+		break;
+		case 6:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(7.f, 0.f, 60.f), vPos, false);
+			m_pModelCom->Set_AnimIndex(24);
+			CUIManager::Get_Instance()->Set_Text(TEXT("sdfsfsdf"), 1.f, 1.f, true);
+			m_bDark = true;
+		}
+		break;
+		case 7:
+		{
+			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
+			CUIManager::Get_Instance()->Off_Text();
+			m_bDark = true;
+			++m_iTalkCount;
+		}
+		break;
+		default:
+			break;
+		}
+
+		if (8 == m_iTalkCount)
+		{
+			m_fCutTimeAcc_1 += fTimeDelta;
+			if (3.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
+			{
+				Set_State(STATE_IDLE);
+				End_Dark();
+				m_pSockatCom->Remove_Sockat(SLOT_SPIN);
+				m_pSockatCom->Remove_Sockat(SLOT_HAND);
+				if (FAILED(CDataManager::Get_Instance()->Load_Map(5, LEVEL_BOSS)))   // 3 5
+					return;
+				m_fCutTimeAcc_1 = 10.f;
+			}
+		}
+	}
+
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
 
 
 
@@ -966,11 +1112,15 @@ void CVSnatcher::LateTick(_float fTimeDelta)
 	{
 		End_Anim();
 	}
-
+	 
 
 	// 소켓 갱신
 	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
-	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
+
+	if(m_bDark)
+		m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
+	else
+		m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom, CRenderer::RENDER_NONLIGHT);
 
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -1319,6 +1469,28 @@ _float3 CVSnatcher::Get_PaceLook(_float fHight)
 	_float3 vVPos;
 	XMStoreFloat3(&vVPos, vPos);
 	return vVPos;
+}
+
+void CVSnatcher::Start_Dark()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	pGameInstance->Set_Dark(true);
+	m_bDark = true;
+	m_pPlayer->Set_Dark(true);
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CVSnatcher::End_Dark()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	pGameInstance->Set_Dark(false);
+	m_bDark = false;
+	m_pPlayer->Set_Dark(false);
+
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 

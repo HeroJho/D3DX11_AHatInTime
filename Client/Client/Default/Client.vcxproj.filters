@@ -354,9 +354,6 @@
     <ClInclude Include="..\Public\UI_Item_Inven.h">
       <Filter>03.UI\Item_Inven</Filter>
     </ClInclude>
-    <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp">
-      <Filter>97.ShaderFiles</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\SkyModel.h">
       <Filter>02.GameObjects\Sky</Filter>
     </ClInclude>
@@ -488,6 +485,9 @@
     </ClInclude>
     <ClInclude Include="..\public\SwipsSky.h">
       <Filter>02.GameObjects\Map\SwipsSky</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp">
+      <Filter>97.ShaderFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -746,19 +746,25 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
-      <Filter>97.ShaderFiles</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl">
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimModel.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxModel_Instance.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

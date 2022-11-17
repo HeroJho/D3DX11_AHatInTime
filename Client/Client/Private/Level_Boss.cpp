@@ -110,8 +110,8 @@ HRESULT CLevel_Boss::Ready_Lights()
 
 HRESULT CLevel_Boss::Ready_Layer_BackGround(const _tchar * pLayerTag)
 {
-	if (FAILED(CDataManager::Get_Instance()->Load_Map(5, LEVEL_BOSS)))   // 3 5
-		return E_FAIL;
+	//if (FAILED(CDataManager::Get_Instance()->Load_Map(5, LEVEL_BOSS)))   // 3 5
+	//	return E_FAIL;
 
 	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 	Safe_AddRef(pGameInstance);

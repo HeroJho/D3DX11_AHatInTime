@@ -77,7 +77,6 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 
 
 
-
 	if (bRender)
 	{
 		if (m_bWall && CGameManager::Get_Instance()->Get_WispInfoNum())

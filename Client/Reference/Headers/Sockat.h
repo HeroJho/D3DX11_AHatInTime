@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Renderer.h"
 
 BEGIN(Engine)
 
@@ -34,7 +35,7 @@ public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 	void Tick(_float fTimeDelta, class CTransform* pParentTran);
-	void LateTick(_float fTimeDelta, class CRenderer* pRenderer);
+	void LateTick(_float fTimeDelta, class CRenderer* pRenderer, CRenderer::RENDERGROUP eGroup = CRenderer::RENDER_NONALPHABLEND);
 
 public:
 	HRESULT Match_Enum_BoneName(char* pBoneName, _int iIndex);

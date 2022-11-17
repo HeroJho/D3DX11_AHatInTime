@@ -69,7 +69,7 @@ void CSockat::Tick(_float fTimeDelta, CTransform* pParentTran)
 
 }
 
-void CSockat::LateTick(_float fTimeDelta, CRenderer* pRenderer)
+void CSockat::LateTick(_float fTimeDelta, CRenderer* pRenderer, CRenderer::RENDERGROUP eGroup)
 {
 	if (nullptr == pRenderer)
 		return;
@@ -80,7 +80,7 @@ void CSockat::LateTick(_float fTimeDelta, CRenderer* pRenderer)
 			continue;
 
 		m_Parts[i]->LateTick(fTimeDelta);
-		pRenderer->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, m_Parts[i]);
+		pRenderer->Add_RenderGroup(eGroup, m_Parts[i]);
 	}
 
 }
