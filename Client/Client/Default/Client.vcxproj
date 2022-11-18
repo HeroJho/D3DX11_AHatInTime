@@ -173,6 +173,7 @@
     <ClInclude Include="..\public\BellMountEye.h" />
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\public\CamManager.h" />
+    <ClInclude Include="..\public\CaulDron.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\ColorCube.h" />
     <ClInclude Include="..\public\CutSceneManager.h" />
@@ -215,9 +216,11 @@
     <ClInclude Include="..\public\SubSpider.h" />
     <ClInclude Include="..\public\Swip.h" />
     <ClInclude Include="..\public\SwipsSky.h" />
+    <ClInclude Include="..\public\SwipsSky_Boss.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\public\Test.h" />
     <ClInclude Include="..\public\TimeObject.h" />
+    <ClInclude Include="..\public\Toilet_Scream.h" />
     <ClInclude Include="..\public\Toilet_SentorWall.h" />
     <ClInclude Include="..\public\ToolManager.h" />
     <ClInclude Include="..\Public\UI.h" />
@@ -258,6 +261,7 @@
     <ClCompile Include="..\private\BellMountEye.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\private\CamManager.cpp" />
+    <ClCompile Include="..\private\CaulDron.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
     <ClCompile Include="..\private\CutSceneManager.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
@@ -299,9 +303,11 @@
     <ClCompile Include="..\private\SubSpider.cpp" />
     <ClCompile Include="..\private\Swip.cpp" />
     <ClCompile Include="..\private\SwipsSky.cpp" />
+    <ClCompile Include="..\private\SwipsSky_Boss.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\private\Test.cpp" />
     <ClCompile Include="..\private\TimeObject.cpp" />
+    <ClCompile Include="..\private\Toilet_Scream.cpp" />
     <ClCompile Include="..\private\Toilet_SentorWall.cpp" />
     <ClCompile Include="..\private\ToolManager.cpp" />
     <ClCompile Include="..\Private\UI.cpp" />

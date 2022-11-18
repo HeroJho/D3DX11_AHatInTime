@@ -44,6 +44,7 @@ public:
 public:
 	void Set_WipsData(_float* pWispRatios, _float4* pWispPoss, _int pWispNum);
 	void Get_WispData(_float** Out_pWispRatios, _float4** Out_pWispPoss, _bool* Out_bIsWisp, _int* Out_iWispNum);
+	_float Get_MaxWispRatio() { return m_fMaxRatio; }
 
 	_float Get_RendomNum(_float fMin, _float fMax);
 	_int Get_RendomNum_Int(_int iMin, _int iMax);
@@ -56,6 +57,8 @@ private: // 클라에서 넘어온 셰이더 데이터들
 	_int			m_iWispNum = 0;
 	_float			m_WispRatios[256];
 	_float4			m_WispPoss[256];
+
+	_float			m_fMaxRatio = 0.f;
 
 	_bool			m_bDark = false;
 

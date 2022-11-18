@@ -8,7 +8,7 @@
 
 #include "StaticModel.h"
 #include "Cell.h"
-
+#include "Light.h"
 
 IMPLEMENT_SINGLETON(CMapManager)
 
@@ -26,19 +26,46 @@ CMapManager::CMapManager()
 
 
 
+HRESULT CMapManager::Init(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+{
+	m_pDevice = pDevice;
+	m_pContext = pContext;
+
+	Safe_AddRef(m_pDevice);
+	Safe_AddRef(m_pContext);
+
+	return S_OK;
+}
+
 void CMapManager::Tick(_float TimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	
 	if (pGameInstance->Key_Pressing(DIK_LSHIFT))
 	{
-		if (pGameInstance->Mouse_Pressing(DIMK_LBUTTON))
-			Click_Model();
-		else if (pGameInstance->Mouse_Pressing(DIMK_WHEEL))
-			Move_ClickedModel();
-		else if (pGameInstance->Mouse_Pressing(DIMK_RBUTTON))
-			UnClick_Model();
+		//if (m_bLightMode)
+		//{
+		//	if (pGameInstance->Mouse_Pressing(DIMK_WHEEL))
+		//	{
+		//		Move_ClickedLight();
+		//	}
+		//}
+		//else
+		{
+			if (pGameInstance->Mouse_Pressing(DIMK_LBUTTON))
+				Click_Model();
+			else if (pGameInstance->Mouse_Pressing(DIMK_WHEEL))
+			{
+				Move_ClickedModel();
+				// Move_ClickedLight();
+			}
+			else if (pGameInstance->Mouse_Pressing(DIMK_RBUTTON))
+				UnClick_Model();
+		}
+
+
 	}
+
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -481,7 +508,155 @@ void CMapManager::Set_ClickedTagID(_int iTagID)
 	Set_ClikedColDesc(Desc);
 }
 
+
+
+void CMapManager::Create_Light()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	ZeroMemory(&m_LightDesc, sizeof(LIGHTDESC));
+	m_LightDesc.eType = LIGHTDESC::TYPE_POINT;
+	m_LightDesc.vPosition = _float4(-68.97f, 13.04f, 121.20f, 1.f);
+	m_LightDesc.fRange = 30.f;
+	m_LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	m_LightDesc.vAmbient = _float4(0.1f, 0.1f, 0.1f, 1.f);
+	m_LightDesc.vSpecular = _float4(0.1f, 0.1f, 0.1f, 1.f);
+
+	CLight* pLight = nullptr;
+
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, m_LightDesc, m_iLgithID, &pLight)))
+		return;
+
+	Set_CurLightID(m_iLgithID);
+
+	++m_iLgithID;
+
+
+
+	CStaticModel::STATICMODELDESC Desc;
+	ZeroMemory(&Desc, sizeof(CStaticModel::STATICMODELDESC));
+
+	lstrcpy(Desc.cModelTag, TEXT("Ori_Hat"));
+	Desc.vScale = _float3(1.f, 1.f, 1.f);
+	Desc.vSize = _float3(1.f, 1.f, 1.f);
+	Desc.pLight = pLight;
+	CGameObject* pObj = nullptr;
+	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), LEVEL_MAPTOOL, TEXT("Layer_Model"), &pObj, &Desc);
+
+	CMapManager::Get_Instance()->Add_Model((CStaticModel*)pObj);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CMapManager::Create_Light(LIGHTDESC eDesc)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, eDesc, m_iLgithID)))
+		return;
+
+	Set_CurLightID(m_iLgithID);
+
+	++m_iLgithID;
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CMapManager::Create_Light(LIGHTDESC eDesc, CLight ** pLight)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, eDesc, m_iLgithID, pLight)))
+		return;
+
+	Set_CurLightID(m_iLgithID);
+
+	++m_iLgithID;
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+
+LIGHTDESC CMapManager::Get_CurIDLight()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CLight* pLight = pGameInstance->Find_Light(m_iCurLightID);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	if (nullptr == pLight)
+		return LIGHTDESC();
+
+	return pLight->Get_LightDesc();
+}
+
+void CMapManager::Remove_CurIDLight()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	pGameInstance->Remove_Light(m_iCurLightID);
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CMapManager::Set_CurIDLight(LIGHTDESC eDesc)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CLight* pLight = pGameInstance->Find_Light(m_iCurLightID);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	if (nullptr == pLight)
+		return;
+
+	pLight->Set_LightDesc(eDesc);
+}
+
+list<class CLight*>* CMapManager::Get_Lights()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	list<class CLight*>* pLights = pGameInstance->Get_Lights();
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return pLights;
+}
+
+
+
+void CMapManager::Move_ClickedLight()
+{
+	LIGHTDESC Desc = Get_CurIDLight();
+
+	Desc.vPosition = _float4(m_fMinPos.x, m_fMinPos.y, m_fMinPos.z, 1.f);
+
+	Set_CurIDLight(Desc);
+}
+
+void CMapManager::Save_LightData()
+{
+	CDataManager::Get_Instance()->Save_Lights(m_iLightSaveIndex);
+}
+
+void CMapManager::Load_LightData()
+{
+	CDataManager::Get_Instance()->Load_Lights(m_iLightSaveIndex);
+}
+
+
+
+
+
 void CMapManager::Free()
 {
 	m_StaticModels.clear();
+
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
 }

@@ -14,6 +14,8 @@
 #include "MarkCube.h";
 #include "LookCube.h"
 
+#include "Light.h"
+
 
 IMPLEMENT_SINGLETON(CDataManager)
 
@@ -873,6 +875,127 @@ CDataManager::DATA_CAMS* CDataManager::Load_Cam(_int iCamID)
 
 
 	return pDatas;
+}
+
+
+
+
+HRESULT CDataManager::Save_Lights(_int iLightID)
+{
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iLightID);
+
+	strcpy_s(cName, "Light_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Light/");
+	strcat_s(cPullName, cName);
+
+
+	std::ofstream ofs(cPullName, ios::out | ios::binary);
+
+	if (!ofs)
+		return E_FAIL;
+
+
+	list<CLight*>* pLights = CMapManager::Get_Instance()->Get_Lights();
+	_int iNumLights = pLights->size();
+
+	ofs.write((char*)&iLightID, sizeof(int));		// ID
+	ofs.write((char*)&iNumLights, sizeof(int));	// NumObj
+
+
+	for (auto& pLight : *pLights)
+	{
+
+		LIGHTDESC Desc =  pLight->Get_LightDesc();
+
+		ofs.write((char*)&Desc.eType, sizeof(_int));
+		ofs.write((char*)&Desc.vDirection, sizeof(_float4));
+		ofs.write((char*)&Desc.vPosition, sizeof(_float4));
+		ofs.write((char*)&Desc.fRange, sizeof(_float));
+		ofs.write((char*)&Desc.vDiffuse, sizeof(_float4));
+		ofs.write((char*)&Desc.vAmbient, sizeof(_float4));
+		ofs.write((char*)&Desc.vSpecular, sizeof(_float4));
+
+	}
+
+
+	ofs.close();
+
+	return S_OK;
+}
+
+
+LIGHTDESC* CDataManager::Load_Lights(_int iLightID)
+{
+
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iLightID);
+
+	strcpy_s(cName, "Light_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Light/");
+	strcat_s(cPullName, cName);
+
+
+	std::ifstream ifs(cPullName, ios::in | ios::binary);
+
+	if (!ifs)
+		return nullptr;
+
+
+	_int iID = 0;
+	_int iNum = 0;
+	ifs.read((char*)&iID, sizeof(int));		// ID
+	ifs.read((char*)&iNum, sizeof(int));	// NumObj
+
+	LIGHTDESC* pDesc = new LIGHTDESC[iNum];
+
+	for (_uint i = 0; i < iNum; ++i)
+	{
+		ifs.read((char*)&pDesc[i].eType, sizeof(_int));
+		ifs.read((char*)&pDesc[i].vDirection, sizeof(_float4));
+		ifs.read((char*)&pDesc[i].vPosition, sizeof(_float4));
+		ifs.read((char*)&pDesc[i].fRange, sizeof(_float));
+		ifs.read((char*)&pDesc[i].vDiffuse, sizeof(_float4));
+		ifs.read((char*)&pDesc[i].vAmbient, sizeof(_float4));
+		ifs.read((char*)&pDesc[i].vSpecular, sizeof(_float4));
+	}
+
+
+	ifs.close();
+
+
+	for (_uint i = 0; i < iNum; ++i)
+	{
+
+		CLight* pLight = nullptr;
+		CMapManager::Get_Instance()->Create_Light(pDesc[i], &pLight);
+
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		CStaticModel::STATICMODELDESC Desc;
+		ZeroMemory(&Desc, sizeof(CStaticModel::STATICMODELDESC));
+	
+		lstrcpy(Desc.cModelTag, TEXT("Ori_Hat"));
+		Desc.vScale = _float3(1.f, 1.f, 1.f);
+		Desc.vSize = _float3(1.f, 1.f, 1.f);
+		Desc.pLight = pLight;
+		CGameObject* pObj = nullptr;
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), LEVEL_MAPTOOL, TEXT("Layer_Model"), &pObj, &Desc);
+
+		CMapManager::Get_Instance()->Add_Model((CStaticModel*)pObj);
+
+
+		RELEASE_INSTANCE(CGameInstance);
+	}
+
+	Safe_Delete_Array(pDesc);
+
+	return pDesc;
 }
 
 

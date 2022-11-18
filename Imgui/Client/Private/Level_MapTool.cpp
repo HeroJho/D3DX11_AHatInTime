@@ -38,17 +38,29 @@ HRESULT CLevel_MapTool::Ready_Lights()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
-	LIGHTDESC			LightDesc;
-	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+	//LIGHTDESC			LightDesc;
+	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 
-	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
-	LightDesc.vDirection = _float4(1.f, -1.f, -1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	//LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
+	//LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	//LightDesc.vDiffuse = _float4(0.1f, 0.1f, 0.1f, 1.f);
+	//LightDesc.vAmbient = _float4(.2f, .2f, .2f, 1.f);
+	//LightDesc.vSpecular = _float4(139.f / 255.f, 0.f / 255.f, 255.f / 255.f, 1.f);
 
-	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc, 0)))
+	//	return E_FAIL;
+
+
+	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+	//LightDesc.eType = LIGHTDESC::TYPE_POINT;
+	//LightDesc.vPosition = _float4(-68.97f, 13.04f, 121.20f, 1.f);
+	//LightDesc.fRange = 30.f;
+	//LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	//LightDesc.vAmbient = _float4(0.1f, 0.1f, 0.1f, 1.f);
+	//LightDesc.vSpecular = LightDesc.vDiffuse;
+
+	//if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
+	//	return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 

@@ -143,6 +143,8 @@ public:
 
 	DATA_CAMS* Load_Cam(_int iCamID);
 
+	void Load_Lights(_int iLightID);
+
 public:
 	virtual void Free() override;
 

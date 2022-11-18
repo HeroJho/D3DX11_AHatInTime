@@ -24,7 +24,8 @@ public:
 		STATE_TALKING, STATE_CURSESTART, STATE_CURSE, 
 		STATE_MINON, STATE_MAGICSTART, STATE_MAGIC, STATE_HOITSTART, 
 		STATE_HOIT, STATE_SNAPHAT, 
-		STATE_SWIPSTART, STATE_SWIPS, STATE_SIT, STATE_END };
+		STATE_SWIPSTART, STATE_SWIPS, STATE_SIT,
+		STATE_ATTACK, STATE_END };
 	enum SLOT { SLOT_HAND, SLOT_HEAD, SLOT_SPIN, SLOT_END };
 
 private:
@@ -66,8 +67,9 @@ public:
 	void Tick_SwipStart(_float fTimeDelta);
 	void Tick_Swip(_float fTimeDelta);
 
-	void Tick_SnapHat(_float fTimeDelta);
+	void Tick_Attack(_float fTimeDelta);
 
+	void Tick_SnapHat(_float fTimeDelta);
 
 
 	void Tick_Cut_1(_float fTimeDelta);
@@ -76,6 +78,7 @@ public:
 	void Tick_Cut_4(_float fTimeDelta);
 	void Tick_Cut_5(_float fTimeDelta);
 	void Tick_Cut_6(_float fTimeDelta);
+
 
 private:
 	void Compute_Pattern(_float fTimeDelta);
@@ -102,6 +105,7 @@ private:
 	STATE			m_ePreState = STATE_END;
 
 	class CPlayer*		m_pPlayer = nullptr;
+	class CCaulDron*	m_pCaulDron = nullptr;
 
 	_uint m_iNaviIndex = 0;
 

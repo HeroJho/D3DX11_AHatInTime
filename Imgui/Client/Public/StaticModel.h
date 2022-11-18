@@ -9,6 +9,7 @@ class CTexture;
 class CRenderer;
 class CTransform;
 class CModel;
+class CLight;
 END
 
 BEGIN(Client)
@@ -29,6 +30,8 @@ public:
 		_bool	bWall;
 		_int	iTagID;
 
+		CLight* pLight = nullptr;
+
 	}STATICMODELDESC;
 
 private:
@@ -47,6 +50,8 @@ public:
 	_uint Get_Mesh_NumPrimitives(_uint iIndex);
 	const VTXMODEL* Get_Mesh_NonAnimVertices(_uint iIndex);
 	const FACEINDICES32* Get_Mesh_Indices(_uint iIndex);
+
+	virtual void Set_Dead() override;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -67,13 +72,14 @@ private:
 	CTransform*				m_pTransformCom = nullptr;
 	CModel*					m_pModelCom = nullptr;
 
-
 private:
 	TCHAR					m_cModelTag[MAX_PATH];
 	string					m_sModelNum;
 	_float3					m_vAxis;
 
 	_float					m_fSpaceTimeAcc = 0.f;
+
+	CLight*					m_pLights = nullptr;
 
 private:
 	HRESULT Ready_Components(STATICMODELDESC* Desc);

@@ -24,8 +24,8 @@ public:
 	void Set_Tag(string sTag) { m_sTag = sTag; }
 	string Get_Tag() { return m_sTag; }
 
-	void Set_Dead() { m_bDead = true; }
-	_bool Get_Dead() { return m_bDead; }
+	virtual void Set_Dead() { m_bDead = true; }
+	virtual _bool Get_Dead() { return m_bDead; }
 
 	virtual _float3* Get_Axis() { return nullptr; }
 

@@ -40,6 +40,7 @@ public:
 private:
 	HRESULT Loading_Model_NoneAnim();
 	HRESULT Loading_UI();
+	HRESULT Loading_ObjTexture();
 
 private:
 	ID3D11Device*			m_pDevice = nullptr;

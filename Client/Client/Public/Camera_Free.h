@@ -3,6 +3,10 @@
 #include "Client_Defines.h"
 #include "Camera.h"
 
+BEGIN(Engine)
+class CNavigation;
+END
+
 BEGIN(Client)
 
 class CCamera_Free final : public CCamera
@@ -86,6 +90,11 @@ private:
 
 	CAM_STATE			m_eState = CAM_GAME;
 
+private:
+	CNavigation*			m_pNavigationCom = nullptr;
+
+private:
+	HRESULT Ready_Components();
 
 
 public:

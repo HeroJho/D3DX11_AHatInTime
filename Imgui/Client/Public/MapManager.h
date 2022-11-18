@@ -6,6 +6,7 @@
 BEGIN(Engine)
 
 class CGameObject;
+class CLight;
 
 END
 
@@ -18,6 +19,9 @@ class CMapManager final : public CBase
 public:
 	CMapManager();
 	virtual ~CMapManager() = default;
+
+public:
+	HRESULT Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 
 
 public:
@@ -37,7 +41,8 @@ private:
 	_float m_fRad = 0.f;		// 원뿔의 반지름
 	_float m_fSharp = 0.f;
 
-
+	ID3D11Device* m_pDevice = nullptr;
+	ID3D11DeviceContext* m_pContext = nullptr;
 
 
 
@@ -150,6 +155,47 @@ public:
 private:
 	_bool m_bColMode = false;
 
+
+
+
+	// For. Lights
+public:
+	void Create_Light();
+	void Create_Light(LIGHTDESC eDesc);
+
+	void Create_Light(LIGHTDESC eDesc, class CLight** pLight);
+
+	LIGHTDESC Get_CurIDLight();
+	void Remove_CurIDLight();
+
+	void Set_CurIDLight(LIGHTDESC eDesc);
+
+	list<class CLight*>* Get_Lights();
+
+	_int Get_CurLightID() { return m_iCurLightID; }
+	void Set_CurLightID(_int iID) { m_iCurLightID = iID; }
+
+	void Move_ClickedLight();
+
+
+	void Set_LightMode(_bool bLightMode) {m_bLightMode = bLightMode;}
+	_bool Get_LightMode() { return m_bLightMode; }
+
+	void Set_LightSaveIndex(_uint iIndex) { m_iLightSaveIndex = iIndex ; }
+	_int Get_LightSaveIndex() { return m_iLightSaveIndex; }
+
+	void Save_LightData();
+	void Load_LightData();
+
+
+private:
+	LIGHTDESC m_LightDesc;
+	_uint m_iLgithID = 1;
+	_int m_iCurLightID = -1;
+
+	_bool m_bLightMode = false;
+
+	_uint m_iLightSaveIndex = 0;
 
 public:
 	virtual void Free() override;

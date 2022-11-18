@@ -37,6 +37,10 @@ HRESULT CCamera_Free::Initialize(void * pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Components()))
+		return E_FAIL;
+
+
 	m_fOriDis = m_fDis = 4.5f;
 	ZeroMemory(&m_vAngle, sizeof(_float3));
 	ZeroMemory(&m_vDestLookPos, sizeof(_float3));
@@ -246,8 +250,37 @@ void CCamera_Free::OriCamPos(_float fDeltaTime)
 	vCamDir = XMVector3TransformNormal(vCamDir, mX);
 	vCamDir = XMVector3TransformNormal(vCamDir, mY);
 	_vector vCamPos = vCamDir * m_fDis;
-	_vector vDestPos = pPlayerTran->Get_State(CTransform::STATE_POSITION) + vCamPos;
 
+	_vector vPlayerPos = pPlayerTran->Get_State(CTransform::STATE_POSITION);
+
+
+	_vector vDestPos = vPlayerPos + vCamPos;
+
+
+
+	// 셀이 없다면 계속 구한다.
+	if(-1 == m_pNavigationCom->Get_CurCellIndex())
+		m_pNavigationCom->Set_NaviIndex(m_pNavigationCom->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
+	else
+	{
+		// 셀 갱신, 뛰어 넘었다면 다시 찾는다.
+		if (!m_pNavigationCom->isMove(vDestPos))
+			m_pNavigationCom->Set_NaviIndex(m_pNavigationCom->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
+	
+		if (-1 != m_pNavigationCom->Get_CurCellIndex())
+		{
+			// 네비 Y를 구한다
+			_float fY = m_pNavigationCom->Compute_Height(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			fY += 0.5f;
+
+			// 이동하려는 포스가 Y보다 작다면 Y을 태운다
+			if (fY > XMVectorGetY(vDestPos))
+				vDestPos = XMVectorSetY(vDestPos, fY);
+
+		}
+
+	}
+	
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDestPos);
 }
 
@@ -421,6 +454,22 @@ void CCamera_Free::CutScene_Mode(_float fTimeDelta)
 
 
 
+HRESULT CCamera_Free::Ready_Components()
+{
+
+	/* For.Com_Navigation */
+	CNavigation::NAVIGATIONDESC NaviDesc;
+	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
+	NaviDesc.iCurrentIndex = 0;
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+		return E_FAIL;
+
+	m_pNavigationCom->Set_NaviIndex(m_pNavigationCom->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
+
+
+	return S_OK;
+}
+
 CCamera_Free * CCamera_Free::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CCamera_Free*		pInstance = new CCamera_Free(pDevice, pContext);
@@ -453,7 +502,7 @@ void CCamera_Free::Free()
 {
 	__super::Free();
 
-
+	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pPlayer);
 
 }

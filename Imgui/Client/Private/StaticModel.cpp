@@ -6,6 +6,8 @@
 #include "MeshManager.h"
 #include "ToolManager.h"
 
+#include "Light.h"
+
 CStaticModel::CStaticModel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -41,6 +43,19 @@ const FACEINDICES32 * CStaticModel::Get_Mesh_Indices(_uint iIndex)
 {
 	return m_pModelCom->Get_Mesh_Indices(iIndex);
 }
+
+void CStaticModel::Set_Dead()
+{
+	m_bDead = true;
+	if (!lstrcmp(TEXT("Ori_Hat"), m_cModelTag))
+	{
+		CMapManager::Get_Instance()->Set_CurLightID(m_pLights->Get_ID());
+		CMapManager::Get_Instance()->Remove_CurIDLight();
+	}
+}
+
+
+
 
 HRESULT CStaticModel::Initialize_Prototype()
 {
@@ -83,6 +98,10 @@ HRESULT CStaticModel::Initialize(void * pArg)
 	m_vAxis = Desc->vAngle;
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_vAxis.x, XMVectorSet(0.f, 1.f, 0.f, 0.f), m_vAxis.y, XMVectorSet(0.f, 0.f, 1.f, 0.f), m_vAxis.z);
 
+
+	m_pLights = Desc->pLight;
+
+
 	return S_OK;
 }
 
@@ -92,6 +111,18 @@ void CStaticModel::Tick(_float fTimeDelta)
 
 	_float3 vPoss[3];
 	_float fMinDis = 0.f;
+
+
+	if (!lstrcmp(TEXT("Ori_Hat"), m_cModelTag))
+	{
+		LIGHTDESC Desc = m_pLights->Get_LightDesc();
+		_float4 vPos;
+		XMStoreFloat4(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		vPos.w = 1.f;
+		Desc.vPosition = vPos;
+		m_pLights->Set_LightDesc(Desc);
+	}
+
 	
 
 	if (!CMeshManager::Get_Instance()->Get_ClickVertexMode())
@@ -215,7 +246,10 @@ void CStaticModel::LateTick(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 
 	if (true == isDraw || !lstrcmp(m_cModelTag, TEXT("SubCon")) || !lstrcmp(m_cModelTag, TEXT("SubConBoss")) || !lstrcmp(m_cModelTag, TEXT("SubCon_Navi")) || !lstrcmp(m_cModelTag, TEXT("SubConBoss_Navi")))
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	}
+		
 }
 
 HRESULT CStaticModel::Render()
@@ -245,6 +279,13 @@ HRESULT CStaticModel::Render()
 	string sTemp2 = CMapManager::Get_Instance()->Get_PickedCreatedString();
 	_bool bRendPickingColor = CMapManager::Get_Instance()->Get_RendPickingColor();
 	_bool bIsPicked = m_sModelNum == sTemp2 && bRendPickingColor;
+
+	if (bIsPicked && (!lstrcmp(TEXT("Ori_Hat"), m_cModelTag)))
+	{
+		CMapManager::Get_Instance()->Set_CurLightID(m_pLights->Get_ID());
+	}
+
+
 	if (FAILED(m_pShaderCom->Set_RawValue("g_IsPicked", &bIsPicked, sizeof(_bool))))
 		return E_FAIL;
 

@@ -202,7 +202,6 @@ HRESULT CRenderer::Render_Lights()
 		return E_FAIL;
 
 
-
 	_float4x4			WorldMatrix;
 	_uint				iNumViewport = 1;
 	D3D11_VIEWPORT		ViewportDesc;
@@ -279,41 +278,55 @@ HRESULT CRenderer::Render_Blend()
 		return E_FAIL;
 
 	// 안개를 위한 연산
-
-	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
-		return E_FAIL;
-
-	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
-	if (FAILED(m_pShader->Set_RawValue("g_vCamPosition", &pPipeLine->Get_CamPosition(), sizeof(_float4))))
-		return E_FAIL;
-	RELEASE_INSTANCE(CPipeLine);
-
-	_bool bIsWisp = false;
-	_int iWispNum = 0;
-	_float* fRatios = nullptr;
-	_float4* vPoss = nullptr;
-
-	m_pTarget_Manager->Get_WispData(&fRatios, &vPoss, &bIsWisp, &iWispNum);
-
-	if (FAILED(m_pShader->Set_RawValue("g_IsbWisp", &bIsWisp, sizeof(_bool))))
-		return E_FAIL;
-
-	if (bIsWisp)
 	{
-		if (FAILED(m_pShader->Set_RawValue("g_WispInfoNum", &iWispNum, sizeof(_int))))
-			return E_FAIL;
-		if (FAILED(m_pShader->Set_RawValue("g_WispRatios", fRatios, 256, 2)))
-			return E_FAIL;
-		if (FAILED(m_pShader->Set_RawValue("g_WispPoss", vPoss, 256, 3)))
+		if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
 			return E_FAIL;
 
-		
-		// _float fRendomNext = m_pTarget_Manager->Get_RendomNum(0.97f, 0.99f);;
-		_float fRendomNext = 1.f;
-
-		if (FAILED(m_pShader->Set_RawValue("g_RendomNext", &fRendomNext, sizeof(_float))))
+		CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
+		if (FAILED(m_pShader->Set_RawValue("g_vCamPosition", &pPipeLine->Get_CamPosition(), sizeof(_float4))))
 			return E_FAIL;
+		RELEASE_INSTANCE(CPipeLine);
 	}
+
+	// 윕스 안개 없애기
+	{
+		_bool bIsWisp = false;
+		_int iWispNum = 0;
+		_float* fRatios = nullptr;
+		_float4* vPoss = nullptr;
+
+
+		m_pTarget_Manager->Get_WispData(&fRatios, &vPoss, &bIsWisp, &iWispNum);
+
+		if (FAILED(m_pShader->Set_RawValue("g_IsbWisp", &bIsWisp, sizeof(_bool))))
+			return E_FAIL;
+
+		if (bIsWisp)
+		{
+			if (FAILED(m_pShader->Set_RawValue("g_WispInfoNum", &iWispNum, sizeof(_int))))
+				return E_FAIL;
+			if (FAILED(m_pShader->Set_RawValue("g_WispRatios", fRatios, 256, 2)))
+				return E_FAIL;
+			if (FAILED(m_pShader->Set_RawValue("g_WispPoss", vPoss, 256, 3)))
+				return E_FAIL;
+
+
+			_float fMaxRatio = m_pTarget_Manager->Get_MaxWispRatio();
+			_float fRatio = 1.f - (fRatios[0] / (fMaxRatio * 0.8f));
+			_float fRendomNext = 0.f;
+			if (0.f > fRatio)
+				fRendomNext = 1.f;
+			else
+			{
+				_float fShakeValue = 0.02f * fRatio;
+				fRendomNext = m_pTarget_Manager->Get_RendomNum(1.f - fShakeValue, 1.f + fShakeValue);
+			}
+
+			if (FAILED(m_pShader->Set_RawValue("g_RendomNext", &fRendomNext, sizeof(_float))))
+				return E_FAIL;
+		}
+	}
+
 
 	if(m_pTarget_Manager->Get_Dark())
 		m_pShader->Begin(4);

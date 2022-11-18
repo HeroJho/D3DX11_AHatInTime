@@ -55,10 +55,11 @@ HRESULT CLevel_GamePlay::Initialize()
 	
 
 	// CCamManager::Get_Instance()->Play_CutScene(0, true);
-	CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
-	CItemManager::Get_Instance()->Add_Hat(TEXT("Witch_Hat"));
-	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
+	//CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
+	//CItemManager::Get_Instance()->Add_Hat(TEXT("Witch_Hat"));
+	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
+	CItemManager::Get_Instance()->Add_Hat(TEXT("Sprint_Hat"));
 
 
 	return S_OK;
@@ -95,13 +96,15 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
 	LightDesc.vDiffuse = _float4(0.8f, 0.8f, 0.8f, 1.f);
-	LightDesc.vAmbient = _float4(.4f, .4f, .4f, 1.f);
+	LightDesc.vAmbient = _float4(.2f, .2f, .2f, 1.f);
 	LightDesc.vSpecular = _float4(139.f/255.f, 0.f / 255.f, 255.f / 255.f, 1.f);
 
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc)))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
+
+	//CDataManager::Get_Instance()->Load_Lights(0);
 
 	return S_OK;
 }

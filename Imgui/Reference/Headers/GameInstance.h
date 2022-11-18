@@ -65,7 +65,13 @@ public: /* for.Timer_Manager */
 
 public: /* For.Light_Manager */
 	const LIGHTDESC* Get_LightDesc(_uint iIndex);
-	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);
+	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc, _uint iID, class CLight** Out_pLight = nullptr);
+	HRESULT Remove_Light(_uint iID);
+	void Set_LightDesc(_uint iIndex, LIGHTDESC Desc);
+	class CLight* Find_Light(_uint iID);
+
+	list<class CLight*>* Get_Lights();
+
 
 public: /* For.Input_Device */
 	_char Get_DIKState(_uchar eKeyID);

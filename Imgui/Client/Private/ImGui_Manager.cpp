@@ -22,6 +22,8 @@
 
 #include "Transform.h"
 
+#include "Light.h"
+
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
 CImGui_Manager::CImGui_Manager()
@@ -212,6 +214,10 @@ void CImGui_Manager::Init_AnimTool()
 void CImGui_Manager::Init_PartsTool()
 {
 }
+void CImGui_Manager::Init_LightTool()
+{
+}
+
 void CImGui_Manager::Init_TestLevel()
 {
 
@@ -270,7 +276,8 @@ void CImGui_Manager::Render_MapTool()
 		Window_Col();
 	}
 
-
+	if(CMapManager::Get_Instance()->Get_LightMode())
+		Render_LightTool();
 
 }
 void CImGui_Manager::Render_CamTool()
@@ -382,6 +389,89 @@ void CImGui_Manager::Render_PartsTool()
 
 	Window_Part();
 }
+void CImGui_Manager::Render_LightTool()
+{
+	ImGui::Begin("LightTool");
+
+	list<CLight*>* pLights = CMapManager::Get_Instance()->Get_Lights();
+
+
+
+	ImVec2 vSize{ 150.f, 200.f };
+	if (ImGui::BeginListBox("Lights", vSize))
+	{
+		int iCount = 0;
+		for (auto& pLight : *pLights)
+		{
+
+			bool isSelected = CMapManager::Get_Instance()->Get_CurLightID() == pLight->Get_ID();
+			vSize = { 100.f, 10.f };
+			string strID = to_string(pLight->Get_ID());
+			if (ImGui::Selectable(strID.data(), isSelected, 0, vSize))
+			{
+				CMapManager::Get_Instance()->Set_CurLightID(pLight->Get_ID());
+			}
+
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+
+		ImGui::EndListBox();
+	}
+
+
+	LIGHTDESC Desc = CMapManager::Get_Instance()->Get_CurIDLight();
+
+
+	_int eType = Desc.eType;
+	if (ImGui::InputInt("Type", &eType))
+		Desc.eType = (LIGHTDESC::TYPE)eType;
+	XMFLOAT4		vDirection = Desc.vDirection;
+	if (ImGui::DragFloat4("Direction", (float*)&vDirection, 0.1f, -1.f, 1.f))
+		Desc.vDirection = vDirection;
+	XMFLOAT4		vPosition = Desc.vPosition;
+	if (ImGui::DragFloat4("Position", (float*)&vPosition, 0.1f))
+		Desc.vPosition = vPosition;
+
+	_float fRange = Desc.fRange;
+	if (ImGui::DragFloat("fRange", &fRange))
+		Desc.fRange = fRange;
+
+	XMFLOAT4		vDiffuse = Desc.vDiffuse;
+	if (ImGui::DragFloat4("Diffuse", (float*)&vDiffuse, 0.1f, -1.f, 1.f))
+		Desc.vDiffuse = vDiffuse;
+	XMFLOAT4		vAmbient = Desc.vAmbient;
+	if (ImGui::DragFloat4("Ambient", (float*)&vAmbient, 0.1f, -1.f, 1.f))
+		Desc.vAmbient = vAmbient;
+	XMFLOAT4		vSpecular = Desc.vSpecular;
+	if (ImGui::DragFloat4("Specular", (float*)&vSpecular, 0.1f, -1.f, 1.f))
+		Desc.vSpecular = vSpecular;
+
+
+	CMapManager::Get_Instance()->Set_CurIDLight(Desc);
+
+
+	if (ImGui::Button("Create"))
+		CMapManager::Get_Instance()->Create_Light();
+	if (ImGui::Button("Delete"))
+		CMapManager::Get_Instance()->Remove_CurIDLight();
+
+
+	_int iSaveIndex = CMapManager::Get_Instance()->Get_LightSaveIndex();
+	if (ImGui::InputInt("SaveIndex", &iSaveIndex))
+		CMapManager::Get_Instance()->Set_LightSaveIndex(iSaveIndex);
+
+	if (ImGui::Button("Save"))
+		CMapManager::Get_Instance()->Save_LightData();
+	ImGui::SameLine();
+	if (ImGui::Button("Load"))
+		CMapManager::Get_Instance()->Load_LightData();
+
+
+	ImGui::End();
+}
+
+
 void CImGui_Manager::Render_TestLevel()
 {
 	Render_StaticTool();
@@ -450,6 +540,10 @@ void CImGui_Manager::Clear_PartsTool()
 	CPartsManager::Get_Instance()->Free();
 
 }
+void CImGui_Manager::Clear_LightTool()
+{
+}
+
 void CImGui_Manager::Clear_TestLevel()
 {
 
@@ -689,6 +783,11 @@ void CImGui_Manager::Window_Model()
 	_bool bColMode = CMapManager::Get_Instance()->Get_ColMode();
 	if (ImGui::Checkbox("ColMode", &bColMode))
 		CMapManager::Get_Instance()->Set_ColMode(bColMode);
+	
+	_bool bLightMode = CMapManager::Get_Instance()->Get_LightMode();
+	if (ImGui::Checkbox("LightMode", &bLightMode))
+		CMapManager::Get_Instance()->Set_LightMode(bLightMode);
+
 
 	ImGui::End();
 }

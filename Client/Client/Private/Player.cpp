@@ -93,6 +93,12 @@ void CPlayer::Set_AnimLinearData(ANIM_LINEAR_DATA LinearData)
 	m_pModelCom->Push_AnimLinearData(LinearData);
 }
 
+_bool CPlayer::Get_IsPlayerOn()
+{
+	_float fTemp = 0.f;
+	return 	m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp, 0.f) || COBB::COL_ON == Get_StaticOBB()->Get_ColState() || COBB::COL_SLIDE == Get_StaticOBB()->Get_ColState();
+}
+
 void CPlayer::Set_State()
 {
 	if (m_TickStates.empty())
@@ -133,6 +139,9 @@ void CPlayer::Set_State()
 			CItemManager::Get_Instance()->Make_Flask(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_pTransformCom->Get_State(CTransform::STATE_LOOK), 7.f, 5.f, m_pNavigationCom->Get_CurCellIndex());
 		}
 			break;
+		case STATE_DOWN:
+			m_pTransformCom->ResetGravity();
+			m_pTransformCom->Jump(8.f);
 		default:
 			m_fSlepSpeed = 0.f;
 			break;
@@ -274,6 +283,10 @@ void CPlayer::Set_Anim()
 	case STATE_ATTACKED:
 		m_pModelCom->Set_AnimIndex(77);
 		break;
+	case STATE_DOWN:
+		m_pModelCom->Set_AnimIndex(53);
+		m_pSockatCom->Remove_Sockat_If(SLOT_HAND, string("Umbrella"));
+		break;
 	case STATE_TALK:
 		m_pModelCom->Set_AnimIndex(113);
 		break;
@@ -377,6 +390,9 @@ void CPlayer::Tick(_float fTimeDelta)
 		break;
 	case STATE_ATTACKED:
 		Attacked_Tick(fTimeDelta);
+		break;
+	case STATE_DOWN:
+		Down_Tick(fTimeDelta);
 		break;
 	case STATE_TALK:
 		Talk_Tick(fTimeDelta);
@@ -527,12 +543,8 @@ void CPlayer::HillDown_Tick(_float fTimeDelta)
 	{
 		// ¸éÀÇ ³ë¸» º¤ÅÍ¸¦ ³» ¾÷ º¤ÅÍ·Î ¸ÂÃá´Ù.
 
-		m_pTransformCom->Set_Up(vPlan);
-	}
-	else if(1.f > m_fHillDownTimeAcc)
-	{
 		HillDown_Input(fTimeDelta);
-		return;
+		m_pTransformCom->Set_Up(vPlan);
 	}
 
 
@@ -647,6 +659,13 @@ void CPlayer::MageDrow_Tick(_float fTimeDelta)
 	m_fMageTimeAcc = 0.f;
 
 	MageDrow_Input(fTimeDelta);
+}
+
+void CPlayer::Down_Tick(_float fTimeDelta)
+{
+	_float fTemp = 0.f;
+	if(Get_IsPlayerOn())
+		HillDown_Input(fTimeDelta);
 }
 
 void CPlayer::FoxMask_Tick(_float fTimeDelta)
@@ -1714,9 +1733,9 @@ void CPlayer::LateTick(_float fTimeDelta)
 			}
 		}
 		else if (STATE_SLIDE == m_eState)
-		{
 			m_TickStates.push_back(STATE_SLIDELENDING);
-		}
+		else if (STATE_DOWN == m_eState)
+			m_pTransformCom->Set_CurSpeed(0.f);
 
 		if (COBB::COL_SLIDE == Get_StaticOBB()->Get_ColState())
 		{
@@ -2412,7 +2431,7 @@ void CPlayer::OnDipY()
 
 		m_pTransformCom->ResetGravity();
 
-		m_TickStates.push_back(STATE_IDLE);
+		Attacked();
 	}
 
 }

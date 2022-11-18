@@ -505,7 +505,9 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 		TCHAR szTemp[MAX_PATH];
 		string sFileName = Pair.first + "_Instance";
-		CToolManager::Get_Instance()->CtoTC(sFileName.data(), szTemp);
+		char szTemp2[MAX_PATH];
+		strcpy_s(szTemp2, sFileName.data());
+		CToolManager::Get_Instance()->CtoTC(szTemp2, szTemp);
 		memcpy(Desc.cModelTag, szTemp, sizeof(TCHAR) * MAX_PATH);
 		Desc.iNumInstance = Pair.second.size();
 
@@ -702,6 +704,59 @@ CDataManager::DATA_CAMS * CDataManager::Load_Cam(_int iCamID)
 	return pDatas;
 }
 
+void CDataManager::Load_Lights(_int iLightID)
+{
+
+	char cPullName[MAX_PATH];
+	char cName[MAX_PATH];
+	string ID = to_string(iLightID);
+
+	strcpy_s(cName, "Light_");
+	strcat_s(cName, ID.data());
+	strcpy_s(cPullName, "../Bin/ToolData/Light/");
+	strcat_s(cPullName, cName);
+
+
+	std::ifstream ifs(cPullName, ios::in | ios::binary);
+
+	if (!ifs)
+		return;
+
+
+	_int iID = 0;
+	_int iNum = 0;
+	ifs.read((char*)&iID, sizeof(int));		// ID
+	ifs.read((char*)&iNum, sizeof(int));	// NumObj
+
+	LIGHTDESC* pDesc = new LIGHTDESC[iNum];
+
+	for (_uint i = 0; i < iNum; ++i)
+	{
+		ifs.read((char*)&pDesc[i].eType, sizeof(_int));
+		ifs.read((char*)&pDesc[i].vDirection, sizeof(_float4));
+		ifs.read((char*)&pDesc[i].vPosition, sizeof(_float4));
+		ifs.read((char*)&pDesc[i].fRange, sizeof(_float));
+		ifs.read((char*)&pDesc[i].vDiffuse, sizeof(_float4));
+		ifs.read((char*)&pDesc[i].vAmbient, sizeof(_float4));
+		ifs.read((char*)&pDesc[i].vSpecular, sizeof(_float4));
+	}
+
+
+	ifs.close();
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	for (_uint i = 0; i < iNum; ++i)
+	{
+		if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pContext, pDesc[i])))
+			return;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	Safe_Delete_Array(pDesc);
+
+}
 
 
 

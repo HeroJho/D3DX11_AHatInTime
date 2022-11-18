@@ -127,7 +127,7 @@ void CHat::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
 
-		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+		if (!strcmp("Attacked_Sphere", Desc.OtherDesc.sTag) && lstrcmp(TEXT("crown") ,m_InvenDesc.szModelName))
 		{
 			if (m_Desc.bIsPigic)
 			{

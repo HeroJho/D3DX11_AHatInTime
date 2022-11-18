@@ -49,7 +49,9 @@ private:
 	void Init_CamTool();
 	void Init_AnimTool();
 	void Init_PartsTool();
+	void Init_LightTool();
 	void Init_TestLevel();
+
 	
 
 
@@ -60,6 +62,7 @@ private:
 	void Render_CamTool();
 	void Render_AnimTool();
 	void Render_PartsTool();
+	void Render_LightTool();
 	void Render_TestLevel();
 
 	void Render_StaticTool();
@@ -72,6 +75,7 @@ private:
 	void Clear_CamTool();
 	void Clear_AnimTool();
 	void Clear_PartsTool();
+	void Clear_LightTool();
 	void Clear_TestLevel();
 
 

@@ -17,6 +17,8 @@
 #include "StatuePosed_Boss.h"
 #include "PuzzleCube_Boss.h"
 #include "Parts.h"
+#include "CaulDron.h"
+#include "Toilet_Scream.h"
 
 CVSnatcher::CVSnatcher(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -150,6 +152,8 @@ void CVSnatcher::Set_State(STATE eState)
 		case STATE_SWIPS:
 			m_fSwipTimeAcc = 0.f;
 			break;
+		case STATE_ATTACK:
+			break;
 		case STATE_SNAPHAT:
 			Choose_SnapHat();
 			m_fSnapHatTimeAcc = 0.f;
@@ -281,6 +285,9 @@ void CVSnatcher::Set_Anim()
 	case STATE_SWIPS:
 		m_pModelCom->Set_AnimIndex(24);
 		break;
+	case STATE_ATTACK:
+		m_pModelCom->Set_AnimIndex(21, true);
+		break;
 	case STATE_SNAPHAT:
 		m_pModelCom->Set_AnimIndex(21, true);
 		break;
@@ -367,6 +374,9 @@ void CVSnatcher::Tick(_float fTimeDelta)
 		break;
 	case STATE_SWIPS:
 		Tick_Swip(fTimeDelta);
+		break;
+	case STATE_ATTACK:
+		Tick_Attack(fTimeDelta);
 		break;
 
 	case STATE_CUT_1:
@@ -511,6 +521,7 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 		if (-10.f < XMVectorGetY(vPos))
 		{
 			m_pTransformCom->Go_Dir(XMVectorSet(0.f, -1.f, 0.f, 0.f), 10.f, fTimeDelta);
+			m_pCaulDron->Reset_Bound();
 			m_fHoItTimeAcc = 0.f;
 		}
 		else
@@ -556,6 +567,23 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 			vPos = XMVectorSetY(vPos, 0.f);
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPos, 1.f));
 			m_fHoItTimeAcc += fTimeDelta;
+			if (0 < m_iHoItCount)
+			{
+				if (0.1f > m_fHoItTimeAcc && m_pPlayer->Get_IsPlayerOn())
+				{
+					if (CPlayer::STATE_DOWN != m_pPlayer->Get_State())
+						m_pPlayer->Set_Down();
+					else
+					{
+						((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->ResetGravity();
+						((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Jump(8.f);						
+					}
+						
+				}
+
+				m_pCaulDron->Go_Bound();
+			}
+
 			if (1.f < m_fHoItTimeAcc)
 			{
 				m_bIsUp = true;
@@ -564,7 +592,6 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 
 				if (0 > m_iHoItCount)
 				{
-					CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_BOSS);
 					Set_State(STATE_IDLE);
 					m_bIsUp = true;
 					m_iHoItCount = 0;
@@ -600,6 +627,20 @@ void CVSnatcher::Tick_Swip(_float fTimeDelta)
 
 }
 
+void CVSnatcher::Tick_Attack(_float fTimeDelta)
+{
+	_vector vPlayerPos = ((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
+	m_pTransformCom->LookAt_ForLandObject(vPlayerPos);
+
+	m_fSnapHatTimeAcc += fTimeDelta;
+
+	if (3.f < m_fSnapHatTimeAcc && 9.f > m_fSnapHatTimeAcc)
+	{
+		m_pPlayer->Attacked();
+		m_fSnapHatTimeAcc = 10.f;
+	}
+}
+
 void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 {
 	_vector vPlayerPos = ((CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform")))->Get_State(CTransform::STATE_POSITION);
@@ -626,6 +667,8 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 		m_fSnapHatTimeAcc = 20.f;
 	}
 }
+
+
 
 void CVSnatcher::Tick_Cut_1(_float fTimeDelta)
 {
@@ -976,7 +1019,7 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 		_vector vNorDir = XMVector3Normalize(vDir);
 		_float fDis = XMVectorGetX(XMVector3Length(vDir));
 
-		if (16.f > fDis)
+		if (12.f > fDis)
 		{
 			m_iCutIndex = 2;
 			m_bDark = false;
@@ -1005,7 +1048,7 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 			_float3 vPos = pSlotGame->Get_TotalPos();
 			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
-			CUIManager::Get_Instance()->Set_Text(TEXT("오늘 참 고된 하루지...?"), 0.8f, 0.5f, true);
+			CUIManager::Get_Instance()->Set_Text(TEXT("참 고된 하루지...?"), 0.8f, 0.5f, true);
 		}
 		break;
 		case 2:
@@ -1023,7 +1066,7 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 			_float3 vPos = pSlotGame->Get_TotalPos();
 			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
-			CUIManager::Get_Instance()->Set_Text(TEXT("ㅂㅂㅂㅂㅂㅂ"), 0.8f, 0.5f, true);
+			CUIManager::Get_Instance()->Set_Text(TEXT("내가 너무 못되게 굴었던 것 같아."), 0.8f, 0.5f, true);
 		}
 		break;
 		case 4:
@@ -1032,30 +1075,21 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 			_float3 vPos = pSlotGame->Get_TotalPos();
 			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
-			CUIManager::Get_Instance()->Set_Text(TEXT("???????"), 0.8f, 0.5f, true);
+			CUIManager::Get_Instance()->Set_Text(TEXT("그러니 사과의 의미로..."), 0.8f, 0.5f, true);
 		}
 		break;
 		case 5:
 		{
 			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
 			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(7.f, 0.f, 60.f), vPos, false);
 			m_pModelCom->Set_AnimIndex(11);
-			CUIManager::Get_Instance()->Set_Text(TEXT("!!!!!!!!!!"), 1.f, 1.f, true);
+			CUIManager::Get_Instance()->Set_Text(TEXT("가지고 있는 모자 다 내놔!!!!!!!!"), 1.2f, 1.4f, true);
 			m_bDark = true;
 		}
 		break;
 		case 6:
-		{
-			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
-			_float3 vPos = pSlotGame->Get_TotalPos();
-			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(7.f, 0.f, 60.f), vPos, false);
-			m_pModelCom->Set_AnimIndex(24);
-			CUIManager::Get_Instance()->Set_Text(TEXT("sdfsfsdf"), 1.f, 1.f, true);
-			m_bDark = true;
-		}
-		break;
-		case 7:
 		{
 			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
 			CUIManager::Get_Instance()->Off_Text();
@@ -1067,10 +1101,10 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 			break;
 		}
 
-		if (8 == m_iTalkCount)
+		if (7 == m_iTalkCount)
 		{
 			m_fCutTimeAcc_1 += fTimeDelta;
-			if (3.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
+			if (2.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
 			{
 				Set_State(STATE_IDLE);
 				End_Dark();
@@ -1078,6 +1112,24 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 				m_pSockatCom->Remove_Sockat(SLOT_HAND);
 				if (FAILED(CDataManager::Get_Instance()->Load_Map(5, LEVEL_BOSS)))   // 3 5
 					return;
+
+				CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+				CGameObject* pObj = nullptr;
+				if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_CaulDron"), LEVEL_BOSS, TEXT("Layer_BackGournd"), &pObj, nullptr)))
+					return;
+				m_pCaulDron = (CCaulDron*)pObj;
+
+				CToilet_Scream::SCREAMDESC Desc;
+				Desc.vRotation = _float3(0.f, 0.f, 0.f);
+				if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Toilet_Scream"), LEVEL_BOSS, TEXT("Layer_BackGournd"), &Desc)))
+					return;
+				//Desc.vRotation = _float3(0.f, 45.f, 0.f);
+				//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Toilet_Scream"), LEVEL_BOSS, TEXT("Layer_BackGournd"), &Desc)))
+				//	return;
+
+				RELEASE_INSTANCE(CGameInstance);
+
 				m_fCutTimeAcc_1 = 10.f;
 			}
 		}
@@ -1192,6 +1244,8 @@ void CVSnatcher::End_Anim()
 		break;
 	case STATE_SWIPS:
 		break;
+	case STATE_ATTACK:
+		Set_State(STATE_IDLE);
 
 	case STATE_CUT_1:
 	{
@@ -1359,9 +1413,10 @@ void CVSnatcher::Create_CubeBox()
 
 void CVSnatcher::Choose_SnapHat()
 {
+	// 모자가 없다 일반 펀치 공격
 	if (CItemManager::Get_Instance()->Get_Hats()->empty())
 	{
-		Set_State(STATE_IDLE);
+		Set_State(STATE_ATTACK);
 		return;
 	}
 

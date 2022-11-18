@@ -39,6 +39,8 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 
+	if (FAILED(CMapManager::Get_Instance()->Init(m_pDevice, m_pContext)))
+		return E_FAIL;
 	if (FAILED(CDataManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
 	if (FAILED(CToolManager::Get_Instance()->Init(m_pDevice, m_pContext)))

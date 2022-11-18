@@ -80,7 +80,7 @@ HRESULT CLevel_AnimTool::Ready_Lights()
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc, 0)))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);

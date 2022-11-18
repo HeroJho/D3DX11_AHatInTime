@@ -7,25 +7,75 @@ CLight_Manager::CLight_Manager()
 {
 }
 
-const LIGHTDESC * CLight_Manager::Get_LightDesc(_uint iIndex)
+const LIGHTDESC* CLight_Manager::Get_LightDesc(_uint iIndex)
 {
 	auto	iter = m_Lights.begin();
 
 	for (_uint i = 0; i < iIndex; ++i)
 		++iter;
 
-	return (*iter)->Get_LightDesc();
+	return &(*iter)->Get_LightDesc();
 }
 
-HRESULT CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc)
+
+
+HRESULT CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc, _uint iID, CLight** Out_pLight)
 {
+	if (Find_Light(iID))
+		return E_FAIL;
+
 	CLight*		pLight = CLight::Create(pDevice, pContext, LightDesc);
 	if (nullptr == pLight)
 		return E_FAIL;
 
+	pLight->Set_ID(iID);
 	m_Lights.push_back(pLight);
 
+	if(Out_pLight != nullptr)
+		*Out_pLight = pLight;
+
 	return S_OK;
+}
+
+HRESULT CLight_Manager::Remove_Light(_uint iID)
+{
+	
+	for (LIGHTS::iterator iter = m_Lights.begin(); iter != m_Lights.end();)
+	{
+		if (iID == (*iter)->Get_ID())
+		{
+			Safe_Release(*iter);
+			m_Lights.erase(iter);
+			break;
+		}
+		else
+			++iter;
+	}
+
+	return S_OK;
+}
+
+CLight * CLight_Manager::Find_Light(_uint iID)
+{
+	for (auto& pLight : m_Lights)
+	{
+		if (iID == pLight->Get_ID())
+		{
+			return pLight;
+			break;
+		}
+	}
+
+	return nullptr;
+}
+
+void CLight_Manager::Set_LightDesc(_uint iIndex, LIGHTDESC Desc)
+{
+	CLight* pLight = Find_Light(iIndex);
+	if (nullptr == pLight)
+		return;
+
+	pLight->Set_LightDesc(Desc);
 }
 
 HRESULT CLight_Manager::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)

@@ -142,7 +142,8 @@ public:
 	HRESULT Save_Cam(_int iCamID);
 	DATA_CAMS* Load_Cam(_int iCamID);
 
-
+	HRESULT Save_Lights(_int iLightID);
+	LIGHTDESC* Load_Lights(_int iLightID);
 
 
 public:

@@ -231,7 +231,7 @@ HRESULT CGameInstance::Update_Timer(const _tchar * pTimerTag)
 
 
 
-const LIGHTDESC * CGameInstance::Get_LightDesc(_uint iIndex)
+const LIGHTDESC* CGameInstance::Get_LightDesc(_uint iIndex)
 {
 	if (nullptr == m_pLight_Manager)
 		return nullptr;
@@ -239,15 +239,47 @@ const LIGHTDESC * CGameInstance::Get_LightDesc(_uint iIndex)
 	return m_pLight_Manager->Get_LightDesc(iIndex);
 }
 
-HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc)
+
+
+HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc, _uint iID, CLight** Out_pLight)
 {
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
-	return m_pLight_Manager->Add_Light(pDevice, pContext, LightDesc);
+	return m_pLight_Manager->Add_Light(pDevice, pContext, LightDesc, iID, Out_pLight);
 }
 
+HRESULT CGameInstance::Remove_Light(_uint iID)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
 
+	return m_pLight_Manager->Remove_Light(iID);
+}
+
+void CGameInstance::Set_LightDesc(_uint iIndex, LIGHTDESC Desc)
+{
+	if (nullptr == m_pLight_Manager)
+		return;
+
+	m_pLight_Manager->Set_LightDesc(iIndex, Desc);
+}
+
+CLight * CGameInstance::Find_Light(_uint iID)
+{
+	if (nullptr == m_pLight_Manager)
+		return nullptr;
+
+	return m_pLight_Manager->Find_Light(iID);
+}
+
+list<class CLight*>* CGameInstance::Get_Lights()
+{
+	if (nullptr == m_pLight_Manager)
+		return nullptr;
+
+	return m_pLight_Manager->Get_Lights();
+}
 
 
 

@@ -16,6 +16,7 @@ void CTarget_Manager::Set_WipsData(_float* pWispRatios, _float4* pWispPoss, _int
 	if (nullptr == pWispRatios || nullptr == pWispPoss)
 	{
 		m_bIsWisp = false;
+		m_fMaxRatio = 0.f;
 		return;
 	}
 
@@ -23,6 +24,9 @@ void CTarget_Manager::Set_WipsData(_float* pWispRatios, _float4* pWispPoss, _int
 	m_iWispNum = pWispNum;
 	memcpy(m_WispRatios, pWispRatios, sizeof(_float) * 256);
 	memcpy(m_WispPoss, pWispPoss, sizeof(_float4) * 256);
+
+	if (m_fMaxRatio < m_WispRatios[0])
+		m_fMaxRatio = m_WispRatios[0];
 }
 
 void CTarget_Manager::Get_WispData(_float ** Out_pWispRatios, _float4 ** Out_pWispPoss, _bool* Out_bIsWisp, _int* Out_iWispNum)

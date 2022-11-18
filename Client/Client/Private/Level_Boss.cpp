@@ -133,8 +133,7 @@ HRESULT CLevel_Boss::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain"), LEVEL_BOSS, pLayerTag, &TDesc)))
 		return E_FAIL;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Toilet_SentorWall"), LEVEL_BOSS, pLayerTag)))
-		return E_FAIL;
+
 
 
 

@@ -232,6 +232,15 @@
     <Filter Include="02.GameObjects\Map\SwipsSky">
       <UniqueIdentifier>{e241b59a-2ee9-4bb7-b0d5-4bcd620fcabb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\VSnatcher\SKill\Swip\SwipsSky_Boss">
+      <UniqueIdentifier>{cf7ea7bf-3d25-42b8-a39f-aaffa2e6804a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\CaulDron">
+      <UniqueIdentifier>{9940dbd8-f7d3-4517-8031-3db9c1d23fbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\Toilet_Scream">
+      <UniqueIdentifier>{81558bfa-def3-46aa-8bf6-bbd16ddd9264}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -489,6 +498,15 @@
     <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp">
       <Filter>97.ShaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\SwipsSky_Boss.h">
+      <Filter>02.GameObjects\VSnatcher\SKill\Swip\SwipsSky_Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\CaulDron.h">
+      <Filter>02.GameObjects\Map\CaulDron</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Toilet_Scream.h">
+      <Filter>02.GameObjects\Map\Toilet_Scream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -730,6 +748,15 @@
     </ClCompile>
     <ClCompile Include="..\private\SwipsSky.cpp">
       <Filter>02.GameObjects\Map\SwipsSky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SwipsSky_Boss.cpp">
+      <Filter>02.GameObjects\VSnatcher\SKill\Swip\SwipsSky_Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\CaulDron.cpp">
+      <Filter>02.GameObjects\Map\CaulDron</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Toilet_Scream.cpp">
+      <Filter>02.GameObjects\Map\Toilet_Scream</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

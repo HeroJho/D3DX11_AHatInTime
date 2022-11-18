@@ -38,14 +38,17 @@
 #include "IceBox.h"
 #include "TimeObject.h"
 #include "Swip.h"
+#include "CaulDron.h"
 
 #include "SwipsSky.h"
+#include "SwipsSky_Boss.h"
 
 #include "VSnatcher.h"
 #include "ExPlo.h"
 #include "Magic.h"
 #include "Hat.h"
 #include "PuzzleCube_Boss.h"
+#include "Toilet_Scream.h"
 
 
 
@@ -244,9 +247,19 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CStatuePosed_Boss::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_CCaulDron */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_CaulDron"),
+		CCaulDron::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
+
 	/* For.Prototype_GameObject_SwipsSky */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SwipsSky"),
 		CSwipsSky::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_SwipsSky_Boss */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SwipsSky_Boss"),
+		CSwipsSky_Boss::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	
 
@@ -381,7 +394,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_VSnatcher"),
 		CVSnatcher::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-	
+
+	/* For.Prototype_GameObject_Toilet_Scream*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Toilet_Scream"),
+		CToilet_Scream::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 	
 	
 	/* For.Prototype_GameObject_ColorCube*/
@@ -488,9 +505,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 	// ==================== UI=====================
-	Loading_UI();
+	if (FAILED(Loading_UI()))
+		return E_FAIL;
 
-
+	if (FAILED(Loading_ObjTexture()))
+		return E_FAIL;
 
 
 
@@ -526,6 +545,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("StatuePosed"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("TimeObject"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("VSnatcher"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
+	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("cauldron"), LEVEL_GAMEPLAY, CDataManager::DATA_ANIM);
 
 	/* For. PartsModel */
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("Ori_Hat"), LEVEL_GAMEPLAY, CDataManager::DATA_PARTS);
@@ -796,6 +816,24 @@ HRESULT CLoader::Loading_UI()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/speech_bubble_gloom.dds"), 1))))
 		return E_FAIL;
 
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_ObjTexture()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	/* For.Prototype_Component_Texture_PipeScream_faceloop */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_PipeScream_faceloop"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Object/Toilet_Scream/PipeScream_faceloop.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_T_Noise01 */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_T_Noise01"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Object/Toilet_Scream/T_Noise01.dds"), 1))))
+		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 

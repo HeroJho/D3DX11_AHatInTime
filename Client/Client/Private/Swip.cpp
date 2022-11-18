@@ -8,6 +8,7 @@
 #include "CutSceneManager.h"
 
 #include "Player.h"
+#include "SwipsSky_Boss.h"
 
 CSwip::CSwip(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -212,6 +213,15 @@ HRESULT CSwip::Ready_Components()
 	//if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("BellMount"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 	//	return E_FAIL;
 
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CSwipsSky_Boss::SWIPSSKYDESC Desc;
+	Desc.pOwner = this;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SwipsSky_Boss"), LEVEL_GAMEPLAY, TEXT("Layer_Swips"), &Desc)))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
 
 
 	return S_OK;
