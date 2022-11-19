@@ -7,6 +7,7 @@ BEGIN(Client)
 class CPartsManager final : public CBase
 {
 	DECLARE_SINGLETON(CPartsManager)
+
 public:
 	CPartsManager();
 	virtual ~CPartsManager() = default;

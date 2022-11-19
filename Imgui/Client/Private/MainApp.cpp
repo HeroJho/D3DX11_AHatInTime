@@ -10,6 +10,7 @@
 #include "AnimManager.h"
 #include "PartsManager.h"
 #include "MeshManager.h"
+#include "ParticleManager.h"
 
 #include "Level_Loading.h"
 
@@ -38,7 +39,8 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_Prototype_Component()))
 		return E_FAIL;
 
-
+	if (FAILED(CParticleManager::Get_Instance()->Init(m_pDevice, m_pContext)))
+		return E_FAIL;
 	if (FAILED(CMapManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
 	if (FAILED(CDataManager::Get_Instance()->Init(m_pDevice, m_pContext)))
@@ -197,6 +199,7 @@ CMainApp * CMainApp::Create()
 void CMainApp::Free()
 {
 
+	CParticleManager::Destroy_Instance();
 	CMeshManager::Destroy_Instance();
 	CPartsManager::Destroy_Instance();
 	CAnimManager::Destroy_Instance();
@@ -205,6 +208,7 @@ void CMainApp::Free()
 	CCamManager::Destroy_Instance();
 	CMapManager::Destroy_Instance();
 	CImGui_Manager::Destroy_Instance();
+
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

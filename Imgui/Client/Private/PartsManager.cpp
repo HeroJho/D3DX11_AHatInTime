@@ -87,7 +87,7 @@ void CPartsManager::Create_Player()
 {
 	
 	CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("VSnatcher"), LEVEL_PARTSTOOL, CDataManager::DATA_ANIM);
-	// CDataManager::Get_Instance()->Create_Try_BinModel(TEXT("HatGirl"), LEVEL_PARTSTOOL, CDataManager::DATA_ANIM);
+	// CParticleManager::Get_Instance()->Create_Try_BinModel(TEXT("HatGirl"), LEVEL_PARTSTOOL, CParticleManager::DATA_ANIM);
 
 	if (m_pPlayer != nullptr)
 	{

@@ -60,6 +60,8 @@ public:
 	void Go_Right(_float fTimeDelta);
 	void Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta);
 
+	void Go_Scale(_float3 fSpeed, _float fTimeDelta);
+
 	void Set_Scale(_fvector vScaleInfo);
 	_float3 Get_Scale();
 
@@ -78,7 +80,7 @@ public:
 	void MoveTarget_Lend(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, class CNavigation* pNavigation, _float fLimitDistance = 0.1f);
 	_bool Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _float fLimitDistance = 0.1f);
 
-	void Tick_Gravity(_float fTimeDelta, class CNavigation* pNavigation, _float fGravity = 1.f);
+	void Tick_Gravity(_float fTimeDelta, class CNavigation* pNavigation, _float fGravity = 1.f, _float fMagicNum = 0.f, _bool bIsWiap = false);
 	void Jump(_float fPower);
 	void DoubleJump(_float fPower);
 	void ResetGravity();

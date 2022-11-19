@@ -163,6 +163,12 @@
     <Filter Include="02.GameObject\02. MapTool\04. Sky">
       <UniqueIdentifier>{c103879d-4122-43ae-adfd-ce41b76cfc60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.Manager\07. ParticleManager">
+      <UniqueIdentifier>{46bc2f30-939c-4eaf-ba43-103ef4176a0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\05. ParticleTool">
+      <UniqueIdentifier>{720d19f3-52ec-4c00-9890-22853ce198d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -332,6 +338,12 @@
     <ClInclude Include="..\public\SkyModel.h">
       <Filter>02.GameObject\02. MapTool\04. Sky</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\ParticleManager.h">
+      <Filter>97.Manager\07. ParticleManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Particle.h">
+      <Filter>02.GameObject\05. ParticleTool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -483,6 +495,12 @@
     </ClCompile>
     <ClCompile Include="..\private\SkyModel.cpp">
       <Filter>02.GameObject\02. MapTool\04. Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ParticleManager.cpp">
+      <Filter>97.Manager\07. ParticleManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Particle.cpp">
+      <Filter>02.GameObject\05. ParticleTool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

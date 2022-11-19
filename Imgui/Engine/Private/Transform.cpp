@@ -136,6 +136,23 @@ void CTransform::Go_Dir(_fvector vDir, _float fSpeed, _float fTimeDelta)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
+void CTransform::Go_Scale(_float3 fSpeed, _float fTimeDelta)
+{
+	_float3 vScale = Get_Scale();
+	vScale.x -= fSpeed.x * fTimeDelta;
+	vScale.y -= fSpeed.y * fTimeDelta;
+	vScale.z -= fSpeed.z * fTimeDelta;
+
+	if (0.f > vScale.x)
+		vScale.x = 0.f;
+	if (0.f > vScale.y)
+		vScale.y = 0.f;
+	if (0.f > vScale.z)
+		vScale.z = 0.f;
+
+	Set_Scale(XMLoadFloat3(&vScale));
+}
+
 
 void CTransform::Set_Scale(_fvector vScaleInfo)
 {
@@ -355,25 +372,40 @@ _bool  CTransform::Move(_fvector vTargetPos, _float fSpeed, _float fTimeDelta, _
 	return false;
 }
 
-void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _float fGravity)
+void CTransform::Tick_Gravity(_float fTimeDelta, CNavigation* pNavigation, _float fGravity, _float fMagicNum, _bool bIsWiap)
 {
 	_float3 vPos;
 	XMStoreFloat3(&vPos, Get_State(CTransform::STATE_POSITION));
 
 	_float fCellY = 0.f;
-	if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY) && (1.f > m_fVelocity))
+
+	if (nullptr != pNavigation)
 	{
-		m_fGravityAcc = 0.f;
-		m_fVelocity = 0.f;
-		vPos.y = fCellY;
+		// Wiap 안에 있다면 셀은 타지 않는다.
+		if (pNavigation->isGround(Get_State(CTransform::STATE_POSITION), &fCellY) && (1.f > m_fVelocity) && !bIsWiap)
+		{
+			m_fGravityAcc = 0.f;
+			m_fVelocity = 0.f;
+
+			// 여기서 태운다.
+			vPos.y = fCellY;
+		}
+		else
+		{
+			m_fGravityAcc += fGravity * fTimeDelta;
+			if (0.5f < m_fGravityAcc)
+				m_fGravityAcc = 15.f;
+			m_fVelocity -= m_fGravityAcc * fTimeDelta;
+		}
 	}
 	else
 	{
-		m_fGravityAcc += fGravity;
+		m_fGravityAcc += fGravity * fTimeDelta;
 		if (0.5f < m_fGravityAcc)
-			m_fGravityAcc = 0.5f;
-		m_fVelocity -= m_fGravityAcc;
+			m_fGravityAcc = 15.f;
+		m_fVelocity -= m_fGravityAcc * fTimeDelta;
 	}
+
 
 	vPos.y += m_fVelocity * fTimeDelta;
 

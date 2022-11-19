@@ -50,6 +50,7 @@ private:
 	void Init_AnimTool();
 	void Init_PartsTool();
 	void Init_LightTool();
+	void Init_ParticleTool();
 	void Init_TestLevel();
 
 	
@@ -63,6 +64,7 @@ private:
 	void Render_AnimTool();
 	void Render_PartsTool();
 	void Render_LightTool();
+	void Render_ParticleTool();
 	void Render_TestLevel();
 
 	void Render_StaticTool();
@@ -76,6 +78,7 @@ private:
 	void Clear_AnimTool();
 	void Clear_PartsTool();
 	void Clear_LightTool();
+	void Clear_ParticleTool();
 	void Clear_TestLevel();
 
 

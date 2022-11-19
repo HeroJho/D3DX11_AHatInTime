@@ -3,6 +3,7 @@
 #include "Client_Struct.h"
 #include <fstream>
 #include <iostream>
+#include <random>
 
 namespace Client
 {

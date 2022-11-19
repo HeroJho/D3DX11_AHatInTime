@@ -218,6 +218,10 @@ void CImGui_Manager::Init_LightTool()
 {
 }
 
+void CImGui_Manager::Init_ParticleTool()
+{
+}
+
 void CImGui_Manager::Init_TestLevel()
 {
 
@@ -375,6 +379,9 @@ void CImGui_Manager::Render_AnimTool()
 
 
 	
+	Render_ParticleTool();
+
+
 
 
 	if (CAnimManager::Get_Instance()->Get_IsDelete())
@@ -471,6 +478,10 @@ void CImGui_Manager::Render_LightTool()
 	ImGui::End();
 }
 
+void CImGui_Manager::Render_ParticleTool()
+{
+}
+
 
 void CImGui_Manager::Render_TestLevel()
 {
@@ -541,6 +552,10 @@ void CImGui_Manager::Clear_PartsTool()
 
 }
 void CImGui_Manager::Clear_LightTool()
+{
+}
+
+void CImGui_Manager::Clear_ParticleTool()
 {
 }
 

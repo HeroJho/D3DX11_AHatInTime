@@ -27,6 +27,7 @@
 #include "Parts.h"
 #include "ClickedVertexCube.h"
 #include "SkyModel.h"
+#include "Particle.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -193,7 +194,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CSkyModel::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-
+	/* For.Prototype_GameObject_Particle*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Particle"),
+		CParticle::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
