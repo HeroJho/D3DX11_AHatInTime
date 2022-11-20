@@ -94,6 +94,8 @@ public: /* For.PipeLine */
 	_float4x4 Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE eTransformState) const;
 	_float4x4 Get_TransformFloat4x4_TP(CPipeLine::TRANSFORMSTATE eTransformState) const;
 	_float4 Get_CamPosition();
+	_matrix Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE eTransformState) const;
+
 
 public: /* For.Frustum */
 	_bool isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius = 0.f);

@@ -42,7 +42,6 @@ private:
 
 
 
-
 	// For. GameMode
 public:
 	void Set_Target(_fvector vPos) { XMStoreFloat3(&m_vDestLookPos, XMVectorSetW(vPos, 1.f)); }
@@ -89,6 +88,28 @@ private:
 	_float3				m_vDestPos;
 
 	CAM_STATE			m_eState = CAM_GAME;
+
+
+
+public:
+	void Start_Shake(_float fShakeTime, _float fShakePower, _float fShakeTurnTime);
+
+	void Tick_Shacke(_float fTimeDelta);
+
+
+private:
+	_bool				m_bShake = false;
+	_float				m_fShakePower = 0.f;
+
+	_float				m_fShakeTime = 0.f;
+	_float				m_fShakeTurnTime = 0.f;
+
+	_float				m_fShakeTimeAcc = 0.f;
+	_float				m_fShakeTurnTimeAcc = 0.f;
+	_bool				m_bShakeTurn = false;
+
+	_float3				m_vShakePosAcc;
+
 
 private:
 	CNavigation*			m_pNavigationCom = nullptr;

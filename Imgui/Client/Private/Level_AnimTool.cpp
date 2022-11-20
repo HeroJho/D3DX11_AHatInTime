@@ -7,6 +7,7 @@
 #include "Camera_CamTool.h"
 #include "ColorCube.h"
 #include "Camera_Free.h"
+#include "ParticleManager.h"
 
 CLevel_AnimTool::CLevel_AnimTool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -46,6 +47,7 @@ void CLevel_AnimTool::Tick(_float fTimeDelta)
 	Get_Input(fTimeDelta);
 
 	CAnimManager::Get_Instance()->Tick(fTimeDelta);
+	CParticleManager::Get_Instance()->Tick(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }

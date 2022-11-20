@@ -181,6 +181,7 @@
     <ClInclude Include="..\public\Diamond.h" />
     <ClInclude Include="..\public\ExPlo.h" />
     <ClInclude Include="..\public\Flask.h" />
+    <ClInclude Include="..\public\FlaskLight.h" />
     <ClInclude Include="..\public\Flask_EX.h" />
     <ClInclude Include="..\public\GameManager.h" />
     <ClInclude Include="..\public\Hat.h" />
@@ -199,6 +200,8 @@
     <ClInclude Include="..\public\MarkCube.h" />
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\public\MonsterVault.h" />
+    <ClInclude Include="..\public\Particle.h" />
+    <ClInclude Include="..\public\ParticleManager.h" />
     <ClInclude Include="..\public\Parts.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\PuzzleCube.h" />
@@ -268,6 +271,7 @@
     <ClCompile Include="..\private\Diamond.cpp" />
     <ClCompile Include="..\private\ExPlo.cpp" />
     <ClCompile Include="..\private\Flask.cpp" />
+    <ClCompile Include="..\private\FlaskLight.cpp" />
     <ClCompile Include="..\private\Flask_EX.cpp" />
     <ClCompile Include="..\private\GameManager.cpp" />
     <ClCompile Include="..\private\Hat.cpp" />
@@ -286,6 +290,8 @@
     <ClCompile Include="..\private\MarkCube.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\private\MonsterVault.cpp" />
+    <ClCompile Include="..\private\Particle.cpp" />
+    <ClCompile Include="..\private\ParticleManager.cpp" />
     <ClCompile Include="..\private\Parts.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\PuzzleCube.cpp" />

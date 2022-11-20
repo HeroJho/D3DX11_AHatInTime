@@ -344,6 +344,14 @@ _float4 CGameInstance::Get_CamPosition()
 	return m_pPipeLine->Get_CamPosition();	
 }
 
+_matrix CGameInstance::Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE eTransformState) const
+{
+	if (nullptr == m_pPipeLine)
+		return XMMatrixIdentity();
+
+	return m_pPipeLine->Get_TransformMatrixInverse(eTransformState);
+}
+
 const LIGHTDESC * CGameInstance::Get_LightDesc(_uint iIndex)
 {
 	if (nullptr == m_pLight_Manager)
@@ -358,6 +366,22 @@ HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * p
 		return E_FAIL;
 
 	return m_pLight_Manager->Add_Light(pDevice, pContext, LightDesc);	
+}
+
+HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc, CLight ** Out_pLight)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	return m_pLight_Manager->Add_Light(pDevice, pContext, LightDesc, Out_pLight);
+}
+
+HRESULT CGameInstance::Remove_Light(CLight * pLight)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	return m_pLight_Manager->Remove_Light(pLight);
 }
 
 

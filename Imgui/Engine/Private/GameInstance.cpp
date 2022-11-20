@@ -412,6 +412,14 @@ _float4 CGameInstance::Get_CamPosition()
 	return m_pPipeLine->Get_CamPosition();
 }
 
+_matrix CGameInstance::Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE eTransformState) const
+{
+	if (nullptr == m_pPipeLine)
+		return XMMatrixIdentity();
+
+	return m_pPipeLine->Get_TransformMatrixInverse(eTransformState);
+}
+
 _bool CGameInstance::isIn_Frustum_WorldSpace(_fvector vWorldPos, float fRadius)
 {
 	if (nullptr == m_pFrustum)

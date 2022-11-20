@@ -10,6 +10,7 @@
 #include "DataManager.h"
 #include "AnimManager.h"
 #include "PartsManager.h"
+#include "ParticleManager.h"
 
 #include "ColorCube.h"
 #include "MarkCube.h"
@@ -480,6 +481,155 @@ void CImGui_Manager::Render_LightTool()
 
 void CImGui_Manager::Render_ParticleTool()
 {
+	ImGui::Begin("ParticleTool");
+
+	list<CParticleManager::PARTICLETOOLDESC*>* pParticles = CParticleManager::Get_Instance()->Get_ParticleInfos();
+
+
+	ImVec2 vSize{ 150.f, 200.f };
+	if (ImGui::BeginListBox("Lights", vSize))
+	{
+		int iCount = 0;
+		for (auto& pInfo : *pParticles)
+		{
+
+			bool isSelected = CParticleManager::Get_Instance()->Get_ClickedID() == pInfo->iID;
+			vSize = { 100.f, 10.f };
+			string strID = to_string(pInfo->iID);
+			if (ImGui::Selectable(strID.data(), isSelected, 0, vSize))
+			{
+				CParticleManager::Get_Instance()->Set_ClickedID(pInfo->iID);
+			}
+
+			if (isSelected)
+				ImGui::SetItemDefaultFocus();
+		}
+
+		ImGui::EndListBox();
+	}
+
+
+	if (ImGui::Button("Add_Model"))
+		CParticleManager::Get_Instance()->Add_Particle(CParticle::TYPE_MODLE);
+	ImGui::SameLine();
+	if (ImGui::Button("Add_Texture"))
+		CParticleManager::Get_Instance()->Add_Particle(CParticle::TYPE_TEXTURE);
+	if(ImGui::Button("Remove"))
+		CParticleManager::Get_Instance()->Remove_Particle();
+
+	CParticleManager::PARTICLETOOLDESC* pDescTool = CParticleManager::Get_Instance()->Find_Particle();
+
+	ImGui::End();
+
+
+	if (nullptr != pDescTool)
+	{
+
+		ImGui::Begin("Option");
+
+		ImGui::Text("================= Option Particle ===============");
+
+		char sTemp[MAX_PATH];
+		CToolManager::Get_Instance()->TCtoC(pDescTool->Desc.cModelTag, sTemp);
+		if (ImGui::InputText("Model_Name", sTemp, sizeof(char) * MAX_PATH))
+			CToolManager::Get_Instance()->CtoTC(sTemp, pDescTool->Desc.cModelTag);
+
+		_float3		vPos = pDescTool->Desc.vPos;
+		if (ImGui::DragFloat3("vLocalPos", (float*)&vPos, 0.01f))
+			pDescTool->Desc.vPos = vPos;
+
+		_float3		vScale = pDescTool->Desc.vScale;
+		if (ImGui::DragFloat3("vScale", (float*)&vScale, 0.1f))
+			pDescTool->Desc.vScale = vScale;
+		_float		fScaleSpeed = pDescTool->Desc.vScaleSpeed.x;
+		if (ImGui::DragFloat("fScaleSpeed", (float*)&fScaleSpeed, 0.01f))
+			pDescTool->Desc.vScaleSpeed = _float3(fScaleSpeed, fScaleSpeed, fScaleSpeed);
+
+		_float3		vDir = pDescTool->Desc.vDir;
+		if (ImGui::DragFloat3("vDirRotation", (float*)&vDir, 1.f))
+			pDescTool->Desc.vDir = vDir;
+
+		_float		fStopValue = pDescTool->Desc.fStopValue;
+		if (ImGui::DragFloat("fStopValue", (float*)&fStopValue, 0.01f))
+			pDescTool->Desc.fStopValue = fStopValue;
+		_float		fSpeed = pDescTool->Desc.fSpeed;
+		if (ImGui::DragFloat("fSpeed", (float*)&fSpeed, 0.1f))
+			pDescTool->Desc.fSpeed = fSpeed;
+
+		_bool		bGravity = pDescTool->Desc.bGravity;
+		if (ImGui::Checkbox("bGravity", &bGravity))
+			pDescTool->Desc.bGravity = bGravity;
+		if (bGravity)
+		{
+			_float		fJumpPower = pDescTool->Desc.fJumpPower;
+			if (ImGui::DragFloat("fJumpPower", (float*)&fJumpPower, 0.1f))
+				pDescTool->Desc.fJumpPower = fJumpPower;
+			_float		fGravityValue = pDescTool->Desc.fGravityValue;
+			if (ImGui::DragFloat("fGravityValue", (float*)&fGravityValue, 0.1f))
+				pDescTool->Desc.fGravityValue = fGravityValue;
+		}
+
+		_float		fLifeTime = pDescTool->Desc.fLifeTime;
+		if (ImGui::DragFloat("fLifeTime", (float*)&fLifeTime, 0.1f))
+			pDescTool->Desc.fLifeTime = fLifeTime;
+
+
+
+		ImGui::Text("================= Option Effect ===============");
+
+
+
+		_int iCount = pDescTool->iCount;
+		if (ImGui::InputInt("iCount", &iCount))
+			pDescTool->iCount = iCount;
+
+		_float fRandPos = pDescTool->fRandPos;
+		if (ImGui::DragFloat("fRandPos", &fRandPos, 0.1f))
+			pDescTool->fRandPos = fRandPos;
+
+		_float fRandScale = pDescTool->fRandScale;
+		if (ImGui::DragFloat("fRandScale", &fRandScale, 0.1f))
+			pDescTool->fRandScale = fRandScale;
+
+		_float fRandScaleSpeed = pDescTool->fRandScaleSpeed;
+		if (ImGui::DragFloat("fRandScaleSpeed", &fRandScaleSpeed, 0.01f))
+			pDescTool->fRandScaleSpeed = fRandScaleSpeed;
+
+		_float fRandRotation = pDescTool->vRandRotation;
+		if (ImGui::DragFloat("fRandRotation", &fRandRotation, 0.01f))
+			pDescTool->vRandRotation = fRandRotation;
+
+		_float fRandStopValue = pDescTool->fRandStopValue;
+		if (ImGui::DragFloat("fRandStopValue", &fRandStopValue, 0.01f))
+			pDescTool->fRandStopValue = fRandStopValue;
+
+		_float fRandSpeed = pDescTool->fRandSpeed;
+		if (ImGui::DragFloat("fRandSpeed", &fRandSpeed, 0.1f))
+			pDescTool->fRandSpeed = fRandSpeed;
+
+		_float fRandGravityValue = pDescTool->fRandGravityValue;
+		if (ImGui::DragFloat("fRandGravityValue", &fRandGravityValue, 0.01f))
+			pDescTool->fRandGravityValue = fRandGravityValue;
+
+		_float fRandJumpPower = pDescTool->fRandJumpPower;
+		if (ImGui::DragFloat("fRandJumpPower", &fRandJumpPower, 0.1f))
+			pDescTool->fRandJumpPower = fRandJumpPower;
+
+		_float fRandLifeTime = pDescTool->fRandLifeTime;
+		if (ImGui::DragFloat("fRandLifeTime", &fRandLifeTime, 0.1f))
+			pDescTool->fRandLifeTime = fRandLifeTime;
+
+		_float3		vLimitAngleMin = pDescTool->vLimitAngleMin;
+		if (ImGui::DragFloat3("vLimitAngleMin", (float*)&vLimitAngleMin, 1.f))
+			pDescTool->vLimitAngleMin = vLimitAngleMin;
+		_float3		vLimitAngleMax = pDescTool->vLimitAngleMax;
+		if (ImGui::DragFloat3("vLimitAngleMax", (float*)&vLimitAngleMax, 1.f))
+			pDescTool->vLimitAngleMax = vLimitAngleMax;
+
+		ImGui::End();
+	}
+
+	
 }
 
 

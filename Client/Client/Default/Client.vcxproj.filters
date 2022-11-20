@@ -241,6 +241,12 @@
     <Filter Include="02.GameObjects\Map\Toilet_Scream">
       <UniqueIdentifier>{81558bfa-def3-46aa-8bf6-bbd16ddd9264}</UniqueIdentifier>
     </Filter>
+    <Filter Include="96.Managers\ParticleManager">
+      <UniqueIdentifier>{cc5d15fc-fe9a-4fa2-a82e-1ec3b510f659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Particle">
+      <UniqueIdentifier>{2ea5420d-30f7-4a31-9dd5-9327996db0fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -507,6 +513,15 @@
     <ClInclude Include="..\public\Toilet_Scream.h">
       <Filter>02.GameObjects\Map\Toilet_Scream</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\ParticleManager.h">
+      <Filter>96.Managers\ParticleManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Particle.h">
+      <Filter>02.GameObjects\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\FlaskLight.h">
+      <Filter>02.GameObjects\Item\Flask</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -757,6 +772,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Toilet_Scream.cpp">
       <Filter>02.GameObjects\Map\Toilet_Scream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\ParticleManager.cpp">
+      <Filter>96.Managers\ParticleManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Particle.cpp">
+      <Filter>02.GameObjects\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\FlaskLight.cpp">
+      <Filter>02.GameObjects\Item\Flask</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

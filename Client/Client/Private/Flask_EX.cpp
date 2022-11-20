@@ -6,6 +6,7 @@
 #include "StatuePosed_Boss.h"
 #include "PuzzleCube_Boss.h"
 
+
 CFlask_EX::CFlask_EX(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -54,7 +55,10 @@ HRESULT CFlask_EX::Initialize(void * pArg)
 void CFlask_EX::Tick(_float fTimeDelta)
 {
 	if (m_bTickAttack)
+	{
 		Set_Dead(true);
+	}
+
 }
 
 void CFlask_EX::LateTick(_float fTimeDelta)
@@ -65,10 +69,10 @@ void CFlask_EX::LateTick(_float fTimeDelta)
 	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PROJECT, this);
 	RELEASE_INSTANCE(CGameInstance);
 
-	if (nullptr == m_pRendererCom)
-		return;
+	//if (nullptr == m_pRendererCom)
+	//	return;
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 
 	m_bTickAttack = true;
 }

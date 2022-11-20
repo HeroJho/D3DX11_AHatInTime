@@ -62,13 +62,13 @@ void CAnimModel::Tick(_float fTimeDelta)
 
 	if (pGameInstance->Key_Down(DIK_M))
 	{
-		_float3 vPos;
-		XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-		_float3 vLook;
-		XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+		//_float3 vPos;
+		//XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		//_float3 vLook;
+		//XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
 
-		_float3 vInvLook;
-		XMStoreFloat3(&vInvLook, -1.f * m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+		//_float3 vInvLook;
+		//XMStoreFloat3(&vInvLook, -1.f * m_pTransformCom->Get_State(CTransform::STATE_LOOK));
 
 
 		//CParticleManager::Get_Instance()->Create_Particle(TEXT("SmokeParticle"), vPos,
@@ -76,11 +76,11 @@ void CAnimModel::Tick(_float fTimeDelta)
 		//	vInvLook, 0.1f, 3.f, 
 		//	false , 1.f, 1.f, 1.f);
 
-		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos,
-			_float3(0.f, 0.f, 0.f), vInvLook, _float3(1.f, 1.f, 1.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f),
-			vInvLook, 0.1f, 3.f,
-			false, 1.f, 1.f, 1.f
-		, CParticleManager::STATE_SIRCLE, 10, 0.f, 0.5f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f);
+		//CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos,
+		//	_float3(0.f, 0.f, 0.f), vInvLook, _float3(1.f, 1.f, 1.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f),
+		//	vInvLook, 0.1f, 3.f,
+		//	true, 1.f, 1.f, 1.f
+		//, CParticleManager::STATE_SIRCLE, 10, 0.f, 0.5f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f);
 
 	}
 

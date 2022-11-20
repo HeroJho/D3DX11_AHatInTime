@@ -71,6 +71,8 @@ void CCamera_Free::Tick(_float fTimeDelta)
 
 
 
+	Tick_Shacke(fTimeDelta);
+
 
 	switch (m_eState)
 	{
@@ -232,6 +234,7 @@ void CCamera_Free::Game_Mode(_float fTimeDelta)
 		break;
 	}
 
+
 	SmoothLook(fTimeDelta);
 }
 
@@ -280,8 +283,25 @@ void CCamera_Free::OriCamPos(_float fDeltaTime)
 		}
 
 	}
-	
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDestPos);
+
+	if(!m_bShake)
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDestPos);
+	else
+	{
+		_vector vXMShakePosAcc = XMLoadFloat3(&m_vShakePosAcc);
+		_vector vShakeDir = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
+		vShakeDir += m_pTransformCom->Get_State(CTransform::STATE_UP);
+		vShakeDir = XMVector3Normalize(vShakeDir);
+
+		if(m_bShakeTurn)
+			vXMShakePosAcc += vShakeDir * m_fShakePower * fDeltaTime;
+		else
+			vXMShakePosAcc -= vShakeDir * m_fShakePower * fDeltaTime;
+
+		XMStoreFloat3(&m_vShakePosAcc, vXMShakePosAcc);
+		vDestPos += vXMShakePosAcc;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vDestPos);
+	}
 }
 
 void CCamera_Free::FocusePos(_float fDeltaTime)
@@ -319,6 +339,9 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 	_float fDis = XMVectorGetX(XMVector3Length(vDir));
 
 	vPrePos += vNorDir * fDis * 5.f * fDeltaTime;
+	if (m_bShake)
+		vPrePos += XMLoadFloat3(&m_vShakePosAcc);
+
 
 
 	_float fX = XMVectorGetX(vPrePos) + XMVectorGetX(vNorDir) * fDis * 3.f * fDeltaTime;
@@ -328,6 +351,7 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 	vPrePos = XMVectorSetY(vPrePos, fY);
 
 	
+
 	if (0.01f < fDis)
 	{
 		XMStoreFloat3(&m_vPreLookPos, vPrePos);
@@ -338,6 +362,9 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 		XMStoreFloat3(&m_vPreLookPos, vDestPos);
 		m_pTransformCom->LookAt(XMVectorSetW(vDestPos, 1.f));
 	}
+	
+
+	
 
 }
 
@@ -444,6 +471,51 @@ void CCamera_Free::CutScene_Mode(_float fTimeDelta)
 {
 
 	CCamManager::Get_Instance()->Tick(fTimeDelta);
+
+}
+
+
+
+
+void CCamera_Free::Start_Shake(_float fShakeTime, _float fShakePower, _float fShakeTurnTime)
+{
+	m_bShake = true;
+	m_fShakePower = fShakePower;
+
+	m_fShakeTime = fShakeTime;
+	m_fShakeTurnTime = fShakeTurnTime;
+
+	m_fShakeTimeAcc = 0.f;
+	m_fShakeTurnTimeAcc = 0.f;
+	m_bShakeTurn = false;
+
+	ZeroMemory(&m_vShakePosAcc, sizeof(_float3));
+}
+
+void CCamera_Free::Tick_Shacke(_float fTimeDelta)
+{
+	if (!m_bShake)
+		return;
+
+	m_fShakeTimeAcc += fTimeDelta;
+	if (m_fShakeTime < m_fShakeTimeAcc)
+	{
+		m_bShake = false;
+		ZeroMemory(&m_vShakePosAcc, sizeof(_float3));
+		return;
+	}
+
+
+	m_fShakeTurnTimeAcc += fTimeDelta;
+	if (m_fShakeTurnTime < m_fShakeTurnTimeAcc)
+	{
+		if (m_bShakeTurn)
+			m_bShakeTurn = false;
+		else
+			m_bShakeTurn = true;
+
+		m_fShakeTurnTimeAcc = 0.f;
+	}
 
 }
 

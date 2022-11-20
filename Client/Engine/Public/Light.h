@@ -5,7 +5,7 @@
 BEGIN(Engine)
 /* 빛 정볼르 보관한다. */
 
-class CLight final : public CBase
+class ENGINE_DLL CLight final : public CBase
 {
 private:
 	CLight(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -13,6 +13,10 @@ private:
 
 public:
 	const LIGHTDESC* Get_LightDesc() const {
+		return &m_LightDesc;
+	}
+
+	LIGHTDESC* Get_LightEditDesc() {
 		return &m_LightDesc;
 	}
 

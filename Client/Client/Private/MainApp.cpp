@@ -10,6 +10,7 @@
 #include "UIManager.h"
 #include "GameManager.h"
 #include "CutSceneManager.h"
+#include "ParticleManager.h"
 
 #include "Level_Loading.h"
 
@@ -37,6 +38,8 @@ HRESULT CMainApp::Initialize()
 
 
 
+	if (FAILED(CParticleManager::Get_Instance()->Init(m_pDevice, m_pContext)))
+		return E_FAIL;
 	if (FAILED(CDataManager::Get_Instance()->Init(m_pDevice, m_pContext)))
 		return E_FAIL;
 	if (FAILED(CToolManager::Get_Instance()->Init(m_pDevice, m_pContext)))
@@ -256,6 +259,7 @@ CMainApp * CMainApp::Create()
 void CMainApp::Free()
 {
 
+	CParticleManager::Get_Instance()->Destroy_Instance();
 	CCutSceneManager::Get_Instance()->Destroy_Instance();
 	CGameManager::Get_Instance()->Destroy_Instance();
 	CUIManager::Get_Instance()->Destroy_Instance();

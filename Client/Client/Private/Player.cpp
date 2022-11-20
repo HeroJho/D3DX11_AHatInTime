@@ -716,6 +716,9 @@ void CPlayer::State_Input(_float fTimeDelta)
 			CToolManager::Get_Instance()->Set_WithOutPlayer(0.15f);
 		}
 
+		_float3 vDir; XMStoreFloat3(&vDir, m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
+		// CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.3f, 3.f, 0.05f);
+
 	}
 
 
@@ -2176,7 +2179,9 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 
 
 	TCHAR cItemName[MAX_PATH];
-	CToolManager::Get_Instance()->CtoTC(sItemName.data(), cItemName);
+	char cTempItem[MAX_PATH];
+	strcpy(cTempItem, sItemName.data());
+	CToolManager::Get_Instance()->CtoTC(cTempItem, cItemName);
 
 
 	CSockat::PARTSDESC PartsDesc;

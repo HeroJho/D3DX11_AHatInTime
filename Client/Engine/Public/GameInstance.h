@@ -83,10 +83,13 @@ public: /* For.PipeLine */
 	_float4x4 Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE eTransformState) const;
 	_float4x4 Get_TransformFloat4x4_TP(CPipeLine::TRANSFORMSTATE eTransformState) const;
 	_float4 Get_CamPosition();
+	_matrix Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE eTransformState) const;
 
 public: /* For.Light_Manager */
 	const LIGHTDESC* Get_LightDesc(_uint iIndex);
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);
+	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc, class CLight** Out_pLight);
+	HRESULT Remove_Light(CLight* pLight);
 
 public: /* For. ColliderManager */
 	void Add_ColGroup(CColliderManager::COLLIDERGROUP eGroup, class CGameObject* pObj);

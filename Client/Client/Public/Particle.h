@@ -26,7 +26,7 @@ public:
 		TCHAR					cModelTag[MAX_PATH];
 
 		_float3 vParentPos;
-		
+
 		_float3 vPos;
 		_float3 vLook;
 		_float3 vScale;

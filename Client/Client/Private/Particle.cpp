@@ -2,8 +2,6 @@
 #include "..\Public\Particle.h"
 #include "GameInstance.h"
 
-#include "MapManager.h"
-#include "MeshManager.h"
 #include "ToolManager.h"
 
 
@@ -49,7 +47,7 @@ HRESULT CParticle::Initialize(void * pArg)
 	m_pTransformCom->Set_Scale(XMLoadFloat3(&m_Desc.vScale));
 
 	// m_pTransformCom->Set_Look(XMLoadFloat3(&m_Desc.vLook));
-	
+
 	// 바라보고 회전
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_Desc.vRoation.x,
 		XMVectorSet(0.f, 1.f, 0.f, 0.f), m_Desc.vRoation.y,
@@ -92,8 +90,8 @@ void CParticle::Tick(_float fTimeDelta)
 	default:
 		break;
 	}
-	
-	
+
+
 }
 
 void CParticle::Tick_Model(_float fTimeDelta)
@@ -106,7 +104,7 @@ void CParticle::Tick_Model(_float fTimeDelta)
 	// 몇 초 동안
 	m_fLifeTimeAcc += fTimeDelta;
 	if (m_Desc.fLifeTime < m_fLifeTimeAcc)
-		Set_Dead();
+		Set_Dead(true);
 
 
 	// 어느 방향으로 어느 속도로
@@ -127,7 +125,7 @@ void CParticle::Tick_Model(_float fTimeDelta)
 	// 크기 변화
 	m_pTransformCom->Go_Scale(m_Desc.vScaleSpeed, fTimeDelta);
 
-	if(m_bRotC)
+	if (m_bRotC)
 		m_pTransformCom->Turn(XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
 	else
 		m_pTransformCom->Turn(-XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
@@ -146,7 +144,7 @@ void CParticle::Tick_Texture(_float fTimeDelta)
 	// 몇 초 동안
 	m_fLifeTimeAcc += fTimeDelta;
 	if (m_Desc.fLifeTime < m_fLifeTimeAcc)
-		Set_Dead();
+		Set_Dead(true);
 
 
 	// 어느 방향으로 어느 속도로
@@ -229,7 +227,7 @@ void CParticle::LateTick_Texture(_float fTimeDelta)
 	_matrix mCam = pGameInstance->Get_TransformMatrixInverse(CPipeLine::D3DTS_VIEW);
 	_vector vCamPos = mCam.r[3];
 
-	if(m_bRotC)
+	if (m_bRotC)
 		m_fAnigleAcc += m_fRotationSpeed * fTimeDelta;
 	else
 		m_fAnigleAcc -= m_fRotationSpeed * fTimeDelta;
@@ -343,7 +341,7 @@ HRESULT CParticle::Render_Texture()
 
 	if (!lstrcmp(TEXT("Prototype_Component_Texture_Star"), m_Desc.cModelTag))
 	{
-		iPassIndex = 2;
+		iPassIndex = 3;
 
 		if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture1", 1)))
 			return E_FAIL;
@@ -352,11 +350,11 @@ HRESULT CParticle::Render_Texture()
 	}
 	else if (!lstrcmp(TEXT("Prototype_Component_Texture_star_shuriken"), m_Desc.cModelTag))
 	{
-		iPassIndex = 3;
+		iPassIndex = 4;
 	}
 	else if (!lstrcmp(TEXT("Prototype_Component_Texture_T_FX_Flare_01"), m_Desc.cModelTag))
 	{
-		iPassIndex = 4;
+		iPassIndex = 5;
 	}
 
 
@@ -431,7 +429,7 @@ HRESULT CParticle::Ready_Texture_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For.Com_Texture */

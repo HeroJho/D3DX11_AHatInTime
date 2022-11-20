@@ -49,7 +49,8 @@
 #include "Hat.h"
 #include "PuzzleCube_Boss.h"
 #include "Toilet_Scream.h"
-
+#include "Particle.h"
+#include "FlaskLight.h"
 
 
 #include "UI_Edit.h"
@@ -251,6 +252,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_CaulDron"),
 		CCaulDron::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_FlaskLight */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_FlaskLight"),
+		CFlaskLight::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 	
 
 	/* For.Prototype_GameObject_SwipsSky */
@@ -272,6 +277,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CPuzzleCube_Boss::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_Particle */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Particle"),
+		CParticle::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	
 	/* For.Prototype_GameObject_RollingBarrel */
@@ -474,6 +483,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 
+
+
 	// TEST
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_Inven"),
 		CUI_Inven::Create(m_pDevice, m_pContext))))
@@ -502,6 +513,26 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Grass"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Meshes/NonAnim/SubCon/Grass.dds"), 1))))
 		return E_FAIL;
+
+
+
+	// =========== Particle ====================
+
+	/* For.Prototype_Component_Texture_T_FX_Flare_01 */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_T_FX_Flare_01"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/T_FX_Flare_01.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Star */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Star"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Star_%d.dds"), 3))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_star_shuriken */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_star_shuriken"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/star_shuriken.dds"), 1))))
+		return E_FAIL;
+
 
 
 	// ==================== UI=====================

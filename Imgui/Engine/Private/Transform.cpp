@@ -322,6 +322,27 @@ void CTransform::LookAt(_fvector vAt)
 	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLook) * vScale.z);
 }
 
+void CTransform::LookAtInv(_fvector vAt, _float fAnlge)
+{
+	_vector		vLook = Get_State(CTransform::STATE_POSITION) - vAt;
+
+	_vector		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
+
+	_vector		vUp = XMVector3Cross(vLook, vRight);
+
+	_float3		vScale = Get_Scale();
+
+	Set_State(CTransform::STATE_RIGHT, XMVector3Normalize(vRight) * vScale.x);
+	Set_State(CTransform::STATE_UP, XMVector3Normalize(vUp) * vScale.y);
+	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLook) * vScale.z);
+
+	_matrix		RotationMatrix = XMMatrixRotationAxis(vLook, XMConvertToRadians(fAnlge));
+
+	Set_State(CTransform::STATE_RIGHT, XMVector3TransformNormal(Get_State(CTransform::STATE_RIGHT), RotationMatrix));
+	Set_State(CTransform::STATE_UP, XMVector3TransformNormal(Get_State(CTransform::STATE_UP), RotationMatrix));
+	Set_State(CTransform::STATE_LOOK, XMVector3TransformNormal(Get_State(CTransform::STATE_LOOK), RotationMatrix));
+}
+
 void CTransform::LookAt_ForLandObject(_fvector vAt)
 {
 	_vector		vLook = vAt - Get_State(CTransform::STATE_POSITION);
