@@ -85,6 +85,8 @@
 #include "Flask_EX.h"
 #include "Toilet_SentorWall.h"
 
+#include "MushRoom.h"
+
 #include "Test.h"
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -307,6 +309,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_Toilet_SentorWall */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Toilet_SentorWall"),
 		CToilet_SentorWall::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_MushRoom */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MushRoom"),
+		CMushRoom::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	
 	

@@ -247,6 +247,9 @@
     <Filter Include="02.GameObjects\Particle">
       <UniqueIdentifier>{2ea5420d-30f7-4a31-9dd5-9327996db0fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Map\MushRoom">
+      <UniqueIdentifier>{a784f513-dbf1-411a-8893-8f5b37acb786}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -522,6 +525,9 @@
     <ClInclude Include="..\public\FlaskLight.h">
       <Filter>02.GameObjects\Item\Flask</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MushRoom.h">
+      <Filter>02.GameObjects\Map\MushRoom</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -781,6 +787,9 @@
     </ClCompile>
     <ClCompile Include="..\private\FlaskLight.cpp">
       <Filter>02.GameObjects\Item\Flask</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MushRoom.cpp">
+      <Filter>02.GameObjects\Map\MushRoom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

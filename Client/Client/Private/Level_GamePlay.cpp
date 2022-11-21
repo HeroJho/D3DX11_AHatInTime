@@ -19,6 +19,7 @@
 #include "RotateBarrel.h"
 #include "StatuePosed.h"
 #include "TimeObject.h"
+#include "MushRoom.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -208,6 +209,25 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		return E_FAIL;
 
 
+
+
+	CMushRoom::MUSHROOMDESC MushDesc;
+	MushDesc.vPos = _float3(-68.97f, 11.04f, 121.20f);
+	MushDesc.vScale = _float3(1.f, 1.f, 1.f);
+	MushDesc.vRotation = _float3(0.f, 0.f, 0.f);
+	
+	MushDesc.fPower = 15.f;
+	MushDesc.fUpSpeed = 1.f;
+	MushDesc.fDownSpeed = 1.f;
+	MushDesc.vDiffuseColor = _float4(1.f, 0.f, 1.f, 1.f);
+	MushDesc.vAmColor = _float4(1.f, 1.f, 1.f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_MushRoom"), LEVEL_GAMEPLAY, pLayerTag, &MushDesc)))
+		return E_FAIL;
+
+
+
+
+	
 
 
 	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
