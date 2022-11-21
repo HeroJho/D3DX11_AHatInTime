@@ -70,8 +70,8 @@ void CParticleManager::Add_Particle(CParticle::PARTICLE_TYPE eType)
 		break;
 	case Client::CParticle::TYPE_TEXTURE:
 		DescTool->Desc.eType = CParticle::TYPE_TEXTURE;
-		lstrcpy(DescTool->Desc.cModelTag, TEXT("Prototype_Component_Texture_T_FX_Flare_01"));
-		// lstrcpy(DescTool->Desc.cModelTag, TEXT("Prototype_Component_Texture_Star"));
+		// lstrcpy(DescTool->Desc.cModelTag, TEXT("Prototype_Component_Texture_T_FX_Flare_01"));
+		lstrcpy(DescTool->Desc.cModelTag, TEXT("Prototype_Component_Texture_Star"));
 		// lstrcpy(DescTool->Desc.cModelTag, TEXT("Prototype_Component_Texture_star_shuriken"));
 		break;
 	default:

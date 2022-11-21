@@ -135,7 +135,7 @@ void CVSnatcher::Set_State(STATE eState)
 			break;
 		case STATE_MAGIC:
 			m_fMagicTimeAcc = 0.f;
-			Create_Magic(50);
+			Create_Magic(20);
 			break;
 		case STATE_HOITSTART:
 			break;
@@ -1352,7 +1352,7 @@ void CVSnatcher::Create_Magic(_uint iCount)
 		XMStoreFloat3(&Desc.vStartPos, vStartPos);
 		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Magic"), LEVEL_BOSS, TEXT("Layer_Ex"), &Desc);
 		
-		fGoTime += 0.05f;
+		fGoTime += 1.f;
 		fAngle += 360.f / iCount;
 	}
 

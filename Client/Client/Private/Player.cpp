@@ -9,6 +9,7 @@
 #include "GameManager.h"
 #include "UIManager.h"
 #include "CutSceneManager.h"
+#include "ParticleManager.h"
 
 #include "Camera_Free.h"
 
@@ -122,10 +123,21 @@ void CPlayer::Set_State()
 			m_fSlepSpeed = 2.f;
 			break;
 		case STATE_SLIDE:
+		{
 			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
 				m_pTransformCom->Set_CurSpeed(m_pTransformCom->Get_CurSpeed() + 6.f);
 			else
 				m_pTransformCom->Set_CurSpeed(m_pTransformCom->Get_CurSpeed() + 4.f);
+
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			_float3 vLook; XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.05f, 1.f, false, 0.f, 0.f, 2.f,
+				10, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 2.f, false, 0.f, 0.f, 2.f,
+				5, 0.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.0f, _float3(-20.f, 0.f, -20.f), _float3(20.f, 0.f, 20.f), CParticle::TYPE_MODLE);
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), vLook, _float3(0.3f, 0.3f, 0.3f), _float3(0.3f, 0.3f, 0.3f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 3.f, false, 0.f, 0.f, 2.f,
+				5, 0.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_TEXTURE);
+		}
 			break;
 		case STATE_SLIDELENDING:
 			m_fSlepSpeed = m_pTransformCom->Get_CurSpeed();
@@ -142,6 +154,12 @@ void CPlayer::Set_State()
 		case STATE_DOWN:
 			m_pTransformCom->ResetGravity();
 			m_pTransformCom->Jump(8.f);
+			break;
+		case STATE_DOUBLEJUMP:
+		{
+
+		}
+			break;
 		default:
 			m_fSlepSpeed = 0.f;
 			break;

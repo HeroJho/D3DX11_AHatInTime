@@ -100,7 +100,12 @@ HRESULT CStaticModel::Initialize(void * pArg)
 
 
 	m_pLights = Desc->pLight;
-
+	if (nullptr != m_pLights)
+	{
+		LIGHTDESC Desc = m_pLights->Get_LightDesc();
+	
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat4(&Desc.vPosition), 1.f));
+	}
 
 	return S_OK;
 }

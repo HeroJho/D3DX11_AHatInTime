@@ -236,6 +236,11 @@ void CMapManager::Load_MapData()
 		ZeroMemory(&Desc, sizeof(CStaticModel::STATICMODELDESC));
 
 		string sTemp = DataObj.cName;
+
+
+		if ("Ori_Hat" == sTemp)
+			continue;
+
 		CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
 		Desc.vPos = DataObj.vPos;
 		Desc.vAngle = DataObj.vAngle;

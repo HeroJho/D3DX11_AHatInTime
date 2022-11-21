@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 
 #include "ToolManager.h"
-
+#include "FlaskLight.h"
 
 CParticle::CParticle(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -46,7 +46,25 @@ HRESULT CParticle::Initialize(void * pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vTotalPos, 1.f));
 	m_pTransformCom->Set_Scale(XMLoadFloat3(&m_Desc.vScale));
 
+
 	// m_pTransformCom->Set_Look(XMLoadFloat3(&m_Desc.vLook));
+
+
+	_vector vVLook = XMLoadFloat3(&m_Desc.vLook);
+	if (0.01f <  XMVectorGetX(XMVector3Length(vVLook)))
+	{
+		_vector		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vVLook);
+		_vector		vUp = XMVector3Cross(vVLook, vRight);
+		_matrix mRoteMatrix = XMMatrixIdentity();
+		mRoteMatrix.r[0] = XMVectorSetW(XMVector3Normalize(vRight), 0.f);
+		mRoteMatrix.r[1] = XMVectorSetW(XMVector3Normalize(vUp), 0.f);
+		mRoteMatrix.r[2] = XMVectorSetW(XMVector3Normalize(vVLook), 0.f);
+		mRoteMatrix.r[3] = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+
+		_vector vDir = XMLoadFloat3(&m_Desc.vDir);
+		XMStoreFloat3(&m_Desc.vDir, XMVector3TransformNormal(vDir, mRoteMatrix));
+	}
+	
 
 	// 바라보고 회전
 	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_Desc.vRoation.x,
@@ -65,6 +83,16 @@ HRESULT CParticle::Initialize(void * pArg)
 		m_bRotC = true;
 	else
 		m_bRotC = false;
+
+	if (!lstrcmp(TEXT("Prototype_Component_Texture_Star"), m_Desc.cModelTag))
+	{
+		//CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		//CFlaskLight::FLASKLIGHTDESC LightDesc;
+		//XMStoreFloat3(&LightDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		//LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();
+		//pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_FlaskLight"), eLevel, TEXT("Layer_Light"), &LightDesc);
+		//RELEASE_INSTANCE(CGameInstance);
+	}
 
 	return S_OK;
 }

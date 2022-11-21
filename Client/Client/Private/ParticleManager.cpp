@@ -86,6 +86,7 @@ void CParticleManager::Create_Effect(const TCHAR * cModelTag, _float3 vParentPos
 	XMStoreFloat3(&vDir, vBaseDir);
 
 
+
 	_float3		vRandomLook;
 
 	for (_uint i = 0; i < iCount; ++i)

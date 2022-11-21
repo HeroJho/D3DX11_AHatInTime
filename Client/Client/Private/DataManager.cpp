@@ -418,8 +418,12 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 		string sTemp = DataObj.cName;
 
-		//if ("SubCon" != sTemp)			
-		//	continue;
+		if ("Ori_Hat" == sTemp)
+		{
+			Safe_Delete_Array(DataObj.piNaviIndexs);
+			continue;
+		}
+
 
 		//if ("Tree1" == sTemp || "tree2" == sTemp || "Tree3" == sTemp || "forest_plant" == sTemp)
 		//	continue;
