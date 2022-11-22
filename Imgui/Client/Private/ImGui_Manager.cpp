@@ -517,6 +517,18 @@ void CImGui_Manager::Render_ParticleTool()
 	if(ImGui::Button("Remove"))
 		CParticleManager::Get_Instance()->Remove_Particle();
 
+
+	TCHAR sTemp[MAX_PATH];
+	char zTemp[MAX_PATH];
+	lstrcpy(sTemp, CParticleManager::Get_Instance()->Get_ParticleName());
+	CToolManager::Get_Instance()->TCtoC(sTemp, zTemp);
+	if (ImGui::InputText("Name", zTemp, sizeof(char) * 256))
+	{
+		CToolManager::Get_Instance()->CtoTC(zTemp, sTemp);
+		CParticleManager::Get_Instance()->Set_ParticleName(sTemp);
+	}
+
+
 	CParticleManager::PARTICLETOOLDESC* pDescTool = CParticleManager::Get_Instance()->Find_Particle();
 
 	ImGui::End();
@@ -625,6 +637,9 @@ void CImGui_Manager::Render_ParticleTool()
 		_float3		vLimitAngleMax = pDescTool->vLimitAngleMax;
 		if (ImGui::DragFloat3("vLimitAngleMax", (float*)&vLimitAngleMax, 1.f))
 			pDescTool->vLimitAngleMax = vLimitAngleMax;
+
+
+		
 
 		ImGui::End();
 	}

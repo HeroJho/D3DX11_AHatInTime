@@ -413,7 +413,7 @@ HRESULT CParticle::Ready_Model_Components()
 
 	/* For.Com_Shader */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
-		return E_FAIL;
+		return S_OK;
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_Desc.cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
@@ -436,7 +436,7 @@ HRESULT CParticle::Ready_Texture_Components()
 
 	/* For.Com_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_Desc.cModelTag, TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-		return E_FAIL;
+		return S_OK;
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))

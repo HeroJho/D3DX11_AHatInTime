@@ -426,6 +426,10 @@ void CMushRoom::Free()
 {
 	__super::Free();
 
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->Remove_Light(m_pLight);
+	RELEASE_INSTANCE(CGameInstance);
+
 
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);

@@ -87,6 +87,8 @@ private:
 
 	void FoxMask_Tick(_float fTimeDelta);
 
+	void Stay_Tick(_float fTimeDelta);
+
 	void Talk_Tick(_float fTimeDelta);
 
 
@@ -144,6 +146,7 @@ public:
 	void Set_RenderSkip(_bool bSkip) { m_bRenderSkip = bSkip; }
 
 	void Set_Dark(_bool bDark) { m_bDark = bDark; }
+
 
 private:
 	CShader*				m_pShaderCom = nullptr;
@@ -216,6 +219,10 @@ private:
 	// For. CutScene
 	_bool	m_bRenderSkip = false;
 	_bool   m_bDark = false;
+
+
+	// For. StayTick
+	_float m_fStayTimeAcc = 0.f;
 
 private:
 	HRESULT Ready_Components();

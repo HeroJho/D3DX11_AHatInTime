@@ -54,6 +54,9 @@ public: // For. Tool
 	PARTICLETOOLDESC* Find_Particle();
 	void Remove_Particle();
 
+	TCHAR* Get_ParticleName() { return m_szParticleName; }
+	void Set_ParticleName(TCHAR* szName) { lstrcpy(m_szParticleName, szName); }
+
 private:
 	list<PARTICLETOOLDESC*> m_EffectInfos;
 
@@ -86,6 +89,8 @@ private:
 	ID3D11DeviceContext* m_pContext;
 
 	_float fTimeAcc = 0.f;
+
+	TCHAR m_szParticleName[MAX_PATH];
 
 
 public:

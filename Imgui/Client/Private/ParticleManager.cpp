@@ -19,7 +19,7 @@ HRESULT CParticleManager::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
-
+	ZeroMemory(m_szParticleName, sizeof(TCHAR) * 256);
 
 	return S_OK;
 }
@@ -57,6 +57,9 @@ void CParticleManager::Tick(_float fTimeDelta)
 
 void CParticleManager::Add_Particle(CParticle::PARTICLE_TYPE eType)
 {
+	if (!lstrcmp(TEXT(""), m_szParticleName))
+		return;
+
 	// 일단 기본 설정으로 추가한다 -> 수정은 이후에
 	PARTICLETOOLDESC* DescTool = new PARTICLETOOLDESC;
 	DescTool->iID = m_iIDCount;
@@ -66,12 +69,14 @@ void CParticleManager::Add_Particle(CParticle::PARTICLE_TYPE eType)
 	{
 	case Client::CParticle::TYPE_MODLE:
 		DescTool->Desc.eType = CParticle::TYPE_MODLE;
-		lstrcpy(DescTool->Desc.cModelTag, TEXT("SmokeParticle"));
+		lstrcpy(DescTool->Desc.cModelTag, m_szParticleName);
+		//lstrcpy(DescTool->Desc.cModelTag, TEXT("SmokeParticle"));
 		break;
 	case Client::CParticle::TYPE_TEXTURE:
 		DescTool->Desc.eType = CParticle::TYPE_TEXTURE;
+		lstrcpy(DescTool->Desc.cModelTag, m_szParticleName);
 		// lstrcpy(DescTool->Desc.cModelTag, TEXT("Prototype_Component_Texture_T_FX_Flare_01"));
-		lstrcpy(DescTool->Desc.cModelTag, TEXT("Prototype_Component_Texture_Star"));
+		// lstrcpy(DescTool->Desc.cModelTag, TEXT("Prototype_Component_Texture_Star"));
 		// lstrcpy(DescTool->Desc.cModelTag, TEXT("Prototype_Component_Texture_star_shuriken"));
 		break;
 	default:

@@ -117,6 +117,8 @@ void CPlayer::Set_State()
 	// 애니메이션이 바뀔때 거쳐야하는 부분p
 	if (m_ePreState != m_eState)
 	{
+		m_fStayTimeAcc = 0.f;
+
 		switch (m_eState)
 		{
 		case STATE_SLEP:
@@ -127,7 +129,7 @@ void CPlayer::Set_State()
 		case STATE_SPRINTJUMP:
 		{
 			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.1f, 0.1f, 0.1f), _float3(0.1f, 0.1f, 0.1f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.2f, 2.f, false, 0.f, 0.f, 0.5f,
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.1f, 0.1f, 0.1f), _float3(0.1f, 0.1f, 0.1f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.2f, 2.f, false, 0.f, 0.f, 1.f,
 				10, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 		
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.01f, 0.5f, false, 0.f, 0.f, 1.f,
@@ -174,6 +176,17 @@ void CPlayer::Set_State()
 				10, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 		}
 			break;
+		case STATE_JUMPLENDING:
+		case STATE_JUMPATTACKRENDING:
+		case STATE_RUNJUMPLENDING:
+		case STATE_MAGEIDLEJUMPRENDING:
+		case STATE_MAGERUNJUMPRENDING:   
+		{
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.1f, 0.1f, 0.1f), _float3(0.1f, 0.1f, 0.1f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.2f, 2.f, false, 0.f, 0.f, 1.f,
+				10, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+		}
+			break;
 		default:
 			m_fSlepSpeed = 0.f;
 			break;
@@ -203,7 +216,9 @@ void CPlayer::Set_Anim()
 		m_pModelCom->Set_AnimIndex(113);
 		break;
 	case STATE_WALK:
+	{
 		m_pModelCom->Set_AnimIndex(192);
+	}
 		break;
 	case STATE_RUN:
 		if (STATE_SLEP == m_ePreState)
@@ -348,6 +363,10 @@ void CPlayer::Tick(_float fTimeDelta)
 	Check_Attacked(fTimeDelta);
 
 	FoxMask_Tick(fTimeDelta);
+
+	Stay_Tick(fTimeDelta);
+
+
 
 	switch (m_eState)
 	{
@@ -714,6 +733,153 @@ void CPlayer::FoxMask_Tick(_float fTimeDelta)
 		CToolManager::Get_Instance()->Set_All(1.f);
 	}
 	
+}
+
+void CPlayer::Stay_Tick(_float fTimeDelta)
+{
+
+
+	switch (m_eState)
+	{
+	case Client::CPlayer::STATE_IDLE:
+		break;
+	case Client::CPlayer::STATE_WALK:
+	{
+		m_fStayTimeAcc += fTimeDelta;
+
+		if (0.5f < m_fStayTimeAcc)
+		{
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			_float3 vLook; XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.1f, 0.1f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(0.9f, 0.9f, 0.9f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.05f, 0.f, false, 0.f, 0.f, 1.f,
+				1, 0.2f, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), CParticle::TYPE_MODLE);
+
+			m_fStayTimeAcc = 0.f;
+		}
+
+	}
+		break;
+	case Client::CPlayer::STATE_RUN:
+	{
+		m_fStayTimeAcc += fTimeDelta;
+
+		if (0.4f < m_fStayTimeAcc)
+		{
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			_float3 vLook; XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.1f, 0.1f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(0.9f, 0.9f, 0.9f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.05f, 0.f, false, 0.f, 0.f, 1.f,
+				1, 0.2f, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), CParticle::TYPE_MODLE);
+
+			m_fStayTimeAcc = 0.f;
+		}
+
+	}
+		break;
+	case Client::CPlayer::STATE_SPRINT:
+		break;
+	case Client::CPlayer::STATE_SLEP:
+		break;
+	case Client::CPlayer::STATE_JUMP:
+		break;
+	case Client::CPlayer::STATE_SLIDE:
+	{
+		m_fStayTimeAcc += fTimeDelta;
+
+		if (0.1f < m_fStayTimeAcc)
+		{
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			_float3 vLook; XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.1f, 0.1f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(0.9f, 0.9f, 0.9f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.05f, 0.f, false, 0.f, 0.f, 1.f,
+				1, 0.2f, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), CParticle::TYPE_MODLE);
+
+			m_fStayTimeAcc = 0.f;
+		}
+	}
+		break;
+	case Client::CPlayer::STATE_JUMPLENDING:
+		break;
+	case Client::CPlayer::STATE_RUNJUMP:
+		break;
+	case Client::CPlayer::STATE_RUNJUMPLENDING:
+	{
+		m_fStayTimeAcc += fTimeDelta;
+
+		if (0.4f < m_fStayTimeAcc)
+		{
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			_float3 vLook; XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.1f, 0.1f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(0.9f, 0.9f, 0.9f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.05f, 0.f, false, 0.f, 0.f, 1.f,
+				1, 0.2f, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), CParticle::TYPE_MODLE);
+
+			m_fStayTimeAcc = 0.f;
+		}
+	}
+		break;
+	case Client::CPlayer::STATE_SLIDELENDING:
+	{
+		m_fStayTimeAcc += fTimeDelta;
+
+		if (0.4f < m_fStayTimeAcc)
+		{
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			_float3 vLook; XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.1f, 0.1f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(0.9f, 0.9f, 0.9f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.05f, 0.f, false, 0.f, 0.f, 1.f,
+				1, 0.2f, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), CParticle::TYPE_MODLE);
+
+			m_fStayTimeAcc = 0.f;
+		}
+	}
+		break;
+	case Client::CPlayer::STATE_SPRINTJUMP:
+		break;
+	case Client::CPlayer::STATE_DOUBLEJUMP:
+		break;
+	case Client::CPlayer::STATE_ATTACK_1:
+		break;
+	case Client::CPlayer::STATE_ATTACK_2:
+		break;
+	case Client::CPlayer::STATE_ATTACK_3:
+		break;
+	case Client::CPlayer::STATE_READYATTACK:
+		break;
+	case Client::CPlayer::STATE_JUMPATTACK:
+		break;
+	case Client::CPlayer::STATE_JUMPATTACKRENDING:
+		break;
+	case Client::CPlayer::STATE_HILLDOWN:
+		break;
+	case Client::CPlayer::STATE_STARTGETITEM:
+		break;
+	case Client::CPlayer::STATE_IDLEGETITEM:
+		break;
+	case Client::CPlayer::STATE_ENDGETITEM:
+		break;
+	case Client::CPlayer::STATE_MAGEIDLE:
+		break;
+	case Client::CPlayer::STATE_MAGERUN:
+		break;
+	case Client::CPlayer::STATE_MAGEJUMP:
+		break;
+	case Client::CPlayer::STATE_MAGEIDLEJUMPRENDING:
+		break;
+	case Client::CPlayer::STATE_MAGERUNJUMPRENDING:
+		break;
+	case Client::CPlayer::STATE_MAGEDROW:
+		break;
+	case Client::CPlayer::STATE_DOWN:
+		break;
+	case Client::CPlayer::STATE_ATTACKED:
+		break;
+	case Client::CPlayer::STATE_TALK:
+		break;
+	case Client::CPlayer::STATE_APPEAR:
+		break;
+	case Client::CPlayer::STATE_NONE:
+		break;
+	}
+
+
+
 }
 
 void CPlayer::Talk_Tick(_float fTimeDelta)
@@ -2227,6 +2393,14 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 		PartsDesc.vRot = _float3(-90.f, 0, 0);
 		PartsDesc.pOwner = this;
+
+
+		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.0f, 0.7f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.8f, 0.8f, 0.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 1.5f, false, 0.f, 0.f, 0.75f,
+			7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+		CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
+			5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+
 	}
 	else if (!lstrcmp(cItemName, TEXT("Sprint_Hat")))
 	{
@@ -2245,6 +2419,12 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 			PartsDesc.vRot = _float3(-82.9f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
+
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.0f, 0.7f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.8f, 0.8f, 0.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 1.5f, false, 0.f, 0.f, 0.75f,
+				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
+				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
 		}
 
 	}
@@ -2265,6 +2445,12 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 			PartsDesc.vRot = _float3(-90.f, 0.f, -0.f);
 			PartsDesc.pOwner = this;
+
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.0f, 0.7f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.8f, 0.8f, 0.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 1.5f, false, 0.f, 0.f, 0.75f,
+				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
+				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
 		}
 	}
 	else if (!lstrcmp(cItemName, TEXT("Mask_Cat")))
@@ -2284,6 +2470,12 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 			PartsDesc.vRot = _float3(-90.f, 0.f, -0.f);
 			PartsDesc.pOwner = this;
+
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.0f, 0.7f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.8f, 0.8f, 0.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 1.5f, false, 0.f, 0.f, 0.75f,
+				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
+				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
 		}
 	}
 	else if (!lstrcmp(cItemName, TEXT("Mask_Fox")))
@@ -2303,6 +2495,12 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 			PartsDesc.vRot = _float3(-90.f, 0.f, -0.f);
 			PartsDesc.pOwner = this;
+
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.0f, 0.7f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.8f, 0.8f, 0.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 1.5f, false, 0.f, 0.f, 0.75f,
+				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
+				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
 		}
 	}
 	else if (!lstrcmp(cItemName, TEXT("Umbrella")))
