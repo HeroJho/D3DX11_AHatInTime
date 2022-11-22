@@ -171,6 +171,7 @@
     <ClInclude Include="..\public\BadgeS_Base.h" />
     <ClInclude Include="..\public\BellMount.h" />
     <ClInclude Include="..\public\BellMountEye.h" />
+    <ClInclude Include="..\public\Bindi.h" />
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\public\CamManager.h" />
     <ClInclude Include="..\public\CaulDron.h" />
@@ -263,6 +264,7 @@
     <ClCompile Include="..\private\BadgeS_Base.cpp" />
     <ClCompile Include="..\private\BellMount.cpp" />
     <ClCompile Include="..\private\BellMountEye.cpp" />
+    <ClCompile Include="..\private\Bindi.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\private\CamManager.cpp" />
     <ClCompile Include="..\private\CaulDron.cpp" />

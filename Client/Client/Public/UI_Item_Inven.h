@@ -28,6 +28,8 @@ public:
 public:
 	void LoadItemMgr_ItemUI();
 
+	void OnOff(_bool bOnOff) { m_bIsOn = bOnOff; }
+
 
 protected:
 	HRESULT Ready_Components();
@@ -36,7 +38,10 @@ private:
 	CShader*				m_pShaderCom = nullptr;
 	CTexture*				m_pTextureCom = nullptr;
 
-public:
+private:
+	_bool			m_bIsOn = false;
+	_float2			m_vOnPos;
+	_float2			m_vOffPos;
 
 
 public:

@@ -52,6 +52,7 @@ private:
 	virtual void Handle_Press() override;
 	virtual void Handle_Click() override;
 
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CTexture*				m_pTextureCom = nullptr;

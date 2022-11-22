@@ -33,13 +33,48 @@ HRESULT CUI_Health::Initialize(void * pArg)
 	 Make_ChildUI(-80.f, -50.f, 100.f, 100.f, TEXT("Prototype_UI_TextLife"));
 
 
+	 m_vOnPos.x = m_UiInfo.fX;
+	 m_vOnPos.y = m_UiInfo.fY;
+
+	 m_vOffPos.x = m_UiInfo.fX;
+	 m_vOffPos.y = m_UiInfo.fY - 300.f;
+
+	 m_bIsOn = false;
+	 m_UiInfo.fY = m_vOffPos.y;
+
+
 	return S_OK;
 }
 
 void CUI_Health::Tick(_float fTimeDelta)
 {
 
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	if (pGameInstance->Key_Down(DIK_M))
+	{
+		if (m_bIsOn)
+			m_bIsOn = false;
+		else
+			m_bIsOn = true;
+	}
+
+	if (!m_bIsOn)
+	{
+		m_UiInfo.fY -= 300.f * fTimeDelta;
+
+		if (m_UiInfo.fY < m_vOffPos.y)
+			m_UiInfo.fY = m_vOffPos.y;
+	}
+	else
+	{
+		m_UiInfo.fY += 300.f * fTimeDelta;
+
+		if (m_UiInfo.fY > m_vOnPos.y)
+			m_UiInfo.fY = m_vOnPos.y;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
 
 
 	__super::Tick(fTimeDelta);

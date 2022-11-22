@@ -10,6 +10,7 @@
 #include "UI_DiamondScore.h"
 #include "UI_Shop.h"
 #include "UI_SpeechBubble.h"
+#include "UI_Health.h"
 
 
 
@@ -155,6 +156,30 @@ HRESULT CUIManager::Make_SpeechBubble()
 	return S_OK;
 }
 
+HRESULT CUIManager::Make_Hp()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CUI::UIINFODESC UiInfoDesc;
+	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+	UiInfoDesc.fSizeX = 150;
+	UiInfoDesc.fSizeY = 150;
+	UiInfoDesc.fX = 140;
+	UiInfoDesc.fY = 110;
+	UiInfoDesc.pDesc = nullptr;
+
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Health"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+		return E_FAIL;
+
+	m_pHp = (CUI_Health*)pObj;
+	Safe_AddRef(m_pHp);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
 
 
 
@@ -202,6 +227,8 @@ void CUIManager::Close_Shop()
 	m_pShop->Close();
 }
 
+
+
 void CUIManager::On_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake)
 {
 	if (nullptr == m_pSpeechBubble)
@@ -230,9 +257,12 @@ void CUIManager::Off_Text()
 
 void CUIManager::Free()
 {
+
+	Safe_Release(m_pHp);
 	Safe_Release(m_pSpeechBubble);
 	Safe_Release(m_pDiamondScore);
 	Safe_Release(m_pInven);
 	Safe_Release(m_pItem_Inven);
 	Safe_Release(m_pShop);
+
 }

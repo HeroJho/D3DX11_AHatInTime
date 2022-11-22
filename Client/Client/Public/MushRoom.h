@@ -68,6 +68,11 @@ private:
 
 	_float m_fRatio = 0.f;
 
+	_float m_fTimeAcc = 0.f;
+	_float m_fTime = 0.f;
+
+	_bool m_bTurn = false;
+
 
 private:
 	HRESULT Ready_Components();

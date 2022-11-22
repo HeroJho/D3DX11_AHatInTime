@@ -87,12 +87,16 @@ public:
 	void Set_JumpVault() { m_bJumpMapvalut = true; }
 	void Set_JumpVault2() { m_bJumpMapvalut2 = true; }
 
+	void Set_Musroom(_bool bMushroom) { m_bInMushroom = bMushroom; }
+	_bool Get_Musroom() { return m_bInMushroom; }
+
 private:
 	_uint m_iMonsterVaultCount = 1; // 7
 	_bool m_bModVault = false;
 	_bool m_bJumpMapvalut = false;
 	_bool m_bJumpMapvalut2 = false;
 
+	_bool m_bInMushroom = false;
 
 
 

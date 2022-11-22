@@ -20,6 +20,7 @@
 #include "StatuePosed.h"
 #include "TimeObject.h"
 #include "MushRoom.h"
+#include "Bindi.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -170,6 +171,30 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		return E_FAIL;
 
 
+	// ¹Ýµ÷ºÒ
+	for (_uint i = 0; i < 10; ++i)
+	{
+		CBindi::BINDIDESC BindiDesc;
+		BindiDesc.vPos = _float3(-32.2f, 18.f, 89.09f);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 10; ++i)
+	{
+		CBindi::BINDIDESC BindiDesc;
+		BindiDesc.vPos = _float3(-39.3f, 17.77f, 111.3f);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 10; ++i)
+	{
+		CBindi::BINDIDESC BindiDesc;
+		BindiDesc.vPos = _float3(-8.43f, 15.76f, 95.61f);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
+			return E_FAIL;
+	}
+
+
 
 	
 	CSpikeBlock::SPIKEBLOCKDESC SpikeDesc;
@@ -211,35 +236,16 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 
 
-	CMushRoom::MUSHROOMDESC MushDesc;
-	MushDesc.vPos = _float3(-68.97f, 11.04f, 121.20f);
-	MushDesc.vScale = _float3(1.f, 1.f, 1.f);
-	MushDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	
-	MushDesc.fPower = 15.f;
-	MushDesc.fUpSpeed = 1.f;
-	MushDesc.fDownSpeed = 1.f;
-	MushDesc.vDiffuseColor = _float4(1.f, 0.f, 1.f, 1.f);
-	MushDesc.vAmColor = _float4(1.f, 1.f, 1.f, 1.f);
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_MushRoom"), LEVEL_GAMEPLAY, pLayerTag, &MushDesc)))
-		return E_FAIL;
-
-
-
-
-	
-
-
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-		return E_FAIL;
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_ice"), LEVEL_GAMEPLAY, _float3(-41.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-		return E_FAIL;
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_hover"), LEVEL_GAMEPLAY, _float3(-42.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-		return E_FAIL;
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, _float3(-43.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-		return E_FAIL;
-	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("Umbrella"), LEVEL_GAMEPLAY, _float3(-44.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-		return E_FAIL;
+	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+	//	return E_FAIL;
+	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_ice"), LEVEL_GAMEPLAY, _float3(-41.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+	//	return E_FAIL;
+	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_hover"), LEVEL_GAMEPLAY, _float3(-42.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+	//	return E_FAIL;
+	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, _float3(-43.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+	//	return E_FAIL;
+	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("Umbrella"), LEVEL_GAMEPLAY, _float3(-44.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+	//	return E_FAIL;
 
 	
 
@@ -262,6 +268,12 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	
 
 
+
+
+
+
+
+
 	Safe_Release(pGameInstance);
 
 	return S_OK;
@@ -273,8 +285,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	Safe_AddRef(pGameInstance);
 
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
+	//	return E_FAIL;
 	
 
 
@@ -383,14 +395,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 	Safe_AddRef(pGameInstance);
 
 
-	CUI::UIINFODESC UiInfoDesc;
-	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
-	UiInfoDesc.fSizeX = 150;
-	UiInfoDesc.fSizeY = 150;
-	UiInfoDesc.fX = 120;
-	UiInfoDesc.fY = 120;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Health"), LEVEL_GAMEPLAY, pLayerTag, &UiInfoDesc)))
-		return E_FAIL;
+
 
 
 
@@ -398,6 +403,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 	Safe_Release(pGameInstance);
 
 
+	CUIManager::Get_Instance()->Make_Hp();
 	CUIManager::Get_Instance()->Make_InvenUI();
 	CUIManager::Get_Instance()->Make_ItemInvenUI();
 	CUIManager::Get_Instance()->Make_DiamondUI();

@@ -241,7 +241,7 @@ void CParticle::LateTick_Model(_float fTimeDelta)
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 	RELEASE_INSTANCE(CGameInstance);
 	if (true == isDraw)
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 }
 
 void CParticle::LateTick_Texture(_float fTimeDelta)

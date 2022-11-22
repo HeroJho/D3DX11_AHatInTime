@@ -8,6 +8,7 @@
 #include "StaticModel_Col.h"
 #include "StaticModel_Instance.h"
 #include "Cell.h"
+#include "MushRoom.h"
 
 
 IMPLEMENT_SINGLETON(CDataManager)
@@ -420,6 +421,39 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 
 		if ("Ori_Hat" == sTemp)
 		{
+			Safe_Delete_Array(DataObj.piNaviIndexs);
+			continue;
+		}
+		else if ("Mushroom" == sTemp)
+		{
+			CMushRoom::MUSHROOMDESC MushDesc;
+			MushDesc.vPos = DataObj.vPos;
+			MushDesc.vScale = DataObj.vScale;
+			MushDesc.vRotation = DataObj.vAngle;
+
+
+			MushDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+			MushDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.5f, 1.5f);
+			MushDesc.fDownSpeed = MushDesc.fUpSpeed;
+			
+			_float fR = 0.f;
+			_float fG = 0.f;
+			_float fB = 0.f;
+			
+			while (!(1.8f < fR + fG + fB && 2.9f > fR + fG + fB))
+			{
+				fR = CToolManager::Get_Instance()->Get_RendomNum_Int(0.f, 1.f);
+				fG = CToolManager::Get_Instance()->Get_RendomNum_Int(0.f, 1.f);
+				fB = CToolManager::Get_Instance()->Get_RendomNum_Int(0.f, 1.f);
+			}
+			MushDesc.vDiffuseColor = _float4(fR, fG, fB, 1.f);
+			MushDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_MushRoom"), LEVEL_GAMEPLAY, TEXT("Layer_Bg"), &MushDesc)))
+				return E_FAIL;
+
+
+
+
 			Safe_Delete_Array(DataObj.piNaviIndexs);
 			continue;
 		}

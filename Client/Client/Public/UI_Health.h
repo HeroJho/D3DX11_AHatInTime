@@ -24,8 +24,15 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+	void OnOff(_bool bOnOff) { m_bIsOn = bOnOff; }
+
 protected:
 	HRESULT Ready_Components();
+
+private:
+	_bool			m_bIsOn = false;
+	_float2			m_vOnPos;
+	_float2			m_vOffPos;
 
 private:
 	CShader*				m_pShaderCom = nullptr;

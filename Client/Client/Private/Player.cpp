@@ -122,6 +122,18 @@ void CPlayer::Set_State()
 		case STATE_SLEP:
 			m_fSlepSpeed = 2.f;
 			break;
+		case STATE_JUMP:
+		case STATE_RUNJUMP:
+		case STATE_SPRINTJUMP:
+		{
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.1f, 0.1f, 0.1f), _float3(0.1f, 0.1f, 0.1f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.2f, 2.f, false, 0.f, 0.f, 0.5f,
+				10, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+		
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.01f, 0.5f, false, 0.f, 0.f, 1.f,
+				5, 0.f, 0.1f, 0.f, 0.f, 0.f, 2.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+		}
+			break;
 		case STATE_SLIDE:
 		{
 			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
@@ -157,7 +169,9 @@ void CPlayer::Set_State()
 			break;
 		case STATE_DOUBLEJUMP:
 		{
-
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.1f, 0.1f, 0.1f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.2f, 2.f, false, 0.f, 0.f, 0.5f,
+				10, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 		}
 			break;
 		default:

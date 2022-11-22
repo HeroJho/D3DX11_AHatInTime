@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+
 BEGIN(Client)
 
 class CUIManager final : public CBase
@@ -19,6 +20,7 @@ public:
 	HRESULT Make_DiamondUI();
 	HRESULT Make_ShopUI();
 	HRESULT Make_SpeechBubble();
+	HRESULT Make_Hp();
 
 	// For. Inven
 public:
@@ -34,6 +36,9 @@ public:
 	void Open_Shop();
 	void Close_Shop();
 
+	// For. Hp
+public:
+
 	// For. Text
 public:
 	void On_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake = false);
@@ -47,7 +52,7 @@ private:
 	class CUI_DiamondScore* m_pDiamondScore = nullptr;
 	class CUI_Shop*			m_pShop = nullptr;
 	class CUI_SpeechBubble*	m_pSpeechBubble = nullptr;
-
+	class CUI_Health*		m_pHp = nullptr;
 	
 
 public:

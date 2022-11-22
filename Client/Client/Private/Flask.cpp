@@ -156,7 +156,7 @@ HRESULT CFlask::SetUp_State(_fmatrix StateMatrix)
 
 void CFlask::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
-	if(!strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+	if("Tag_MushRoom" != Desc.pOther->Get_Tag() && !strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		m_bEx = true;
 }
 

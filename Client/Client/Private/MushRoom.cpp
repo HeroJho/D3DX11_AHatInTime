@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 
 #include "ToolManager.h"
+#include "GameManager.h"
 
 #include "Light.h"
 
@@ -38,7 +39,7 @@ HRESULT CMushRoom::Initialize(void * pArg)
 
 
 	m_sTag = "Tag_MushRoom";
-	m_eState = STATE_DOWN_IDLE;
+	Set_State(STATE_DOWN_START);
 
 
 	// 내 상태 정의
@@ -92,8 +93,12 @@ void CMushRoom::Set_State(STATE eState)
 			m_pLight->Get_LightEditDesc()->vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
 			break;
 		case STATE_DOWN_START:
+			m_fTimeAcc = 0.f;
+			m_fTime = CToolManager::Get_Instance()->Get_RendomNum(0.5f, 5.f);
 			break;
 		case STATE_UP_START:
+			m_fTimeAcc = 0.f;
+			m_fTime = CToolManager::Get_Instance()->Get_RendomNum(0.5f, 5.f);
 			break;
 		case STATE_UP_IDLE:
 			m_fRatio = 1.f;
@@ -118,6 +123,14 @@ void CMushRoom::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
+
+	//if (CGameManager::Get_Instance()->Get_Musroom())
+	//{
+	//	if (STATE_UP_IDLE != m_eState && STATE_UP_START != m_eState)
+	//		Set_State(STATE_UP_START);
+	//}
+
+
 	switch (m_eState)
 	{
 	case Client::CMushRoom::STATE_DOWN_IDLE:
@@ -141,11 +154,19 @@ void CMushRoom::Tick(_float fTimeDelta)
 void CMushRoom::Tick_Down_Idle(_float fTimeDelta)
 {
 	// 가만히 있는다
-	
+	//_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
+	//_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
+	//m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
+	//m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
+
 }
 
 void CMushRoom::Tick_Down_Start(_float fTimeDelta)
 {
+	//m_fTimeAcc += fTimeDelta;
+	//if (m_fTime > m_fTimeAcc)
+	//	return;
+
 	m_fRatio -= m_Desc.fDownSpeed * fTimeDelta;
 
 	if (0.f > m_fRatio)
@@ -165,6 +186,9 @@ void CMushRoom::Tick_Down_Start(_float fTimeDelta)
 
 void CMushRoom::Tick_Up_Start(_float fTimeDelta)
 {
+	//m_fTimeAcc += fTimeDelta;
+	//if (m_fTime > m_fTimeAcc)
+	//	return;
 
 	m_fRatio += m_Desc.fUpSpeed * fTimeDelta;
 
@@ -187,6 +211,34 @@ void CMushRoom::Tick_Up_Start(_float fTimeDelta)
 void CMushRoom::Tick_Up_Idle(_float fTimeDelta)
 {
 	// 켜서 가만히 있는다
+
+	//if (0.8f < m_fRatio)
+	//{
+	//	m_bTurn = true;
+	//}
+	//else if (0.5f > m_fRatio)
+	//{
+	//	m_bTurn = false;
+	//}
+
+	//if (m_bTurn)
+	//{
+	//	m_fRatio -= m_Desc.fUpSpeed * fTimeDelta;
+	//}
+	//else
+	//{
+	//	m_fRatio += m_Desc.fUpSpeed * fTimeDelta;
+	//}
+
+	//_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
+	//_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
+	//m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
+	//m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
+
+
+
+	//if (!CGameManager::Get_Instance()->Get_Musroom())
+	//	Set_State(STATE_DOWN_START);
 }
 
 
@@ -205,13 +257,16 @@ void CMushRoom::LateTick(_float fTimeDelta)
 	Tick_Col(m_pTransformCom->Get_WorldMatrix(), nullptr, nullptr);
 
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+
+	if(!CGameManager::Get_Instance()->Get_WispInfoNum())
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
+	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_EM, this);
 	RELEASE_INSTANCE(CGameInstance);
 
 
+	// CGameManager::Get_Instance()->Set_Musroom(false);
 	Set_State(STATE_DOWN_START);
 }
 
@@ -238,6 +293,15 @@ HRESULT CMushRoom::Render()
 		return E_FAIL;
 
 
+
+	_uint iIndex = 7;
+	if (STATE_UP_START == m_eState || STATE_UP_IDLE == m_eState)
+	{
+		iIndex = 9;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_MushColorRatio", &m_fRatio, sizeof(_float))))
+			return E_FAIL;
+	}
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
@@ -245,12 +309,12 @@ HRESULT CMushRoom::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 9)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iIndex)))
 			return E_FAIL;
 	}
 
 
-	Render_Col();
+	// Render_Col();
 
 
 	return S_OK;
@@ -261,6 +325,7 @@ void CMushRoom::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 	if ("Tag_Player" == Desc.pOther->Get_Tag() && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 	{
+		// CGameManager::Get_Instance()->Set_Musroom(true);
 		Set_State(STATE_UP_START);
 	}
 

@@ -250,6 +250,9 @@
     <Filter Include="02.GameObjects\Map\MushRoom">
       <UniqueIdentifier>{a784f513-dbf1-411a-8893-8f5b37acb786}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Map\Bindi">
+      <UniqueIdentifier>{1354cabe-63f1-48e2-81fb-71c64ef9f899}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -528,6 +531,9 @@
     <ClInclude Include="..\public\MushRoom.h">
       <Filter>02.GameObjects\Map\MushRoom</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Bindi.h">
+      <Filter>02.GameObjects\Map\Bindi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -790,6 +796,9 @@
     </ClCompile>
     <ClCompile Include="..\private\MushRoom.cpp">
       <Filter>02.GameObjects\Map\MushRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Bindi.cpp">
+      <Filter>02.GameObjects\Map\Bindi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

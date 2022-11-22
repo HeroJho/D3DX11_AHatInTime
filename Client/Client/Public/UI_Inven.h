@@ -32,8 +32,13 @@ public:
 	void Start();
 	void End();
 
+
+
 protected:
 	HRESULT Ready_Components();
+
+
+
 
 private:
 	CShader*				m_pShaderCom = nullptr;

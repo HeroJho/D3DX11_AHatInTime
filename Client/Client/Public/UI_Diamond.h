@@ -31,6 +31,8 @@ private:
 	CShader*				m_pShaderCom = nullptr;
 	CTexture*				m_pTextureCom = nullptr;
 
+
+
 public:
 	static CUI_Diamond* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

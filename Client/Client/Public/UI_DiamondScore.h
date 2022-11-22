@@ -27,12 +27,21 @@ public:
 public:
 	void Set_Score(_uint iNum);
 
+	void OnOff(_bool bOnOff) { m_bIsOn = bOnOff; }
+
+
 protected:
 	HRESULT Ready_Components();
 
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CTexture*				m_pTextureCom = nullptr;
+
+private:
+	_bool			m_bIsOn = false;
+	_float2			m_vOnPos;
+	_float2			m_vOffPos;
+
 
 public:
 	static CUI_DiamondScore* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

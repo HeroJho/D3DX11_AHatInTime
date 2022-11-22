@@ -86,6 +86,7 @@
 #include "Toilet_SentorWall.h"
 
 #include "MushRoom.h"
+#include "Bindi.h"
 
 #include "Test.h"
 
@@ -268,7 +269,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SwipsSky_Boss"),
 		CSwipsSky_Boss::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-	
+	/* For.Prototype_GameObject_Bindi*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Bindi"),
+		CBindi::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	/* For.Prototype_GameObject_PuzzleCube */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_PuzzleCube"),
