@@ -111,6 +111,7 @@ public:
 public: /* For. Target_Manager */
 	void Set_WipsData(_float* pWispRatios, _float4* pWispPoss, _int pWispNum);
 	void Set_Dark(_bool bDark);
+	void Set_PlayerPos(_float3 vPos);
 
 private:
 	CGraphic_Device*				m_pGraphic_Device = nullptr;

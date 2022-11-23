@@ -48,6 +48,8 @@ public:
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
+	virtual HRESULT Render_ShadowDepth() { return S_OK; }
+
 
 	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) {};
 	

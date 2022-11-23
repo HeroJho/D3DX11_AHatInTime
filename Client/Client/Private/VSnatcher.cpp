@@ -82,6 +82,8 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 		 // Set_State(STATE_DISAPPEAR);
 		 Set_State(STATE_CUT_6);
 		 Start_Dark();
+
+		 CUIManager::Get_Instance()->Set_Target(this);
 	 }
 	 else
 	 {
@@ -161,6 +163,7 @@ void CVSnatcher::Set_State(STATE eState)
 		case STATE_SNAPHAT:
 			Choose_SnapHat();
 			m_fSnapHatTimeAcc = 0.f;
+			CUIManager::Get_Instance()->Set_Text(TEXT("어떤 모자가 좋을까아~~~"), 0.6f, 1.f, true, true);
 			break;
 		case STATE_SIT:
 			Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
@@ -315,7 +318,7 @@ void CVSnatcher::Set_Anim()
 
 void CVSnatcher::Compute_Pattern(_float fTimeDelta)
 {
-	if (0 <= m_iSnatCount)
+	if (1 <= m_iSnatCount)
 	{
 		m_iSnatCount = 0;
 		Set_State(STATE_CANATTACKED);
@@ -671,6 +674,7 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 
 	m_fSnapHatTimeAcc += fTimeDelta;
 
+	
 	if (3.f < m_fSnapHatTimeAcc && 9.f > m_fSnapHatTimeAcc)
 	{
 		char cTemp[MAX_PATH];
@@ -684,6 +688,8 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 		++m_iSnatCount;
 
 		m_fSnapHatTimeAcc = 10.f;
+
+		CUIManager::Get_Instance()->On_Text(TEXT("유후~"), 0.6f, 1.f, true, true);
 	}
 	else if (11.5f < m_fSnapHatTimeAcc && 19.f > m_fSnapHatTimeAcc)
 	{
@@ -691,6 +697,8 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 		m_pSockatCom->Remove_Sockat(SLOT_HAND);
 		Equip_Sockat(m_sSnapTag, SLOT_HEAD);
 		m_fSnapHatTimeAcc = 20.f;
+
+		CUIManager::Get_Instance()->Off_Text(true);
 	}
 }
 

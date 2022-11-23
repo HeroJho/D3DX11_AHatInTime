@@ -3,6 +3,11 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+BEGIN(Engine)
+
+class CGameObject;
+
+END
 
 BEGIN(Client)
 
@@ -46,7 +51,7 @@ public:
 	void Set_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake = false, _bool bSmall = false);
 	void Off_Text(_bool bSmall = false);
 
-
+	void Set_Target(class CGameObject* pObj);
 
 public:
 	void Make_WitchChargEffect();

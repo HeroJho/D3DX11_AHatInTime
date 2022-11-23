@@ -468,6 +468,14 @@ void CGameInstance::Set_Dark(_bool bDark)
 	m_pTarget_Manager->Set_Dark(bDark);
 }
 
+void CGameInstance::Set_PlayerPos(_float3 vPos)
+{
+	if (nullptr == m_pTarget_Manager)
+		return;
+
+	m_pTarget_Manager->Set_PlayerPos(vPos);
+}
+
 
 
 void CGameInstance::Release_Engine()

@@ -41,6 +41,8 @@ HRESULT CUI_SmallSpeechBubble::Initialize(void * pArg)
 
 void CUI_SmallSpeechBubble::Tick(_float fTimeDelta)
 {
+	Set_Position();
+
 
 	if (m_bShake)
 	{
@@ -70,7 +72,7 @@ void CUI_SmallSpeechBubble::Tick(_float fTimeDelta)
 
 
 
-	UI_InputDebug(fTimeDelta);
+	// UI_InputDebug(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }
@@ -129,9 +131,15 @@ void CUI_SmallSpeechBubble::On_Text(TCHAR * sText, _float fSize, _float fPower, 
 	if (!lstrcmp(m_sText, sText))
 		return;
 
+
+
 	m_eState = STATE_ON;
+	ZeroMemory(m_sText, sizeof(TCHAR) * MAX_PATH);
 	lstrcpy(m_sText, sText);
-	m_iTextCount = 0;
+
+	wstring sTemp = sText;
+	m_iTextMaxCount = sTemp.size();
+
 	m_fTimeAcc = 0.f;
 
 	m_fAlpa = 0.f;
@@ -146,7 +154,14 @@ void CUI_SmallSpeechBubble::Set_Text(TCHAR * sText, _float fSize, _float fPower,
 		return;
 
 	m_eState = STATE_IDLE;
+
+	ZeroMemory(m_sText, sizeof(TCHAR) * MAX_PATH);
 	lstrcpy(m_sText, sText);
+
+	wstring sTemp = sText;
+	m_iTextMaxCount = sTemp.size();
+
+
 	m_iTextCount = 0;
 	m_fTimeAcc = 0.f;
 
@@ -161,6 +176,36 @@ void CUI_SmallSpeechBubble::Off_Text()
 	m_eState = STATE_OFF;
 
 	m_fAlpa = 1.f;
+}
+
+void CUI_SmallSpeechBubble::Set_Target(CGameObject * pObj)
+{
+	m_pObj = pObj;
+}
+
+void CUI_SmallSpeechBubble::Set_Position()
+{
+	if (nullptr == m_pObj)
+		return;
+
+	CTransform* pTran = (CTransform*)m_pObj->Get_ComponentPtr(TEXT("Com_Transform"));
+	_vector vPos = pTran->Get_State(CTransform::STATE_POSITION);
+	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 3.f);
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_matrix mView = pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+	_matrix mProj = pGameInstance->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
+	_matrix mTotal = mView * mProj;
+	vPos = XMVector3TransformCoord(vPos, mTotal);
+
+	m_UiInfo.fX = XMVectorGetX(vPos) * g_iWinSizeX + g_iWinSizeX * 0.5f;
+	m_UiInfo.fY = XMVectorGetY(vPos) * g_iWinSizeY * 0.5f;
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
 }
 
 
@@ -199,13 +244,13 @@ HRESULT CUI_SmallSpeechBubble::Render()
 		{
 			sTempText[i] = m_sText[i];
 		}
-
-		CToolManager::Get_Instance()->Render_FontsY(TEXT("Font_Nexon"), sTempText, _float2(m_UiInfo.fX * 0.5f + 20.f + m_fX, m_UiInfo.fY + m_fY), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(m_fSize, m_fSize));
+		m_fX = m_iTextMaxCount * m_fSize * 12.f;
+		CToolManager::Get_Instance()->Render_FontsY(TEXT("Font_Nexon"), sTempText, _float2(m_UiInfo.fX - m_fX, m_UiInfo.fY + m_fY), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(m_fSize, m_fSize));
 	}
 
 
 
-	UI_RenderDebug();
+	// UI_RenderDebug();
 
 	return S_OK;
 }

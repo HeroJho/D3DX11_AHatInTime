@@ -1,5 +1,6 @@
 #include "..\public\Graphic_Device.h"
 
+
 IMPLEMENT_SINGLETON(CGraphic_Device)
 
 CGraphic_Device::CGraphic_Device()

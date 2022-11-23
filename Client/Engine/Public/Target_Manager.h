@@ -21,6 +21,7 @@ public:
 
 
 public:
+	HRESULT Ready_ShadowDepthStencilRenderTargetView(ID3D11Device * pDevice, _uint iWinCX, _uint iWinCY);
 	HRESULT Add_RenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const _tchar* pTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT eFormat, const _float4* pClearColor);
 	HRESULT Add_MRT(const _tchar* pMRTTag, const _tchar* pTargetTag);
 
@@ -29,6 +30,9 @@ public:
 
 	/* 기존에 있던 렌더타겟을 빼고, 지정한 렌더타겟들(mrt)을 장치에 순서대로 바인딩한다. */
 	HRESULT Begin_MRT(ID3D11DeviceContext* pContext, const _tchar* pMRTTag);
+	HRESULT Begin_ShadowMRT(ID3D11DeviceContext* pContext, const _tchar* pMRTTag);
+
+
 
 	/* 원래 상태로 복구한다.(BackBuffer를 장치에 셋한다.) */
 	HRESULT End_MRT(ID3D11DeviceContext* pContext);
@@ -38,6 +42,8 @@ public:
 	HRESULT Initialize_Debug(const _tchar* pTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render_Debug(const _tchar* pMRTTag, class CVIBuffer* pVIBuffer, class CShader* pShader);
 #endif // _DEBUG
+
+
 
 
 
@@ -52,6 +58,10 @@ public:
 	_bool Get_Dark() { return m_bDark; }
 	void Set_Dark(_bool bDark) { m_bDark = bDark; }
 
+	void Set_PlayerPos(_float3 vPos) { m_vPlayerPos = vPos; }
+	_float3 Get_PlayerPos() { return m_vPlayerPos; }
+
+
 private: // 클라에서 넘어온 셰이더 데이터들
 	_bool			m_bIsWisp = false;
 	_int			m_iWispNum = 0;
@@ -62,6 +72,7 @@ private: // 클라에서 넘어온 셰이더 데이터들
 
 	_bool			m_bDark = false;
 
+	_float3			m_vPlayerPos;
 
 
 private: /* 생성한 렌더타겟들을 전체 다 모아놓는다. */
@@ -75,7 +86,7 @@ private: /* 동시에 바인딩되어야할 렌더타겟들을 LIST로 묶어놓는다. (Diffuse + Nor
 private:
 	ID3D11RenderTargetView*					m_pOldRenderTargets[8] = { nullptr };
 	ID3D11DepthStencilView*					m_pOldDepthStencil = nullptr;
-
+	ID3D11DepthStencilView*					m_pShadowDeptheStencil = nullptr;
 
 
 private:

@@ -153,6 +153,13 @@ HRESULT CUIManager::Make_SpeechBubble()
 	Safe_AddRef(m_pSpeechBubble);
 
 
+	UiInfoDesc.fSizeX = 230.f;
+	UiInfoDesc.fSizeY = 142.f;
+	UiInfoDesc.fX = g_iWinSizeX * 0.5f;
+	UiInfoDesc.fY = 86.7f;
+	UiInfoDesc.pDesc = nullptr;
+
+
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_SmallSpeechBubbles"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
 		return E_FAIL;
 
@@ -292,6 +299,11 @@ void CUIManager::Off_Text(_bool bSmall)
 	}
 
 
+}
+
+void CUIManager::Set_Target(CGameObject * pObj)
+{
+	m_pSmallSpeechBubble->Set_Target(pObj);
 }
 
 

@@ -25,6 +25,15 @@ HRESULT CRenderer::Initialize_Prototype()
 
 	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
 
+
+	// For.Target_ShadowDepth
+	_uint		iShadowMapCX = 1280;
+	_uint		iShadowMapCY = 720;
+	if (FAILED(m_pTarget_Manager->Ready_ShadowDepthStencilRenderTargetView(m_pDevice, iShadowMapCX, iShadowMapCY)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ShadowDepth"), iShadowMapCX, iShadowMapCY, DXGI_FORMAT_R32G32B32A32_FLOAT, &_float4(1.f, 1.f, 1.f, 1.f))))
+		return E_FAIL;
+
 	/* For.Target_Diffuse */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Diffuse"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
@@ -45,9 +54,9 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Specular"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
-	/* For.Target_Blur */
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
-		return E_FAIL;
+	///* For.Target_Blur */
+	//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+	//	return E_FAIL;
 
 
 
@@ -58,13 +67,19 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Depth"))))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Blur"))))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Blur"))))
+	//	return E_FAIL;
+
 
 	/* For.MRT_LightAcc */
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
+		return E_FAIL;
+
+
+	/* For.MRT_LightDepth*/
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightDepth"), TEXT("Target_ShadowDepth"))))
 		return E_FAIL;
 
 
@@ -80,8 +95,12 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Specular"), 300.f, 300.f, 200.f, 200.f)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Blur"), 300.f, 500.f, 200.f, 200.f)))
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_ShadowDepth"), 300.f, 500.f, 200.f, 200.f)))
 		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Blur"), 300.f, 500.f, 200.f, 200.f)))
+	//	return E_FAIL;
+
+
 
 	m_pShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements);
 	if (nullptr == m_pShader)
@@ -123,12 +142,19 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_Priority()))
 		return E_FAIL;
 
+	// 광원 깊이를 그린다.
+	if (FAILED(Render_ShadowDepth())) 
+		return E_FAIL;
+
+	// 디퓨즈, 벡터를 그린다.
 	if (FAILED(Render_NonAlphaBlend()))
 		return E_FAIL;
 
+	// 빛과 벡터로 빛을 그린다.
 	if (FAILED(Render_Lights()))
 		return E_FAIL;
 
+	// 디퓨즈와 빛 연산을 한다.(안개 처리)
 	if (FAILED(Render_Blend()))
 		return E_FAIL;
 
@@ -145,8 +171,8 @@ HRESULT CRenderer::Draw()
 #ifdef _DEBUG
 
 
-	if (FAILED(Render_Debug()))
-		return E_FAIL;
+	//if (FAILED(Render_Debug()))
+	//	return E_FAIL;
 
 
 #endif
@@ -174,6 +200,26 @@ HRESULT CRenderer::Render_Priority()
 		Safe_Release(pRenderObject);
 	}
 	m_RenderObjects[RENDER_PRIORITY].clear();
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_ShadowDepth()
+{
+	if (FAILED(m_pTarget_Manager->Begin_ShadowMRT(m_pContext, TEXT("MRT_LightDepth"))))
+		return E_FAIL;
+
+	for (auto& pRenderObject : m_RenderObjects[RENDER_SHADOWDEPTH])
+	{
+		if (nullptr != pRenderObject)
+			pRenderObject->Render_ShadowDepth();
+
+		Safe_Release(pRenderObject);
+	}
+	m_RenderObjects[RENDER_SHADOWDEPTH].clear();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -286,16 +332,50 @@ HRESULT CRenderer::Render_Blend()
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Specular"), m_pShader, "g_SpecularTexture")))
 		return E_FAIL;
 
-	// 안개를 위한 연산
+
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+		return E_FAIL;
+
+
+
+	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
+	// 그림자
 	{
-		if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Depth"), m_pShader, "g_DepthTexture")))
+		if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_ShadowDepth"), m_pShader, "g_ShadowDepthTexture")))
 			return E_FAIL;
 
-		CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
+
+
+
+
+		_vector vPos = XMVectorSetW(XMLoadFloat3(&m_pTarget_Manager->Get_PlayerPos()), 1.f);
+		_vector		vLightAt = XMVectorSetW(vPos, 1.f);
+		vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
+		vPos = XMVectorSetX(vPos, XMVectorGetX(vPos) - 7.f);
+		_vector		vLightEye = XMVectorSetW(vPos, 1.f);
+		_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 1.f);
+
+		_float4x4		LightViewMatrix;
+		XMStoreFloat4x4(&LightViewMatrix, XMMatrixTranspose(XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp)));
+		if (FAILED(m_pShader->Set_RawValue("g_ShadowViewMatrix", &LightViewMatrix, sizeof(_float4x4))))
+			return E_FAIL;
+
+		if (FAILED(m_pShader->Set_RawValue("g_CamProjMatrix", &pPipeLine->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+			return E_FAIL;
+
+
+	}
+
+
+	// 안개를 위한 연산
+	{
 		if (FAILED(m_pShader->Set_RawValue("g_vCamPosition", &pPipeLine->Get_CamPosition(), sizeof(_float4))))
 			return E_FAIL;
-		RELEASE_INSTANCE(CPipeLine);
+
 	}
+
+	RELEASE_INSTANCE(CPipeLine);
 
 	// 윕스 안개 없애기
 	{
@@ -403,6 +483,7 @@ HRESULT CRenderer::Render_Debug()
 
 	m_pTarget_Manager->Render_Debug(TEXT("MRT_Deferred"), m_pVIBuffer, m_pShader);
 	m_pTarget_Manager->Render_Debug(TEXT("MRT_LightAcc"), m_pVIBuffer, m_pShader);
+	m_pTarget_Manager->Render_Debug(TEXT("MRT_LightDepth"), m_pVIBuffer, m_pShader);
 
 	for (auto& pDebugCom : m_DebugObject)
 	{

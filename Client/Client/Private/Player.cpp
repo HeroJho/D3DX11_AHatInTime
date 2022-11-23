@@ -81,6 +81,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 	_uint iNavi = CToolManager::Get_Instance()->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	m_pNavigationCom->Set_NaviIndex(iNavi);
 
+
 	return S_OK;
 }
 
@@ -917,12 +918,15 @@ void CPlayer::State_Input(_float fTimeDelta)
 	{
 		CToolManager::Get_Instance()->Resul_Level(LEVEL_BOSS);
 		RELEASE_INSTANCE(CGameInstance);
+
+		RELEASE_INSTANCE(CGameInstance);
 		return;
 	}
 	if (pGameInstance->Key_Down(DIK_N))
 	{
-		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_pNavigationCom->Get_CurCellIndex(), 15);
+		//_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		//CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_pNavigationCom->Get_CurCellIndex(), 15);
+
 	}
 
 
@@ -1991,10 +1995,14 @@ void CPlayer::LateTick(_float fTimeDelta)
 
 		if (STATE_NONE != m_eState)
 		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this);
+
+
 			if(!m_bDark)
 				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 			else
 				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+			
 			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 			pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_PLAYER, this);
 			RELEASE_INSTANCE(CGameInstance);
@@ -2184,6 +2192,59 @@ HRESULT CPlayer::Render()
 		CToolManager::Get_Instance()->Render_Fonts(TEXT("Font_Nexon"), str.data(), _float2(50.f, 50.f), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(1.f, 1.f), false);
 	}
 
+
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Render_ShadowDepth()
+{
+	if (CToolManager::Get_Instance()->Get_IsLoading())
+		return S_OK;
+
+	if (nullptr == m_pShaderCom ||
+		nullptr == m_pTransformCom)
+		return E_FAIL;
+
+
+
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
+		return E_FAIL;
+
+
+
+	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float3 vVPos; XMStoreFloat3(&vVPos, vPos);
+	pGameInstance->Set_PlayerPos(vVPos);
+	_vector		vLightAt = XMVectorSetW(vPos, 1.f);
+	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
+	vPos = XMVectorSetX(vPos, XMVectorGetX(vPos) - 7.f);
+	_vector		vLightEye = XMVectorSetW(vPos, 1.f);
+	_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 1.f);
+
+	_float4x4		LightViewMatrix;
+	_matrix temp = XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp);
+	XMStoreFloat4x4(&LightViewMatrix, XMMatrixTranspose(temp));
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &LightViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 8)))
+			return E_FAIL;
+	}
 
 
 	return S_OK;

@@ -142,11 +142,11 @@
     <ClCompile Include="..\private\RenderTarget.cpp">
       <Filter>04.Utility\05.RenderTargets</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Target_Manager.cpp">
-      <Filter>04.Utility\05.RenderTargets\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="..\private\Frustum.cpp">
       <Filter>04.Utility\06.Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Target_Manager.cpp">
+      <Filter>04.Utility\05.RenderTargets\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -306,11 +306,11 @@
     <ClInclude Include="..\public\RenderTarget.h">
       <Filter>04.Utility\05.RenderTargets</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Target_Manager.h">
-      <Filter>04.Utility\05.RenderTargets\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="..\public\Frustum.h">
       <Filter>04.Utility\06.Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Target_Manager.h">
+      <Filter>04.Utility\05.RenderTargets\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

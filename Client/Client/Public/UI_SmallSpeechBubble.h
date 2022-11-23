@@ -32,10 +32,14 @@ private:
 	void Tick_Idle(_float fTimeDelta);
 	void Tick_Off(_float fTimeDelta);
 
+	void Set_Position();
+
 public:
 	void On_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake);
 	void Set_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake);
 	void Off_Text();
+
+	void Set_Target(CGameObject* pObj);
 
 private:
 	HRESULT Ready_Components();
@@ -49,11 +53,15 @@ private:
 	_float m_fTimeAcc = 0.f;
 	_float m_fAlpa = 0.f;
 
+	_uint m_iTextMaxCount = 0;
+
 	_bool m_bShake = false;
 	_float m_fX = 0;
 	_float m_fY = 0;
 	_float m_fPower = 0.f;
 	_float m_fSize = 1.f;
+
+	CGameObject* m_pObj = nullptr;
 
 private:
 	CShader*				m_pShaderCom = nullptr;
