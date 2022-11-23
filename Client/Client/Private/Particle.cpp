@@ -63,11 +63,12 @@ HRESULT CParticle::Initialize(void * pArg)
 
 		_vector vDir = XMLoadFloat3(&m_Desc.vDir);
 		XMStoreFloat3(&m_Desc.vDir, XMVector3TransformNormal(vDir, mRoteMatrix));
+		m_pTransformCom->Set_Look(mRoteMatrix.r[2]);
 	}
 	
 
 	// 바라보고 회전
-	m_pTransformCom->Rotation(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_Desc.vRoation.x,
+		m_pTransformCom->RotationStay(XMVectorSet(1.f, 0.f, 0.f, 0.f), m_Desc.vRoation.x,
 		XMVectorSet(0.f, 1.f, 0.f, 0.f), m_Desc.vRoation.y,
 		XMVectorSet(0.f, 0.f, 1.f, 0.f), m_Desc.vRoation.z);
 
@@ -153,10 +154,13 @@ void CParticle::Tick_Model(_float fTimeDelta)
 	// 크기 변화
 	m_pTransformCom->Go_Scale(m_Desc.vScaleSpeed, fTimeDelta);
 
-	if (m_bRotC)
-		m_pTransformCom->Turn(XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
-	else
-		m_pTransformCom->Turn(-XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
+	if (lstrcmp(TEXT("SprintParticle"), m_Desc.cModelTag))
+	{
+		if (m_bRotC)
+			m_pTransformCom->Turn(XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
+		else
+			m_pTransformCom->Turn(-XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
+	}
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -241,7 +245,7 @@ void CParticle::LateTick_Model(_float fTimeDelta)
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 	RELEASE_INSTANCE(CGameInstance);
 	if (true == isDraw)
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
 }
 
 void CParticle::LateTick_Texture(_float fTimeDelta)
@@ -323,7 +327,11 @@ HRESULT CParticle::Render_Model()
 	RELEASE_INSTANCE(CGameInstance);
 
 
-
+	_uint iPassIndex = 0;
+	if (!lstrcmp(TEXT("SprintParticle"), m_Desc.cModelTag) || !lstrcmp(TEXT("SmokeParticle"), m_Desc.cModelTag))
+	{
+		iPassIndex = 10;
+	}
 
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
@@ -336,7 +344,7 @@ HRESULT CParticle::Render_Model()
 		return E_FAIL;*/
 
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 

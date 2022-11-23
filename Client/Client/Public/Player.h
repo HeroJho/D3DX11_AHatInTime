@@ -192,7 +192,7 @@ private:
 	_float3				m_vHillDir;
 
 	// For. Mage
-	_float				m_fMageGageTime = 2.f;
+	_float				m_fMageGageTime = 1.f;
 	_float				m_fMageTimeAcc = 0.f;
 
 	// For. FoxMask

@@ -112,15 +112,33 @@ void CParticleManager::Create_Effect(const TCHAR * cModelTag, _float3 vParentPos
 		_float		fRandomScaleValueMin = vScale.x - fRandScale;
 		if (0.f >= fRandomScaleValueMin)
 			fRandomScaleValueMin = 0.1f;
-		_float		fRandomScaleValue = CToolManager::Get_Instance()->Get_RendomNum(fRandomScaleValueMin, vScale.x + fRandScale);
-		_float3		vRandomScale = _float3(fRandomScaleValue, fRandomScaleValue, fRandomScaleValue);
 
 
-		_float fRotationX = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
-		_float fRotationY = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
-		_float fRotationZ = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
-		_float3		vRandRotation(fRotationX, fRotationY, fRotationZ);
+		_float3		vRandomScale;
+		if (vScale.x == vScale.y && vScale.y == vScale.z)
+		{
+			_float		fRandomScaleValueX = CToolManager::Get_Instance()->Get_RendomNum(fRandomScaleValueMin, vScale.x + fRandScale);
+			vRandomScale = _float3(fRandomScaleValueX, fRandomScaleValueX, fRandomScaleValueX);
+		}
+		else
+		{
+			_float		fRandomScaleValueX = CToolManager::Get_Instance()->Get_RendomNum(fRandomScaleValueMin, vScale.x + fRandScale);
+			_float		fRandomScaleValueY = CToolManager::Get_Instance()->Get_RendomNum(fRandomScaleValueMin, vScale.y + fRandScale);
+			_float		fRandomScaleValueZ = CToolManager::Get_Instance()->Get_RendomNum(fRandomScaleValueMin, vScale.z + fRandScale);
+			vRandomScale = _float3(fRandomScaleValueX, fRandomScaleValueY, fRandomScaleValueZ);
+		}
 
+
+		_float3		vRandRotation;
+		if (lstrcmp(TEXT("SprintParticle"), cModelTag))
+		{
+			_float fRotationX = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
+			_float fRotationY = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
+			_float fRotationZ = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
+			vRandRotation = _float3(fRotationX, fRotationY, fRotationZ);
+		}
+		else
+			vRandRotation = vRotaion;
 
 		// Speed Speed
 		_float		fRandomStopValueMin = fStopValue - fRandStopValue;

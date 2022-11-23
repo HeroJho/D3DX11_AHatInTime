@@ -6,6 +6,12 @@
 
 #include "ItemManager.h"
 
+BEGIN(Engine)
+class CModel;
+END
+
+
+
 BEGIN(Client)
 
 class CDiamond final : public CItem
@@ -37,6 +43,9 @@ public:
 	void Init_Pigic_Bounding(_float OriJumpPow, _float OriDirPow);
 	void Tick_Pigic_Bounding(_float fTimeDelta);
 
+
+private:
+	CModel*					m_pModelCom2 = nullptr;
 
 private:
 	CItemManager::SPRINTDESC m_Desc;

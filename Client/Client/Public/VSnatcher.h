@@ -25,7 +25,7 @@ public:
 		STATE_MINON, STATE_MAGICSTART, STATE_MAGIC, STATE_HOITSTART, 
 		STATE_HOIT, STATE_SNAPHAT, 
 		STATE_SWIPSTART, STATE_SWIPS, STATE_SIT,
-		STATE_ATTACK, STATE_END };
+		STATE_ATTACK, STATE_CANATTACKED, STATE_END };
 	enum SLOT { SLOT_HAND, SLOT_HEAD, SLOT_SPIN, SLOT_END };
 
 private:
@@ -47,6 +47,7 @@ public:
 	void Set_State(STATE eState);
 	void Set_Anim();
 
+	void Attacked();
 
 public:
 	void Tick_Appear(_float fTimeDelta);
@@ -70,6 +71,8 @@ public:
 	void Tick_Attack(_float fTimeDelta);
 
 	void Tick_SnapHat(_float fTimeDelta);
+
+	void Tick_CanAttacked(_float fTimeDelta);
 
 
 	void Tick_Cut_1(_float fTimeDelta);
@@ -98,6 +101,8 @@ private:
 
 	void Start_Dark();
 	void End_Dark();
+
+
 
 private:
 	// For. Common
@@ -137,7 +142,7 @@ private:
 	_float m_fSnapHatTimeAcc = 0.f;
 	_int m_iSnapIndex = -1;
 	string   m_sSnapTag = "";
-
+	_uint m_iSnatCount = 0;
 
 
 	// For. Cut
@@ -146,8 +151,16 @@ private:
 	_int m_iTalkCount = 0;
 	_bool m_bCutBool = false;
 
-
 	_bool m_bDark = false;
+
+
+	// For. CanAttacked
+	_float m_fCanAttackedTimeAcc = 0.f;
+
+	_bool m_bAttacked = false;
+	_float m_fAttackedTimeAcc = 0.f;
+
+
 
 private:
 	CShader*				m_pShaderCom = nullptr;

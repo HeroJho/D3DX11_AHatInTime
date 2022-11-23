@@ -235,11 +235,17 @@ void CParticleManager::Create_Effect(const TCHAR * cModelTag, _float3 vParentPos
 		_float3		vRandomScale = _float3(fRandomScaleValue, fRandomScaleValue, fRandomScaleValue);
 
 
-		_float fRotationX = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
-		_float fRotationY = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
-		_float fRotationZ = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
-		_float3		vRandRotation(fRotationX, fRotationY, fRotationZ);
-
+		_float3		vRandRotation;
+		if (lstrcmp(TEXT("SprintParticle"), cModelTag))
+		{
+			_float fRotationX = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
+			_float fRotationY = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
+			_float fRotationZ = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
+			vRandRotation = _float3(fRotationX, fRotationY, fRotationZ);
+		}
+		else
+			vRandRotation = vRotaion;
+		
 		
 		// Speed Speed
 		_float		fRandomStopValueMin = fStopValue - fRandStopValue;

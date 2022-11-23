@@ -51,6 +51,7 @@
 #include "Toilet_Scream.h"
 #include "Particle.h"
 #include "FlaskLight.h"
+#include "WitchChargEffect.h"
 
 
 #include "UI_Edit.h"
@@ -314,6 +315,12 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Toilet_SentorWall"),
 		CToilet_SentorWall::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	/* For.Prototype_GameObject_WitchChargEffect */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_WitchChargEffect"),
+		CWitchChargEffect::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
 
 	/* For.Prototype_GameObject_MushRoom */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MushRoom"),

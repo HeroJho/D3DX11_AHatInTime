@@ -56,6 +56,8 @@ private:
 
 	_bool m_bEx = false;
 
+	class CWitchChargEffect* m_pWitchChargEffect = nullptr;
+
 protected:
 	HRESULT Ready_Components();
 

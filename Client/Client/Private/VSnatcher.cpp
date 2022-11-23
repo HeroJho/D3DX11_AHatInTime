@@ -8,6 +8,7 @@
 #include "ItemManager.h"
 #include "UIManager.h"
 #include "CutSceneManager.h"
+#include "ParticleManager.h"
 
 #include "Player.h"
 #include "Camera_Free.h"
@@ -19,6 +20,7 @@
 #include "Parts.h"
 #include "CaulDron.h"
 #include "Toilet_Scream.h"
+
 
 CVSnatcher::CVSnatcher(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -86,7 +88,9 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 		 Set_State(STATE_DISAPPEAR);
 		 Set_State(STATE_CUT_0);
 	 }
-
+	 
+	 m_CreatureDesc.iMaxHP = 10;
+	 m_CreatureDesc.iHP = 10;
 
 	return S_OK;
 }
@@ -162,7 +166,11 @@ void CVSnatcher::Set_State(STATE eState)
 			Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
 			Equip_Sockat("Snatcher_Book", SLOT_HAND);
 			break;
-
+		case STATE_CANATTACKED:
+			m_bAttacked = false;
+			m_fAttackedTimeAcc = 0.f;
+			m_fCanAttackedTimeAcc = 0.f;
+			break;
 
 
 		case STATE_CUT_0:
@@ -294,6 +302,9 @@ void CVSnatcher::Set_Anim()
 	case STATE_SIT:
 		m_pModelCom->Set_AnimIndex(15);
 		break;
+	case STATE_CANATTACKED:
+		m_pModelCom->Set_AnimIndex(8);
+		break;
 	default:
 		break;
 	}
@@ -304,12 +315,21 @@ void CVSnatcher::Set_Anim()
 
 void CVSnatcher::Compute_Pattern(_float fTimeDelta)
 {
+	if (0 <= m_iSnatCount)
+	{
+		m_iSnatCount = 0;
+		Set_State(STATE_CANATTACKED);
+		return;
+	}
+
+
+
 	_uint iRendNum = CToolManager::Get_Instance()->Get_RendomNum_Int(0, 2);
 
 	switch (iRendNum)
 	{
 	case 0:
-		 // Set_State(STATE_CURSESTART);
+		// Set_State(STATE_CURSESTART);
 		break;
 	case 1:
 		// Set_State(STATE_MAGICSTART);
@@ -377,6 +397,9 @@ void CVSnatcher::Tick(_float fTimeDelta)
 		break;
 	case STATE_ATTACK:
 		Tick_Attack(fTimeDelta);
+		break;
+	case STATE_CANATTACKED:
+		Tick_CanAttacked(fTimeDelta);
 		break;
 
 	case STATE_CUT_1:
@@ -657,6 +680,9 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 		CItemManager::Get_Instance()->Delete_Hat(szTemp);
 
 		Equip_Sockat(m_sSnapTag, SLOT_HAND);
+
+		++m_iSnatCount;
+
 		m_fSnapHatTimeAcc = 10.f;
 	}
 	else if (11.5f < m_fSnapHatTimeAcc && 19.f > m_fSnapHatTimeAcc)
@@ -666,6 +692,36 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 		Equip_Sockat(m_sSnapTag, SLOT_HEAD);
 		m_fSnapHatTimeAcc = 20.f;
 	}
+}
+
+void CVSnatcher::Tick_CanAttacked(_float fTimeDelta)
+{
+	
+	if (m_bAttacked)
+	{
+		m_fAttackedTimeAcc += fTimeDelta;
+		if (0.1f < m_fAttackedTimeAcc)
+		{
+			Set_State(STATE_IDLE);
+			m_bAttacked = false;
+			m_fAttackedTimeAcc = 0.f;
+			m_fCanAttackedTimeAcc = 0.f;
+			CToolManager::Get_Instance()->Set_All(1.f);
+		}
+	}
+	else
+	{
+		m_fCanAttackedTimeAcc += fTimeDelta;
+
+		if (5.f < m_fCanAttackedTimeAcc)
+		{
+			Set_State(STATE_IDLE);
+			m_bAttacked = false;
+			m_fAttackedTimeAcc = 0.f;
+			m_fCanAttackedTimeAcc = 0.f;
+		}
+	}
+
 }
 
 
@@ -1176,8 +1232,10 @@ void CVSnatcher::LateTick(_float fTimeDelta)
 
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
 
+	if (STATE_CANATTACKED == m_eState)
+		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
+	
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f);
 	if (true == isDraw)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
@@ -1549,6 +1607,30 @@ void CVSnatcher::End_Dark()
 }
 
 
+void CVSnatcher::Attacked()
+{
+	if (m_bAttacked)
+		return;
+
+	--m_CreatureDesc.iHP;
+	if (0 >= m_CreatureDesc.iHP)
+	{
+		// ¿£µù
+		m_CreatureDesc.iHP = 0;
+	}
+	else
+	{
+		// Set_State(STATE_IDLE);
+		m_bAttacked = true;
+		CToolManager::Get_Instance()->Set_All(0.05f);
+		Drop_Hat();
+		m_pSockatCom->Remove_Sockat(SLOT_HEAD);
+
+
+	}
+}
+
+
 
 
 
@@ -1576,10 +1658,17 @@ HRESULT CVSnatcher::Render()
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	_uint iIndex = 0;
+
+	if (m_bAttacked)
+		iIndex = 7;
+
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
 		if (1 == i && m_bDark)
-			iIndex = 6;
+		{
+				iIndex = 6;
+		}
+			
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
@@ -1599,6 +1688,13 @@ void CVSnatcher::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
+
+
+		if (!strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+		{
+			// Attacked();
+		}
+
 
 		if (!strcmp("Near_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
@@ -1679,9 +1775,9 @@ HRESULT CVSnatcher::Ready_Components()
 	ZeroMemory(&ColDesc, sizeof(CCollider::COLLIDERDESC));
 
 
-	ColDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	ColDesc.vCenter = _float3(0.f, 1.5f, 0.f);
 	ColDesc.vRotation = _float3(0.f, 0.f, 0.f);
-	ColDesc.vSize = _float3(1.f, 1.f, 1.f);
+	ColDesc.vSize = _float3(2.5f, 2.5f, 2.5f);
 	strcpy(ColDesc.sTag, "Attacked_Sphere");
 	if (FAILED(AddCollider(CCollider::TYPE_SPHERE, ColDesc)))
 		return E_FAIL;

@@ -83,8 +83,6 @@ void CDiamond::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
-	__super::LateTick(fTimeDelta);
-
 	if (!m_bGet)
 	{
 
@@ -109,28 +107,90 @@ void CDiamond::LateTick(_float fTimeDelta)
 	}
 
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_ITEM, this);
-	RELEASE_INSTANCE(CGameInstance);
 
+
+
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
+	if (true == isDraw)
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+
+	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_ITEM, this);
+
+	Compute_CamZ(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 HRESULT CDiamond::Render()
 {
+	if (nullptr == m_pModelCom ||
+		nullptr == m_pShaderCom)
+		return E_FAIL;
+
+
+
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
-	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
+
+	_float4x4		WorldMatrix;
+
+	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(m_pTransformCom->Get_WorldMatrix() * m_pParentTransformCom->Get_WorldMatrix()));
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
 	RELEASE_INSTANCE(CGameInstance);
-	if (true == isDraw)
+
+
+	_bool bIsDia = true;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_IsDia", &bIsDia, sizeof(_bool))))
+		return E_FAIL;
+
+
+	_uint		iNumMeshes = m_pModelCom2->Get_NumMeshes();
+	_uint iPassIndex = 11;
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		if (FAILED(__super::Render()))
+		if (FAILED(m_pModelCom2->SetUp_OnShader(m_pShaderCom, m_pModelCom2->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom2->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
+
+
+
+	//bIsDia = false;
+	//if (FAILED(m_pShaderCom->Set_RawValue("g_IsDia", &bIsDia, sizeof(_bool))))
+	//	return E_FAIL;
+	//
+	//iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+
+	//for (_uint i = 0; i < iNumMeshes; ++i)
+	//{
+	//	if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+	//		return E_FAIL;
+
+	//	if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
+	//		return E_FAIL;
+	//}
+
 
 
 	if (CToolManager::Get_Instance()->Get_Debug())
 		Render_Col();
 
+
+
 	return S_OK;
+
 }
 
 HRESULT CDiamond::SetUp_State(_fmatrix StateMatrix)
@@ -269,6 +329,13 @@ void CDiamond::Tick_Pigic_Bounding(_float fTimeDelta)
 HRESULT CDiamond::Ready_Components()
 {
 
+
+	/* For.Com_Model */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Diamond"), TEXT("Com_Model2"), (CComponent**)&m_pModelCom2)))
+		return E_FAIL;
+
+
+
 	if (m_Desc.bIsPigic)
 	{
 		/* For.Com_Navigation */
@@ -339,7 +406,7 @@ void CDiamond::Free()
 {
 	__super::Free();
 
-
+	Safe_Release(m_pModelCom2);
 	Safe_Release(m_pNavigationCom);
 
 }

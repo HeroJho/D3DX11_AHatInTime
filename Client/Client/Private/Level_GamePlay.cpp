@@ -89,6 +89,7 @@ HRESULT CLevel_GamePlay::Render()
 
 HRESULT CLevel_GamePlay::Ready_Lights()
 {
+
 	//CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
 	//LIGHTDESC			LightDesc;

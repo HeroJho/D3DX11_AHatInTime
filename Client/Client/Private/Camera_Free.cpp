@@ -289,8 +289,8 @@ void CCamera_Free::OriCamPos(_float fDeltaTime)
 	else
 	{
 		_vector vXMShakePosAcc = XMLoadFloat3(&m_vShakePosAcc);
-		_vector vShakeDir = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-		vShakeDir += m_pTransformCom->Get_State(CTransform::STATE_UP);
+		_vector vShakeDir = XMVectorSet(1.f, 0.f, 1.f, 0.f);// m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
+		// vShakeDir += m_pTransformCom->Get_State(CTransform::STATE_UP);
 		vShakeDir = XMVector3Normalize(vShakeDir);
 
 		if(m_bShakeTurn)
@@ -362,8 +362,6 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 		XMStoreFloat3(&m_vPreLookPos, vDestPos);
 		m_pTransformCom->LookAt(XMVectorSetW(vDestPos, 1.f));
 	}
-	
-
 	
 
 }

@@ -50,6 +50,9 @@ void CToilet_Scream::Tick(_float fTimeDelta)
 
 void CToilet_Scream::LateTick(_float fTimeDelta)
 {
+	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
+
+
 	if (nullptr == m_pRendererCom)
 		return;
 

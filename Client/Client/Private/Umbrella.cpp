@@ -1,9 +1,14 @@
 #include "stdafx.h"
 #include "..\Public\Umbrella.h"
 #include "GameInstance.h"
-#include "Player.h"
+
 #include "ToolManager.h"
+#include "ParticleManager.h"
+
+#include "Player.h"
 #include "Monster.h"
+#include "VSnatcher.h"
+
 
 CUmbrella::CUmbrella(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -166,10 +171,29 @@ void CUmbrella::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 	if (!m_bCanAttack)
 		return;
 
-	if (("Tag_Monster" == Desc.pOther->Get_Tag() || "BageS_Base" == Desc.pOther->Get_Tag()) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
+	if (("Tag_Monster" == Desc.pOther->Get_Tag() || "BageS_Base" == Desc.pOther->Get_Tag() || "Tag_Snatcher" == Desc.pOther->Get_Tag()) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 	{
-		((CMonster*)Desc.pOther)->Attacked(1);
-		m_bCanAttack = false;
+		// 점프 공격
+		if ("Tag_Snatcher" == Desc.pOther->Get_Tag())
+		{
+			((CVSnatcher*)Desc.pOther)->Attacked();
+			m_bCanAttack = false;
+
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION) + m_pParentTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.4f, 0.4f, 0.4f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 3.f, false, 0.f, 0.f, 1.5f,
+				5, 1.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+
+		}
+		else
+		{
+			((CMonster*)Desc.pOther)->Attacked(1);
+			m_bCanAttack = false;
+
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION) + m_pParentTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.4f, 0.4f, 0.4f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 3.f, false, 0.f, 0.f, 1.f,
+				5, 1.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+
+		}
 	}
 }
 

@@ -288,7 +288,6 @@ void CBindi::LateTick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
 
-	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_EM, this);
 	RELEASE_INSTANCE(CGameInstance);
 
 }
@@ -417,9 +416,6 @@ void CBindi::Free()
 {
 	__super::Free();
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Remove_Light(m_pLight);
-	RELEASE_INSTANCE(CGameInstance);
 
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pVIBufferCom);

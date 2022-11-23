@@ -90,6 +90,7 @@ public: /* For.Light_Manager */
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc, class CLight** Out_pLight);
 	HRESULT Remove_Light(CLight* pLight);
+	void Clear_Light();
 
 public: /* For. ColliderManager */
 	void Add_ColGroup(CColliderManager::COLLIDERGROUP eGroup, class CGameObject* pObj);

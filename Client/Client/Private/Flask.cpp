@@ -11,6 +11,7 @@
 
 #include "Flask_EX.h"
 #include "FlaskLight.h"
+#include "WitchChargEffect.h"
 
 CFlask::CFlask(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CItem(pDevice, pContext)
@@ -51,6 +52,12 @@ HRESULT CFlask::Initialize(void * pArg)
 	m_sTag = "Tag_Item";
 
 	m_pTransformCom->Jump(m_Desc.fJumpPow);
+
+
+
+
+
+
 
 	return S_OK;
 }
@@ -114,7 +121,7 @@ void CFlask::LateTick(_float fTimeDelta)
 			20, 2.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_TEXTURE);
 
 
-		CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.25f, 10.f, 0.05f);
+		CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.2f, 10.f, 0.07f);
 
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();

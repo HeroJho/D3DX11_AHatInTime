@@ -60,6 +60,14 @@ HRESULT CLight_Manager::Remove_Light(CLight * pLight)
 	return S_OK;
 }
 
+void CLight_Manager::Clear_Light()
+{
+	for (auto& pLight : m_Lights)
+		Safe_Release(pLight);
+
+	m_Lights.clear();
+}
+
 HRESULT CLight_Manager::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 {
 	for (auto& pLight : m_Lights)
@@ -70,8 +78,5 @@ HRESULT CLight_Manager::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 
 void CLight_Manager::Free()
 {
-	for (auto& pLight : m_Lights)
-		Safe_Release(pLight);
-
-	m_Lights.clear();
+	Clear_Light();
 }

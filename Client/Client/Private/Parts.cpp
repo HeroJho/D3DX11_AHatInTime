@@ -2,6 +2,9 @@
 #include "..\Public\Parts.h"
 #include "GameInstance.h"
 
+#include "ToolManager.h"
+#include "WitchChargEffect.h"
+
 CParts::CParts(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
 {
@@ -42,12 +45,15 @@ HRESULT CParts::Initialize(void * pArg)
 	vPos = XMVectorSetW(vPos, 1.f);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 
-	
+
+
 	return S_OK;
 }
 
 void CParts::Tick(_float fTimeDelta)
 {
+
+
 
 }
 
@@ -57,6 +63,11 @@ void CParts::LateTick(_float fTimeDelta)
 		return;
 
 	// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+
+
+
+
+
 }
 
 HRESULT CParts::Render()

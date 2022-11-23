@@ -258,8 +258,14 @@ void CMushRoom::LateTick(_float fTimeDelta)
 
 
 
-	if(!CGameManager::Get_Instance()->Get_WispInfoNum())
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+	if (!CGameManager::Get_Instance()->Get_WispInfoNum())
+	{
+		if (STATE_UP_START == m_eState || STATE_UP_IDLE == m_eState || STATE_DOWN_START == m_eState)
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+		else
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	}
+
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_EM, this);
@@ -295,7 +301,7 @@ HRESULT CMushRoom::Render()
 
 
 	_uint iIndex = 7;
-	if (STATE_UP_START == m_eState || STATE_UP_IDLE == m_eState)
+	if (STATE_UP_START == m_eState || STATE_UP_IDLE == m_eState || STATE_DOWN_START == m_eState)
 	{
 		iIndex = 9;
 		if (FAILED(m_pShaderCom->Set_RawValue("g_MushColorRatio", &m_fRatio, sizeof(_float))))
@@ -426,9 +432,6 @@ void CMushRoom::Free()
 {
 	__super::Free();
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	pGameInstance->Remove_Light(m_pLight);
-	RELEASE_INSTANCE(CGameInstance);
 
 
 	Safe_Release(m_pModelCom);

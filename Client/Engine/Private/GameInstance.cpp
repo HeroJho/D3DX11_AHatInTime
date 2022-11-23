@@ -384,6 +384,14 @@ HRESULT CGameInstance::Remove_Light(CLight * pLight)
 	return m_pLight_Manager->Remove_Light(pLight);
 }
 
+void CGameInstance::Clear_Light()
+{
+	if (nullptr == m_pLight_Manager)
+		return;
+
+	m_pLight_Manager->Clear_Light();
+}
+
 
 
 void CGameInstance::Add_ColGroup(CColliderManager::COLLIDERGROUP eGroup, CGameObject * pObj)

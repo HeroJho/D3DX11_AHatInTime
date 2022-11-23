@@ -21,6 +21,7 @@ public:
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc, class CLight** pLight);
 	HRESULT Remove_Light(CLight* pLight);
+	void Clear_Light();
 	
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
 private:

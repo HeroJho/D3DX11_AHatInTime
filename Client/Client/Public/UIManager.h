@@ -46,6 +46,11 @@ public:
 	void Off_Text();
 
 
+
+public:
+	void Make_WitchChargEffect();
+
+
 private:
 	class CUI_Inven*		m_pInven = nullptr;
 	class CUI_Item_Inven*	m_pItem_Inven = nullptr;

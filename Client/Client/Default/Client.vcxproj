@@ -254,6 +254,7 @@
     <ClInclude Include="..\public\Vault_State.h" />
     <ClInclude Include="..\public\VSnatcher.h" />
     <ClInclude Include="..\public\Wisp.h" />
+    <ClInclude Include="..\public\WitchChargEffect.h" />
     <ClInclude Include="..\public\Yarn.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
@@ -346,6 +347,7 @@
     <ClCompile Include="..\private\Vault_State.cpp" />
     <ClCompile Include="..\private\VSnatcher.cpp" />
     <ClCompile Include="..\private\Wisp.cpp" />
+    <ClCompile Include="..\private\WitchChargEffect.cpp" />
     <ClCompile Include="..\private\Yarn.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

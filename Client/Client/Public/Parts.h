@@ -45,6 +45,8 @@ private:
 	TCHAR					m_cModelTag[MAX_PATH];
 	_float3					m_vAxis;
 
+	class CWitchChargEffect* m_pWitchChargEffect = nullptr;
+
 private:
 	HRESULT Ready_Components();
 

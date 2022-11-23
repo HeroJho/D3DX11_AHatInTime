@@ -4,6 +4,8 @@
 
 
 #include "ItemManager.h"
+#include "ToolManager.h"
+
 
 #include "UI_Inven.h"
 #include "UI_Item_Inven.h"
@@ -248,6 +250,19 @@ void CUIManager::Off_Text()
 	if (nullptr == m_pSpeechBubble)
 		return;
 	m_pSpeechBubble->Off_Text();
+}
+
+
+
+
+void CUIManager::Make_WitchChargEffect()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();
+	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_WitchChargEffect"), eLevel, TEXT("Layer_Effect"), nullptr);
+
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 

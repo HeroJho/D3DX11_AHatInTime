@@ -17,6 +17,8 @@
 
 #include "Wisp.h"
 
+#include "VSnatcher.h"
+
 // TEST
 #include "Yarn.h"
 
@@ -776,6 +778,22 @@ void CPlayer::Stay_Tick(_float fTimeDelta)
 	}
 		break;
 	case Client::CPlayer::STATE_SPRINT:
+	{
+		m_fStayTimeAcc += fTimeDelta;
+
+		if (0.1f < m_fStayTimeAcc)
+		{
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			_float3 vLook; XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SprintParticle"), vPos, _float3(0.1f, 0.2f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(1.6f, 1.6f, 1.6f), _float3(0.f, -90.f, 0.f), _float3(0.f, 0.f, 90.f), 0.1f, 0.f, false, 0.f, 0.f, 1.f,
+				1, 0.2f, 0.2f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), CParticle::TYPE_MODLE);
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.1f, 0.2f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.6f, 0.6f, 0.6f), _float3(0.9f, 0.9f, 0.9f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.05f, 0.f, false, 0.f, 0.f, 1.5f,
+				3, 0.2f, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+
+
+			m_fStayTimeAcc = 0.f;
+		}
+	}
 		break;
 	case Client::CPlayer::STATE_SLEP:
 		break;
@@ -819,7 +837,7 @@ void CPlayer::Stay_Tick(_float fTimeDelta)
 	{
 		m_fStayTimeAcc += fTimeDelta;
 
-		if (0.4f < m_fStayTimeAcc)
+		if (0.2f < m_fStayTimeAcc && 0.1f < m_pTransformCom->Get_CurSpeed())
 		{
 			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 			_float3 vLook; XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
@@ -900,6 +918,11 @@ void CPlayer::State_Input(_float fTimeDelta)
 		CToolManager::Get_Instance()->Resul_Level(LEVEL_BOSS);
 		RELEASE_INSTANCE(CGameInstance);
 		return;
+	}
+	if (pGameInstance->Key_Down(DIK_N))
+	{
+		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_pNavigationCom->Get_CurCellIndex(), 15);
 	}
 
 
@@ -2555,6 +2578,8 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 		PartsDesc.vRot = _float3(180.f, 0.f, 0.f);
 		PartsDesc.pOwner = this;
+
+		CUIManager::Get_Instance()->Make_WitchChargEffect();
 	}
 	else
 		return E_FAIL;
@@ -2638,9 +2663,27 @@ void CPlayer::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 			if (STATE_JUMPATTACK == m_eState && Desc.pOther == Get_NearstMonster())
 			{
 				// 점프 공격
-				((CMonster*)Desc.pOther)->Attacked(1);
-				m_TickStates.push_back(STATE_DOUBLEJUMP);
-				m_pTransformCom->DoubleJump(m_fJumpPower + 4.f);
+				if ("Tag_Snatcher" == Desc.pOther->Get_Tag())
+				{
+					((CVSnatcher*)Desc.pOther)->Attacked();
+					m_TickStates.push_back(STATE_DOUBLEJUMP);
+					m_pTransformCom->DoubleJump(m_fJumpPower + 4.f);
+
+					_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+					CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.3f, 0.3f, 0.3f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 3.f, false, 0.f, 0.f, 2.f,
+						8, 1.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+				}
+				else
+				{
+					((CMonster*)Desc.pOther)->Attacked(1);
+					m_TickStates.push_back(STATE_DOUBLEJUMP);
+					m_pTransformCom->DoubleJump(m_fJumpPower + 4.f);
+
+					_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+					CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.3f, 0.3f, 0.3f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 3.f, false, 0.f, 0.f, 2.f,
+						8, 1.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+				}
+
 			}
 
 		}

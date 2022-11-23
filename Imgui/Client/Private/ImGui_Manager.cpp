@@ -550,6 +550,10 @@ void CImGui_Manager::Render_ParticleTool()
 		if (ImGui::DragFloat3("vLocalPos", (float*)&vPos, 0.01f))
 			pDescTool->Desc.vPos = vPos;
 
+		_float3		vRoation = pDescTool->Desc.vRoation;
+		if (ImGui::DragFloat3("vRoation", (float*)&vRoation, 0.1f))
+			pDescTool->Desc.vRoation = vRoation;
+
 		_float3		vScale = pDescTool->Desc.vScale;
 		if (ImGui::DragFloat3("vScale", (float*)&vScale, 0.1f))
 			pDescTool->Desc.vScale = vScale;

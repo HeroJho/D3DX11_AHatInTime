@@ -253,6 +253,9 @@
     <Filter Include="02.GameObjects\Map\Bindi">
       <UniqueIdentifier>{1354cabe-63f1-48e2-81fb-71c64ef9f899}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Particle\WitchChargEffect">
+      <UniqueIdentifier>{07c21683-e1e8-4e62-a3fb-28935895b1a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -534,6 +537,9 @@
     <ClInclude Include="..\public\Bindi.h">
       <Filter>02.GameObjects\Map\Bindi</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\WitchChargEffect.h">
+      <Filter>02.GameObjects\Particle\WitchChargEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -799,6 +805,9 @@
     </ClCompile>
     <ClCompile Include="..\private\Bindi.cpp">
       <Filter>02.GameObjects\Map\Bindi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\WitchChargEffect.cpp">
+      <Filter>02.GameObjects\Particle\WitchChargEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

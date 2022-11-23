@@ -127,10 +127,15 @@ void CParticle::Tick_Model(_float fTimeDelta)
 	// 크기 변화
 	m_pTransformCom->Go_Scale(m_Desc.vScaleSpeed, fTimeDelta);
 
-	if(m_bRotC)
-		m_pTransformCom->Turn(XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
-	else
-		m_pTransformCom->Turn(-XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
+
+	if (lstrcmp(TEXT("SprintParticle"), m_Desc.cModelTag))
+	{
+		if (m_bRotC)
+			m_pTransformCom->Turn(XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
+		else
+			m_pTransformCom->Turn(-XMVectorSetW(XMLoadFloat3(&m_vRotDir), 0.f), m_fRotationSpeed * 0.01f, fTimeDelta);
+	}
+
 
 	RELEASE_INSTANCE(CGameInstance);
 
