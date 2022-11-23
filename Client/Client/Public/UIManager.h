@@ -22,6 +22,7 @@ public:
 	HRESULT Make_SpeechBubble();
 	HRESULT Make_Hp();
 
+
 	// For. Inven
 public:
 	HRESULT Update_HatInvenSlot();
@@ -41,9 +42,9 @@ public:
 
 	// For. Text
 public:
-	void On_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake = false);
-	void Set_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake = false);
-	void Off_Text();
+	void On_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake = false, _bool bSmall = false);
+	void Set_Text(TCHAR* sText, _float fSize, _float fPower, _bool bShake = false, _bool bSmall = false);
+	void Off_Text(_bool bSmall = false);
 
 
 
@@ -56,9 +57,11 @@ private:
 	class CUI_Item_Inven*	m_pItem_Inven = nullptr;
 	class CUI_DiamondScore* m_pDiamondScore = nullptr;
 	class CUI_Shop*			m_pShop = nullptr;
-	class CUI_SpeechBubble*	m_pSpeechBubble = nullptr;
 	class CUI_Health*		m_pHp = nullptr;
 	
+	class CUI_SpeechBubble*			m_pSpeechBubble = nullptr;
+	class CUI_SmallSpeechBubble*	m_pSmallSpeechBubble = nullptr;
+
 
 public:
 	virtual void Free() override;

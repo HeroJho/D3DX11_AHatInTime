@@ -73,6 +73,7 @@
 #include "UI_Shop_SlotItem.h"
 #include "UI_ShopMenu.h"
 #include "UI_SpeechBubble.h"
+#include "UI_SmallSpeechBubble.h"
 
 #include "RollingBarrel.h"
 #include "RectBarrel.h"
@@ -491,6 +492,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_SpeechBubble"),
 		CUI_SpeechBubble::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_UI_SmallSpeechBubble*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_UI_SmallSpeechBubbles"),
+		CUI_SmallSpeechBubble::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 	
 
@@ -863,6 +868,10 @@ HRESULT CLoader::Loading_UI()
 	/* For.Prototype_Component_Texture_speech_bubble */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_speech_bubble"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/speech_bubble_gloom.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_smalltalk */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_smalltalk"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/smalltalk.dds"), 1))))
 		return E_FAIL;
 
 

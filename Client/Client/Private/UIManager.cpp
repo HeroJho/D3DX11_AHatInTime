@@ -12,6 +12,7 @@
 #include "UI_DiamondScore.h"
 #include "UI_Shop.h"
 #include "UI_SpeechBubble.h"
+#include "UI_SmallSpeechBubble.h"
 #include "UI_Health.h"
 
 
@@ -152,6 +153,13 @@ HRESULT CUIManager::Make_SpeechBubble()
 	Safe_AddRef(m_pSpeechBubble);
 
 
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_SmallSpeechBubbles"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+		return E_FAIL;
+
+	m_pSmallSpeechBubble = (CUI_SmallSpeechBubble*)pObj;
+	Safe_AddRef(m_pSmallSpeechBubble);
+
+
 	RELEASE_INSTANCE(CGameInstance);
 
 
@@ -231,25 +239,59 @@ void CUIManager::Close_Shop()
 
 
 
-void CUIManager::On_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake)
+void CUIManager::On_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake, _bool bSmall)
 {
-	if (nullptr == m_pSpeechBubble)
-		return;
-	m_pSpeechBubble->On_Text(sText, fSize, fPower, bShake);
+	if (bSmall)
+	{
+		if (nullptr == m_pSmallSpeechBubble)
+			return;
+		m_pSmallSpeechBubble->On_Text(sText, fSize, fPower, bShake);
+
+	}
+	else
+	{
+		if (nullptr == m_pSpeechBubble)
+			return;
+		m_pSpeechBubble->On_Text(sText, fSize, fPower, bShake);
+	}
+
+
 }
 
-void CUIManager::Set_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake)
+void CUIManager::Set_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake, _bool bSmall)
 {
-	if (nullptr == m_pSpeechBubble)
-		return;
-	m_pSpeechBubble->Set_Text(sText, fSize, fPower, bShake);
+
+	if (bSmall)
+	{
+		if (nullptr == m_pSmallSpeechBubble)
+			return;
+		m_pSmallSpeechBubble->Set_Text(sText, fSize, fPower, bShake);
+	}
+	else
+	{
+		if (nullptr == m_pSpeechBubble)
+			return;
+		m_pSpeechBubble->Set_Text(sText, fSize, fPower, bShake);
+	}
+
 }
 
-void CUIManager::Off_Text()
+void CUIManager::Off_Text(_bool bSmall)
 {
-	if (nullptr == m_pSpeechBubble)
-		return;
-	m_pSpeechBubble->Off_Text();
+	if (bSmall)
+	{
+		if (nullptr == m_pSmallSpeechBubble)
+			return;
+		m_pSmallSpeechBubble->Off_Text();
+	}
+	else
+	{
+		if (nullptr == m_pSpeechBubble)
+			return;
+		m_pSpeechBubble->Off_Text();
+	}
+
+
 }
 
 
@@ -275,6 +317,7 @@ void CUIManager::Free()
 
 	Safe_Release(m_pHp);
 	Safe_Release(m_pSpeechBubble);
+	Safe_Release(m_pSmallSpeechBubble);
 	Safe_Release(m_pDiamondScore);
 	Safe_Release(m_pInven);
 	Safe_Release(m_pItem_Inven);

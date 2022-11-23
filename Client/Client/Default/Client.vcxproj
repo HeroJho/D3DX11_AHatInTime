@@ -244,6 +244,7 @@
     <ClInclude Include="..\public\UI_ShopMenu.h" />
     <ClInclude Include="..\public\UI_Shop_Slot.h" />
     <ClInclude Include="..\public\UI_Shop_SlotItem.h" />
+    <ClInclude Include="..\public\UI_SmallSpeechBubble.h" />
     <ClInclude Include="..\Public\UI_SpeechBubble.h" />
     <ClInclude Include="..\Public\UI_TextLife.h" />
     <ClInclude Include="..\public\UI_X.h" />
@@ -337,6 +338,7 @@
     <ClCompile Include="..\private\UI_ShopMenu.cpp" />
     <ClCompile Include="..\private\UI_Shop_Slot.cpp" />
     <ClCompile Include="..\private\UI_Shop_SlotItem.cpp" />
+    <ClCompile Include="..\private\UI_SmallSpeechBubble.cpp" />
     <ClCompile Include="..\Private\UI_SpeechBubble.cpp" />
     <ClCompile Include="..\Private\UI_TextLife.cpp" />
     <ClCompile Include="..\private\UI_X.cpp" />

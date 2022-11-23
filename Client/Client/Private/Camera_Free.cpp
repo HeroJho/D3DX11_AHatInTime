@@ -339,8 +339,8 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 	_float fDis = XMVectorGetX(XMVector3Length(vDir));
 
 	vPrePos += vNorDir * fDis * 5.f * fDeltaTime;
-	if (m_bShake)
-		vPrePos += XMLoadFloat3(&m_vShakePosAcc);
+	//if (m_bShake)
+	//	vPrePos += XMLoadFloat3(&m_vShakePosAcc);
 
 
 

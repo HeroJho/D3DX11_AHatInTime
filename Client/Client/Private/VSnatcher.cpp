@@ -1625,8 +1625,6 @@ void CVSnatcher::Attacked()
 		CToolManager::Get_Instance()->Set_All(0.05f);
 		Drop_Hat();
 		m_pSockatCom->Remove_Sockat(SLOT_HEAD);
-
-
 	}
 }
 

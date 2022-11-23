@@ -540,6 +540,9 @@
     <ClInclude Include="..\public\WitchChargEffect.h">
       <Filter>02.GameObjects\Particle\WitchChargEffect</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_SmallSpeechBubble.h">
+      <Filter>03.UI\SpeechBubble</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -808,6 +811,9 @@
     </ClCompile>
     <ClCompile Include="..\private\WitchChargEffect.cpp">
       <Filter>02.GameObjects\Particle\WitchChargEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_SmallSpeechBubble.cpp">
+      <Filter>03.UI\SpeechBubble</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
