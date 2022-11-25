@@ -476,6 +476,14 @@ void CGameInstance::Set_PlayerPos(_float3 vPos)
 	m_pTarget_Manager->Set_PlayerPos(vPos);
 }
 
+_float3 CGameInstance::Get_PlayerPos()
+{
+	if (nullptr == m_pTarget_Manager)
+		return _float3();
+
+	return m_pTarget_Manager->Get_PlayerPos();
+}
+
 
 
 void CGameInstance::Release_Engine()

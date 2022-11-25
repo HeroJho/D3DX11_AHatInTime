@@ -173,6 +173,14 @@ HRESULT CGameInstance::Check_Prototype(const _tchar * pPrototypeTag)
 	return m_pObject_Manager->Check_Prototype(pPrototypeTag);
 }
 
+void CGameInstance::Tick_ImGui(_float fTimeDelta)
+{
+	if (nullptr == m_pObject_Manager)
+		return;
+
+	m_pObject_Manager->Tick_ImGui(fTimeDelta);
+}
+
 HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const _tchar * pPrototypeTag, CComponent * pPrototype)
 {
 	if (nullptr == m_pComponent_Manager)

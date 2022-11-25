@@ -6,6 +6,7 @@
 #include "ItemManager.h"
 #include "CamManager.h"
 #include "GameManager.h"
+#include "ParticleManager.h"
 
 #include "Player.h"
 
@@ -67,6 +68,8 @@ void CVault_State::Tick(_float fTimeDelta)
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 	__super::Tick(fTimeDelta);
 
+	if (m_Spr)
+		Sprint_Tick(fTimeDelta);
 
 	switch (m_eState)
 	{
@@ -203,17 +206,18 @@ void CVault_State::Idle_Tick(_float fTimeDelta)
 
 void CVault_State::Open_Tick(_float fTimeDelta)
 {
-
 	m_fSprintItemTimeAcc += fTimeDelta;
 
 	if (3.f < m_fSprintItemTimeAcc && !m_bIsSprintItem)
 	{
 		m_bIsSprintItem = true;
+		m_Spr = true;
 		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 15);
-		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 2);
-	}
+		CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(1.5f, 1.5f, 1.5f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 3.f, 30.f, false, 3.f, 0.1f, 5.f,
+			30, 0.f, 0.5f, 0.f, 0.f, 0.f, 1.f, 0.f, 1.f, 1.f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_TEXTURE);
 
+		m_fSprintItemTimeAcc = 0.f;
+	}
 }
 
 void CVault_State::Opened_Tick(_float fTimeDelta)
@@ -232,7 +236,21 @@ void CVault_State::Use_Item()
 
 }
 
+void CVault_State::Sprint_Tick(_float fTimeDelta)
+{
+	m_fSprintItemTimeAcc += fTimeDelta;
 
+	if (0.3f < m_fSprintItemTimeAcc)
+	{
+		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
+		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 1);
+
+		m_fSprintItemTimeAcc = 0.f;
+		++m_iSprintCount;
+	}
+
+}
 
 
 

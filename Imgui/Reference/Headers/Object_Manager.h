@@ -30,6 +30,8 @@ public:
 	void LateTick(_float fTimeDelta);
 	void Clear(_uint iLevelIndex);
 	
+	void Tick_ImGui(_float fTimeDelta);
+
 
 private: /* 원형객체들을 보관할 커넽이너ㅣ */
 	map<const _tchar*, class CGameObject*>			m_Prototypes;

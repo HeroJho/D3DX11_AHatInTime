@@ -28,6 +28,10 @@ public:
 	HRESULT Make_Hp();
 
 
+	void OnOff_DiamondScore(_bool bBool);
+	void OnOff_Inven(_bool bBool);
+	void OnOff_HP(_bool bBool);
+
 	// For. Inven
 public:
 	HRESULT Update_HatInvenSlot();
@@ -44,6 +48,10 @@ public:
 
 	// For. Hp
 public:
+
+
+
+
 
 	// For. Text
 public:

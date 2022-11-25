@@ -19,6 +19,8 @@ public:
 	void Tick(_float fTimeDelta);
 	void LateTick(_float fTimeDelta);
 
+	void Tick_ImGui(_float fTimeDelta);
+
 private:
 	list<class CGameObject*>				m_GameObjects;
 	typedef list<class CGameObject*>		GAMEOBJECTS;

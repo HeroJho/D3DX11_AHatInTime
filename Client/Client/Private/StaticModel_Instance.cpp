@@ -80,8 +80,8 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 	if (bRender)
 	{
 
-		// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this);
-
+		if (lstrcmp(TEXT("SubCon_Instance"), m_cModelTag) && lstrcmp(TEXT("SubConBoss_Instance"), m_cModelTag))
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this);
 
 		if (m_bWall && CGameManager::Get_Instance()->Get_WispInfoNum())
 		{
@@ -164,7 +164,13 @@ HRESULT CStaticModel_Instance::Render()
 
 	}
 	else
+	{
+
 		iPassIndex = 0;
+		if (!lstrcmp(TEXT("Toilet_Area_Instance"), m_cModelTag))
+			iPassIndex = 3;
+	}
+
 
 
 
@@ -231,12 +237,15 @@ HRESULT CStaticModel_Instance::Render_ShadowDepth()
 		return E_FAIL;
 
 
-	_vector		vLightEye = XMVectorSet(-68.97f, 30.04f, 121.20f, 1.f);
-	_vector		vLightAt = XMVectorSet(60.f, 0.f, 60.f, 1.f);
-	_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 1.f);
+	_vector vPos = XMVectorSetW(XMLoadFloat3(&pGameInstance->Get_PlayerPos()), 1.f);
+	_vector		vLightAt = XMVectorSetW(vPos, 1.f);
+	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
+	vPos = XMVectorSetX(vPos, XMVectorGetX(vPos) - 7.f);
+	_vector		vLightEye = XMVectorSetW(vPos, 1.f);
+	_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
 	_float4x4		LightViewMatrix;
-	_matrix temp = XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp);
-	XMStoreFloat4x4(&LightViewMatrix, XMMatrixTranspose(temp));
+	XMStoreFloat4x4(&LightViewMatrix, XMMatrixTranspose(XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp)));
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &LightViewMatrix, sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
@@ -245,11 +254,12 @@ HRESULT CStaticModel_Instance::Render_ShadowDepth()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 2)))

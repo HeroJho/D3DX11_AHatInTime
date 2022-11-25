@@ -28,6 +28,9 @@
 #include "ClickedVertexCube.h"
 #include "SkyModel.h"
 #include "Particle.h"
+#include "Splash_wave.h"
+#include "EyeBream.h"
+#include "PipeScream.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -167,6 +170,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CClickedVertexCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_EyeBream*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_EyeBream"),
+		CEyeBream::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 
 
 	/* For.Prototype_GameObject_Terrain_StaticModel*/
@@ -199,8 +207,16 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CParticle::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_Particle*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Splash_wave"),
+		CSplash_wave::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
-
+	/* For.Prototype_GameObject_PipeScream*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_PipeScream"),
+		CPipeScream::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
 
 
 
@@ -227,11 +243,26 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/star_shuriken.dds"), 1))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_T_FX_RoilingFlameModulate */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_T_FX_RoilingFlameModulate"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/T_FX_RoilingFlameModulate.dds"), 1))))
+		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_ColorNoise*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_ColorNoise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/ColorNoise.dds"), 1))))
+		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_impactCrown*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_impactCrown"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/impactCrown.dds"), 1))))
+		return E_FAIL;
 
-
-
+	/* For.Prototype_Component_Texture_split_line*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_split_line"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/split_line.dds"), 1))))
+		return E_FAIL;
+	
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다. "));
 	/* 모델를 로드한다. */

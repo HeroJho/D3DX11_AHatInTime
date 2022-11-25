@@ -153,6 +153,7 @@ void CGameManager::Inc_Diamond(_uint iNum)
 {
 	m_iDiamond += iNum;
 
+	CUIManager::Get_Instance()->OnOff_DiamondScore(true);
 	CUIManager::Get_Instance()->Set_Score(m_iDiamond);
 }
 
@@ -163,6 +164,7 @@ void CGameManager::Dec_Diamond(_uint iNum)
 	else
 		m_iDiamond = 0;
 
+	CUIManager::Get_Instance()->OnOff_DiamondScore(true);
 	CUIManager::Get_Instance()->Set_Score(m_iDiamond);
 }
 

@@ -34,6 +34,8 @@ private:
 	_float2			m_vOnPos;
 	_float2			m_vOffPos;
 
+	_float			m_fTimeAcc = 0.f;
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CTexture*				m_pTextureCom = nullptr;

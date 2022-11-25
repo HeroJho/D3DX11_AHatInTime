@@ -28,6 +28,8 @@ private:
 	list<class CLight*>			m_Lights;
 	typedef list<class CLight*>	LIGHTS;
 
+	
+
 public:
 	virtual void Free() override;
 };

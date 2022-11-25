@@ -132,7 +132,7 @@ void CUI_SmallSpeechBubble::On_Text(TCHAR * sText, _float fSize, _float fPower, 
 		return;
 
 
-
+	Off_Text();
 	m_eState = STATE_ON;
 	ZeroMemory(m_sText, sizeof(TCHAR) * MAX_PATH);
 	lstrcpy(m_sText, sText);
@@ -199,9 +199,12 @@ void CUI_SmallSpeechBubble::Set_Position()
 	_matrix mTotal = mView * mProj;
 	vPos = XMVector3TransformCoord(vPos, mTotal);
 
-	m_UiInfo.fX = XMVectorGetX(vPos) * g_iWinSizeX + g_iWinSizeX * 0.5f;
-	m_UiInfo.fY = XMVectorGetY(vPos) * g_iWinSizeY * 0.5f;
+	m_UiInfo.fX = (XMVectorGetX(vPos) + 1.f) * g_iWinSizeX * 0.5f;
+	m_UiInfo.fY = (-1.f * XMVectorGetY(vPos) + 1.f) * g_iWinSizeY * 0.5f;
 
+	// -1 ~ 1  == 0 ~ 1280
+	// 1 ~ -1  == 720 ~ 0
+	// -1 ~ 1 = 0 ~ 720
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -244,7 +247,7 @@ HRESULT CUI_SmallSpeechBubble::Render()
 		{
 			sTempText[i] = m_sText[i];
 		}
-		m_fX = m_iTextMaxCount * m_fSize * 12.f;
+		m_fX = m_iTextMaxCount * m_fSize * 10.f;
 		CToolManager::Get_Instance()->Render_FontsY(TEXT("Font_Nexon"), sTempText, _float2(m_UiInfo.fX - m_fX, m_UiInfo.fY + m_fY), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(m_fSize, m_fSize));
 	}
 

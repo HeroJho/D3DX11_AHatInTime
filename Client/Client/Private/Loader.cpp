@@ -32,6 +32,7 @@
 #include "BellMountEye.h"
 #include "PuzzleCube.h"
 #include "RotateBarrel.h"
+#include "Splash_wave.h"
 
 #include "StatuePosed.h"
 #include "BadgeS_Base.h"
@@ -251,6 +252,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_StatuePosed_Boss */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_StatuePosed_Boss"),
 		CStatuePosed_Boss::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Splash_wave */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Splash_wave"),
+		CSplash_wave::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	/* For.Prototype_GameObject_CCaulDron */

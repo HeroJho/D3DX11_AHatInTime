@@ -918,8 +918,6 @@ void CPlayer::State_Input(_float fTimeDelta)
 	{
 		CToolManager::Get_Instance()->Resul_Level(LEVEL_BOSS);
 		RELEASE_INSTANCE(CGameInstance);
-
-		RELEASE_INSTANCE(CGameInstance);
 		return;
 	}
 	if (pGameInstance->Key_Down(DIK_N))
@@ -2252,6 +2250,41 @@ HRESULT CPlayer::Render_ShadowDepth()
 
 HRESULT CPlayer::Choose_Pass(_int iIndex)
 {
+
+	//CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	//if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrixInverse", &m_pTransformCom->Get_WorldMatrixInverse(), sizeof(_float4x4))))
+	//	return E_FAIL;
+
+
+	//if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrixInverse", &pGameInstance->Get_TransformMatrixInverse(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+	//	return E_FAIL;
+
+	//RELEASE_INSTANCE(CGameInstance);
+
+	//_uint      iNumViewport = 1;
+
+	//D3D11_VIEWPORT      ViewportDesc;
+
+	//m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	//m_pShaderCom->Set_RawValue("g_fWinSizeX", &ViewportDesc.Width, sizeof(_float));
+	//m_pShaderCom->Set_RawValue("g_fWinSizeY", &ViewportDesc.Height, sizeof(_float));
+	//_float s = 5.f;
+	//m_pShaderCom->Set_RawValue("g_fOutLinePower", &s, sizeof(_float));
+
+	//if (FAILED(m_pModelCom->Render(m_pShaderCom, iIndex, 9)))
+	//	return E_FAIL;
+
+
+
+
+
+
+
+
+
+
 	_uint iPassIndex = 0;
 
 	switch (m_pModelCom->Get_MaterialIndex(iIndex))

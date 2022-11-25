@@ -20,6 +20,7 @@
 #include "Parts.h"
 #include "CaulDron.h"
 #include "Toilet_Scream.h"
+#include "Splash_wave.h"
 
 
 CVSnatcher::CVSnatcher(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -163,7 +164,7 @@ void CVSnatcher::Set_State(STATE eState)
 		case STATE_SNAPHAT:
 			Choose_SnapHat();
 			m_fSnapHatTimeAcc = 0.f;
-			CUIManager::Get_Instance()->Set_Text(TEXT("어떤 모자가 좋을까아~~~"), 0.6f, 1.f, true, true);
+			CUIManager::Get_Instance()->On_Text(TEXT("어떤 모자가 좋을까아~~"), 0.6f, 1.f, true, true);
 			break;
 		case STATE_SIT:
 			Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
@@ -173,6 +174,7 @@ void CVSnatcher::Set_State(STATE eState)
 			m_bAttacked = false;
 			m_fAttackedTimeAcc = 0.f;
 			m_fCanAttackedTimeAcc = 0.f;
+			CUIManager::Get_Instance()->On_Text(TEXT("*허억!* 잠깐...!"), 0.6f, 1.f, true, true);
 			break;
 
 
@@ -546,7 +548,7 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 	{
 		if (-10.f < XMVectorGetY(vPos))
 		{
-			m_pTransformCom->Go_Dir(XMVectorSet(0.f, -1.f, 0.f, 0.f), 10.f, fTimeDelta);
+			m_pTransformCom->Go_Dir(XMVectorSet(0.f, -1.f, 0.f, 0.f), 15.f, fTimeDelta);
 			m_pCaulDron->Reset_Bound();
 			m_fHoItTimeAcc = 0.f;
 		}
@@ -556,7 +558,7 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPos, 1.f));
 			
 			m_fHoItTimeAcc += fTimeDelta;
-			if (1.f < m_fHoItTimeAcc)
+			if (0.5f < m_fHoItTimeAcc)
 			{
 				m_bIsUp = false;
 				m_fHoItTimeAcc = 0.f;
@@ -585,13 +587,31 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 	{
 		if (0.f > XMVectorGetY(vPos))
 		{
-			m_pTransformCom->Go_Dir(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, fTimeDelta);
+			m_pTransformCom->Go_Dir(XMVectorSet(0.f, 1.f, 0.f, 0.f), 20.f, fTimeDelta);
 			m_fHoItTimeAcc = 0.f;
 		}
 		else
 		{
 			vPos = XMVectorSetY(vPos, 0.f);
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPos, 1.f));
+
+			if (0.f == m_fHoItTimeAcc && 0 < m_iHoItCount)
+			{
+				CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+				CSplash_wave::SPLASHWAVEDESC Desc;
+				XMStoreFloat3(&Desc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+				if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Splash_wave"), LEVEL_GAMEPLAY, TEXT("Layer_Skill"), &Desc)))
+					return;
+
+				RELEASE_INSTANCE(CGameInstance);
+
+				CParticleManager::Get_Instance()->Create_Effect(TEXT("Grave1"), _float3(-60.57f, 0.f, -115.45f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.f, 0.f, true, 30.f, 15.f, 2.f,
+					30, 20.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 4.f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+				CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.2f, 10.f, 0.07f);
+
+			}
+
 			m_fHoItTimeAcc += fTimeDelta;
 			if (0 < m_iHoItCount)
 			{
@@ -610,7 +630,7 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 				m_pCaulDron->Go_Bound();
 			}
 
-			if (1.f < m_fHoItTimeAcc)
+			if (0.5f < m_fHoItTimeAcc)
 			{
 				m_bIsUp = true;
 				m_fHoItTimeAcc = 0.f;
@@ -689,7 +709,7 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 
 		m_fSnapHatTimeAcc = 10.f;
 
-		CUIManager::Get_Instance()->On_Text(TEXT("유후~"), 0.6f, 1.f, true, true);
+		// CUIManager::Get_Instance()->On_Text(TEXT("유후~"), 0.6f, 1.f, true, true);
 	}
 	else if (11.5f < m_fSnapHatTimeAcc && 19.f > m_fSnapHatTimeAcc)
 	{
@@ -721,13 +741,15 @@ void CVSnatcher::Tick_CanAttacked(_float fTimeDelta)
 	{
 		m_fCanAttackedTimeAcc += fTimeDelta;
 
-		if (5.f < m_fCanAttackedTimeAcc)
+		if (6.5f < m_fCanAttackedTimeAcc)
 		{
 			Set_State(STATE_IDLE);
 			m_bAttacked = false;
 			m_fAttackedTimeAcc = 0.f;
 			m_fCanAttackedTimeAcc = 0.f;
 		}
+
+		
 	}
 
 }
@@ -1241,7 +1263,12 @@ void CVSnatcher::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	if (STATE_CANATTACKED == m_eState)
+	if (LEVEL_BOSS == CToolManager::Get_Instance()->Get_CulLevel())
+	{
+		if (STATE_CANATTACKED == m_eState )
+			pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
+	}
+	else
 		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
 	
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f);
@@ -1558,7 +1585,7 @@ void CVSnatcher::Drop_Hat()
 	fPow = CToolManager::Get_Instance()->Get_RendomNum(1.5f, 2.f);
 
 	CItemManager::Get_Instance()->Make_DrowItem(TEXT("Prototype_GameObject_Hat"), czTempName, LEVEL_BOSS, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, vDir, fPow, 5.f, m_iNaviIndex);
-
+	m_iSnapIndex = -1;
 }
 
 _float3 CVSnatcher::Get_PacePos(_float fLength , _float fUpAngle, _float fRightAngle)
@@ -1633,6 +1660,8 @@ void CVSnatcher::Attacked()
 		CToolManager::Get_Instance()->Set_All(0.05f);
 		Drop_Hat();
 		m_pSockatCom->Remove_Sockat(SLOT_HEAD);
+
+		CUIManager::Get_Instance()->Set_Text(TEXT("*크헉!!!*"), 1.2f, 2.f, true, true);
 	}
 }
 

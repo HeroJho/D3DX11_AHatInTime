@@ -4,6 +4,9 @@
 
 #include "IceBox.h"
 #include "Player.h"
+#include "ParticleManager.h"
+#include "CamManager.h"
+#include "Camera_Free.h"
 
 CExPlo::CExPlo(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -34,10 +37,26 @@ HRESULT CExPlo::Initialize(void * pArg)
 	EXPLODESC* Desc = (EXPLODESC*)pArg;
 
 
-
+	Desc->vPos.y = 0.2f;
 	_vector vPos = XMLoadFloat3(&Desc->vPos);
 	vPos = XMVectorSetW(vPos, 1.f);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+
+	CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), Desc->vPos, _float3(0.f, 3.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(3.f, 3.f, 3.f), _float3(1.5f, 1.5f, 1.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 4.f, 15.f, false, 0.f, 0.f, 2.f,
+		40, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_MODLE);
+	CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), Desc->vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.f, 2.f, false, 0.f, 0.f, 2.f,
+		10, 2.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(-10.f, 0.f, -10.f), _float3(10.f, 0.f, 10.f), CParticle::TYPE_MODLE);
+	CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), Desc->vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 4.f, false, 0.f, 0.f, 2.f,
+		20, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+	CParticleManager::Get_Instance()->Create_Effect(TEXT("Grave1"), Desc->vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(2.f, 2.f, 2.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.5f, 15.f, true, 1.f, 3.f, 0.8f,
+		20, 2.f, 0.5f, 0.f, 0.f, 0.f, 5.f, 0.f, 1.0f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+
+
+	CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.2f, 10.f, 0.07f);
+
+
+
+
 
 
 	return S_OK;

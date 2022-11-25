@@ -48,6 +48,7 @@ public:
 
 	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
 
+	virtual HRESULT Render_ShadowDepth();
 
 public:
 	void Set_State(STATE eState);

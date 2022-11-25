@@ -89,6 +89,10 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 		return;
 	}
 
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->Tick_ImGui(fTimeDelta);
+	RELEASE_INSTANCE(CGameInstance);
+
 
 	switch (m_eCurLevel)
 	{
@@ -396,6 +400,7 @@ void CImGui_Manager::Render_PartsTool()
 	Render_StaticTool();
 
 	Window_Part();
+
 }
 void CImGui_Manager::Render_LightTool()
 {

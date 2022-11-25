@@ -55,13 +55,28 @@ void CUI_DiamondScore::Tick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	if (pGameInstance->Key_Down(DIK_M))
+
+
+	if (m_bIsOn)
 	{
-		if (m_bIsOn)
+		m_fTimeAcc += fTimeDelta;
+
+		if (10.f < m_fTimeAcc)
+		{
 			m_bIsOn = false;
-		else
-			m_bIsOn = true;
+			m_fTimeAcc = 0.f;
+		}
 	}
+	else
+	{
+		m_fTimeAcc = 0.f;
+	}
+
+	
+
+
+
+
 
 	if (!m_bIsOn)
 	{

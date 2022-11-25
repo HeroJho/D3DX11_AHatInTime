@@ -213,6 +213,7 @@
     <ClInclude Include="..\public\RotateBarrel.h" />
     <ClInclude Include="..\public\SkyModel.h" />
     <ClInclude Include="..\public\SpikeBlock.h" />
+    <ClInclude Include="..\public\Splash_wave.h" />
     <ClInclude Include="..\Public\StaticModel_Col.h" />
     <ClInclude Include="..\public\StaticModel_Instance.h" />
     <ClInclude Include="..\public\StatuePosed.h" />
@@ -307,6 +308,7 @@
     <ClCompile Include="..\private\RotateBarrel.cpp" />
     <ClCompile Include="..\private\SkyModel.cpp" />
     <ClCompile Include="..\private\SpikeBlock.cpp" />
+    <ClCompile Include="..\private\Splash_wave.cpp" />
     <ClCompile Include="..\Private\StaticModel_Col.cpp" />
     <ClCompile Include="..\private\StaticModel_Instance.cpp" />
     <ClCompile Include="..\private\StatuePosed.cpp" />

@@ -72,6 +72,7 @@ void CMainApp::Tick(_float fTimeDelta)
 #endif // _DEBUG
 
 	m_pGameInstance->Tick_Engine(fTimeDelta);
+	CImGui_Manager::Get_Instance()->Tick(fTimeDelta);
 }
 
 HRESULT CMainApp::Render()
@@ -86,7 +87,7 @@ HRESULT CMainApp::Render()
 	m_pRenderer->Draw();
 
 	m_pGameInstance->Render_Level();
-	CImGui_Manager::Get_Instance()->Tick(0.f);
+
 	CImGui_Manager::Get_Instance()->Render();
 
 

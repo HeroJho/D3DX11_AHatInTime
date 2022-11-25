@@ -53,7 +53,7 @@ public:
 
 	
 	virtual void Use_Item() override;
-
+	void Sprint_Tick(_float fTimeDelta);
 
 private:
 	VAULT_STATE m_eState = STATE_END;
@@ -63,6 +63,9 @@ private:
 
 	_float m_fSprintItemTimeAcc = 0.f;
 	_bool m_bIsSprintItem = false;
+
+	_uint m_iSprintCount = 0;
+	_bool m_Spr = false;
 
 	_uint m_iNaviIndex = 0;
 

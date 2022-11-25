@@ -169,6 +169,15 @@
     <Filter Include="02.GameObject\05. ParticleTool">
       <UniqueIdentifier>{720d19f3-52ec-4c00-9890-22853ce198d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\05. ParticleTool\Splash_wave">
+      <UniqueIdentifier>{6c7b4ee8-22c7-4a4c-b37a-ea504743b80b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\05. ParticleTool\EyeBeam">
+      <UniqueIdentifier>{ab418b9a-df42-4f03-9ec2-3d9fcd7d6ad0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\05. ParticleTool\PipeScream">
+      <UniqueIdentifier>{916a72b2-7236-45e7-8d8e-0613b4220927}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -344,6 +353,15 @@
     <ClInclude Include="..\public\Particle.h">
       <Filter>02.GameObject\05. ParticleTool</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\Splash_wave.h">
+      <Filter>02.GameObject\05. ParticleTool\Splash_wave</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\EyeBream.h">
+      <Filter>02.GameObject\05. ParticleTool\EyeBeam</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\PipeScream.h">
+      <Filter>02.GameObject\05. ParticleTool\PipeScream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -501,6 +519,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Particle.cpp">
       <Filter>02.GameObject\05. ParticleTool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Splash_wave.cpp">
+      <Filter>02.GameObject\05. ParticleTool\Splash_wave</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\EyeBream.cpp">
+      <Filter>02.GameObject\05. ParticleTool\EyeBeam</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\PipeScream.cpp">
+      <Filter>02.GameObject\05. ParticleTool\PipeScream</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

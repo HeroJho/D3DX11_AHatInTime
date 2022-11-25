@@ -61,6 +61,15 @@ void CLayer::LateTick(_float fTimeDelta)
 
 }
 
+void CLayer::Tick_ImGui(_float fTimeDelta)
+{
+	for (auto& pGameObject : m_GameObjects)
+	{
+		if (nullptr != pGameObject)
+			pGameObject->Tick_ImGui(fTimeDelta);
+	}
+}
+
 CLayer * CLayer::Create()
 {
 	CLayer*			pInstance = new CLayer();

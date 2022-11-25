@@ -242,6 +242,52 @@ void CMushRoom::Tick_Up_Idle(_float fTimeDelta)
 }
 
 
+HRESULT CMushRoom::Render_ShadowDepth()
+{
+
+	if (nullptr == m_pShaderCom ||
+		nullptr == m_pTransformCom)
+		return E_FAIL;
+
+
+
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
+		return E_FAIL;
+
+
+	_vector vPos = XMVectorSetW(XMLoadFloat3(&pGameInstance->Get_PlayerPos()), 1.f);
+	_vector		vLightAt = XMVectorSetW(vPos, 1.f);
+	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
+	vPos = XMVectorSetX(vPos, XMVectorGetX(vPos) - 7.f);
+	_vector		vLightEye = XMVectorSetW(vPos, 1.f);
+	_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	_float4x4		LightViewMatrix;
+	XMStoreFloat4x4(&LightViewMatrix, XMMatrixTranspose(XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp)));
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &LightViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 13)))
+			return E_FAIL;
+	}
+
+
+	return S_OK;
+}
 
 
 
@@ -260,6 +306,8 @@ void CMushRoom::LateTick(_float fTimeDelta)
 
 	if (!CGameManager::Get_Instance()->Get_WispInfoNum())
 	{
+		// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this);
+
 		if (STATE_UP_START == m_eState || STATE_UP_IDLE == m_eState || STATE_DOWN_START == m_eState)
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 		else

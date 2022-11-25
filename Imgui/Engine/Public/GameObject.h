@@ -42,6 +42,8 @@ public:
 	void Render_Col();
 	
 
+	virtual void Tick_ImGui(_float fTimeDelta) {};
+
 public:
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) { return S_OK; }
 	HRESULT AddCollider(CCollider::TYPE eType, CCollider::tagColliderDesc Desc);

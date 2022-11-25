@@ -42,6 +42,8 @@ private:
 	_float2			m_vOnPos;
 	_float2			m_vOffPos;
 
+	_float			m_fTimeAcc = 0.f;
+
 
 public:
 	static CUI_DiamondScore* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

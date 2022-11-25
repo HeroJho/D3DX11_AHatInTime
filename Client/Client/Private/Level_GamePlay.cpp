@@ -57,7 +57,7 @@ HRESULT CLevel_GamePlay::Initialize()
 	
 
 	// CCamManager::Get_Instance()->Play_CutScene(0, true);
-	 CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
+	CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Witch_Hat"));
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
@@ -176,7 +176,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	for (_uint i = 0; i < 10; ++i)
 	{
 		CBindi::BINDIDESC BindiDesc;
-		BindiDesc.vPos = _float3(-32.2f, 18.f, 89.09f);
+		BindiDesc.vPos = _float3(-20.2f, 18.f, 89.09f);
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
 			return E_FAIL;
 	}
@@ -191,6 +191,20 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	{
 		CBindi::BINDIDESC BindiDesc;
 		BindiDesc.vPos = _float3(-8.43f, 15.76f, 95.61f);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 10; ++i)
+	{
+		CBindi::BINDIDESC BindiDesc;
+		BindiDesc.vPos = _float3(-40.f, 8.f, -15.f);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
+			return E_FAIL;
+	}
+	for (_uint i = 0; i < 10; ++i)
+	{
+		CBindi::BINDIDESC BindiDesc;
+		BindiDesc.vPos = _float3(-69.2f, 10.25f, -12.7f);
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
 			return E_FAIL;
 	}
@@ -286,8 +300,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	Safe_AddRef(pGameInstance);
 
 
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
-	//	return E_FAIL;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
+		return E_FAIL;
 	
 
 

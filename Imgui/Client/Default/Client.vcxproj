@@ -178,6 +178,7 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\ColorCube.h" />
     <ClInclude Include="..\public\DataManager.h" />
+    <ClInclude Include="..\public\EyeBream.h" />
     <ClInclude Include="..\Public\imconfig.h" />
     <ClInclude Include="..\Public\imgui.h" />
     <ClInclude Include="..\Public\imgui_impl_dx11.h" />
@@ -208,10 +209,12 @@
     <ClInclude Include="..\public\ParticleManager.h" />
     <ClInclude Include="..\public\Parts.h" />
     <ClInclude Include="..\public\PartsManager.h" />
+    <ClInclude Include="..\public\PipeScream.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\public\RenderCube.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\public\SkyModel.h" />
+    <ClInclude Include="..\public\Splash_wave.h" />
     <ClInclude Include="..\public\StaticModel.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\Terrain_Anim.h" />
@@ -236,6 +239,7 @@
     <ClCompile Include="..\private\ClickedVertexCube.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
+    <ClCompile Include="..\private\EyeBream.cpp" />
     <ClCompile Include="..\Private\imgui.cpp" />
     <ClCompile Include="..\Private\imgui_demo.cpp" />
     <ClCompile Include="..\Private\imgui_draw.cpp" />
@@ -265,10 +269,12 @@
     <ClCompile Include="..\private\ParticleManager.cpp" />
     <ClCompile Include="..\private\Parts.cpp" />
     <ClCompile Include="..\private\PartsManager.cpp" />
+    <ClCompile Include="..\private\PipeScream.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\private\RenderCube.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\private\SkyModel.cpp" />
+    <ClCompile Include="..\private\Splash_wave.cpp" />
     <ClCompile Include="..\private\StaticModel.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\Terrain_Anim.cpp" />

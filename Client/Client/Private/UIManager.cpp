@@ -199,6 +199,25 @@ HRESULT CUIManager::Make_Hp()
 
 
 
+void CUIManager::OnOff_DiamondScore(_bool bBool)
+{
+	m_pDiamondScore->OnOff(bBool);
+}
+
+void CUIManager::OnOff_Inven(_bool bBool)
+{
+	m_pItem_Inven->OnOff(bBool);
+}
+
+void CUIManager::OnOff_HP(_bool bBool)
+{
+	m_pHp->OnOff(bBool);
+}
+
+
+
+
+
 
 HRESULT CUIManager::Update_HatInvenSlot()
 {

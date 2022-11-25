@@ -50,6 +50,7 @@ public: /* For.Object_Manager */
 	HRESULT Add_GameObjectToLayer(const _tchar * pPrototypeTag, _uint iLevelIndex, const _tchar * pLayerTag, CGameObject** pObj, void * pArg);
 	HRESULT Check_Prototype(const _tchar* pPrototypeTag);
 
+	void Tick_ImGui(_float fTimeDelta);
 
 public: /*For.Component_Manager*/
 	HRESULT Add_Prototype(_uint iLevelIndex, const _tchar* pPrototypeTag, class CComponent* pPrototype);

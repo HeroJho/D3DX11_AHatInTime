@@ -241,7 +241,9 @@ void CMapManager::Load_MapData()
 		if ("Ori_Hat" == sTemp)
 			continue;
 
-		CToolManager::Get_Instance()->CtoTC(sTemp.data(), Desc.cModelTag);
+		char stTemp[MAX_PATH];
+		strcpy(stTemp, sTemp.data());
+		CToolManager::Get_Instance()->CtoTC(stTemp, Desc.cModelTag);
 		Desc.vPos = DataObj.vPos;
 		Desc.vAngle = DataObj.vAngle;
 		Desc.vScale = DataObj.vScale;

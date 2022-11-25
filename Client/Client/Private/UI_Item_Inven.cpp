@@ -70,13 +70,14 @@ void CUI_Item_Inven::Tick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	if (pGameInstance->Key_Down(DIK_M))
+	if (pGameInstance->Key_Down(DIK_I))
 	{
 		if (m_bIsOn)
 			m_bIsOn = false;
 		else
 			m_bIsOn = true;
 	}
+
 
 	if (!m_bIsOn)
 	{
