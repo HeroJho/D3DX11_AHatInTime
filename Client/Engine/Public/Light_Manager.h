@@ -15,7 +15,7 @@ public:
 
 public:
 	const LIGHTDESC* Get_LightDesc(_uint iIndex);
-
+	_float4x4 Get_ShadowLightViewMatrix();
 
 public:
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);
@@ -28,7 +28,8 @@ private:
 	list<class CLight*>			m_Lights;
 	typedef list<class CLight*>	LIGHTS;
 
-	
+	_float4x4		m_mShadowLightViewMatrix;
+
 
 public:
 	virtual void Free() override;

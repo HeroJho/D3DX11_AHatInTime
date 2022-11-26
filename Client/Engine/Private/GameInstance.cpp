@@ -392,6 +392,14 @@ void CGameInstance::Clear_Light()
 	m_pLight_Manager->Clear_Light();
 }
 
+_float4x4 CGameInstance::Get_ShadowLightViewMatrix()
+{
+	if (nullptr == m_pLight_Manager)
+		return _float4x4();
+
+	return m_pLight_Manager->Get_ShadowLightViewMatrix();
+}
+
 
 
 void CGameInstance::Add_ColGroup(CColliderManager::COLLIDERGROUP eGroup, CGameObject * pObj)

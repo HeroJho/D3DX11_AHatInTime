@@ -2213,19 +2213,19 @@ HRESULT CPlayer::Render_ShadowDepth()
 
 
 
-	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	_float3 vVPos; XMStoreFloat3(&vVPos, vPos);
-	pGameInstance->Set_PlayerPos(vVPos);
-	_vector		vLightAt = XMVectorSetW(vPos, 1.f);
-	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
-	vPos = XMVectorSetX(vPos, XMVectorGetX(vPos) - 7.f);
-	_vector		vLightEye = XMVectorSetW(vPos, 1.f);
-	_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 1.f);
+	//_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	//_float3 vVPos; XMStoreFloat3(&vVPos, vPos);
+	//pGameInstance->Set_PlayerPos(vVPos);
+	//_vector		vLightAt = XMVectorSetW(vPos, 1.f);
+	//vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
+	//vPos = XMVectorSetX(vPos, XMVectorGetX(vPos) - 7.f);
+	//_vector		vLightEye = XMVectorSetW(vPos, 1.f);
+	//_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 1.f);
 
-	_float4x4		LightViewMatrix;
-	_matrix temp = XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp);
-	XMStoreFloat4x4(&LightViewMatrix, XMMatrixTranspose(temp));
-	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &LightViewMatrix, sizeof(_float4x4))))
+	//_float4x4		LightViewMatrix;
+	//_matrix temp = XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp);
+	//XMStoreFloat4x4(&LightViewMatrix, XMMatrixTranspose(temp));
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_ShadowLightViewMatrix(), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;

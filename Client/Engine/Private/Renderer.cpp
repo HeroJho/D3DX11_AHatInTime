@@ -27,8 +27,10 @@ HRESULT CRenderer::Initialize_Prototype()
 
 
 	// For.Target_ShadowDepth
-	_uint		iShadowMapCX = 1280;
-	_uint		iShadowMapCY = 720;
+	//_float		iShadowMapCX = ViewportDesc.Width * 6.25f;
+	//_float		iShadowMapCY = ViewportDesc.Height * 6.25f;
+	_float		iShadowMapCX = ViewportDesc.Width * 12.5f;
+	_float		iShadowMapCY = ViewportDesc.Height * 12.5f;
 	if (FAILED(m_pTarget_Manager->Ready_ShadowDepthStencilRenderTargetView(m_pDevice, iShadowMapCX, iShadowMapCY)))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ShadowDepth"), iShadowMapCX, iShadowMapCY, DXGI_FORMAT_R32G32B32A32_FLOAT, &_float4(1.f, 1.f, 1.f, 1.f))))
@@ -85,6 +87,7 @@ HRESULT CRenderer::Initialize_Prototype()
 
 #ifdef _DEBUG
 
+	//																	렉트의 직교투영 욷르 만들기 위한 인자 값들
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Diffuse"), 100.f, 100.f, 200.f, 200.f)))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Normal"), 100.f, 300.f, 200.f, 200.f)))
@@ -171,8 +174,8 @@ HRESULT CRenderer::Draw()
 #ifdef _DEBUG
 
 
-	if (FAILED(Render_Debug()))
-		return E_FAIL;
+	//if (FAILED(Render_Debug()))
+	//	return E_FAIL;
 
 
 #endif
@@ -349,16 +352,15 @@ HRESULT CRenderer::Render_Blend()
 
 
 
-		_vector vPos = XMVectorSetW(XMLoadFloat3(&m_pTarget_Manager->Get_PlayerPos()), 1.f);
-		_vector		vLightAt = XMVectorSetW(vPos, 1.f);
-		vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
-		vPos = XMVectorSetX(vPos, XMVectorGetX(vPos) - 7.f);
-		_vector		vLightEye = XMVectorSetW(vPos, 1.f);
-		_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 1.f);
+		//_vector vPos = XMVectorSetW(XMLoadFloat3(&m_pTarget_Manager->Get_PlayerPos()), 1.f);
+		//_vector		vLightAt = XMVectorSetW(vPos, 1.f);
+		//vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 5.f);
+		//vPos = XMVectorSetX(vPos, XMVectorGetX(vPos) - 7.f);
+		//_vector		vLightEye = XMVectorSetW(vPos, 1.f);
+		//_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 1.f);
 
 		_float4x4		LightViewMatrix;
-		XMStoreFloat4x4(&LightViewMatrix, XMMatrixTranspose(XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp)));
-		if (FAILED(m_pShader->Set_RawValue("g_ShadowViewMatrix", &LightViewMatrix, sizeof(_float4x4))))
+		if (FAILED(m_pShader->Set_RawValue("g_ShadowViewMatrix", &CLight_Manager::Get_Instance()->Get_ShadowLightViewMatrix(), sizeof(_float4x4))))
 			return E_FAIL;
 
 		if (FAILED(m_pShader->Set_RawValue("g_CamProjMatrix", &pPipeLine->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))

@@ -38,7 +38,7 @@ HRESULT CCamManager::Create_Cam()
 	CameraDesc.vEye = _float4(0.f, 10.f, -10.f, 1.f);
 	CameraDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	CameraDesc.fFovy = XMConvertToRadians(60.0f);
-	CameraDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+	CameraDesc.fAspect = ((_float)g_iWinSizeX * 2.f) / (g_iWinSizeY * 2.f);
 	CameraDesc.fNear = 0.2f;
 	CameraDesc.fFar = 300.0f;
 
