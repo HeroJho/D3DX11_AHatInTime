@@ -56,9 +56,29 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Specular"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
-	///* For.Target_Blur */
-	//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
-	//	return E_FAIL;
+	/* For.Target_Blur */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+	/* For.Target_BlurDownSample */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BlurDownSample"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+	/* For.Target_BlurHor */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BlurHor"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+	/* For.Target_BlurVer */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BlurVer"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+	/* For.Target_BlurUpSample */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_BlurUpSample"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+	/* For.Target_Grow */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Grow"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+
+	/* For.Target_Blend */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blend"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 
 
 
@@ -69,8 +89,8 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Depth"))))
 		return E_FAIL;
-	//if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Blur"))))
-	//	return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Blur"))))
+		return E_FAIL;
 
 
 	/* For.MRT_LightAcc */
@@ -85,23 +105,54 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 
 
+	/* For.MRT_BlurDownSample*/
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_BlurDownSample"), TEXT("Target_BlurDownSample"))))
+		return E_FAIL;
+	/* For.MRT_BlurHor*/
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_BlurHor"), TEXT("Target_BlurHor"))))
+		return E_FAIL;
+	/* For.MRT_BlurVer*/
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_BlurVer"), TEXT("Target_BlurVer"))))
+		return E_FAIL;
+	/* For.MRT_BlurUpSample*/
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_BlurUpSample"), TEXT("Target_BlurUpSample"))))
+		return E_FAIL;
+	/* For.MRT_Grow*/
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Grow"), TEXT("Target_Grow"))))
+		return E_FAIL;
+	
+
+	/* For.MRT_Blend*/
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blend"), TEXT("Target_Blend"))))
+		return E_FAIL;
+
+
 #ifdef _DEBUG
 
-	//																	렉트의 직교투영 욷르 만들기 위한 인자 값들
+	//															렉트의 직교투영 욷르 만들기 위한 인자 값들
 	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Diffuse"), 100.f, 100.f, 200.f, 200.f)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Normal"), 100.f, 300.f, 200.f, 200.f)))
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Blur"), 100.f, 300.f, 200.f, 200.f)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Depth"), 100.f, 500.f, 200.f, 200.f)))
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_BlurDownSample"), 100.f, 500.f, 200.f, 200.f)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Shade"), 300.f, 100.f, 200.f, 200.f)))
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_BlurHor"), 300.f, 100.f, 200.f, 200.f)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Specular"), 300.f, 300.f, 200.f, 200.f)))
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_BlurVer"), 300.f, 300.f, 200.f, 200.f)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_ShadowDepth"), 300.f, 500.f, 200.f, 200.f)))
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Grow"), 300.f, 500.f, 200.f, 200.f)))
 		return E_FAIL;
-	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Blur"), 300.f, 500.f, 200.f, 200.f)))
+	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Normal"), 100.f, 300.f, 200.f, 200.f)))
 	//	return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Depth"), 100.f, 500.f, 200.f, 200.f)))
+	//	return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Shade"), 300.f, 100.f, 200.f, 200.f)))
+	//	return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Specular"), 300.f, 300.f, 200.f, 200.f)))
+	//	return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_ShadowDepth"), 300.f, 500.f, 200.f, 200.f)))
+	//	return E_FAIL;
+
 
 
 
@@ -149,7 +200,7 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_ShadowDepth())) 
 		return E_FAIL;
 
-	// 디퓨즈, 벡터를 그린다.
+	// 디퍼드로 처리할 애들을 그린다. 
 	if (FAILED(Render_NonAlphaBlend()))
 		return E_FAIL;
 
@@ -157,12 +208,32 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_Lights()))
 		return E_FAIL;
 
+
+
+
 	// 디퓨즈와 빛 연산을 한다.(안개 처리)
 	if (FAILED(Render_Blend()))
 		return E_FAIL;
 
 	if (FAILED(Render_NonLight()))
 		return E_FAIL;
+
+
+	// 블러
+	if (FAILED(Render_BlurDownSample()))
+		return E_FAIL;
+	if (FAILED(Render_BlurHorizontal()))
+		return E_FAIL;
+	if (FAILED(Render_BlurVertical()))
+		return E_FAIL;
+	if (FAILED(Render_BlurUpSample()))
+		return E_FAIL;
+	if (FAILED(Render_Grow()))
+		return E_FAIL;
+
+
+
+
 
 	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
@@ -174,8 +245,8 @@ HRESULT CRenderer::Draw()
 #ifdef _DEBUG
 
 
-	//if (FAILED(Render_Debug()))
-	//	return E_FAIL;
+	if (FAILED(Render_Debug()))
+		return E_FAIL;
 
 
 #endif
@@ -226,6 +297,221 @@ HRESULT CRenderer::Render_ShadowDepth()
 
 	return S_OK;
 }
+
+
+HRESULT CRenderer::Render_BlurDownSample()
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	/* Target_Shader타겟에 빛 연산한 결과를 그린다. */
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_BlurDownSample"))))
+		return E_FAIL;
+
+
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width * 0.5f, ViewportDesc.Height * 0.5f, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Blur"), m_pShader, "g_DiffuseTexture")))
+		return E_FAIL;
+
+
+	m_pShader->Begin(0);
+
+
+	m_pVIBuffer->Render();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_BlurHorizontal()
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	/* Target_Shader타겟에 빛 연산한 결과를 그린다. */
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_BlurHor"))))
+		return E_FAIL;
+
+
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BlurDownSample"), m_pShader, "g_BlurTexture")))
+		return E_FAIL;
+
+
+	m_pShader->Begin(5);
+
+
+	m_pVIBuffer->Render();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_BlurVertical()
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	/* Target_Shader타겟에 빛 연산한 결과를 그린다. */
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_BlurVer"))))
+		return E_FAIL;
+
+
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BlurHor"), m_pShader, "g_BlurTexture")))
+		return E_FAIL;
+
+
+	m_pShader->Begin(6);
+
+
+	m_pVIBuffer->Render();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_BlurUpSample()
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	/* Target_Shader타겟에 빛 연산한 결과를 그린다. */
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_BlurUpSample"))))
+		return E_FAIL;
+
+
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width * 2.f, ViewportDesc.Height * 2.f, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BlurVer"), m_pShader, "g_DiffuseTexture")))
+		return E_FAIL;
+
+
+	m_pShader->Begin(0);
+
+
+	m_pVIBuffer->Render();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Grow()
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+
+	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Grow"), false)))
+	//	return E_FAIL;
+
+
+	_float4x4			WorldMatrix;
+
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Blend"), m_pShader, "g_DiffuseTexture")))
+		return E_FAIL;;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BlurUpSample"), m_pShader, "g_BlurTexture")))
+		return E_FAIL;;
+
+
+	m_pShader->Begin(7);
+
+
+	m_pVIBuffer->Render();
+
+	//if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+	//	return E_FAIL;
+
+	return S_OK;
+}
+
 
 HRESULT CRenderer::Render_NonAlphaBlend()
 {
@@ -309,6 +595,14 @@ HRESULT CRenderer::Render_Lights()
 
 HRESULT CRenderer::Render_Blend()
 {
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"))))
+		return E_FAIL;
+
+
 	_float4x4			WorldMatrix;
 
 	_uint				iNumViewport = 1;
@@ -427,6 +721,11 @@ HRESULT CRenderer::Render_Blend()
 
 	m_pVIBuffer->Render();
 
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+
 	return S_OK;
 }
 
@@ -486,7 +785,13 @@ HRESULT CRenderer::Render_Debug()
 	m_pTarget_Manager->Render_Debug(TEXT("MRT_Deferred"), m_pVIBuffer, m_pShader);
 	m_pTarget_Manager->Render_Debug(TEXT("MRT_LightAcc"), m_pVIBuffer, m_pShader);
 	m_pTarget_Manager->Render_Debug(TEXT("MRT_LightDepth"), m_pVIBuffer, m_pShader);
+	m_pTarget_Manager->Render_Debug(TEXT("MRT_BlurDownSample"), m_pVIBuffer, m_pShader);
+	m_pTarget_Manager->Render_Debug(TEXT("MRT_BlurHor"), m_pVIBuffer, m_pShader);
+	m_pTarget_Manager->Render_Debug(TEXT("MRT_BlurVer"), m_pVIBuffer, m_pShader);
+	m_pTarget_Manager->Render_Debug(TEXT("MRT_BlurUpSample"), m_pVIBuffer, m_pShader);
+	m_pTarget_Manager->Render_Debug(TEXT("MRT_Grow"), m_pVIBuffer, m_pShader);
 
+	
 	for (auto& pDebugCom : m_DebugObject)
 	{
 		pDebugCom->Render();

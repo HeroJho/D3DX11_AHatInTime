@@ -6,7 +6,7 @@ CLayer::CLayer()
 }
 
 CComponent * CLayer::Get_ComponentPtr(const _tchar * pComponentTag, _uint iLayerIndex)
-{
+{  // 내 리스트의 iLayerIndex 번째 애의 pComponentTag 컴포넌트를 찾아서 리턴
 	auto	iter = m_GameObjects.begin();
 
 	for (_uint i = 0; i < iLayerIndex; ++i)

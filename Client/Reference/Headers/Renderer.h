@@ -56,6 +56,14 @@ private:
 private:
 	HRESULT Render_Priority();
 	HRESULT Render_ShadowDepth();
+
+	HRESULT Render_BlurDownSample();
+	HRESULT Render_BlurHorizontal();
+	HRESULT Render_BlurVertical();
+	HRESULT Render_BlurUpSample();
+	HRESULT Render_Grow();
+
+
 	HRESULT Render_NonAlphaBlend();
 	HRESULT Render_Lights();
 	HRESULT Render_Blend();

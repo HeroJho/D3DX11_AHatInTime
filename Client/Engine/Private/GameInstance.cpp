@@ -145,7 +145,7 @@ CGameObject * CGameInstance::Get_GameObjectPtr(_uint iLevelIndex, const _tchar *
 }
 
 CComponent * CGameInstance::Get_ComponentPtr(_uint iLevelIndex, const _tchar * pLayerTag, const _tchar * pComponentTag, _uint iLayerIndex)
-{
+{//												씬 레벨 인덱스        찾으려는 애의 레이어 테그,     찾으려는 애의 컴포 테그,     찾으려는 애의 레이어에 있는 리스트의 몇 번째인지 (플레이어의 경우 0)    
 	if (nullptr == m_pObject_Manager)
 		return nullptr;
 

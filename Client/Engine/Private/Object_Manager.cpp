@@ -10,7 +10,7 @@ CObject_Manager::CObject_Manager()
 
 CComponent * CObject_Manager::Get_ComponentPtr(_uint iLevelIndex, const _tchar * pLayerTag, const _tchar * pComponentTag, _uint iLayerIndex)
 {
-	CLayer*		pLayer = Find_Layer(iLevelIndex, pLayerTag);
+	CLayer*		pLayer = Find_Layer(iLevelIndex, pLayerTag);		// 레이어 찾기
 
 	if (nullptr == pLayer)
 		return nullptr;
