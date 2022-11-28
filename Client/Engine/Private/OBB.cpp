@@ -405,12 +405,12 @@ _bool COBB::Collision_OBB(CCollider * pTargetCollider, CTransform* pTran, _float
 
 		// 내적값이 0.7f 이하라면 (경사) 슬라이드
 		// On이였는데 0.2f라면 None
-		if (0.5f > fDot)
+		if (0.7f > fDot)
 		{
 			((COBB*)pTargetCollider)->m_eColState = COL_NONE;
 
 			// 너무 가파르다 -> 벽이다
-			if (0.2f > fDot)
+			if (0.4f > fDot)
 			{
 
 				if (COL_ON == ((COBB*)pTargetCollider)->m_ePreColState && !m_ColliderDesc.bWall)

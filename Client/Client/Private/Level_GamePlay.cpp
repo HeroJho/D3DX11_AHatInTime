@@ -173,7 +173,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 
 	// ¹Ýµ÷ºÒ
-	for (_uint i = 0; i < 10; ++i)
+	for (_uint i = 0; i < 5; ++i)
 	{
 		CBindi::BINDIDESC BindiDesc;
 		BindiDesc.vPos = _float3(-20.2f, 18.f, 89.09f);
@@ -187,13 +187,15 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
 			return E_FAIL;
 	}
-	for (_uint i = 0; i < 10; ++i)
+	for (_uint i = 0; i < 5; ++i)
 	{
 		CBindi::BINDIDESC BindiDesc;
 		BindiDesc.vPos = _float3(-8.43f, 15.76f, 95.61f);
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
 			return E_FAIL;
 	}
+
+	// 2½º
 	for (_uint i = 0; i < 10; ++i)
 	{
 		CBindi::BINDIDESC BindiDesc;
@@ -201,7 +203,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
 			return E_FAIL;
 	}
-	for (_uint i = 0; i < 10; ++i)
+	for (_uint i = 0; i < 5; ++i)
 	{
 		CBindi::BINDIDESC BindiDesc;
 		BindiDesc.vPos = _float3(-69.2f, 10.25f, -12.7f);

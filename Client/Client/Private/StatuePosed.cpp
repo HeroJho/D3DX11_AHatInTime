@@ -445,7 +445,9 @@ void CStatuePosed::Render_None()
 
 
 
-
+	_bool bBlur = false;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return;
 
 
 
@@ -509,6 +511,9 @@ void CStatuePosed::Render_Anim()
 
 	}
 
+	_bool bBlur = CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return;
 
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();

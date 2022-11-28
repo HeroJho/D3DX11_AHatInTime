@@ -29,6 +29,8 @@ public:
 		_float fUpSpeed;
 		_float fDownSpeed;
 
+		_uint	iIsLight;
+
 	}MUSHROOMDESC;
 
 public:

@@ -83,8 +83,10 @@ HRESULT CTerrain::Render()
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
+#ifdef _DEBUG
 	if(m_bTest)
 		m_pNavigation->Render();
+#endif
 
 	return S_OK;
 }

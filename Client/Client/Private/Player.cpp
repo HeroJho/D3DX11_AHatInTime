@@ -1899,7 +1899,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	_bool bisIsWisp = CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	m_bIsInWisp = CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	_bool bisIsWispX = CGameManager::Get_Instance()->Check_IsInWispX(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 
 	// 중력 적용
@@ -1914,7 +1914,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 	OnDipY();
 
 	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
-	Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom, 0.f, bisIsWisp);
+	Tick_Col(m_pTransformCom->Get_WorldMatrix(), m_pNavigationCom, m_pTransformCom, 0.f, m_bIsInWisp);
 
 
 	// 착지 했다면
@@ -2168,6 +2168,12 @@ HRESULT CPlayer::Render()
 
 	RELEASE_INSTANCE(CGameInstance);
 
+
+	_bool bBlur = false;
+	if (m_bIsInWisp)
+		bBlur = true;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
 
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();

@@ -119,7 +119,9 @@ HRESULT CIceBox::Render()
 
 	RELEASE_INSTANCE(CGameInstance);
 
-
+	_bool bBlur = false;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
 
 	_uint		iIceNumMeshes = m_pIceModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iIceNumMeshes; ++i)

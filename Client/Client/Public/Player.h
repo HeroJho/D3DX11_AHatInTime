@@ -216,6 +216,7 @@ private:
 
 	// For. Wisp
 	class CWisp* m_pWisp = nullptr;
+	_bool		m_bIsInWisp = false;
 
 
 	// For. CutScene

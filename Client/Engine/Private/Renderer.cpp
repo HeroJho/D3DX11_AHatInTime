@@ -56,6 +56,7 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Specular"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
+
 	/* For.Target_Blur */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
@@ -93,6 +94,7 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 
 
+
 	/* For.MRT_LightAcc */
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
 		return E_FAIL;
@@ -125,6 +127,18 @@ HRESULT CRenderer::Initialize_Prototype()
 	/* For.MRT_Blend*/
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blend"), TEXT("Target_Blend"))))
 		return E_FAIL;
+
+
+	/* For.MRT_NonLight*/
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_NonLight"), TEXT("Target_Blend"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_NonLight"), TEXT("Target_Normal"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_NonLight"), TEXT("Target_Depth"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_NonLight"), TEXT("Target_Blur"))))
+		return E_FAIL;
+
 
 
 #ifdef _DEBUG
@@ -219,6 +233,9 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 
 
+	if (FAILED(Render_AlphaBlend()))
+		return E_FAIL;
+
 	// 블러
 	if (FAILED(Render_BlurDownSample()))
 		return E_FAIL;
@@ -232,12 +249,6 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 
 
-
-
-
-	if (FAILED(Render_AlphaBlend()))
-		return E_FAIL;
-
 	if (FAILED(Render_UI()))
 		return E_FAIL;
 
@@ -245,8 +256,8 @@ HRESULT CRenderer::Draw()
 #ifdef _DEBUG
 
 
-	if (FAILED(Render_Debug()))
-		return E_FAIL;
+	//if (FAILED(Render_Debug()))
+	//	return E_FAIL;
 
 
 #endif
@@ -731,6 +742,11 @@ HRESULT CRenderer::Render_Blend()
 
 HRESULT CRenderer::Render_NonLight()
 {
+	// 0 블랜드, 1 Target_Blur
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_NonLight"), false)))
+		return E_FAIL;
+
+
 	for (auto& pRenderObject : m_RenderObjects[RENDER_NONLIGHT])
 	{
 		if (nullptr != pRenderObject)
@@ -739,6 +755,10 @@ HRESULT CRenderer::Render_NonLight()
 		Safe_Release(pRenderObject);
 	}
 	m_RenderObjects[RENDER_NONLIGHT].clear();
+
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -750,6 +770,10 @@ HRESULT CRenderer::Render_AlphaBlend()
 		return pSour->Get_CamDistance() > pDest->Get_CamDistance();
 	});
 
+	// 0 블랜드, 1 Target_Blur
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_NonLight"), false)))
+		return E_FAIL;
+
 	for (auto& pRenderObject : m_RenderObjects[RENDER_ALPHABLEND])
 	{
 		if (nullptr != pRenderObject)
@@ -758,6 +782,10 @@ HRESULT CRenderer::Render_AlphaBlend()
 		Safe_Release(pRenderObject);
 	}
 	m_RenderObjects[RENDER_ALPHABLEND].clear();
+
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
 
 	return S_OK;
 }

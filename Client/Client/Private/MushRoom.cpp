@@ -55,23 +55,26 @@ HRESULT CMushRoom::Initialize(void * pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 
 
+	if (!m_Desc.iIsLight)
+	{
+		// 빛 정의
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	// 빛 정의
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		LIGHTDESC LightDesc;
+		LightDesc.eType = LIGHTDESC::TYPE_POINT;
+		LightDesc.vDiffuse = m_Desc.vDiffuseColor;
+		LightDesc.vAmbient = m_Desc.vAmColor;
 
-	LIGHTDESC LightDesc;
-	LightDesc.eType = LIGHTDESC::TYPE_POINT;
-	LightDesc.vDiffuse = m_Desc.vDiffuseColor;
-	LightDesc.vAmbient = m_Desc.vAmColor;
+		vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 2.5f);
+		XMStoreFloat4(&LightDesc.vPosition, XMVectorSetW(vPos, 1.f));
 
-	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 2.5f);
-	XMStoreFloat4(&LightDesc.vPosition, XMVectorSetW(vPos, 1.f));
-	
-	LightDesc.fRange = m_Desc.fPower;
+		LightDesc.fRange = m_Desc.fPower;
 
-	pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc, &m_pLight);
+		pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc, &m_pLight);
 
-	RELEASE_INSTANCE(CGameInstance);
+		RELEASE_INSTANCE(CGameInstance);
+	}
+
 
 
 
@@ -82,15 +85,18 @@ HRESULT CMushRoom::Initialize(void * pArg)
 
 void CMushRoom::Set_State(STATE eState)
 {
-
 	if (eState != m_eState)
 	{
 		switch (m_eState)
 		{
 		case STATE_DOWN_IDLE:
 			m_fRatio = 0.f;
-			m_pLight->Get_LightEditDesc()->vDiffuse = _float4(0.f, 0.f, 0.f, 1.f);
-			m_pLight->Get_LightEditDesc()->vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
+			if (nullptr != m_pLight)
+			{
+				m_pLight->Get_LightEditDesc()->vDiffuse = _float4(0.f, 0.f, 0.f, 1.f);
+				m_pLight->Get_LightEditDesc()->vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
+			}
+
 			break;
 		case STATE_DOWN_START:
 			m_fTimeAcc = 0.f;
@@ -102,8 +108,11 @@ void CMushRoom::Set_State(STATE eState)
 			break;
 		case STATE_UP_IDLE:
 			m_fRatio = 1.f;
-			m_pLight->Get_LightEditDesc()->vDiffuse = m_Desc.vDiffuseColor;
-			m_pLight->Get_LightEditDesc()->vAmbient = m_Desc.vAmColor;
+			if (nullptr != m_pLight)
+			{
+				m_pLight->Get_LightEditDesc()->vDiffuse = m_Desc.vDiffuseColor;
+				m_pLight->Get_LightEditDesc()->vAmbient = m_Desc.vAmColor;
+			}
 			break;
 		default:
 			break;
@@ -124,11 +133,11 @@ void CMushRoom::Tick(_float fTimeDelta)
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
 
-	//if (CGameManager::Get_Instance()->Get_Musroom())
-	//{
-	//	if (STATE_UP_IDLE != m_eState && STATE_UP_START != m_eState)
-	//		Set_State(STATE_UP_START);
-	//}
+	if (CGameManager::Get_Instance()->Get_Musroom())
+	{
+		if (STATE_UP_IDLE != m_eState && STATE_UP_START != m_eState)
+			Set_State(STATE_UP_START);
+	}
 
 
 	switch (m_eState)
@@ -153,19 +162,23 @@ void CMushRoom::Tick(_float fTimeDelta)
 
 void CMushRoom::Tick_Down_Idle(_float fTimeDelta)
 {
-	// 가만히 있는다
-	//_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
-	//_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
-	//m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
-	//m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
+	if (nullptr == m_pLight)
+		return;
+
+	//  가만히 있는다
+	_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
+	_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
+	m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
+	m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
+
 
 }
 
 void CMushRoom::Tick_Down_Start(_float fTimeDelta)
 {
-	//m_fTimeAcc += fTimeDelta;
-	//if (m_fTime > m_fTimeAcc)
-	//	return;
+	m_fTimeAcc += fTimeDelta;
+	if (m_fTime > m_fTimeAcc)
+		return;
 
 	m_fRatio -= m_Desc.fDownSpeed * fTimeDelta;
 
@@ -178,17 +191,21 @@ void CMushRoom::Tick_Down_Start(_float fTimeDelta)
 		return;
 	}
 
-	_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
-	_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
-	m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
-	m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
+	if (m_pLight)
+	{
+		_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
+		_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
+		m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
+		m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
+	}
+
 }
 
 void CMushRoom::Tick_Up_Start(_float fTimeDelta)
 {
-	//m_fTimeAcc += fTimeDelta;
-	//if (m_fTime > m_fTimeAcc)
-	//	return;
+	m_fTimeAcc += fTimeDelta;
+	if (m_fTime > m_fTimeAcc)
+		return;
 
 	m_fRatio += m_Desc.fUpSpeed * fTimeDelta;
 
@@ -201,44 +218,48 @@ void CMushRoom::Tick_Up_Start(_float fTimeDelta)
 		return;
 	}
 
-	_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
-	_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
-	m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
-	m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
-
+	if (m_pLight)
+	{
+		_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
+		_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
+		m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
+		m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
+	}
 }
 
 void CMushRoom::Tick_Up_Idle(_float fTimeDelta)
 {
 	// 켜서 가만히 있는다
 
-	//if (0.8f < m_fRatio)
-	//{
-	//	m_bTurn = true;
-	//}
-	//else if (0.5f > m_fRatio)
-	//{
-	//	m_bTurn = false;
-	//}
+	if (0.8f < m_fRatio)
+	{
+		m_bTurn = true;
+	}
+	else if (0.7f > m_fRatio)
+	{
+		m_bTurn = false;
+	}
 
-	//if (m_bTurn)
-	//{
-	//	m_fRatio -= m_Desc.fUpSpeed * fTimeDelta;
-	//}
-	//else
-	//{
-	//	m_fRatio += m_Desc.fUpSpeed * fTimeDelta;
-	//}
+	if (m_bTurn)
+	{
+		m_fRatio -= m_Desc.fUpSpeed * fTimeDelta;
+	}
+	else
+	{
+		m_fRatio += m_Desc.fUpSpeed * fTimeDelta;
+	}
 
-	//_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
-	//_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
-	//m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
-	//m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
+	if (m_pLight)
+	{
+		_float4 vDiffuColor(m_Desc.vDiffuseColor.x *m_fRatio, m_Desc.vDiffuseColor.y *m_fRatio, m_Desc.vDiffuseColor.z *m_fRatio, 1.f);
+		_float4 vAmbColor(m_Desc.vAmColor.x *m_fRatio, m_Desc.vAmColor.y *m_fRatio, m_Desc.vAmColor.z *m_fRatio, 1.f);
+		m_pLight->Get_LightEditDesc()->vDiffuse = vDiffuColor;
+		m_pLight->Get_LightEditDesc()->vAmbient = vAmbColor;
+	}
 
 
-
-	//if (!CGameManager::Get_Instance()->Get_Musroom())
-	//	Set_State(STATE_DOWN_START);
+	if (!CGameManager::Get_Instance()->Get_Musroom())
+		Set_State(STATE_DOWN_START);
 }
 
 
@@ -304,7 +325,7 @@ void CMushRoom::LateTick(_float fTimeDelta)
 
 
 
-	if (!CGameManager::Get_Instance()->Get_WispInfoNum())
+	if (!CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION)))
 	{
 		// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this);
 
@@ -320,8 +341,10 @@ void CMushRoom::LateTick(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 
 
-	// CGameManager::Get_Instance()->Set_Musroom(false);
-	Set_State(STATE_DOWN_START);
+	CGameManager::Get_Instance()->Set_Musroom(false);
+
+	//Set_State(STATE_UP_START);
+	//Set_State(STATE_DOWN_START);
 }
 
 
@@ -346,15 +369,24 @@ HRESULT CMushRoom::Render()
 	if (FAILED(m_pShaderCom->Set_RawValue("vMushColor", &m_Desc.vDiffuseColor, sizeof(_float4))))
 		return E_FAIL;
 
-
+	_bool bBlur = false;
 
 	_uint iIndex = 7;
 	if (STATE_UP_START == m_eState || STATE_UP_IDLE == m_eState || STATE_DOWN_START == m_eState)
 	{
+		if (STATE_DOWN_START == m_eState)
+			bBlur = false;
+		else
+			bBlur = true;
 		iIndex = 9;
 		if (FAILED(m_pShaderCom->Set_RawValue("g_MushColorRatio", &m_fRatio, sizeof(_float))))
 			return E_FAIL;
 	}
+
+	// bBlur = true;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
+
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -370,7 +402,6 @@ HRESULT CMushRoom::Render()
 
 	// Render_Col();
 
-
 	return S_OK;
 }
 
@@ -379,8 +410,8 @@ void CMushRoom::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 	if ("Tag_Player" == Desc.pOther->Get_Tag() && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 	{
-		// CGameManager::Get_Instance()->Set_Musroom(true);
-		Set_State(STATE_UP_START);
+		CGameManager::Get_Instance()->Set_Musroom(true);
+		// Set_State(STATE_UP_START);
 	}
 
 

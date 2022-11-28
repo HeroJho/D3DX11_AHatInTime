@@ -430,17 +430,17 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 			MushDesc.vPos = DataObj.vPos;
 			MushDesc.vScale = DataObj.vScale;
 			MushDesc.vRotation = DataObj.vAngle;
-
+			MushDesc.iIsLight = DataObj.iTagID;
 
 			MushDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
-			MushDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.5f, 1.5f);
+			MushDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
 			MushDesc.fDownSpeed = MushDesc.fUpSpeed;
 			
 			_float fR = 0.f;
 			_float fG = 0.f;
 			_float fB = 0.f;
 			
-			while (!(1.8f < fR + fG + fB && 2.9f > fR + fG + fB))
+			while (!(1.8f < fR + fG + fB && 2.7f > fR + fG + fB))
 			{
 				fR = CToolManager::Get_Instance()->Get_RendomNum_Int(0.f, 1.f);
 				fG = CToolManager::Get_Instance()->Get_RendomNum_Int(0.f, 1.f);
