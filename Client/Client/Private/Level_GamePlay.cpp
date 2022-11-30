@@ -8,6 +8,7 @@
 #include "CamManager.h"
 #include "UIManager.h"
 #include "CutSceneManager.h"
+#include "ToolManager.h"
 
 #include "Camera_Free.h"
 #include "UI.h"
@@ -21,6 +22,7 @@
 #include "TimeObject.h"
 #include "MushRoom.h"
 #include "Bindi.h"
+#include "Fire.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -211,6 +213,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 			return E_FAIL;
 	}
 
+	// Áý 
+	for (_uint i = 0; i < 20; ++i)
+	{
+		CBindi::BINDIDESC BindiDesc;
+		BindiDesc.vPos = _float3(-69.5f, 14.36f, 131.2f);
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Bindi"), LEVEL_GAMEPLAY, pLayerTag, &BindiDesc)))
+			return E_FAIL;
+	}
 
 
 	
@@ -284,7 +294,55 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 	
 
+		CFire::FIREDESC FireDesc;
+	FireDesc.vPos = _float3(-12.6f, 11.f, 129.4f);
+	FireDesc.vScale = _float3(2.f, 2.f, 2.f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
 
+
+
+	FireDesc.vPos = _float3(-67.5f, 13.9f, 124.3f);
+	FireDesc.vScale = _float3(0.6f, 0.6f, 0.6f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-85.8f, 15.97f, 134.1f);
+	FireDesc.vScale = _float3(0.7f, 0.7f, 0.7f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-67.4f, 15.5f, 143.f);
+	FireDesc.vScale = _float3(0.6f, 0.6f, 0.6f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-58.4f, 15.31f, 127.6f);
+	FireDesc.vScale = _float3(0.7f, 0.7f, 0.7f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
 
 
 
@@ -302,8 +360,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	Safe_AddRef(pGameInstance);
 
 
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
-	//	return E_FAIL;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
+		return E_FAIL;
 	
 
 
@@ -334,14 +392,13 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	WispDesc.iIndex = 3;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMount"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
+
 	WispDesc.vPos = _float3(-28.0f, 1.4f, 44.84f);
 	WispDesc.vAngle = _float3(0.f, 0.f, 0.f);
 	WispDesc.fRatio = 20;
 	WispDesc.iIndex = 4;
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_BellMountEye"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &WispDesc)))
 		return E_FAIL;
-
-
 
 
 
@@ -400,6 +457,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 		return E_FAIL;
 	
 
+
+
+
+
+
 	Safe_Release(pGameInstance);
 
 
@@ -419,13 +481,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 
 	Safe_Release(pGameInstance);
 
-
+	CUIManager::Get_Instance()->Make_SpeechBubble();
 	CUIManager::Get_Instance()->Make_Hp();
 	CUIManager::Get_Instance()->Make_InvenUI();
 	CUIManager::Get_Instance()->Make_ItemInvenUI();
 	CUIManager::Get_Instance()->Make_DiamondUI();
 	CUIManager::Get_Instance()->Make_ShopUI();
-	CUIManager::Get_Instance()->Make_SpeechBubble();
+	CUIManager::Get_Instance()->Make_WhiteBoard();
+	
 
 
 	return S_OK;

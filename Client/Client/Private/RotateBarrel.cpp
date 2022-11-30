@@ -112,7 +112,9 @@ HRESULT CRotateBarrel::Render()
 
 	RELEASE_INSTANCE(CGameInstance);
 
-
+	_bool bBlur = false;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
 
 	_uint iPassIndex = 0;
 	_int iWispNum = CGameManager::Get_Instance()->Get_WispInfoNum();

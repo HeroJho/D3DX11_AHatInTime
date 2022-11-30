@@ -178,7 +178,10 @@
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\ColorCube.h" />
     <ClInclude Include="..\public\DataManager.h" />
+    <ClInclude Include="..\public\EyeAttackGround.h" />
     <ClInclude Include="..\public\EyeBream.h" />
+    <ClInclude Include="..\public\FinLaser.h" />
+    <ClInclude Include="..\public\Fire.h" />
     <ClInclude Include="..\Public\imconfig.h" />
     <ClInclude Include="..\Public\imgui.h" />
     <ClInclude Include="..\Public\imgui_impl_dx11.h" />
@@ -221,6 +224,7 @@
     <ClInclude Include="..\public\Terrain_Map.h" />
     <ClInclude Include="..\Public\TestManager.h" />
     <ClInclude Include="..\public\ToolManager.h" />
+    <ClInclude Include="..\public\Wind_Spiral.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Client_Struct.h" />
     <ClInclude Include="Resource.h" />
@@ -239,7 +243,10 @@
     <ClCompile Include="..\private\ClickedVertexCube.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
+    <ClCompile Include="..\private\EyeAttackGround.cpp" />
     <ClCompile Include="..\private\EyeBream.cpp" />
+    <ClCompile Include="..\private\FinLaser.cpp" />
+    <ClCompile Include="..\private\Fire.cpp" />
     <ClCompile Include="..\Private\imgui.cpp" />
     <ClCompile Include="..\Private\imgui_demo.cpp" />
     <ClCompile Include="..\Private\imgui_draw.cpp" />
@@ -281,6 +288,7 @@
     <ClCompile Include="..\private\Terrain_Map.cpp" />
     <ClCompile Include="..\Private\TestManager.cpp" />
     <ClCompile Include="..\private\ToolManager.cpp" />
+    <ClCompile Include="..\private\Wind_Spiral.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

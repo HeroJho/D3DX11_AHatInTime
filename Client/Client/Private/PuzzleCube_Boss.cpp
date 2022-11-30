@@ -178,6 +178,11 @@ HRESULT CPuzzleCube_Boss::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+	_bool bBlur = true;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
+
+
 
 	_uint		iWoodNumMeshes = m_pWoodModelCom->Get_NumMeshes();
 	_uint		iIceNumMeshes = m_pIceModelCom->Get_NumMeshes();
@@ -235,7 +240,6 @@ HRESULT CPuzzleCube_Boss::Render()
 	}
 	else
 	{
-		iPassIndex = 0;
 
 		for (_uint i = 0; i < iWoodNumMeshes; ++i)
 		{
@@ -245,7 +249,6 @@ HRESULT CPuzzleCube_Boss::Render()
 			if (FAILED(m_pWoodModelCom->Render(m_pShaderCom, i, iPassIndex)))
 				return E_FAIL;
 		}
-
 
 	}
 

@@ -19,13 +19,13 @@ class CVSnatcher final : public CGameObject
 {
 public:
 	enum STATE {
-		STATE_CUT_0, STATE_CUT_1, STATE_CUT_2, STATE_CUT_3, STATE_CUT_4, STATE_CUT_5, STATE_CUT_6,
+		STATE_CUT_0, STATE_CUT_1, STATE_CUT_2, STATE_CUT_3, STATE_CUT_4, STATE_CUT_5, STATE_CUT_6, STATE_CUT_7,
 		STATE_APPEAR, STATE_SOFTAPPEAR, STATE_DISAPPEAR, STATE_IDLE, 
 		STATE_TALKING, STATE_CURSESTART, STATE_CURSE, 
 		STATE_MINON, STATE_MAGICSTART, STATE_MAGIC, STATE_HOITSTART, 
 		STATE_HOIT, STATE_SNAPHAT, 
 		STATE_SWIPSTART, STATE_SWIPS, STATE_SIT,
-		STATE_ATTACK, STATE_CANATTACKED, STATE_END };
+		STATE_ATTACK, STATE_CANATTACKED, STATE_DEAD, STATE_END };
 	enum SLOT { SLOT_HAND, SLOT_HEAD, SLOT_SPIN, SLOT_END };
 
 private:
@@ -74,6 +74,7 @@ public:
 
 	void Tick_CanAttacked(_float fTimeDelta);
 
+	void Tick_Dead(_float fTimeDelta);
 
 	void Tick_Cut_1(_float fTimeDelta);
 	void Tick_Cut_2(_float fTimeDelta);
@@ -81,7 +82,7 @@ public:
 	void Tick_Cut_4(_float fTimeDelta);
 	void Tick_Cut_5(_float fTimeDelta);
 	void Tick_Cut_6(_float fTimeDelta);
-
+	void Tick_Cut_7(_float fTimeDelta);
 
 private:
 	void Compute_Pattern(_float fTimeDelta);
@@ -95,6 +96,7 @@ private:
 
 	void Choose_SnapHat();
 	void Drop_Hat();
+
 
 	_float3 Get_PacePos(_float fLength, _float fUpAngle, _float fRightAngle);
 	_float3 Get_PaceLook(_float fHight);
@@ -160,7 +162,10 @@ private:
 	_bool m_bAttacked = false;
 	_float m_fAttackedTimeAcc = 0.f;
 
-
+	// For. Dead
+	_float m_fDeadTimeAcc = 0.f;
+	_float m_fDeadMaxTimeAcc = 1.f;
+	_uint  m_iFinLaserCount = 0;
 
 private:
 	CShader*				m_pShaderCom = nullptr;

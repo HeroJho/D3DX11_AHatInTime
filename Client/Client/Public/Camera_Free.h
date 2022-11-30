@@ -93,6 +93,7 @@ private:
 
 public:
 	void Start_Shake(_float fShakeTime, _float fShakePower, _float fShakeTurnTime);
+	void End_Shake();
 
 	void Tick_Shacke(_float fTimeDelta);
 

@@ -8,6 +8,7 @@
 #include "CamManager.h"
 #include "UIManager.h"
 #include "CutSceneManager.h"
+#include "ToolManager.h"
 
 #include "Camera_Free.h"
 #include "UI.h"
@@ -19,6 +20,7 @@
 #include "RotateBarrel.h"
 #include "StatuePosed.h"
 #include "TimeObject.h"
+#include "Fire.h"
 
 #include "Terrain.h"
 
@@ -136,6 +138,93 @@ HRESULT CLevel_Boss::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 
 
+
+
+
+	CFire::FIREDESC FireDesc;
+	FireDesc.vPos = _float3(-54.75f, 4.612f + 0.5f, -127.7f);
+	FireDesc.vScale = _float3(2.f, 2.f, 2.f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_BOSS, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-56.2f, 3.646f + 0.3f, -128.6f);
+	FireDesc.vScale = _float3(1.2f, 1.2f, 1.2f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_BOSS, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-49.04f, 4.313f + 0.1f, -122.95f);
+	FireDesc.vScale = _float3(0.6f, 0.6f, 0.6f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_BOSS, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+
+
+	FireDesc.vPos = _float3(-46.86f, 4.416f + 0.2f, -116.f);
+	FireDesc.vScale = _float3(1.2f, 1.2f, 1.2f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_BOSS, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-44.91f, 2.637 + 0.2f, -111.6f);
+	FireDesc.vScale = _float3(0.6f, 0.6f, 0.6f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_BOSS, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-62.35f, 3.613f+ 0.7f, -101.8f);
+	FireDesc.vScale = _float3(1.5f, 1.5f, 1.5f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_BOSS, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-74.13f, 3.916f + 0.2f, -166.6f);
+	FireDesc.vScale = _float3(1.3f, 1.3f, 1.3f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_BOSS, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-68.39f, 4.74f+ 0.2f, -126.7f);
+	FireDesc.vScale = _float3(2.f, 2.f, 2.f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_BOSS, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
+	FireDesc.vPos = _float3(-63.05f, 2.07f + 0.2f, -128.7f);
+	FireDesc.vScale = _float3(0.3f, 0.3f, 0.3f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
+	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_BOSS, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
 
 
 

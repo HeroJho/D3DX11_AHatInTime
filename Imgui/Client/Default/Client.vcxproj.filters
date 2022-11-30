@@ -178,6 +178,18 @@
     <Filter Include="02.GameObject\05. ParticleTool\PipeScream">
       <UniqueIdentifier>{916a72b2-7236-45e7-8d8e-0613b4220927}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\05. ParticleTool\EyeAttackGround">
+      <UniqueIdentifier>{9e791d8a-f889-40c9-b70f-28f91485fbbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\05. ParticleTool\Wind_Spiral">
+      <UniqueIdentifier>{f0df337f-091a-47e0-a4ff-690b41525567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\05. ParticleTool\FinLaser">
+      <UniqueIdentifier>{f34345f2-c32c-4f5e-b916-15b0be769481}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObject\05. ParticleTool\Fire">
+      <UniqueIdentifier>{495b1421-30b0-4a2b-9d03-1036e7156923}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -362,6 +374,18 @@
     <ClInclude Include="..\public\PipeScream.h">
       <Filter>02.GameObject\05. ParticleTool\PipeScream</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\EyeAttackGround.h">
+      <Filter>02.GameObject\05. ParticleTool\EyeAttackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Wind_Spiral.h">
+      <Filter>02.GameObject\05. ParticleTool\Wind_Spiral</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\FinLaser.h">
+      <Filter>02.GameObject\05. ParticleTool\FinLaser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Fire.h">
+      <Filter>02.GameObject\05. ParticleTool\Fire</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\MainApp.cpp">
@@ -528,6 +552,18 @@
     </ClCompile>
     <ClCompile Include="..\private\PipeScream.cpp">
       <Filter>02.GameObject\05. ParticleTool\PipeScream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\EyeAttackGround.cpp">
+      <Filter>02.GameObject\05. ParticleTool\EyeAttackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Wind_Spiral.cpp">
+      <Filter>02.GameObject\05. ParticleTool\Wind_Spiral</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\FinLaser.cpp">
+      <Filter>02.GameObject\05. ParticleTool\FinLaser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Fire.cpp">
+      <Filter>02.GameObject\05. ParticleTool\Fire</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

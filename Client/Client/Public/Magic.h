@@ -45,6 +45,7 @@ public:
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
+	virtual HRESULT Render_ShadowDepth();
 
 	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) override;
 
@@ -56,6 +57,7 @@ private:
 	void Tick_In(_float fTimeDelta);
 	void Tick_Idle(_float fTimeDelta);
 	void Tick_Go(_float fTimeDelta);
+
 
 
 private:

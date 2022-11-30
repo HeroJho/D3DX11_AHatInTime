@@ -216,9 +216,11 @@ HRESULT CSwip::Ready_Components()
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	 
+
 	CSwipsSky_Boss::SWIPSSKYDESC Desc;
 	Desc.pOwner = this;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SwipsSky_Boss"), LEVEL_GAMEPLAY, TEXT("Layer_Swips"), &Desc)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_SwipsSky_Boss"), CToolManager::Get_Instance()->Get_CulLevel(), TEXT("Layer_Swips"), &Desc)))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);

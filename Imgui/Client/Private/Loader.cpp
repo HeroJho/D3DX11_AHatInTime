@@ -31,6 +31,10 @@
 #include "Splash_wave.h"
 #include "EyeBream.h"
 #include "PipeScream.h"
+#include "EyeAttackGround.h"
+#include "Wind_Spiral.h"
+#include "FinLaser.h"
+#include "Fire.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -165,6 +169,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CRenderCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_Fire */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Fire"),
+		CFire::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	/* For.Prototype_GameObject_ClickedVertexCube */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_ClickedVertexCube"),
 		CClickedVertexCube::Create(m_pDevice, m_pContext))))
@@ -216,7 +225,18 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_PipeScream"),
 		CPipeScream::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-	
+	/* For.Prototype_GameObject_EyeAttackGround*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_EyeAttackGround"),
+		CEyeAttackGround::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_Wind_Spiral*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Wind_Spiral"),
+		CWind_Spiral::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_Laser*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Laser"),
+		CFinLaser::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 
@@ -262,6 +282,25 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_split_line"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/split_line.dds"), 1))))
 		return E_FAIL;
+	
+	/* For.Prototype_Component_Texture_distortionclouds_tex*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_distortionclouds_tex"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/distortionclouds_tex.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Fire_D*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Fire_D"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Fire_D.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Fire_M*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Fire_M"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Fire_M.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Fire_Noise*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Fire_Noise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Fire_Noise.dds"), 1))))
+		return E_FAIL;
+
 	
 
 	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다. "));

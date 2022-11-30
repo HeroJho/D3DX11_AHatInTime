@@ -339,8 +339,8 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 	_float fDis = XMVectorGetX(XMVector3Length(vDir));
 
 	vPrePos += vNorDir * fDis * 5.f * fDeltaTime;
-	//if (m_bShake)
-	//	vPrePos += XMLoadFloat3(&m_vShakePosAcc);
+	if (m_bShake)
+		vPrePos += XMLoadFloat3(&m_vShakePosAcc);
 
 
 
@@ -352,7 +352,7 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 
 	
 
-	if (0.01f < fDis)
+	if (0.01f < fDis || m_bShake)
 	{
 		XMStoreFloat3(&m_vPreLookPos, vPrePos);
 		m_pTransformCom->LookAt(XMVectorSetW(vPrePos, 1.f));
@@ -487,6 +487,12 @@ void CCamera_Free::Start_Shake(_float fShakeTime, _float fShakePower, _float fSh
 	m_fShakeTurnTimeAcc = 0.f;
 	m_bShakeTurn = false;
 
+	ZeroMemory(&m_vShakePosAcc, sizeof(_float3));
+}
+
+void CCamera_Free::End_Shake()
+{
+	m_bShake = false;
 	ZeroMemory(&m_vShakePosAcc, sizeof(_float3));
 }
 

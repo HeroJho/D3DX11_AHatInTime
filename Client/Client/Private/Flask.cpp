@@ -12,6 +12,7 @@
 #include "Flask_EX.h"
 #include "FlaskLight.h"
 #include "WitchChargEffect.h"
+#include "Wind_Spiral.h"
 
 CFlask::CFlask(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CItem(pDevice, pContext)
@@ -117,19 +118,40 @@ void CFlask::LateTick(_float fTimeDelta)
 		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), Desc.vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 4.f, false, 0.f, 0.f, 2.f,
 			20, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 
-		CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_T_FX_Flare_01"), Desc.vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(1.5f, 1.5f, 1.5f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.05f, 3.f, true, 0.1f, 2.f, 2.f,
+	/*	CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_T_FX_Flare_01"), Desc.vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(1.5f, 1.5f, 1.5f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.05f, 3.f, true, 0.1f, 2.f, 2.f,
 			20, 2.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_TEXTURE);
 
-
+*/
 		CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.2f, 10.f, 0.07f);
 
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();
 
-		CFlaskLight::FLASKLIGHTDESC LightDesc;
-		XMStoreFloat3(&LightDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_FlaskLight"), eLevel, TEXT("Layer_Light"), &LightDesc);
+		//CFlaskLight::FLASKLIGHTDESC LightDesc;
+		//XMStoreFloat3(&LightDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		//pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_FlaskLight"), eLevel, TEXT("Layer_Light"), &LightDesc);
+
+		CWind_Spiral::WINDSPIRALDESC WindDesc;
+		XMStoreFloat3(&WindDesc.vParPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		WindDesc.vLocalPos = _float3(0.f, 2.f, 0.f);
+		WindDesc.vScale = _float3(5.f, 3.f, 5.f);
+		WindDesc.fMaxScale = 8.f;
+		WindDesc.fScaleSpeed = 2.f;
+		WindDesc.fAngle = -90.f;
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wind_Spiral"), eLevel, TEXT("Layer_Light"), &WindDesc);
+		
+		WindDesc.vLocalPos = _float3(0.f, 1.f, 0.f);
+		WindDesc.vScale = _float3(3.f, 2.f, 3.f);
+		WindDesc.fMaxScale = 6.f;
+		WindDesc.fScaleSpeed = 2.f;
+		WindDesc.fAngle = 90.f;
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wind_Spiral"), eLevel, TEXT("Layer_Light"), &WindDesc);
+
+		
+		
 		RELEASE_INSTANCE(CGameInstance);
+
+		
 
 		Set_Dead(true);
 	}

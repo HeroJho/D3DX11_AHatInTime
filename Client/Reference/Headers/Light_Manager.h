@@ -29,6 +29,7 @@ private:
 	typedef list<class CLight*>	LIGHTS;
 
 	_float4x4		m_mShadowLightViewMatrix;
+	_float4x4		m_mShadowLightViewMatrixBoss;
 
 
 public:

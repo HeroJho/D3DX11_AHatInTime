@@ -112,6 +112,7 @@ public:
 public: /* For. Target_Manager */
 	void Set_WipsData(_float* pWispRatios, _float4* pWispPoss, _int pWispNum);
 	void Set_Dark(_bool bDark);
+	_bool Get_Dark();
 	void Set_PlayerPos(_float3 vPos);
 	_float3 Get_PlayerPos();
 

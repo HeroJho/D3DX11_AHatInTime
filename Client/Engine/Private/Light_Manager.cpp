@@ -1,5 +1,6 @@
 #include "..\Public\Light_Manager.h"
 #include "Light.h"
+#include "Level_Manager.h"
 
 IMPLEMENT_SINGLETON(CLight_Manager)
 
@@ -20,7 +21,11 @@ const LIGHTDESC * CLight_Manager::Get_LightDesc(_uint iIndex)
 _float4x4 CLight_Manager::Get_ShadowLightViewMatrix()
 {
 	_float4x4 mMatirx;
-	XMStoreFloat4x4(&mMatirx, XMMatrixTranspose(XMLoadFloat4x4(&m_mShadowLightViewMatrix)));
+	if(3 == CLevel_Manager::Get_Instance()->Get_CulLevel())
+		XMStoreFloat4x4(&mMatirx, XMMatrixTranspose(XMLoadFloat4x4(&m_mShadowLightViewMatrix)));
+	else if(4 == CLevel_Manager::Get_Instance()->Get_CulLevel())
+		XMStoreFloat4x4(&mMatirx, XMMatrixTranspose(XMLoadFloat4x4(&m_mShadowLightViewMatrixBoss)));
+
 	return mMatirx;
 }
 
@@ -81,6 +86,11 @@ HRESULT CLight_Manager::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 	_vector		vLightAt = XMVectorSet(-56.7f, 4.7f, 74.09f, 1.f);
 	_vector		vLightUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 	XMStoreFloat4x4(&m_mShadowLightViewMatrix, XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp));
+
+	vLightEye = XMVectorSet(-41.6, 24.02, -86.7f, 1.f);
+	vLightAt = XMVectorSet(-60.57f, -1.f, -115.52f, 1.f);
+	vLightUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	XMStoreFloat4x4(&m_mShadowLightViewMatrixBoss, XMMatrixLookAtLH(vLightEye, vLightAt, vLightUp));
 
 
 	for (auto& pLight : m_Lights)

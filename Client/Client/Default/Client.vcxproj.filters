@@ -259,6 +259,24 @@
     <Filter Include="02.GameObjects\Boss_VSnatcher\SKill\Splash_wave">
       <UniqueIdentifier>{c6eaa037-0e7d-4a86-a74c-b6fd449fb1f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Particle\Wind_Spiral">
+      <UniqueIdentifier>{d743d87f-0cac-4c1d-a6d6-bd935cc88d61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Particle\FinLaser">
+      <UniqueIdentifier>{1d6239fa-46a7-4fa1-9efe-b0c342826d53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\WhiteBoard">
+      <UniqueIdentifier>{287a1550-d73b-4d0c-8a03-cd96dcf8242d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\04.Ending">
+      <UniqueIdentifier>{a12d98e1-bc85-484f-a5b3-817809a897f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Map\Fire">
+      <UniqueIdentifier>{8d723773-05b5-4987-b910-1a835e161abe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\SceneChange">
+      <UniqueIdentifier>{ff5a9bec-80e8-4acc-9bcd-3b9f35572abb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -549,6 +567,27 @@
     <ClInclude Include="..\Bin\ShaderFiles\Client_Shader_Defines.hpp">
       <Filter>97.ShaderFiles</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\EyeAttackGround.h">
+      <Filter>02.GameObjects\Boss_VSnatcher\SKill\ExPlo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Wind_Spiral.h">
+      <Filter>02.GameObjects\Particle\Wind_Spiral</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\FinLaser.h">
+      <Filter>02.GameObjects\Particle\FinLaser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\WhiteBoard.h">
+      <Filter>03.UI\WhiteBoard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Level_Ending.h">
+      <Filter>01.Levels\04.Ending</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\SubConBossEye.h">
+      <Filter>02.GameObjects\Monster\SubconEye</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\Fire.h">
+      <Filter>02.GameObjects\Map\Fire</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -823,6 +862,27 @@
     </ClCompile>
     <ClCompile Include="..\private\Splash_wave.cpp">
       <Filter>02.GameObjects\Boss_VSnatcher\SKill\Splash_wave</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\EyeAttackGround.cpp">
+      <Filter>02.GameObjects\Boss_VSnatcher\SKill\ExPlo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Wind_Spiral.cpp">
+      <Filter>02.GameObjects\Particle\Wind_Spiral</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\FinLaser.cpp">
+      <Filter>02.GameObjects\Particle\FinLaser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\WhiteBoard.cpp">
+      <Filter>03.UI\WhiteBoard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Level_Ending.cpp">
+      <Filter>01.Levels\04.Ending</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\SubConBossEye.cpp">
+      <Filter>02.GameObjects\Monster\SubconEye</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\Fire.cpp">
+      <Filter>02.GameObjects\Map\Fire</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

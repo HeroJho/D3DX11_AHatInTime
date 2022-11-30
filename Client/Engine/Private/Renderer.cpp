@@ -5,6 +5,8 @@
 #include "VIBuffer_Rect.h"
 #include "Light_Manager.h"
 #include "PipeLine.h"
+#include "Texture.h"
+#include "Timer_Manager.h"
 
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
@@ -81,6 +83,15 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blend"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
+	/* For.Target_Player */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Player"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+	/* For.Target_DarkPlayer */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_DarkPlayer"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, &_float4(0.0f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	// 플레이어 타겟에 플레이어를 그린다.
+	// 이 리소스를 노이즈로 흩뜨린다.
 
 
 	/* For.MRT_Deferred */
@@ -91,6 +102,8 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Depth"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Blur"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Player"))))
 		return E_FAIL;
 
 
@@ -139,25 +152,19 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_NonLight"), TEXT("Target_Blur"))))
 		return E_FAIL;
 
+	/* For.MRT_DarkPlayer*/
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_DarkPlayer"), TEXT("Target_DarkPlayer"))))
+		return E_FAIL;
+
 
 
 #ifdef _DEBUG
 
 	//															렉트의 직교투영 욷르 만들기 위한 인자 값들
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Diffuse"), 100.f, 100.f, 200.f, 200.f)))
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Player"), 100.f, 100.f, 200.f, 200.f)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Blur"), 100.f, 300.f, 200.f, 200.f)))
+	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_DarkPlayer"), 100.f, 300.f, 200.f, 200.f)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_BlurDownSample"), 100.f, 500.f, 200.f, 200.f)))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_BlurHor"), 300.f, 100.f, 200.f, 200.f)))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_BlurVer"), 300.f, 300.f, 200.f, 200.f)))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Grow"), 300.f, 500.f, 200.f, 200.f)))
-		return E_FAIL;
-	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Normal"), 100.f, 300.f, 200.f, 200.f)))
-	//	return E_FAIL;
 	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Depth"), 100.f, 500.f, 200.f, 200.f)))
 	//	return E_FAIL;
 	//if (FAILED(m_pTarget_Manager->Initialize_Debug(TEXT("Target_Shade"), 300.f, 100.f, 200.f, 200.f)))
@@ -182,6 +189,15 @@ HRESULT CRenderer::Initialize_Prototype()
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f)));
 
 #endif // _DEBUG
+
+
+
+
+
+
+	// =================== Texture ======================
+	m_pNoiseTexture = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Fire_Noise.dds"));
+
 
 
 	return S_OK;
@@ -218,12 +234,15 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_NonAlphaBlend()))
 		return E_FAIL;
 
-	// 빛과 벡터로 빛을 그린다.
-	if (FAILED(Render_Lights()))
+
+	// Player Shader
+	if (FAILED(Render_PlayerShader()))
 		return E_FAIL;
 
 
-
+	// 빛과 벡터로 빛을 그린다.
+	if (FAILED(Render_Lights()))
+		return E_FAIL;
 
 	// 디퓨즈와 빛 연산을 한다.(안개 처리)
 	if (FAILED(Render_Blend()))
@@ -256,8 +275,8 @@ HRESULT CRenderer::Draw()
 #ifdef _DEBUG
 
 
-	//if (FAILED(Render_Debug()))
-	//	return E_FAIL;
+	if (FAILED(Render_Debug()))
+		return E_FAIL;
 
 
 #endif
@@ -804,6 +823,56 @@ HRESULT CRenderer::Render_UI()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_PlayerShader()
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	/* Target_Shader타겟에 빛 연산한 결과를 그린다. */
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_DarkPlayer"))))
+		return E_FAIL;
+
+
+	_float4x4			WorldMatrix;
+	_uint				iNumViewport = 1;
+	D3D11_VIEWPORT		ViewportDesc;
+	m_pContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+	XMStoreFloat4x4(&WorldMatrix,
+		XMMatrixTranspose(XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 0.f) * XMMatrixTranslation(0.0f, 0.0f, 0.f)));
+	if (FAILED(m_pShader->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShader->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+
+
+
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Player"), m_pShader, "g_DiffuseTexture")))
+		return E_FAIL;
+	if (FAILED(m_pNoiseTexture->Set_SRV(m_pShader, "g_NoiseTexture")))
+		return E_FAIL;
+
+	m_fDeltaTime += CTimer_Manager::Get_Instance()->Get_TimeDelta(TEXT("Timer_60"));
+	if (FAILED(m_pShader->Set_RawValue("g_DeltaTime", &m_fDeltaTime, sizeof(_float))))
+		return E_FAIL;
+	
+
+
+
+	m_pShader->Begin(8);
+
+	m_pVIBuffer->Render();
+
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+
+	return S_OK;
+}
+
 #ifdef _DEBUG
 HRESULT CRenderer::Render_Debug()
 {
@@ -818,6 +887,7 @@ HRESULT CRenderer::Render_Debug()
 	m_pTarget_Manager->Render_Debug(TEXT("MRT_BlurVer"), m_pVIBuffer, m_pShader);
 	m_pTarget_Manager->Render_Debug(TEXT("MRT_BlurUpSample"), m_pVIBuffer, m_pShader);
 	m_pTarget_Manager->Render_Debug(TEXT("MRT_Grow"), m_pVIBuffer, m_pShader);
+	m_pTarget_Manager->Render_Debug(TEXT("MRT_DarkPlayer"), m_pVIBuffer, m_pShader);
 
 	
 	for (auto& pDebugCom : m_DebugObject)
@@ -870,6 +940,7 @@ void CRenderer::Free()
 	Safe_Release(m_pVIBuffer);
 #endif // _DEBUG
 
+	Safe_Release(m_pNoiseTexture);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pTarget_Manager);
 }

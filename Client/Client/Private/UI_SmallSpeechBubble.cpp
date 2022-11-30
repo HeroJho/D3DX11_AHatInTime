@@ -185,6 +185,9 @@ void CUI_SmallSpeechBubble::Set_Target(CGameObject * pObj)
 
 void CUI_SmallSpeechBubble::Set_Position()
 {
+	if (CToolManager::Get_Instance()->Get_IsLoading())
+		return;
+
 	if (nullptr == m_pObj)
 		return;
 

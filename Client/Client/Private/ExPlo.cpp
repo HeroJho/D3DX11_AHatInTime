@@ -7,6 +7,8 @@
 #include "ParticleManager.h"
 #include "CamManager.h"
 #include "Camera_Free.h"
+#include "ToolManager.h"
+#include "Wind_Spiral.h"
 
 CExPlo::CExPlo(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -50,6 +52,29 @@ HRESULT CExPlo::Initialize(void * pArg)
 		20, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 	CParticleManager::Get_Instance()->Create_Effect(TEXT("Grave1"), Desc->vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(2.f, 2.f, 2.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.5f, 15.f, true, 1.f, 3.f, 0.8f,
 		20, 2.f, 0.5f, 0.f, 0.f, 0.f, 5.f, 0.f, 1.0f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();
+
+	CWind_Spiral::WINDSPIRALDESC WindDesc;
+	XMStoreFloat3(&WindDesc.vParPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	WindDesc.vLocalPos = _float3(0.f, 2.f, 0.f);
+	WindDesc.vScale = _float3(5.f, 3.f, 5.f);
+	WindDesc.fMaxScale = 8.f;
+	WindDesc.fScaleSpeed = 2.f;
+	WindDesc.fAngle = -90.f;
+	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wind_Spiral"), eLevel, TEXT("Layer_Light"), &WindDesc);
+
+	WindDesc.vLocalPos = _float3(0.f, 1.f, 0.f);
+	WindDesc.vScale = _float3(3.f, 2.f, 3.f);
+	WindDesc.fMaxScale = 6.f;
+	WindDesc.fScaleSpeed = 2.f;
+	WindDesc.fAngle = 90.f;
+	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wind_Spiral"), eLevel, TEXT("Layer_Light"), &WindDesc);
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
 
 
 	CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.2f, 10.f, 0.07f);

@@ -36,6 +36,7 @@ public:
 	HRESULT Loading_ForLogoLevel();
 	HRESULT Loading_ForGamePlayLevel();
 	HRESULT Loading_ForBossLevel();
+	HRESULT Loading_ForEndingLevel();
 
 private:
 	HRESULT Loading_Model_NoneAnim();

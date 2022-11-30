@@ -90,17 +90,19 @@ HRESULT CItem::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+	_bool bBlur = true;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
+
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-	_uint iPassIndex = 0;
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 0)))
 			return E_FAIL;
 	}
 

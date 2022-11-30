@@ -61,6 +61,9 @@ HRESULT CSwipsSky_Boss::Initialize(void * pArg)
 
 void CSwipsSky_Boss::Tick(_float fTimeDelta)
 {
+	if (CToolManager::Get_Instance()->Get_IsLoading())
+		return;
+
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
 	CTransform* pTran = (CTransform*)m_pOwner->Get_ComponentPtr(TEXT("Com_Transform"));

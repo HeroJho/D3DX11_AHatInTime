@@ -232,6 +232,10 @@ HRESULT CBadgeS_Base::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+	_bool bBlur = false;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
+
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 

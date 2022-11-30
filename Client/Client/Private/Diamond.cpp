@@ -151,6 +151,9 @@ HRESULT CDiamond::Render()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_IsDia", &bIsDia, sizeof(_bool))))
 		return E_FAIL;
 
+	_bool bBlur = true;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
 
 	_uint		iNumMeshes = m_pModelCom2->Get_NumMeshes();
 	_uint iPassIndex = 11;

@@ -14,6 +14,7 @@
 #include "UI_SpeechBubble.h"
 #include "UI_SmallSpeechBubble.h"
 #include "UI_Health.h"
+#include "WhiteBoard.h"
 
 
 
@@ -197,6 +198,30 @@ HRESULT CUIManager::Make_Hp()
 	return S_OK;
 }
 
+HRESULT CUIManager::Make_WhiteBoard()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CUI::UIINFODESC UiInfoDesc;
+	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+	UiInfoDesc.fSizeX = g_iWinSizeX;
+	UiInfoDesc.fSizeY = g_iWinSizeY;
+	UiInfoDesc.fX = g_iWinSizeX * 0.5f;
+	UiInfoDesc.fY = g_iWinSizeY * 0.5f;
+	UiInfoDesc.pDesc = nullptr;
+
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_WhiteBoard"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+		return E_FAIL;
+
+	m_pWhiteBoard = (CWhiteBoard*)pObj;
+	Safe_AddRef(m_pWhiteBoard);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
 
 
 void CUIManager::OnOff_DiamondScore(_bool bBool)
@@ -264,6 +289,11 @@ void CUIManager::Close_Shop()
 }
 
 
+
+void CUIManager::Set_WhiteBoard(_bool bStart)
+{
+	m_pWhiteBoard->Set_Start(bStart);
+}
 
 void CUIManager::On_Text(TCHAR * sText, _float fSize, _float fPower, _bool bShake, _bool bSmall)
 {
@@ -353,5 +383,6 @@ void CUIManager::Free()
 	Safe_Release(m_pInven);
 	Safe_Release(m_pItem_Inven);
 	Safe_Release(m_pShop);
-
+	Safe_Release(m_pWhiteBoard);
+	
 }

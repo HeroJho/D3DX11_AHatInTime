@@ -16,6 +16,9 @@ private:
 	virtual ~CLevel_Manager() = default;
 
 public:
+	_uint Get_CulLevel() { return m_iCurrentLevelIndex; }
+
+public:
 	/* 기존레벨 삭제. 새로운레벨 셋팅. */
 	HRESULT Open_Level(_uint iLevelIndex, class CLevel* pNewLevel);
 	void Tick(_float fTimeDelta);

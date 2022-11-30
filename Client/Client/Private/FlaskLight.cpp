@@ -50,7 +50,7 @@ HRESULT CFlaskLight::Initialize(void * pArg)
 
 	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) + 2.5f);
 	XMStoreFloat4(&LightDesc.vPosition, XMVectorSetW(vPos, 1.f));
-	LightDesc.vAmbient = _float4(.529f, .121f, .807f, 1.f);
+	LightDesc.vAmbient = _float4(0.1f, 0.1f, 0.1f, 1.f);
 	LightDesc.fRange = 15.f;
 
 	pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc, &m_pLight);
@@ -61,7 +61,7 @@ HRESULT CFlaskLight::Initialize(void * pArg)
 
 	vPos = XMVectorSetY(vPos, XMVectorGetY(vPos) - 1.5f);
 	XMStoreFloat4(&LightDesc.vPosition, XMVectorSetW(vPos, 1.f));
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.1f, 0.1f, 0.1f, 1.f);
 	LightDesc.fRange = 20.f;
 
 	pGameInstance->Add_Light(m_pDevice, m_pContext, LightDesc, &m_pLight2);

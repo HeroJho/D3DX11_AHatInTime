@@ -11,6 +11,7 @@
 #include "FlaskLight.h"
 
 #include "Flask_EX.h"
+#include "Wind_Spiral.h"
 
 CMagic::CMagic(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -113,22 +114,40 @@ void CMagic::LateTick(_float fTimeDelta)
 			CGameInstance::Get_Instance()->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Flask_EX"), LEVEL_GAMEPLAY, TEXT("Layer_EX"), &Desc);
 
 
-
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), Desc.vPos, _float3(0.f, 3.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(3.f, 3.f, 3.f), _float3(1.5f, 1.5f, 1.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 4.f, 15.f, false, 0.f, 0.f, 2.f,
-				40, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_MODLE);
+				30, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_MODLE);
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), Desc.vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.f, 2.f, false, 0.f, 0.f, 2.f,
-				10, 2.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(-10.f, 0.f, -10.f), _float3(10.f, 0.f, 10.f), CParticle::TYPE_MODLE);
+				5, 2.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(-10.f, 0.f, -10.f), _float3(10.f, 0.f, 10.f), CParticle::TYPE_MODLE);
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), Desc.vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 4.f, false, 0.f, 0.f, 2.f,
-				20, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+				10, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 
-			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_T_FX_Flare_01"), Desc.vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(1.5f, 1.5f, 1.5f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.05f, 3.f, true, 0.1f, 2.f, 2.f,
-				20, 2.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_TEXTURE);
+
+
+
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();
+
+			CWind_Spiral::WINDSPIRALDESC WindDesc;
+			XMStoreFloat3(&WindDesc.vParPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			WindDesc.vLocalPos = _float3(0.f, 2.f, 0.f);
+			WindDesc.vScale = _float3(5.f, 3.f, 5.f);
+			WindDesc.fMaxScale = 8.f;
+			WindDesc.fScaleSpeed = 2.f;
+			WindDesc.fAngle = -90.f;
+			pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wind_Spiral"), eLevel, TEXT("Layer_Light"), &WindDesc);
+
+			WindDesc.vLocalPos = _float3(0.f, 1.f, 0.f);
+			WindDesc.vScale = _float3(3.f, 2.f, 3.f);
+			WindDesc.fMaxScale = 6.f;
+			WindDesc.fScaleSpeed = 2.f;
+			WindDesc.fAngle = 90.f;
+			pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wind_Spiral"), eLevel, TEXT("Layer_Light"), &WindDesc);
+
+
 
 
 			CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.25f, 10.f, 0.05f);
 
-			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-			LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();
 
 			CFlaskLight::FLASKLIGHTDESC LightDesc;
 			XMStoreFloat3(&LightDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
@@ -151,7 +170,11 @@ void CMagic::LateTick(_float fTimeDelta)
 
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 	if (true == isDraw)
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this);
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+	}
+
 
 	RELEASE_INSTANCE(CGameInstance);
 }
@@ -178,17 +201,20 @@ HRESULT CMagic::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+	_bool bBlur = true;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
+	
+
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-
-	_uint iPassIndex = 0;
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 0)))
 			return E_FAIL;
 	}
 
@@ -200,6 +226,44 @@ HRESULT CMagic::Render()
 	return S_OK;
 }
 
+HRESULT CMagic::Render_ShadowDepth()
+{
+
+	if (nullptr == m_pShaderCom ||
+		nullptr == m_pTransformCom)
+		return E_FAIL;
+
+
+
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4))))
+		return E_FAIL;
+
+
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ViewMatrix", &pGameInstance->Get_ShadowLightViewMatrix(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_ProjMatrix", &pGameInstance->Get_TransformFloat4x4_TP(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 13)))
+			return E_FAIL;
+	}
+
+
+	return S_OK;
+}
 
 
 

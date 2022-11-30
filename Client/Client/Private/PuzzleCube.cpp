@@ -174,6 +174,11 @@ HRESULT CPuzzleCube::Render()
 
 
 
+	_bool bBlur = true;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
+
+
 	_uint		iWoodNumMeshes = m_pWoodModelCom->Get_NumMeshes();
 	_uint		iIceNumMeshes = m_pIceModelCom->Get_NumMeshes();
 

@@ -1982,6 +1982,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 		Check_EndAnim();
 
 
+
 	// 소켓 갱신
 	if (!m_bRenderSkip)
 	{
@@ -2291,7 +2292,7 @@ HRESULT CPlayer::Choose_Pass(_int iIndex)
 
 
 
-	_uint iPassIndex = 0;
+	_uint iPassIndex = 10;
 
 	switch (m_pModelCom->Get_MaterialIndex(iIndex))
 	{
@@ -2727,8 +2728,19 @@ void CPlayer::SetPosNavi(LEVEL eLevel, _fvector vPos)
 	CNavigation::NAVIGATIONDESC NaviDesc;
 	ZeroMemory(&NaviDesc, sizeof(CNavigation::NAVIGATIONDESC));
 	NaviDesc.iCurrentIndex = 0;
-	if (FAILED(__super::Add_Component(eLevel, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation1"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
-		return;
+
+	LEVEL eLEVEL = CToolManager::Get_Instance()->Get_CulLevel();
+	if (eLEVEL == LEVEL_ENDING)
+	{
+		if (FAILED(__super::Add_Component(eLevel, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation2"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+			return;
+	}
+	else
+	{
+		if (FAILED(__super::Add_Component(eLevel, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navigation1"), (CComponent**)&m_pNavigationCom, &NaviDesc)))
+			return;
+	}
+
 
 	_vector vVPos = XMVectorSetW(vPos, 1.f);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vVPos);

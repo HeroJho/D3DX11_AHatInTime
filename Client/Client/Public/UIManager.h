@@ -26,6 +26,7 @@ public:
 	HRESULT Make_ShopUI();
 	HRESULT Make_SpeechBubble();
 	HRESULT Make_Hp();
+	HRESULT Make_WhiteBoard();
 
 
 	void OnOff_DiamondScore(_bool bBool);
@@ -50,6 +51,9 @@ public:
 public:
 
 
+	//For. WhiteBoard
+public:
+	void Set_WhiteBoard(_bool bStart);
 
 
 
@@ -61,8 +65,14 @@ public:
 
 	void Set_Target(class CGameObject* pObj);
 
+
+	// For.Effect
 public:
 	void Make_WitchChargEffect();
+
+
+
+
 
 
 private:
@@ -71,6 +81,7 @@ private:
 	class CUI_DiamondScore* m_pDiamondScore = nullptr;
 	class CUI_Shop*			m_pShop = nullptr;
 	class CUI_Health*		m_pHp = nullptr;
+	class CWhiteBoard*		m_pWhiteBoard = nullptr;
 	
 	class CUI_SpeechBubble*			m_pSpeechBubble = nullptr;
 	class CUI_SmallSpeechBubble*	m_pSmallSpeechBubble = nullptr;

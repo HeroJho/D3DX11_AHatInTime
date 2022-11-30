@@ -12,7 +12,7 @@
 
 #include "Player.h"
 #include "Camera_Free.h"
-#include "ExPlo.h"
+#include "EyeAttackGround.h"
 #include "Magic.h"
 #include "Swip.h"
 #include "StatuePosed_Boss.h"
@@ -21,6 +21,7 @@
 #include "CaulDron.h"
 #include "Toilet_Scream.h"
 #include "Splash_wave.h"
+#include "FinLaser.h"
 
 
 CVSnatcher::CVSnatcher(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -76,14 +77,17 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 
 	 Equip_Sockat("crown", SLOT_HEAD);
 
-
-
 	 if (LEVEL_BOSS == CToolManager::Get_Instance()->Get_CulLevel())
 	 {
 		 // Set_State(STATE_DISAPPEAR);
 		 Set_State(STATE_CUT_6);
 		 Start_Dark();
 
+		 CUIManager::Get_Instance()->Set_Target(this);
+	 }
+	 else if (LEVEL_ENDING == CToolManager::Get_Instance()->Get_CulLevel())
+	 {
+		 Set_State(STATE_CUT_7);
 		 CUIManager::Get_Instance()->Set_Target(this);
 	 }
 	 else
@@ -93,7 +97,7 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 	 }
 	 
 	 m_CreatureDesc.iMaxHP = 10;
-	 m_CreatureDesc.iHP = 10;
+	 m_CreatureDesc.iHP = 5;
 
 	return S_OK;
 }
@@ -176,6 +180,11 @@ void CVSnatcher::Set_State(STATE eState)
 			m_fCanAttackedTimeAcc = 0.f;
 			CUIManager::Get_Instance()->On_Text(TEXT("*허억!* 잠깐...!"), 0.6f, 1.f, true, true);
 			break;
+		case STATE_DEAD:
+			m_fDeadTimeAcc = 0.f;
+			m_iFinLaserCount = 0;
+			break;
+
 
 
 		case STATE_CUT_0:
@@ -239,8 +248,26 @@ void CVSnatcher::Set_State(STATE eState)
 
 			Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
 			Equip_Sockat("Snatcher_Book", SLOT_HAND);
+
 			m_pModelCom->Set_AnimIndex(15);
 
+			break;
+		case STATE_CUT_7:
+
+			m_fCutTimeAcc_1 = 0.f;
+			m_iTalkCount = 0;
+			m_iCutIndex = 0;
+
+
+			// Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
+			Equip_Sockat("Snatcher_Book", SLOT_HAND);
+
+			m_pModelCom->Set_AnimIndex(15);
+			Start_Dark();
+			m_bDark = false;
+			CUIManager::Get_Instance()->Set_WhiteBoard(false);
+			CCamManager::Get_Instance()->Get_Cam()->End_Shake();
+			CToolManager::Get_Instance()->Set_All(1.f);
 			break;
 
 		default:
@@ -350,6 +377,7 @@ void CVSnatcher::Compute_Pattern(_float fTimeDelta)
 
 void CVSnatcher::Tick(_float fTimeDelta)
 {
+	_float fOriTime = fTimeDelta;
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_MONSTER);
 
 
@@ -406,6 +434,8 @@ void CVSnatcher::Tick(_float fTimeDelta)
 	case STATE_CANATTACKED:
 		Tick_CanAttacked(fTimeDelta);
 		break;
+	case STATE_DEAD:
+		Tick_Dead(fOriTime);
 
 	case STATE_CUT_1:
 		Tick_Cut_1(fTimeDelta);
@@ -424,6 +454,9 @@ void CVSnatcher::Tick(_float fTimeDelta)
 		break;
 	case STATE_CUT_6:
 		Tick_Cut_6(fTimeDelta);
+		break;
+	case STATE_CUT_7:
+		Tick_Cut_7(fTimeDelta);
 		break;
 	default:
 		break;
@@ -750,6 +783,44 @@ void CVSnatcher::Tick_CanAttacked(_float fTimeDelta)
 		}
 
 		
+	}
+
+}
+
+void CVSnatcher::Tick_Dead(_float fTimeDelta)
+{
+	m_fDeadTimeAcc += fTimeDelta;
+
+	if (m_fDeadMaxTimeAcc < m_fDeadTimeAcc && 100 > m_iFinLaserCount)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		vPos += XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * 4.1f;
+
+		_float3 vTempPos;
+		XMStoreFloat3(&vTempPos, vPos);
+		vTempPos.y = 2.7f;
+		CFinLaser::LASERDESC Desc;
+		Desc.vPos = vTempPos;
+	
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_FinLaser"), LEVEL_BOSS, TEXT("Layer_Ex"), &Desc);
+
+		RELEASE_INSTANCE(CGameInstance);
+
+
+		++m_iFinLaserCount;
+		m_fDeadMaxTimeAcc *= 0.8f;
+		m_fDeadTimeAcc = 0.f;
+
+		if (50 < m_iFinLaserCount)
+			CUIManager::Get_Instance()->Set_WhiteBoard(true);
+
+	}
+
+	if (2.5f < m_fDeadTimeAcc)
+	{
+		CToolManager::Get_Instance()->Resul_Level(LEVEL_ENDING);
 	}
 
 }
@@ -1227,6 +1298,87 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 }
 
+void CVSnatcher::Tick_Cut_7(_float fTimeDelta)
+{
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (0 == m_iCutIndex)
+	{
+		if (pGameInstance->Key_Down(DIK_E))
+			++m_iTalkCount;
+
+		switch (m_iTalkCount)
+		{
+		case 0:
+		{
+
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+		}
+			break;
+		case 1:
+		{
+
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+			// CUIManager::Get_Instance()->On_Text(TEXT("....."), 0.8f, 0.5f, true);
+		}
+		break;
+		case 2:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("......"), 0.8f, 0.5f, true);
+		}
+		break;
+		case 3:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("생각보다 근사한 마무리였어."), 0.8f, 0.5f, true);
+		}
+		break;
+		case 4:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("그렇지 않니 꼬마야?"), 0.8f, 0.5f, true);
+		}
+		break;
+		case 5:
+		{
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(_float3(-62.8f, 2.f, -113.f), _float3(-62.6f, 1.29f, -116.f), false);
+			m_pModelCom->Set_AnimIndex(26);
+			CUIManager::Get_Instance()->Set_Text(TEXT(". . . . . ."), 1.2f, 1.f, true);
+		}
+		break;
+		case 6:
+		{
+			// 엔딩 로고 끝
+		}
+		break;
+		default:
+			break;
+		}
+
+
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
 
 
 
@@ -1252,18 +1404,30 @@ void CVSnatcher::LateTick(_float fTimeDelta)
 	}
 	 
 
+	LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();
+
 	// 소켓 갱신
 	m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
 
-	if(m_bDark)
-		m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
+	if (LEVEL_ENDING != eLevel)
+	{
+		if (m_bDark)
+			m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
+		else
+			m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom, CRenderer::RENDER_NONLIGHT);
+
+	}
 	else
-		m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom, CRenderer::RENDER_NONLIGHT);
+	{
+		if(0 < m_iTalkCount)
+			m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom, CRenderer::RENDER_NONLIGHT);
+	}
 
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	if (LEVEL_BOSS == CToolManager::Get_Instance()->Get_CulLevel())
+
+	if (LEVEL_BOSS == eLevel)
 	{
 		if (STATE_CANATTACKED == m_eState )
 			pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
@@ -1271,9 +1435,18 @@ void CVSnatcher::LateTick(_float fTimeDelta)
 	else
 		pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_MONSTER, this);
 	
-	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f);
+
+	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 10.f);
 	if (true == isDraw)
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+	{
+		if(LEVEL_ENDING != eLevel)
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+		else if(0 < m_iTalkCount)
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+		}
+	}
+
 
 	RELEASE_INSTANCE(CGameInstance);
 }
@@ -1308,6 +1481,8 @@ void CVSnatcher::End_Anim()
 		break;
 	case STATE_HOIT:
 		break;
+
+
 	case STATE_SNAPHAT:
 	{
 		if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HEAD))
@@ -1414,11 +1589,12 @@ void CVSnatcher::Create_ExPlo(_fvector vPos)
 
 	_float3 vTempPos;
 	XMStoreFloat3(&vTempPos, vPos);
-
-	CExPlo::EXPLODESC Desc;
+	vTempPos.y = .4f;
+	vTempPos.y += 0.01f * (m_iCurseMaxCount - m_iCurseCount + 1);
+	CEyeAttackGround::EYETTACKGROUNDDESC Desc;
 	Desc.vPos = vTempPos;
 
-	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_ExPlo"), LEVEL_BOSS, TEXT("Layer_Ex"), &Desc);
+	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_EyeAttackGround"), LEVEL_BOSS, TEXT("Layer_Ex"), &Desc);
 
 	RELEASE_INSTANCE(CGameInstance);
 }
@@ -1445,7 +1621,7 @@ void CVSnatcher::Create_Magic(_uint iCount)
 		XMStoreFloat3(&Desc.vStartPos, vStartPos);
 		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Magic"), LEVEL_BOSS, TEXT("Layer_Ex"), &Desc);
 		
-		fGoTime += 1.f;
+		fGoTime += 0.3f;
 		fAngle += 360.f / iCount;
 	}
 
@@ -1651,7 +1827,12 @@ void CVSnatcher::Attacked()
 	if (0 >= m_CreatureDesc.iHP)
 	{
 		// 엔딩
+		m_bAttacked = true;
 		m_CreatureDesc.iHP = 0;
+		CToolManager::Get_Instance()->Set_All(0.01f);
+		Set_State(STATE_DEAD);
+		CCamManager::Get_Instance()->Get_Cam()->Start_Shake(100.f, 2.f, 0.03f);
+		CUIManager::Get_Instance()->Off_Text(true);
 	}
 	else
 	{
@@ -1692,6 +1873,9 @@ HRESULT CVSnatcher::Render()
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
+	_bool bBlur = false;
+
+
 	_uint iIndex = 0;
 
 	if (m_bAttacked)
@@ -1700,9 +1884,12 @@ HRESULT CVSnatcher::Render()
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
 		if (1 == i && m_bDark)
-		{
-				iIndex = 6;
-		}
+			iIndex = 6;
+		else if (0 == i)
+			bBlur = true;
+
+		if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+			return E_FAIL;
 			
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
@@ -1723,7 +1910,6 @@ void CVSnatcher::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
-
 
 		if (!strcmp("Attacked_Sphere", Desc.MyDesc.sTag) && !strcmp("Attacked_Sphere", Desc.OtherDesc.sTag))
 		{
@@ -2075,7 +2261,7 @@ HRESULT CVSnatcher::Equip_Sockat(string sItemName, SLOT eSlot)
 
 
 
-CVSnatcher * CVSnatcher::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CVSnatcher* CVSnatcher::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
 	CVSnatcher*		pInstance = new CVSnatcher(pDevice, pContext);
 
@@ -2088,7 +2274,7 @@ CVSnatcher * CVSnatcher::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pC
 	return pInstance;
 }
 
-CGameObject * CVSnatcher::Clone(void * pArg)
+CGameObject* CVSnatcher::Clone(void * pArg)
 {
 	CVSnatcher*		pInstance = new CVSnatcher(*this);
 

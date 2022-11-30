@@ -181,6 +181,9 @@
     <ClInclude Include="..\public\DataManager.h" />
     <ClInclude Include="..\public\Diamond.h" />
     <ClInclude Include="..\public\ExPlo.h" />
+    <ClInclude Include="..\public\EyeAttackGround.h" />
+    <ClInclude Include="..\public\FinLaser.h" />
+    <ClInclude Include="..\public\Fire.h" />
     <ClInclude Include="..\public\Flask.h" />
     <ClInclude Include="..\public\FlaskLight.h" />
     <ClInclude Include="..\public\Flask_EX.h" />
@@ -190,6 +193,7 @@
     <ClInclude Include="..\public\Item.h" />
     <ClInclude Include="..\public\ItemManager.h" />
     <ClInclude Include="..\public\Level_Boss.h" />
+    <ClInclude Include="..\public\Level_Ending.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Level_Logo.h" />
@@ -218,6 +222,7 @@
     <ClInclude Include="..\public\StaticModel_Instance.h" />
     <ClInclude Include="..\public\StatuePosed.h" />
     <ClInclude Include="..\public\StatuePosed_Boss.h" />
+    <ClInclude Include="..\public\SubConBossEye.h" />
     <ClInclude Include="..\public\SubconEye.h" />
     <ClInclude Include="..\public\SubSpider.h" />
     <ClInclude Include="..\public\Swip.h" />
@@ -255,6 +260,8 @@
     <ClInclude Include="..\public\Vault_Mad_Crow.h" />
     <ClInclude Include="..\public\Vault_State.h" />
     <ClInclude Include="..\public\VSnatcher.h" />
+    <ClInclude Include="..\public\WhiteBoard.h" />
+    <ClInclude Include="..\public\Wind_Spiral.h" />
     <ClInclude Include="..\public\Wisp.h" />
     <ClInclude Include="..\public\WitchChargEffect.h" />
     <ClInclude Include="..\public\Yarn.h" />
@@ -276,6 +283,9 @@
     <ClCompile Include="..\private\DataManager.cpp" />
     <ClCompile Include="..\private\Diamond.cpp" />
     <ClCompile Include="..\private\ExPlo.cpp" />
+    <ClCompile Include="..\private\EyeAttackGround.cpp" />
+    <ClCompile Include="..\private\FinLaser.cpp" />
+    <ClCompile Include="..\private\Fire.cpp" />
     <ClCompile Include="..\private\Flask.cpp" />
     <ClCompile Include="..\private\FlaskLight.cpp" />
     <ClCompile Include="..\private\Flask_EX.cpp" />
@@ -285,6 +295,7 @@
     <ClCompile Include="..\private\Item.cpp" />
     <ClCompile Include="..\private\ItemManager.cpp" />
     <ClCompile Include="..\private\Level_Boss.cpp" />
+    <ClCompile Include="..\private\Level_Ending.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
@@ -313,6 +324,7 @@
     <ClCompile Include="..\private\StaticModel_Instance.cpp" />
     <ClCompile Include="..\private\StatuePosed.cpp" />
     <ClCompile Include="..\private\StatuePosed_Boss.cpp" />
+    <ClCompile Include="..\private\SubConBossEye.cpp" />
     <ClCompile Include="..\private\SubconEye.cpp" />
     <ClCompile Include="..\private\SubSpider.cpp" />
     <ClCompile Include="..\private\Swip.cpp" />
@@ -350,6 +362,8 @@
     <ClCompile Include="..\private\Vault_Mad_Crow.cpp" />
     <ClCompile Include="..\private\Vault_State.cpp" />
     <ClCompile Include="..\private\VSnatcher.cpp" />
+    <ClCompile Include="..\private\WhiteBoard.cpp" />
+    <ClCompile Include="..\private\Wind_Spiral.cpp" />
     <ClCompile Include="..\private\Wisp.cpp" />
     <ClCompile Include="..\private\WitchChargEffect.cpp" />
     <ClCompile Include="..\private\Yarn.cpp" />

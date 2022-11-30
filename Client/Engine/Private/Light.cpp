@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "VIBuffer_Rect.h"
 #include "Frustum.h"
+#include "PipeLine.h"
 
 CLight::CLight(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: m_pDevice(pDevice)
@@ -33,6 +34,9 @@ HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 	else
 	{
 		if (!CFrustum::Get_Instance()->isIn_WorldSpace(XMLoadFloat4(&m_LightDesc.vPosition), m_LightDesc.fRange))
+			return S_OK;
+		_float fDis = XMVectorGetX(XMVector3Length(XMLoadFloat4(&m_LightDesc.vPosition) - XMLoadFloat4(&CPipeLine::Get_Instance()->Get_CamPosition())));
+		if (50.f < fDis)
 			return S_OK;
 
 		if (FAILED(pShader->Set_RawValue("g_vLightPos", &m_LightDesc.vPosition, sizeof(_float4))))

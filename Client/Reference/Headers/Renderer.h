@@ -70,6 +70,7 @@ private:
 	HRESULT Render_NonLight();
 	HRESULT Render_AlphaBlend();
 	HRESULT Render_UI();
+	HRESULT Render_PlayerShader();
 
 #ifdef _DEBUG
 	HRESULT Render_Debug();
@@ -77,8 +78,13 @@ private:
 #endif
 
 private: /* For.Deferred Lighting */
+	
 
 
+	// For. PlayerShader
+private:
+	class CTexture* m_pNoiseTexture = nullptr;
+	_float m_fDeltaTime = 0.f;
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

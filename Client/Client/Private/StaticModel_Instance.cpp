@@ -80,7 +80,8 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 	if (bRender)
 	{
 
-		if (lstrcmp(TEXT("SubCon_Instance"), m_cModelTag) && lstrcmp(TEXT("SubConBoss_Instance"), m_cModelTag))
+		if (lstrcmp(TEXT("SubCon_Instance"), m_cModelTag) && lstrcmp(TEXT("SubConBoss_Instance"), m_cModelTag)
+		&& lstrcmp(TEXT("forest_plant_Instance"), m_cModelTag) && lstrcmp(TEXT("harbour_fern_Instance"), m_cModelTag))
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this);
 
 		if (m_bWall && CGameManager::Get_Instance()->Get_WispInfoNum())
@@ -198,18 +199,30 @@ HRESULT CStaticModel_Instance::Render()
 
 	if (FAILED(m_pShaderCom->Set_RawValue("g_Spac", &bSpec, sizeof(_bool))))
 		return E_FAIL;
+	
 
+	
 
-
-
-
-
-
+	_bool bBlur = false;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return E_FAIL;
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
+		if (!lstrcmp(m_cModelTag, TEXT("Lamppost_Instance")) && 1 == i)
+		{
+			if (1 != iPassIndex)
+				iPassIndex = 4;
+			else
+				iPassIndex = 5;
+
+			bBlur = true;
+			if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+				return E_FAIL;
+		}
+
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 

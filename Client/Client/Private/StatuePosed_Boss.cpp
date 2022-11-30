@@ -411,7 +411,9 @@ void CStatuePosed_Boss::Render_None()
 	RELEASE_INSTANCE(CGameInstance);
 
 
-
+	_bool bBlur = false;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return;
 
 
 
@@ -483,6 +485,9 @@ void CStatuePosed_Boss::Render_Anim()
 	RELEASE_INSTANCE(CGameInstance);
 
 
+	_bool bBlur = true;
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+		return;
 
 
 	_uint iPassIndex = 0;

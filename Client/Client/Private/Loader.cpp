@@ -1,3 +1,4 @@
+
 #include "stdafx.h"
 #include "..\Public\Loader.h"
 
@@ -53,7 +54,8 @@
 #include "Particle.h"
 #include "FlaskLight.h"
 #include "WitchChargEffect.h"
-
+#include "Wind_Spiral.h"
+#include "SubconBossEye.h"
 
 #include "UI_Edit.h"
 #include "UI_Edit_Button.h"
@@ -75,6 +77,7 @@
 #include "UI_ShopMenu.h"
 #include "UI_SpeechBubble.h"
 #include "UI_SmallSpeechBubble.h"
+#include "WhiteBoard.h"
 
 #include "RollingBarrel.h"
 #include "RectBarrel.h"
@@ -90,6 +93,11 @@
 
 #include "MushRoom.h"
 #include "Bindi.h"
+
+
+#include "EyeAttackGround.h"
+#include "FinLaser.h"
+#include "Fire.h"
 
 #include "Test.h"
 
@@ -119,6 +127,9 @@ _uint APIENTRY LoadingMain(void* pArg)
 		break;
 	case LEVEL_BOSS:
 		pLoader->Loading_ForBossLevel();
+		break;
+	case LEVEL_ENDING:
+		pLoader->Loading_ForEndingLevel();
 		break;
 	}
 
@@ -267,8 +278,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_FlaskLight"),
 		CFlaskLight::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_SubconBossEye */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SubconBossEye"),
+		CSubconBossEye::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 	
-
 	/* For.Prototype_GameObject_SwipsSky */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SwipsSky"),
 		CSwipsSky::Create(m_pDevice, m_pContext))))
@@ -294,6 +308,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_Particle */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Particle"),
 		CParticle::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Fire */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Fire"),
+		CFire::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	
@@ -332,6 +351,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_MushRoom */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MushRoom"),
 		CMushRoom::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_WhiteBoard */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_WhiteBoard"),
+		CWhiteBoard::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	
 	
@@ -448,7 +471,19 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CLookCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_EyeAttackGround */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_EyeAttackGround"),
+		CEyeAttackGround::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
+	/* For.Prototype_GameObject_Wind_Spiral*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Wind_Spiral"),
+		CWind_Spiral::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_FinLaser*/
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_FinLaser"),
+		CFinLaser::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
 
 
 	/* For.Prototype_UI_Health*/
@@ -562,6 +597,23 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/star_shuriken.dds"), 1))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_distortionclouds_tex*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_distortionclouds_tex"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/distortionclouds_tex.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Fire_D*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Fire_D"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Fire_D.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Fire_M*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Fire_M"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Fire_M.dds"), 1))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Fire_Noise*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Fire_Noise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Fire_Noise.dds"), 1))))
+		return E_FAIL;
 
 
 	// ==================== UI=====================
@@ -751,6 +803,76 @@ HRESULT CLoader::Loading_ForBossLevel()
 	m_isFinished = true;
 
 	return S_OK;
+}
+
+HRESULT CLoader::Loading_ForEndingLevel()
+{
+	
+	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+	lstrcpy(m_szLoadingText, TEXT("객체원형을 로딩중입니다. "));
+	/* 개ㅑㄱ체원형 로드한다. */
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩중입니다. "));
+	/* 텍스쳐를 로드한다. */
+
+
+
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("모델을 로딩중입니다. "));
+	/* 모델를 로드한다. */
+
+
+
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩중입니다. "));
+
+
+
+
+
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("네비게이션데이터를 생성하는 중입니다."));
+
+	vector<CCell*> Cells = CDataManager::Get_Instance()->Load_Navi(5); // 3 5
+
+																		/* For.Prototype_Component_Navigation */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_ENDING, TEXT("Prototype_Component_Navigation"),
+		CNavigation::Create(m_pDevice, m_pContext, &Cells))))
+		return E_FAIL;
+
+	if (FAILED(CToolManager::Get_Instance()->Clone_Navi(LEVEL_ENDING)))
+		return E_FAIL;
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니ㅏㄷ.  "));
+
+	Safe_Release(pGameInstance);
+
+	m_isFinished = true;
+
+	return S_OK;
+
 }
 
 

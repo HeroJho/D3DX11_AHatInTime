@@ -7,6 +7,7 @@
 #include "Level_Logo.h"
 #include "Level_GamePlay.h"
 #include "Level_Boss.h"
+#include "Level_Ending.h"
 
 #include "Loader.h"
 
@@ -54,6 +55,9 @@ void CLevel_Loading::Tick(_float fTimeDelta)
 				break;
 			case LEVEL_BOSS:
 				pNewLevel = CLevel_Boss::Create(m_pDevice, m_pContext);
+				break;
+			case LEVEL_ENDING:
+				pNewLevel = CLevel_Ending::Create(m_pDevice, m_pContext);
 				break;
 			}
 
