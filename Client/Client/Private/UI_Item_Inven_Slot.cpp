@@ -81,7 +81,7 @@ void CUI_Item_Inven_Slot::Tick(_float fTimeDelta)
 		}
 	}
 
-
+	//UI_InputDebug(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }
@@ -120,9 +120,14 @@ HRESULT CUI_Item_Inven_Slot::Render()
 	TCHAR temp[MAX_PATH];
 	CToolManager::Get_Instance()->CtoTC(str.data(), temp);
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), temp, _float2(XMVectorGetX(Get_TotalPos()), XMVectorGetY(Get_TotalPos())), XMVectorSet(0.f, 0.f, 0.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(1.2f, 1.2f));
 	pGameInstance->Render_Fonts(TEXT("Font_Nexon"), temp, _float2(XMVectorGetX(Get_TotalPos()), XMVectorGetY(Get_TotalPos())));
 	RELEASE_INSTANCE(CGameInstance);
 
+
+
+
+	//UI_RenderDebug();
 
 	// 자식들의 Render 호출
 	__super::Render();

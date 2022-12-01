@@ -58,10 +58,10 @@ HRESULT CUIManager::Make_ItemInvenUI()
 
 	CUI::UIINFODESC UiInfoDesc;
 	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
-	UiInfoDesc.fSizeX = 0;
-	UiInfoDesc.fSizeY = 0;
+	UiInfoDesc.fSizeX = 320.f;
+	UiInfoDesc.fSizeY = 100.f;
 	UiInfoDesc.fX = g_iWinSizeX * 0.5f;
-	UiInfoDesc.fY = 100;
+	UiInfoDesc.fY = 45.85f;
 	UiInfoDesc.pDesc = nullptr;
 
 

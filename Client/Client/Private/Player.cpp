@@ -58,6 +58,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 	// m_eState = STATE_NONE;
 	m_bRenderSkip = true;
 	m_TickStates.push_back(STATE_NONE);
+	//m_TickStates.push_back(STATE_IDLE);
 
 	m_fWalkSpeed = 1.f;
 	m_fRunSpeed = 2.5f;

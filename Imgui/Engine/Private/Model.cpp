@@ -65,7 +65,7 @@ void CModel::Set_AnimIndex(_uint iAnimIndex)
 {
 	if (0 > iAnimIndex || m_iNumAnimations < iAnimIndex)
 		return;
-
+	
 	if (m_iCurrentAnimIndex == iAnimIndex)
 		return;
 

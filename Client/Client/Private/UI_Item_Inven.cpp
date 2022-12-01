@@ -41,13 +41,13 @@ HRESULT CUI_Item_Inven::Initialize(void * pArg)
 
 	CUI_Item_Inven_Slot::ITEMBUTTONDESC IconDesc;
 	lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_Icon_SprintYarn"));
-	Make_ChildUI(100.f, -50.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
+	Make_ChildUI(100.f, -11.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
 
 	lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_Icon_WitchYarn"));
-	Make_ChildUI(0.f, -50.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
+	Make_ChildUI(0.f, -11.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
 
 	lstrcpy(IconDesc.pIconTag, TEXT("Prototype_Component_Texture_Icon_IceYarn"));
-	Make_ChildUI(-100.f, -50.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
+	Make_ChildUI(-100.f, -11.f, 256.f / 4.f, 256.f / 4.f, TEXT("Prototype_UI_Item_Inven_Slot"), &IconDesc);
 
 
 
@@ -55,7 +55,7 @@ HRESULT CUI_Item_Inven::Initialize(void * pArg)
 	m_vOnPos.y = m_UiInfo.fY;
 
 	m_vOffPos.x = m_UiInfo.fX;
-	m_vOffPos.y = m_UiInfo.fY - 100.f;
+	m_vOffPos.y = m_UiInfo.fY - 120.f;
 
 	m_bIsOn = false;
 	m_UiInfo.fY = m_vOffPos.y;
@@ -130,6 +130,7 @@ void CUI_Item_Inven::Tick(_float fTimeDelta)
 
 	RELEASE_INSTANCE(CGameInstance);
 
+	//UI_InputDebug(fTimeDelta);
 
 
 	__super::Tick(fTimeDelta);
@@ -145,6 +146,26 @@ void CUI_Item_Inven::LateTick(_float fTimeDelta)
 
 HRESULT CUI_Item_Inven::Render()
 {
+	if (nullptr == m_pVIBufferCom ||
+		nullptr == m_pShaderCom)
+		return E_FAIL;
+
+
+	m_pShaderCom->Set_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TP(), sizeof(_float4x4));
+	m_pShaderCom->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
+	m_pShaderCom->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
+
+	if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture", 0)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Begin(0)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBufferCom->Render()))
+		return E_FAIL;
+
+	//UI_RenderDebug();
+
 	// 자식들의 Render 호출
 	__super::Render();
 
@@ -178,9 +199,9 @@ void CUI_Item_Inven::LoadItemMgr_ItemUI()
 HRESULT CUI_Item_Inven::Ready_Components()
 {
 
-	///* For.Com_Texture */
-	//if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_InvenFrame"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-	//	return E_FAIL;
+	/* For.Com_Texture */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_ShopWindow"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
 
 	/* For.Com_Shader */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))

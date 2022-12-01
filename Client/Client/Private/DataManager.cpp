@@ -447,7 +447,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 				fB = CToolManager::Get_Instance()->Get_RendomNum_Int(0.f, 1.f);
 			}
 			MushDesc.vDiffuseColor = _float4(fR, fG, fB, 1.f);
-			MushDesc.vAmColor = _float4(0.f, 0.f, 0.f, 1.f);
+			MushDesc.vAmColor = _float4(0.1f, 0.1f, 0.1f, 1.f);
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_MushRoom"), LEVEL_GAMEPLAY, TEXT("Layer_Bg"), &MushDesc)))
 				return E_FAIL;
 
@@ -479,7 +479,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		Desc.piNaviIndexs = DataObj.piNaviIndexs;
 
 
-		if (0.01f < Desc.vSize.x)
+		if (0.1f < Desc.vSize.x && 0.1f < Desc.vSize.y && 0.1f < Desc.vSize.z)
 		{
 			// 콜라이더
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StaticModel"), eLEVEL, TEXT("Layer_Model"), &Desc)))
@@ -580,12 +580,26 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 		memcpy(pTag, Desc.cModelTag, sizeof(TCHAR) * MAX_PATH);
 
 
-		if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, pTag,
-			CModel_Instance::Bin_Create(m_pDevice, m_pContext, Scene, sFilePath.data(), sFileNameFBX.data(), Desc.iNumInstance, Desc.pLocalInfos))))
+		LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();
+		if (LEVEL_GAMEPLAY == eLevel)
 		{
-			RELEASE_INSTANCE(CGameInstance);
-			return E_FAIL;
+			if (FAILED(pGameInstance->Add_Prototype(LEVEL_STATIC, pTag,
+				CModel_Instance::Bin_Create(m_pDevice, m_pContext, Scene, sFilePath.data(), sFileNameFBX.data(), Desc.iNumInstance, Desc.pLocalInfos))))
+			{
+				RELEASE_INSTANCE(CGameInstance);
+				return S_OK;
+			}
 		}
+		else if(LEVEL_BOSS == eLevel)
+		{
+			if (FAILED(pGameInstance->Add_Prototype(LEVEL_BOSS, pTag,
+				CModel_Instance::Bin_Create(m_pDevice, m_pContext, Scene, sFilePath.data(), sFileNameFBX.data(), Desc.iNumInstance, Desc.pLocalInfos))))
+			{
+				RELEASE_INSTANCE(CGameInstance);
+				return S_OK;
+			}
+		}
+		
 
 
 		// 바로 생성

@@ -6,6 +6,7 @@
 #include "DataManager.h"
 #include "GameManager.h"
 #include "ToolManager.h"
+#include "ParticleManager.h"
 
 #include "Player.h"
 
@@ -143,6 +144,11 @@ void CStatuePosed_Boss::Set_Anim()
 
 void CStatuePosed_Boss::Attacked(_int iAT)
 {
+
+	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	CParticleManager::Get_Instance()->Create_Effect(TEXT("Grave1"), vPos, _float3(0.0f, 0.0f, 0.f), _float3(0.f, 0.f, 0.f), _float3(1.5f, 1.5f, 1.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.2f, 8.f, true, 1.f, 3.f, 1.f,
+		10, 0.f, 0.5f, 0.0f, 0.f, 0.f, 0.f, 1.f, 0.5f, .5f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+
 
 	Set_Dead(true);
 
@@ -315,6 +321,11 @@ void CStatuePosed_Boss::LateTick(_float fTimeDelta)
 	}
 
 
+
+
+
+
+
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	_bool		isDraw = pGameInstance->isIn_Frustum_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f);
 
@@ -334,6 +345,35 @@ void CStatuePosed_Boss::LateTick_None(_float fTimeDelta)
 	// 여기서 셀에 있는 콜라이더와 충돌처리 확인하고 밀린다.
 	_matrix mWorld = m_pTransformCom->Get_OriScaleWorldMatrix();
 	Tick_Col(mWorld, m_pNavigationCom, m_pTransformCom);
+
+
+
+	_float fTemp = 0.f;
+	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp, 0.f) || COBB::COL_ON == Get_StaticOBB()->Get_ColState())
+	{
+		m_bPreOn = m_bOn;
+		m_bOn = true;
+	}
+
+	else
+	{
+		m_bPreOn = m_bOn;
+		m_bOn = false;
+	}
+
+
+	if (m_bOn && !m_bPreOn)
+	{
+		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		vPos.y += 0.3f;
+		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 4.f, false, 0.f, 0.f, 2.f,
+			20, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+	}
+
+
+
+
+
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	pGameInstance->Add_ColGroup(CColliderManager::COLLIDER_EM, this);

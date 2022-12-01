@@ -997,18 +997,26 @@ void CImGui_Manager::Window_CreatedModel()
 				CMapManager::Get_Instance()->Set_PickedCreatedString(sModel.first);
 
 
-			
-			CStaticModel* pStaticModel = CMapManager::Get_Instance()->Get_PickedCreatedModel();
-			if (nullptr != pStaticModel)
-			{
-				CModel* pModel = (CModel*)pStaticModel->Get_ComponentPtr(TEXT("Com_Model"));
-				if (pModel->Get_IsBin())
+			//
+			//CStaticModel* pStaticModel = CMapManager::Get_Instance()->Get_PickedCreatedModel();
+			//if (nullptr != pStaticModel)
+			//{
+			//	CModel* pModel = (CModel*)pStaticModel->Get_ComponentPtr(TEXT("Com_Model"));
+			//	if (pModel->Get_IsBin())
+			//	{
+			//		ImGui::SameLine();
+			//		ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), "Bin");
+			//	}
+			//}
+		
+				
+				if (!lstrcmp(TEXT("Fiona"), sModel.second->Get_ModelTag()))
 				{
 					ImGui::SameLine();
-					ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), "Bin");
+					ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), "Col");
 				}
-			}
-		
+
+
 
 			if (isSelected)
 				ImGui::SetItemDefaultFocus();

@@ -58,8 +58,8 @@ HRESULT CLevel_GamePlay::Initialize()
 
 	CUIManager::Get_Instance()->OnOff_Loading(false);
 
-	// CCamManager::Get_Instance()->Play_CutScene(0, true);
-	CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
+	CCamManager::Get_Instance()->Play_CutScene(0, true);
+	//CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Witch_Hat"));
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
@@ -267,16 +267,16 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 
 
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_ice"), LEVEL_GAMEPLAY, _float3(-41.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_hover"), LEVEL_GAMEPLAY, _float3(-42.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, _float3(-43.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
-	//if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("Umbrella"), LEVEL_GAMEPLAY, _float3(-44.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
-	//	return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, _float3(-40.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_ice"), LEVEL_GAMEPLAY, _float3(-41.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_hover"), LEVEL_GAMEPLAY, _float3(-42.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, _float3(-43.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
+	if (FAILED(CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("Umbrella"), LEVEL_GAMEPLAY, _float3(-44.75f, 15.34f, 157.85f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f))))
+		return E_FAIL;
 
 	
 
@@ -304,8 +304,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
 	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
 	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
-	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
-	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	FireDesc.vDiffuseColor = _float4(1.f, 0.2f, 0.2f, 1.f);
+	FireDesc.vAmColor = _float4(0.1f, 0.1f, 0.1f, 1.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
 		return E_FAIL;
 
@@ -316,8 +316,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
 	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
 	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
-	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
-	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	FireDesc.vDiffuseColor = _float4(1.f, 0.2f, 0.2f, 1.f);
+	FireDesc.vAmColor = _float4(0.1f, 0.1f, 0.1f, 1.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
 		return E_FAIL;
 	FireDesc.vPos = _float3(-85.8f, 15.97f, 134.1f);
@@ -325,8 +325,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
 	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
 	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
-	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
-	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	FireDesc.vDiffuseColor = _float4(1.f, 0.2f, 0.2f, 1.f);
+	FireDesc.vAmColor = _float4(0.1f, 0.1f, 0.1f, 1.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
 		return E_FAIL;
 	FireDesc.vPos = _float3(-67.4f, 15.5f, 143.f);
@@ -334,8 +334,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
 	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
 	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
-	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
-	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	FireDesc.vDiffuseColor = _float4(1.f, 0.2f, 0.2f, 1.f);
+	FireDesc.vAmColor = _float4(0.1f, 0.1f, 0.1f, 1.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
 		return E_FAIL;
 	FireDesc.vPos = _float3(-58.4f, 15.31f, 127.6f);
@@ -343,13 +343,30 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 15.f);
 	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
 	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
-	FireDesc.vDiffuseColor = _float4(1.f, 1.f, 5.f, 1.f);
-	FireDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	FireDesc.vDiffuseColor = _float4(1.f, 0.2f, 0.2f, 1.f);
+	FireDesc.vAmColor = _float4(0.1f, 0.1f, 0.1f, 1.f);
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
 		return E_FAIL;
 
+	FireDesc.vPos = _float3(-72.6f, 12.8f, 139.94f);
+	FireDesc.vScale = _float3(0.9f, 0.9f, 0.9f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(5.f, 8.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 1.f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 0.2f, 0.2f, 1.f);
+	FireDesc.vAmColor = _float4(0.1f, 0.1f, 0.1f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
 
-
+	FireDesc.vPos = _float3(-72.51f, 14.8f, 130.05f);
+	FireDesc.vScale = _float3(0.5f, 0.5f, 0.5f);
+	FireDesc.fPower = CToolManager::Get_Instance()->Get_RendomNum(10.f, 11.f);
+	FireDesc.fUpSpeed = CToolManager::Get_Instance()->Get_RendomNum(0.1f, 0.5f);
+	FireDesc.fDownSpeed = FireDesc.fUpSpeed;
+	FireDesc.vDiffuseColor = _float4(1.f, 0.2f, 0.2f, 1.f);
+	FireDesc.vAmColor = _float4(0.1f, 0.1f, 0.1f, 1.f);
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_GAMEPLAY, TEXT("Layer_Fire"), &FireDesc)))
+		return E_FAIL;
 
 
 

@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "BadgeS_Base.h"
 
+#include "ParticleManager.h"
+
 
 CIceBox::CIceBox(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -152,6 +154,14 @@ void CIceBox::Attacked()
 {
 	m_pOwner->Set_Ice();
 	Set_Dead(true);
+
+	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
+	CParticleManager::Get_Instance()->Create_Effect(TEXT("P_Ice"), vPos, _float3(0.0f, 0.0f, 0.f), _float3(0.f, 0.f, 0.f), _float3(1.7f, 1.7f, 1.7f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.2f, 8.f, true, 1.f, 3.f, 1.f,
+		10, 0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, 1.f, 0.5f, .5f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+
+
+
 }
 
 

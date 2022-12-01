@@ -86,6 +86,9 @@ private:
 	_float m_fAddPosTimeAcc = 0.f;
 	_float3 m_vNextPos;
 
+	_bool					m_bOn = false;
+	_bool					m_bPreOn = false;
+
 private:
 	CShader*				m_pShaderCom_None = nullptr;
 	CModel*					m_pModelCom_None = nullptr;

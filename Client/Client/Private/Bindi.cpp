@@ -61,7 +61,7 @@ HRESULT CBindi::Initialize(void * pArg)
 	LIGHTDESC LightDesc;
 	LightDesc.eType = LIGHTDESC::TYPE_POINT;
 	LightDesc.vDiffuse = m_vDiffu = _float4(1.f, 212.f / 255.f, 0.f, 1.f);
-	LightDesc.vAmbient = m_vAmbi = _float4(0.f, 0.f, 0.f, 1.f);
+	LightDesc.vAmbient = m_vAmbi = _float4(0.1f, 0.1f, 0.1f, 1.f);
 
 	_float4 vPos;
 	vPos.x = pDesc->vPos.x;
@@ -317,8 +317,11 @@ HRESULT CBindi::Render()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
 		return E_FAIL;
 
-
 	_uint iPassIndex = 0;
+	if(CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION)))
+		iPassIndex = 12;
+
+// 12
 	if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture", 0)))
 		return E_FAIL;
 

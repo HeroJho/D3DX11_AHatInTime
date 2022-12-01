@@ -75,6 +75,8 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 	}
 
 
+	if (!lstrcmp(TEXT("Fiona_Instance"), m_cModelTag))
+		bRender = false;
 
 
 	if (bRender)
@@ -211,7 +213,8 @@ HRESULT CStaticModel_Instance::Render()
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		if (!lstrcmp(m_cModelTag, TEXT("Lamppost_Instance")) && 1 == i)
+		// (!lstrcmp(m_cModelTag, TEXT("tree_will_Instance")) && 2 == i
+		if ((!lstrcmp(m_cModelTag, TEXT("Lamppost_Instance")) && 1 == i) || (!lstrcmp(m_cModelTag, TEXT("ClockTower_Instance")) && 1 == i ))
 		{
 			if (1 != iPassIndex)
 				iPassIndex = 4;
@@ -304,9 +307,19 @@ HRESULT CStaticModel_Instance::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Grass"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
-	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-		return E_FAIL;
+	if (LEVEL_BOSS == CToolManager::Get_Instance()->Get_CulLevel())
+	{
+		/* For.Com_Model */
+		if (FAILED(__super::Add_Component(LEVEL_BOSS, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+			return E_FAIL;
+	}
+	else
+	{
+		/* For.Com_Model */
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_cModelTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+			return E_FAIL;
+	}
+
 
 
 

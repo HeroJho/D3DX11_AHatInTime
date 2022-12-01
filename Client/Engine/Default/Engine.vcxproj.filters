@@ -148,6 +148,9 @@
     <ClCompile Include="..\Private\Target_Manager.cpp">
       <Filter>04.Utility\05.RenderTargets\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Sound_Manager.cpp">
+      <Filter>05.System\02.Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Engine_Defines.h">
@@ -311,6 +314,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Target_Manager.h">
       <Filter>04.Utility\05.RenderTargets\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sound_Manager.h">
+      <Filter>05.System\02.Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -481,6 +487,9 @@
     </Filter>
     <Filter Include="04.Utility\06.Frustum">
       <UniqueIdentifier>{db875ca9-d332-4b47-939b-d7ea6a68a0ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05.System\02.Sound">
+      <UniqueIdentifier>{b64b7128-b54b-4075-8b8c-b89ae177cf00}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

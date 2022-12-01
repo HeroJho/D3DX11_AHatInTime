@@ -10,6 +10,7 @@ namespace Client
 	static const unsigned int g_iWinSizeY = 720;
 
 	enum LEVEL { LEVEL_STATIC, LEVEL_LOADING, LEVEL_LOGO, LEVEL_GAMEPLAY, LEVEL_BOSS, LEVEL_ENDING, LEVEL_END };
+	enum SOUND { SOUND_BGM, SOUND_END }; // √÷¥Î 32
 }
 
 extern HINSTANCE g_hInst;

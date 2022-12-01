@@ -5,6 +5,12 @@
 #include "ToolManager.h"
 #include "DataManager.h"
 #include "GameManager.h"
+#include "ParticleManager.h"
+
+#include "CamManager.h"
+#include "Camera_Free.h"
+#include "FlaskLight.h"
+
 
 #include "Player.h"
 
@@ -124,6 +130,8 @@ void CVault_Mad_Crow::Attacked(_int iAT)
 	{
 		Set_State(MONSTER_DIE);
 		CGameManager::Get_Instance()->Dis_MonsterVaultCount();
+
+
 	}
 	else
 	{
@@ -268,8 +276,26 @@ void CVault_Mad_Crow::Tick_Attacked(_float fTimeDelta)
 void CVault_Mad_Crow::Tick_Die(_float fTimeDelta)
 {
 	m_fDeadTimeAcc += fTimeDelta;
-	if (10.f < m_fDeadTimeAcc)
+	if (1.f < m_fDeadTimeAcc)
+	{
+		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		vPos.y += 1.5f;
+		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.0f, 0.0f, 0.f), _float3(0.f, 0.f, 0.f), _float3(1.5f, 1.5f, 1.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.5f, 5.f, false, 0.f, 0.f, 1.f,
+			20, 0.f, 0.5f, 0.0f, 0.f, 0.f, 0.5f, 0.f, 0.f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+		CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.15f, 6.f, true, 1.f, 3.f, 2.f,
+			10, 0.f, 0.3f, 0.f, 0.f, 0.f, 2.f, 0.f, 0.5f, 0.5f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_TEXTURE);
+		CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.2f, 10.f, 0.07f);
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		LEVEL eLevel = CToolManager::Get_Instance()->Get_CulLevel();
+		CFlaskLight::FLASKLIGHTDESC LightDesc;
+		XMStoreFloat3(&LightDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_FlaskLight"), eLevel, TEXT("Layer_Light"), &LightDesc);
+		RELEASE_INSTANCE(CGameInstance);
+
 		Set_Dead(true);
+	}
+		
 
 }
 

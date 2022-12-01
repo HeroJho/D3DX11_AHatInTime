@@ -55,6 +55,9 @@ private:
 	_float					m_fUpOnTimeAcc = 0.f;
 	_float					m_bInitDrop = false;
 
+	_bool					m_bOn = false;
+	_bool					m_bPreOn = false;
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CRenderer*				m_pRendererCom = nullptr;

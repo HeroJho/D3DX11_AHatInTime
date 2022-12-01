@@ -650,8 +650,12 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 
 
 				list<CGameObject*>* pCubes = pGameInstance->Get_LayerObjs(LEVEL_BOSS, TEXT("Layer_Cube"));
-				for (auto& pCube : *pCubes)
-					((CPuzzleCube_Boss*)pCube)->Attacked();
+				if (pCubes)
+				{
+					for (auto& pCube : *pCubes)
+						((CPuzzleCube_Boss*)pCube)->Attacked();
+				}
+
 
 
 				RELEASE_INSTANCE(CGameInstance);

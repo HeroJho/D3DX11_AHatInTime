@@ -16,8 +16,10 @@ CGameInstance::CGameInstance()
 	, m_pFont_Manager(CFont_Manager::Get_Instance())
 	, m_pFrustum(CFrustum::Get_Instance())
 	, m_pTarget_Manager(CTarget_Manager::Get_Instance())
+	, m_pSound_Manager(CSound_Manager::Get_Instance())
 {	
 
+	Safe_AddRef(m_pSound_Manager);
 	Safe_AddRef(m_pTarget_Manager);
 	Safe_AddRef(m_pFrustum);
 	Safe_AddRef(m_pFont_Manager);
@@ -50,6 +52,9 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, HINSTANCE hInst, cons
 		return E_FAIL;
 
 	/* 사운드 초기화. */
+
+	if (FAILED(m_pSound_Manager->Initialize()))
+		return E_FAIL;
 
 	if (FAILED(m_pFrustum->Initialize()))
 		return E_FAIL;
@@ -518,8 +523,42 @@ _float3 CGameInstance::Get_PlayerPos()
 
 
 
+
+void CGameInstance::PlaySound(TCHAR * pSoundKey, const _uint & eID, const float & fVolume)
+{
+	if (nullptr == m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->PlaySound(pSoundKey, eID, fVolume);
+}
+void CGameInstance::PlayBGM(TCHAR * pSoundKey, const float & fVolume)
+{
+	if (nullptr == m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->PlayBGM(pSoundKey, fVolume);
+}
+void CGameInstance::StopSound(const _uint & eID)
+{
+	if (nullptr == m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->StopSound(eID);
+}
+void CGameInstance::StopAll()
+{
+	if (nullptr == m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->StopAll();
+}
+
+
+
 void CGameInstance::Release_Engine()
 {
+	CSound_Manager::Get_Instance()->Destroy_Instance();
+
 	CFrustum::Get_Instance()->Destroy_Instance();
 
 	CTarget_Manager::Get_Instance()->Destroy_Instance();
@@ -551,6 +590,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pFont_Manager);

@@ -107,6 +107,12 @@ HRESULT CStaticModel::Initialize(void * pArg)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat4(&Desc.vPosition), 1.f));
 	}
 
+	if (!lstrcmp(m_cModelTag, TEXT("Fiona")))
+	{
+		m_pTransformCom->Set_Scale(XMVectorSet(100.f, 100.f, 100.f, 1.f));
+	}
+
+
 	return S_OK;
 }
 
@@ -242,7 +248,17 @@ void CStaticModel::LateTick(_float fTimeDelta)
 	// m_pModelCom->Play_Animation(fTimeDelta);
 	
 	if (CMapManager::Get_Instance()->Get_ColMode())
-		Tick_Col(m_pTransformCom->Get_WorldMatrix());
+	{
+		if (!lstrcmp(m_cModelTag, TEXT("Fiona")))
+		{
+			_matrix mScale = m_pTransformCom->Get_WorldMatrix();
+			mScale.r[0] = XMVector3Normalize(mScale.r[0]);
+			mScale.r[1] = XMVector3Normalize(mScale.r[1]);
+			mScale.r[2] = XMVector3Normalize(mScale.r[2]);
+			Tick_Col(mScale);
+		}
+	}
+
 
 
 
@@ -263,12 +279,12 @@ HRESULT CStaticModel::Render()
 		nullptr == m_pShaderCom)
 		return E_FAIL;
 
-	if (!lstrcmp(m_cModelTag, TEXT("Fiona")))
-	{
-		if (CMapManager::Get_Instance()->Get_ColMode())
-			Render_Col();
-		return S_OK;
-	}
+	//if (!lstrcmp(m_cModelTag, TEXT("Fiona")))
+	//{
+	//	if (CMapManager::Get_Instance()->Get_ColMode())
+	//		Render_Col();
+	//	return S_OK;
+	//}
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -398,7 +414,7 @@ HRESULT CStaticModel::Ready_Components(STATICMODELDESC* Desc)
 	ColDesc.bWall = Desc->bWall;
 	ColDesc.iTagID = Desc->iTagID;
 
-	if (0.1f < Desc->vSize.x)
+	if (0.1f < Desc->vSize.x && 0.1f < Desc->vSize.y && 0.1f < Desc->vSize.z)
 	{
 		ColDesc.vSize = Desc->vSize;
 		if (FAILED(AddCollider(CCollider::TYPE_OBB, ColDesc)))

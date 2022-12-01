@@ -13,6 +13,7 @@
 #include "Font_Manager.h"
 #include "Target_Manager.h"
 #include "Frustum.h"
+#include "Sound_Manager.h"
 
 /* 클라이언트로 보여주기위한 가장 대표적인 클래스이다. */
 /* 각종 매니져클래스들의 주요함수를 클라로 보여준다.  */
@@ -119,6 +120,14 @@ public: /* For. Target_Manager */
 	_float3 Get_PlayerPos();
 
 
+public: // For. Sound_Manager
+	void PlaySound(TCHAR * pSoundKey, const _uint& eID, const float& fVolume);
+	void PlayBGM(TCHAR * pSoundKey, const float& fVolume);
+	void StopSound(const _uint& eID);
+	void StopAll();
+	
+
+
 private:
 	CGraphic_Device*				m_pGraphic_Device = nullptr;
 	CInput_Device*					m_pInput_Device = nullptr;
@@ -133,7 +142,7 @@ private:
 	CFont_Manager*					m_pFont_Manager = nullptr;
 	CFrustum*						m_pFrustum = nullptr;
 	CTarget_Manager*				m_pTarget_Manager = nullptr;
-
+	CSound_Manager*					m_pSound_Manager = nullptr;
 
 public:
 	static void Release_Engine();

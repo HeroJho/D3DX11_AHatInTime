@@ -47,6 +47,14 @@ HRESULT CStaticModel_Col::Initialize(void * pArg)
 	// 셀에 등록한다
 	CToolManager::Get_Instance()->Ready_CellCollision(this, Desc->piNaviIndexs, Desc->iNaviIndexSize);
 
+	if (!lstrcmp(TEXT("Fiona"), m_cModelTag))
+	{
+		Desc->vScale.x *= 0.01f;
+		Desc->vScale.y *= 0.01f;
+		Desc->vScale.z *= 0.01f;
+		m_pTransformCom->Set_Scale(XMLoadFloat3(&Desc->vScale));
+	}
+
 	return S_OK;
 }
 

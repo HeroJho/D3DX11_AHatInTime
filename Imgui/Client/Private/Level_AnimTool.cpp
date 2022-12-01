@@ -146,8 +146,8 @@ HRESULT CLevel_AnimTool::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	//	return E_FAIL;
 	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PipeScream"), LEVEL_ANIMTOOL, pLayerTag)))
 	//	return E_FAIL;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_ANIMTOOL, pLayerTag)))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Fire"), LEVEL_ANIMTOOL, pLayerTag)))
+	//	return E_FAIL;
 
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain_Anim"), LEVEL_ANIMTOOL, pLayerTag)))

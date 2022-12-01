@@ -4,8 +4,10 @@
 
 #include "ToolManager.h"
 #include "GameManager.h"
+#include "ParticleManager.h"
 
 #include "Player.h"
+
 
 
 CPuzzleCube_Boss::CPuzzleCube_Boss(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -93,6 +95,14 @@ void CPuzzleCube_Boss::Tick_Out(_float fTimeDelta)
 
 void CPuzzleCube_Boss::Attacked()
 {
+
+	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	CParticleManager::Get_Instance()->Create_Effect(TEXT("P_Wood"), vPos, _float3(0.0f, 0.0f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.2f, 8.f, true, 1.f, 3.f, 1.f,
+		5, 0.5f, 0.5f, 0.0f, 0.f, 0.f, 0.f, 1.f, 0.5f, .5f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+	CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.0f, 0.0f, 0.f), _float3(0.f, 0.f, 0.f), _float3(1.5f, 1.5f, 1.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.5f, 5.f, false, 0.f, 0.f, 1.f,
+		5, 0.f, 0.5f, 0.0f, 0.f, 0.f, 0.5f, 0.f, 0.f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+
+
 	Set_Dead(true);
 }
 
@@ -142,6 +152,34 @@ void CPuzzleCube_Boss::LateTick(_float fTimeDelta)
 		Get_StaticOBB()->Set_IsWall(true);
 	else
 		Get_StaticOBB()->Set_IsWall(false);
+
+
+
+	_float fTemp = 0.f;
+	if (m_pNavigationCom->isGround(m_pTransformCom->Get_State(CTransform::STATE_POSITION), &fTemp, 0.f) || COBB::COL_ON == Get_StaticOBB()->Get_ColState())
+	{
+		m_bPreOn = m_bOn;
+		m_bOn = true;
+	}
+
+	else
+	{
+		m_bPreOn = m_bOn;
+		m_bOn = false;
+	}
+
+
+	if (m_bOn && !m_bPreOn)
+	{
+		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		vPos.y += 0.3f;
+		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 4.f, false, 0.f, 0.f, 2.f,
+			20, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+	}
+
+
+
+
 
 
 
