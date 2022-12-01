@@ -63,6 +63,7 @@ HRESULT CLevel_Boss::Initialize()
 	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Fox"));
 	//CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
 
+	CUIManager::Get_Instance()->OnOff_Loading(false);
 
 	return S_OK;
 }

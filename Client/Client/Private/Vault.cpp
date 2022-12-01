@@ -69,6 +69,9 @@ void CVault::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 
 
+	if(30 > m_iSprintCount && m_Spr)
+		Sprint_Tick(fTimeDelta);
+
 	switch (m_eState)
 	{
 	case Client::CVault::STATE_IDLE:

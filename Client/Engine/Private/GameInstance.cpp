@@ -184,6 +184,14 @@ HRESULT CGameInstance::Add_GameObjectToLayer(const _tchar * pPrototypeTag, _uint
 	return m_pObject_Manager->Add_GameObjectToLayer(pPrototypeTag, iLevelIndex, pLayerTag, pObj, pArg);
 }
 
+list<CGameObject*>* CGameInstance::Get_LayerObjs(_uint iLevelIndex, const _tchar * pLayerTag)
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Get_LayerObjs(iLevelIndex, pLayerTag);
+}
+
 HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const _tchar * pPrototypeTag, CComponent * pPrototype)
 {
 	if (nullptr == m_pComponent_Manager)
@@ -459,6 +467,14 @@ void CGameInstance::Get_WinToWorldPos(_float fX, _float fY, _float3* Out_vPos, _
 	m_pPicking->Get_WinToWorldPos(fX, fY, Out_vPos, Out_vDir);
 }
 
+
+HRESULT CGameInstance::Bind_SRV(const _tchar * pTargetTag, CShader * pShader, const char * pConstantName)
+{
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	return m_pTarget_Manager->Bind_SRV(pTargetTag, pShader, pConstantName);
+}
 
 void CGameInstance::Set_WipsData(_float * pWispRatios, _float4 * pWispPoss, _int pWispNum)
 {

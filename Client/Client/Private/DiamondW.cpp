@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\Public\Diamond.h"
+#include "..\Public\DiamondW.h"
 
 #include "GameInstance.h"
 #include "ToolManager.h"
@@ -7,24 +7,24 @@
 
 #include "Player.h"
 
-CDiamond::CDiamond(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CDiamondW::CDiamondW(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CItem(pDevice, pContext)
 {
 
 }
 
-CDiamond::CDiamond(const CDiamond & rhs)
+CDiamondW::CDiamondW(const CDiamondW & rhs)
 	: CItem(rhs)
 {
 
 }
 
-HRESULT CDiamond::Initialize_Prototype()
+HRESULT CDiamondW::Initialize_Prototype()
 {
 	return __super::Initialize_Prototype();
 }
 
-HRESULT CDiamond::Initialize(void * pArg)
+HRESULT CDiamondW::Initialize(void * pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -56,7 +56,7 @@ HRESULT CDiamond::Initialize(void * pArg)
 	return S_OK;
 }
 
-void CDiamond::Tick(_float fTimeDelta)
+void CDiamondW::Tick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
@@ -79,13 +79,14 @@ void CDiamond::Tick(_float fTimeDelta)
 
 
 	m_fLifeTimeAcc += fTimeDelta;
-	if (10000.f < m_fLifeTimeAcc)
+	if (7.f < m_fLifeTimeAcc)
 		Set_Dead(true);
-	if (3.f < m_fLifeTimeAcc)
+	if (2.f < m_fLifeTimeAcc)
 		m_bTimeGet = true;
+
 }
 
-void CDiamond::LateTick(_float fTimeDelta)
+void CDiamondW::LateTick(_float fTimeDelta)
 {
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 
@@ -129,7 +130,7 @@ void CDiamond::LateTick(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 }
 
-HRESULT CDiamond::Render()
+HRESULT CDiamondW::Render()
 {
 	if (nullptr == m_pModelCom ||
 		nullptr == m_pShaderCom)
@@ -202,7 +203,7 @@ HRESULT CDiamond::Render()
 
 }
 
-HRESULT CDiamond::SetUp_State(_fmatrix StateMatrix)
+HRESULT CDiamondW::SetUp_State(_fmatrix StateMatrix)
 {
 	if (FAILED(__super::SetUp_State(StateMatrix)))
 		return E_FAIL;
@@ -211,7 +212,7 @@ HRESULT CDiamond::SetUp_State(_fmatrix StateMatrix)
 }
 
 
-void CDiamond::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
+void CDiamondW::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 {
 	if ("Tag_Player" == Desc.pOther->Get_Tag())
 	{
@@ -230,22 +231,22 @@ void CDiamond::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 
 
 
-void CDiamond::Use_Item()
+void CDiamondW::Use_Item()
 {
 
 
 
 }
 
-void CDiamond::Get_Tick(_float fTimeDelta)
+void CDiamondW::Get_Tick(_float fTimeDelta)
 {
 	// 화면의 왼 하단 좌표를 구한다.
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	
+
 	_float3 vPos, vDir;
 
 	pGameInstance->Get_WinToWorldPos(0.f, g_iWinSizeY, &vPos, &vDir);
-	
+
 	_vector vVPos = XMLoadFloat3(&vDir);
 	_vector vRatioDir = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 	_vector vPlayerRight = ((CTransform*)pGameInstance->Get_ComponentPtr(LEVEL_STATIC, TEXT("Layer_Player"), TEXT("Com_Transform"), 0))->Get_State(CTransform::STATE_RIGHT);
@@ -259,7 +260,7 @@ void CDiamond::Get_Tick(_float fTimeDelta)
 
 	_vector vDestPos = XMLoadFloat3(&vPos) + XMVector3Normalize(vRatioDir) * 4.f;
 	vDestPos = XMVectorSetW(vDestPos, 1.f);
-	
+
 	m_pTransformCom->Move(vDestPos, 10.f * m_fRatio, fTimeDelta);
 
 
@@ -276,13 +277,13 @@ void CDiamond::Get_Tick(_float fTimeDelta)
 
 }
 
-void CDiamond::Init_Pigic_Bounding(_float OriJumpPow, _float OriDirPow)
+void CDiamondW::Init_Pigic_Bounding(_float OriJumpPow, _float OriDirPow)
 {
 	m_fJumpPower = OriJumpPow;
 	m_fDirPower = OriDirPow;
 }
 
-void CDiamond::Tick_Pigic_Bounding(_float fTimeDelta)
+void CDiamondW::Tick_Pigic_Bounding(_float fTimeDelta)
 {
 
 	if (nullptr == m_pNavigationCom || (m_bStop && m_bOn))
@@ -335,7 +336,7 @@ void CDiamond::Tick_Pigic_Bounding(_float fTimeDelta)
 
 
 
-HRESULT CDiamond::Ready_Components()
+HRESULT CDiamondW::Ready_Components()
 {
 
 
@@ -385,33 +386,33 @@ HRESULT CDiamond::Ready_Components()
 	return S_OK;
 }
 
-CDiamond * CDiamond::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CDiamondW * CDiamondW::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	CDiamond*		pInstance = new CDiamond(pDevice, pContext);
+	CDiamondW*		pInstance = new CDiamondW(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX(TEXT("Failed To Created : CDiamond"));
+		MSG_BOX(TEXT("Failed To Created : CDiamondW"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject * CDiamond::Clone(void * pArg)
+CGameObject * CDiamondW::Clone(void * pArg)
 {
-	CDiamond*		pInstance = new CDiamond(*this);
+	CDiamondW*		pInstance = new CDiamondW(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX(TEXT("Failed To Cloned : CDiamond"));
+		MSG_BOX(TEXT("Failed To Cloned : CDiamondW"));
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CDiamond::Free()
+void CDiamondW::Free()
 {
 	__super::Free();
 

@@ -56,7 +56,7 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
 		return E_FAIL;
 
-	
+	CUIManager::Get_Instance()->OnOff_Loading(false);
 
 	// CCamManager::Get_Instance()->Play_CutScene(0, true);
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Ori_Hat"));
@@ -65,6 +65,10 @@ HRESULT CLevel_GamePlay::Initialize()
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Mask_Cat"));
 	CItemManager::Get_Instance()->Add_Hat(TEXT("Sprint_Hat"));
 
+
+	CUIManager::Get_Instance()->OnOff_HP(true);
+	CUIManager::Get_Instance()->OnOff_DiamondScore(true);
+	CUIManager::Get_Instance()->OnOff_Inven(true);
 
 	return S_OK;
 }
@@ -360,10 +364,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _tchar * pLayerTag)
 	Safe_AddRef(pGameInstance);
 
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
-		return E_FAIL;
-	
-
 
 	CTimeObject::TIMEOBJECTDESC TimeObjDesc;
 	TimeObjDesc.vPos = _float3(-60.f, 3.23f, -115.8f);
@@ -479,7 +479,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 
 
 
-	Safe_Release(pGameInstance);
+
 
 	CUIManager::Get_Instance()->Make_SpeechBubble();
 	CUIManager::Get_Instance()->Make_Hp();
@@ -488,8 +488,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar * pLayerTag)
 	CUIManager::Get_Instance()->Make_DiamondUI();
 	CUIManager::Get_Instance()->Make_ShopUI();
 	CUIManager::Get_Instance()->Make_WhiteBoard();
-	
 
+
+	list<CGameObject*>* pObjs = pGameInstance->Get_LayerObjs(LEVEL_STATIC, TEXT("Layer_UI"));
+	CGameObject* pObj = pObjs->front();
+	pObjs->pop_front();
+	pObjs->push_back(pObj);
+
+	Safe_Release(pGameInstance);
 
 	return S_OK;
 }

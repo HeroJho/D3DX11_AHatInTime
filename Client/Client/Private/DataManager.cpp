@@ -447,7 +447,7 @@ HRESULT CDataManager::Load_Map(_int iMapID, LEVEL eLEVEL)
 				fB = CToolManager::Get_Instance()->Get_RendomNum_Int(0.f, 1.f);
 			}
 			MushDesc.vDiffuseColor = _float4(fR, fG, fB, 1.f);
-			MushDesc.vAmColor = _float4(0.3f, 0.3f, 0.3f, 1.f);
+			MushDesc.vAmColor = _float4(0.f, 0.f, 0.f, 1.f);
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_MushRoom"), LEVEL_GAMEPLAY, TEXT("Layer_Bg"), &MushDesc)))
 				return E_FAIL;
 

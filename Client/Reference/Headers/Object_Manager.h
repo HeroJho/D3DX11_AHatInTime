@@ -26,7 +26,7 @@ public:
 	HRESULT Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, class CGameObject** pObj, void* pArg = nullptr);
 
 	CGameObject* Get_GameObjectPtr(_uint iLevelIndex, const _tchar * pLayerTag, _uint iLayerIndex);
-
+	list<CGameObject*>* Get_LayerObjs(_uint iLevelIndex, const _tchar * pLayerTag);
 
 public:
 	void Tick(_float fTimeDelta);

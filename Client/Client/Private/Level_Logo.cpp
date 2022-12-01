@@ -26,7 +26,7 @@ void CLevel_Logo::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	if (GetKeyState(VK_SPACE) & 0x8000)
+	// if (GetKeyState(VK_SPACE) & 0x8000)
 	{
 		CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
 		Safe_AddRef(pGameInstance);
@@ -59,15 +59,15 @@ HRESULT CLevel_Logo::Ready_Layer_BackGround(const _tchar * pLayerTag)
 
 
 
-	CUI::UIINFODESC UiInfoDesc;
-	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
-	UiInfoDesc.fSizeX = 197;
-	UiInfoDesc.fSizeY = 380;
-	UiInfoDesc.fX = g_iWinSizeX * 0.5f;
-	UiInfoDesc.fY = g_iWinSizeY * 0.5f;
+	//CUI::UIINFODESC UiInfoDesc;
+	//ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+	//UiInfoDesc.fSizeX = 197;
+	//UiInfoDesc.fSizeY = 380;
+	//UiInfoDesc.fX = g_iWinSizeX * 0.5f;
+	//UiInfoDesc.fY = g_iWinSizeY * 0.5f;
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_Edit"), LEVEL_LOGO, pLayerTag, &UiInfoDesc)))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_UI_Edit"), LEVEL_LOGO, pLayerTag, &UiInfoDesc)))
+	//	return E_FAIL;
 
 
 

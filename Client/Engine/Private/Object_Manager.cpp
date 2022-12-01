@@ -136,6 +136,16 @@ CGameObject * CObject_Manager::Get_GameObjectPtr(_uint iLevelIndex, const _tchar
 	return pLayer->Get_GameObjectPtr(iLayerIndex);
 }
 
+list<CGameObject*>* CObject_Manager::Get_LayerObjs(_uint iLevelIndex, const _tchar * pLayerTag)
+{
+	CLayer*		pLayer = Find_Layer(iLevelIndex, pLayerTag);
+
+	if (nullptr == pLayer)
+		return nullptr;
+
+	return pLayer->Get_Objs();
+}
+
 void CObject_Manager::Tick(_float fTimeDelta)
 {
 	for (_uint i = 0; i < m_iNumLevels; ++i)

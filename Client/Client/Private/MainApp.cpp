@@ -14,6 +14,9 @@
 
 #include "Level_Loading.h"
 
+#include "UI_Loading.h"
+#include "UI_LoadingStart.h"
+
 using namespace Client;
 
 CMainApp::CMainApp()
@@ -232,6 +235,28 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Collider_Sphere"),
 		CSphere::Create(m_pDevice, m_pContext, CCollider::TYPE_SPHERE))))
 		return E_FAIL;
+
+
+
+	// For. Loading
+	/* For.Prototype_Component_Texture_Star */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Star"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Star_%d.dds"), 3))))
+		return E_FAIL;
+	/* For.Prototype_UI_Loading*/
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_UI_Loading"),
+		CUI_Loading::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_UI_LoadingStart*/
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_UI_LoadingStart"),
+		CUI_LoadingStart::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+
+
+	CUIManager::Get_Instance()->Make_Loading();
+
+
 
 
 	return S_OK;

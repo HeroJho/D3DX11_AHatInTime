@@ -18,13 +18,20 @@ protected:
 	virtual ~CUI_Health() = default;
 
 public:
+	_uint Get_Hp() { return m_iHp; }
+	void Set_Hp(_uint iHp) { m_iHp = iHp; }
+
+public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-	void OnOff(_bool bOnOff) { m_bIsOn = bOnOff; }
+	void OnOff(_bool bOnOff) { m_bIsOn = bOnOff; m_fTimeAcc = 0.f; }
+
+
+	void DangerTick(_float fTimeDelta);
 
 protected:
 	HRESULT Ready_Components();
@@ -35,6 +42,17 @@ private:
 	_float2			m_vOffPos;
 
 	_float			m_fTimeAcc = 0.f;
+	_uint			m_iHp = 0;
+
+
+	_float m_fRaito = 0.f;
+	_float m_fOriSizeX = 0.f;
+	_float m_fOriSizeY = 0.f;
+	_float	m_fIdleMaxSizeX = 0.f;
+	_float	m_fIdleMaxSizeY = 0.f;
+	_float	m_fIdleSpeed = 0.f;
+	_bool	m_bIdleChange = false;
+
 
 private:
 	CShader*				m_pShaderCom = nullptr;

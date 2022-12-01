@@ -97,7 +97,7 @@ HRESULT CVSnatcher::Initialize(void * pArg)
 	 }
 	 
 	 m_CreatureDesc.iMaxHP = 10;
-	 m_CreatureDesc.iHP = 5;
+	 m_CreatureDesc.iHP = 1;
 
 	return S_OK;
 }
@@ -528,7 +528,13 @@ void CVSnatcher::Tick_Curse(_float fTimeDelta)
 
 	if (m_fCurseDelayTime < m_fCurseTimeAcc)
 	{
+		// TODO Y ¼ÒÆÃ!
+		//_float fX = CToolManager::Get_Instance()->Get_RendomNum(-4.f, 4.f);
+		//_float fZ = CToolManager::Get_Instance()->Get_RendomNum(-4.f, 4.f);
+		//vPlayerPos = XMVectorSetX(vPlayerPos, XMVectorGetX(vPlayerPos) + fX);
+		//vPlayerPos = XMVectorSetZ(vPlayerPos, XMVectorGetZ(vPlayerPos) + fZ);
 		Create_ExPlo(vPlayerPos);
+
 		m_fCurseTimeAcc = 0.f;
 		--m_iCurseCount;
 	}
@@ -637,11 +643,18 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 				if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Splash_wave"), LEVEL_GAMEPLAY, TEXT("Layer_Skill"), &Desc)))
 					return;
 
-				RELEASE_INSTANCE(CGameInstance);
-
+				
 				CParticleManager::Get_Instance()->Create_Effect(TEXT("Grave1"), _float3(-60.57f, 0.f, -115.45f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.f, 0.f, true, 30.f, 15.f, 2.f,
-					30, 20.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 4.f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+					40, 20.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 4.f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 				CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.2f, 10.f, 0.07f);
+
+
+				list<CGameObject*>* pCubes = pGameInstance->Get_LayerObjs(LEVEL_BOSS, TEXT("Layer_Cube"));
+				for (auto& pCube : *pCubes)
+					((CPuzzleCube_Boss*)pCube)->Attacked();
+
+
+				RELEASE_INSTANCE(CGameInstance);
 
 			}
 
@@ -1673,7 +1686,7 @@ void CVSnatcher::Create_CubeBox()
 		CPuzzleCube_Boss:: PUZZLECUBEDESC StatueDesc;
 		XMStoreFloat3(&StatueDesc.vPos, vPos);
 		StatueDesc.vPos.y += 3.f;
-
+		
 		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_PuzzleCube_Boss"), LEVEL_BOSS, TEXT("Layer_Cube"), &StatueDesc);
 	}
 

@@ -14,6 +14,9 @@ public:
 	class CGameObject* Get_GameObjectPtr(_uint iLayerIndex);
 
 public:
+	list<class CGameObject*>* Get_Objs() { return &m_GameObjects; }
+
+public:
 	HRESULT Add_GameObject(class CGameObject* pGameObject);
 
 	HRESULT Initialize();

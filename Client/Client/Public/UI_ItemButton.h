@@ -71,6 +71,8 @@ private:
 	_float m_fOriSize = 0.f;
 	_float m_fHoverSize = 0.f;
 
+	_float m_fRatio = 0.f;
+
 public:
 	static CUI_ItemButton* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

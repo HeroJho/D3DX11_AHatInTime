@@ -27,11 +27,13 @@ public:
 	HRESULT Make_SpeechBubble();
 	HRESULT Make_Hp();
 	HRESULT Make_WhiteBoard();
+	HRESULT Make_Loading();
 
 
 	void OnOff_DiamondScore(_bool bBool);
 	void OnOff_Inven(_bool bBool);
 	void OnOff_HP(_bool bBool);
+	void OnOff_Loading(_bool bBool);
 
 	// For. Inven
 public:
@@ -49,7 +51,8 @@ public:
 
 	// For. Hp
 public:
-
+	_uint Get_Hp();
+	void Set_Hp(_uint iHp);
 
 	//For. WhiteBoard
 public:
@@ -86,6 +89,7 @@ private:
 	class CUI_SpeechBubble*			m_pSpeechBubble = nullptr;
 	class CUI_SmallSpeechBubble*	m_pSmallSpeechBubble = nullptr;
 
+	class CUI_Loading*				m_pLoading = nullptr;
 
 public:
 	virtual void Free() override;

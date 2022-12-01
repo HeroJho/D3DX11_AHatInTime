@@ -468,9 +468,19 @@ HRESULT CParticle::Ready_Texture_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_Desc.cModelTag, TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-		return E_FAIL;
+	if (!lstrcmp(TEXT("Prototype_Component_Texture_Star"), m_Desc.cModelTag))
+	{
+		/* For.Com_Texture */
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_Desc.cModelTag, TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+	}
+	else
+	{
+		/* For.Com_Texture */
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, m_Desc.cModelTag, TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+	}
+
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))

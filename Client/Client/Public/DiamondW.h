@@ -14,12 +14,12 @@ END
 
 BEGIN(Client)
 
-class CDiamond final : public CItem
+class CDiamondW final : public CItem
 {
 private:
-	CDiamond(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CDiamond(const CDiamond& rhs);
-	virtual ~CDiamond() = default;
+	CDiamondW(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CDiamondW(const CDiamondW& rhs);
+	virtual ~CDiamondW() = default;
 
 private:
 	CNavigation* m_pNavigationCom = nullptr;
@@ -70,7 +70,7 @@ protected:
 
 
 public:
-	static CDiamond* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CDiamondW* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 

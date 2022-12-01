@@ -61,7 +61,7 @@ HRESULT CBindi::Initialize(void * pArg)
 	LIGHTDESC LightDesc;
 	LightDesc.eType = LIGHTDESC::TYPE_POINT;
 	LightDesc.vDiffuse = m_vDiffu = _float4(1.f, 212.f / 255.f, 0.f, 1.f);
-	LightDesc.vAmbient = m_vAmbi = _float4(0.3f, 0.3f, 0.3f, 1.f);
+	LightDesc.vAmbient = m_vAmbi = _float4(0.f, 0.f, 0.f, 1.f);
 
 	_float4 vPos;
 	vPos.x = pDesc->vPos.x;

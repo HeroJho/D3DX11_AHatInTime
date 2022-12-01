@@ -69,7 +69,7 @@ void CUI_ItemButton::Tick(_float fTimeDelta)
 		break;
 	}
 
-
+	m_fRatio = m_UiInfo.fX / m_vEndPos.x;
 
 
 	if (UI_HOVER == m_eState)
@@ -127,7 +127,10 @@ HRESULT CUI_ItemButton::Render()
 	if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	m_pShaderCom->Set_RawValue("g_fRatio", &m_fRatio, sizeof(_float));
+
+
+	if (FAILED(m_pShaderCom->Begin(11)))
 		return E_FAIL;
 
 	if (FAILED(m_pVIBufferCom->Render()))

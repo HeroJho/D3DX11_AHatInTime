@@ -46,7 +46,6 @@ public:
 	void Set_Anim();
 
 
-
 	void Open_Tick(_float fTimeDelta);
 	void Opened_Tick(_float fTimeDelta);
 	void Idle_Tick(_float fTimeDelta);

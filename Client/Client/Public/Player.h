@@ -19,7 +19,7 @@ BEGIN(Client)
 class CPlayer final : public CGameObject
 {
 public:
-	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_JUMPATTACK, STATE_JUMPATTACKRENDING, STATE_HILLDOWN, STATE_STARTGETITEM, STATE_IDLEGETITEM, STATE_ENDGETITEM, STATE_MAGEIDLE, STATE_MAGERUN, STATE_MAGEJUMP, STATE_MAGEIDLEJUMPRENDING, STATE_MAGERUNJUMPRENDING, STATE_MAGEDROW, STATE_DOWN, STATE_ATTACKED, STATE_TALK, STATE_APPEAR, STATE_NONE, STATE_END };
+	enum STATE { STATE_IDLE, STATE_WALK, STATE_RUN, STATE_SPRINT, STATE_SLEP, STATE_JUMP, STATE_SLIDE, STATE_JUMPLENDING, STATE_RUNJUMP, STATE_RUNJUMPLENDING, STATE_SLIDELENDING, STATE_SPRINTJUMP, STATE_DOUBLEJUMP, STATE_ATTACK_1, STATE_ATTACK_2, STATE_ATTACK_3, STATE_READYATTACK, STATE_JUMPATTACK, STATE_JUMPATTACKRENDING, STATE_HILLDOWN, STATE_STARTGETITEM, STATE_IDLEGETITEM, STATE_ENDGETITEM, STATE_MAGEIDLE, STATE_MAGERUN, STATE_MAGEJUMP, STATE_MAGEIDLEJUMPRENDING, STATE_MAGERUNJUMPRENDING, STATE_MAGEDROW, STATE_DOWN, STATE_ATTACKED, STATE_TALK, STATE_APPEAR, STATE_DEAD, STATE_NONE, STATE_END };
 	enum SLOT { SLOT_HAT, SLOT_HAND, SLOT_END };
 
 private:
@@ -62,6 +62,7 @@ private:
 	void Anim_Face(_float fTimeDelta);
 	void Check_Attacked(_float fTimeDelta);
 
+	void None_Tick(_float fTimeDelta);
 	void Idle_Tick(_float fTimeDelta);
 	void Jump_Tick(_float fTimeDelta);
 	void DoubleJump_Tick(_float fTimeDelta);
@@ -93,8 +94,9 @@ private:
 
 	void Talk_Tick(_float fTimeDelta);
 
+	void Dead_Tick(_float fTimeDelta);
 
-
+	void Appear_Tick(_float fTimeDelta);
 
 	void State_Input(_float fTimeDelta);
 	
@@ -181,10 +183,17 @@ private:
 
 	_bool				m_bImStop = false;
 
+
+	// For. None
+	_float m_fNoneTimeAcc = 0.f;
+
+
 	// For. Attacked
 	_float				m_fAttackedTimeAcc = 0.f;
 	_float				m_fAttackedBoolTimeAcc = 0.f;
 	_bool				m_bAttacked = false;
+	_float				m_fAttackedBlnkTimeAcc = 0.f;
+	_bool				m_bAttackedBlnk = false;
 
 	// For. HillDown
 	_float				m_fHillDownTimeAcc = 0.f;
@@ -200,6 +209,7 @@ private:
 	// For. FoxMask
 	_float				m_fFoxMaskTimeAcc = 0.f;
 	_bool				m_bFoxMask = false;
+	_float				m_bDarkRatio = 0.f;
 
 	// For. FaceAnim
 	_int				m_FaceAnimIndex[2];
@@ -226,6 +236,13 @@ private:
 
 	// For. StayTick
 	_float m_fStayTimeAcc = 0.f;
+
+	// For. Dead
+	_float m_fResponTimeAcc = 0.f;
+
+
+	// For. Chit
+	_bool	m_bChit = false;
 
 private:
 	HRESULT Ready_Components();

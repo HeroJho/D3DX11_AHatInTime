@@ -118,9 +118,9 @@ private:
 
 	// For. Curse
 	_float m_fCurseTimeAcc = 0.f;
-	_float m_fCurseDelayTime = 1.f;
+	_float m_fCurseDelayTime = 0.8f;
 	_int	m_iCurseCount = 0;
-	_int	m_iCurseMaxCount = 5;
+	_int	m_iCurseMaxCount = 10;
 
 	// For. Magic
 	_float m_fMagicTimeAcc = 0.f;

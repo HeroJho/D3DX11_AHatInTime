@@ -152,6 +152,7 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_NonLight"), TEXT("Target_Blur"))))
 		return E_FAIL;
 
+
 	/* For.MRT_DarkPlayer*/
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_DarkPlayer"), TEXT("Target_DarkPlayer"))))
 		return E_FAIL;
@@ -235,10 +236,6 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 
 
-	// Player Shader
-	if (FAILED(Render_PlayerShader()))
-		return E_FAIL;
-
 
 	// ºû°ú º¤ÅÍ·Î ºûÀ» ±×¸°´Ù.
 	if (FAILED(Render_Lights()))
@@ -251,9 +248,13 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_NonLight()))
 		return E_FAIL;
 
-
 	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
+
+	// Player Shader
+	if (FAILED(Render_PlayerShader()))
+		return E_FAIL;
+
 
 	// ºí·¯
 	if (FAILED(Render_BlurDownSample()))
@@ -275,8 +276,8 @@ HRESULT CRenderer::Draw()
 #ifdef _DEBUG
 
 
-	if (FAILED(Render_Debug()))
-		return E_FAIL;
+	//if (FAILED(Render_Debug()))
+	//	return E_FAIL;
 
 
 #endif
@@ -526,9 +527,11 @@ HRESULT CRenderer::Render_Grow()
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_Blend"), m_pShader, "g_DiffuseTexture")))
-		return E_FAIL;;
+		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_BlurUpSample"), m_pShader, "g_BlurTexture")))
-		return E_FAIL;;
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(TEXT("Target_DarkPlayer"), m_pShader, "g_DarkPlayerTexture")))
+		return E_FAIL;
 
 
 	m_pShader->Begin(7);

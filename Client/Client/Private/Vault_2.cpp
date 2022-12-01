@@ -69,7 +69,7 @@ void CVault_2::Tick(_float fTimeDelta)
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 	__super::Tick(fTimeDelta);
 
-	if(m_Spr)
+	if(30 > m_iSprintCount && m_Spr)
 		Sprint_Tick(fTimeDelta);
 
 	switch (m_eState)

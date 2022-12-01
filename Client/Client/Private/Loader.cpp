@@ -79,6 +79,7 @@
 #include "UI_SmallSpeechBubble.h"
 #include "WhiteBoard.h"
 
+
 #include "RollingBarrel.h"
 #include "RectBarrel.h"
 #include "SpikeBlock.h"
@@ -98,6 +99,8 @@
 #include "EyeAttackGround.h"
 #include "FinLaser.h"
 #include "Fire.h"
+
+#include "DiamondW.h"
 
 #include "Test.h"
 
@@ -281,6 +284,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_GameObject_SubconBossEye */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SubconBossEye"),
 		CSubconBossEye::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_DiamondW */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_DiamondW"),
+		CDiamondW::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 	
 	/* For.Prototype_GameObject_SwipsSky */
@@ -538,7 +546,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CUI_SmallSpeechBubble::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	
+
+
 
 	/* For.Prototype_UI_TextLife*/
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_Test"),
@@ -587,10 +596,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/T_FX_Flare_01.dds"), 1))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Star */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Star"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Particle/Star_%d.dds"), 3))))
-		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_star_shuriken */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_star_shuriken"),

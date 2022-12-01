@@ -42,7 +42,7 @@ private:
 	_bool			m_bIsOn = false;
 	_float2			m_vOnPos;
 	_float2			m_vOffPos;
-
+	_float			m_fTimeAcc = 0.f;
 
 public:
 	static CUI_Item_Inven* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

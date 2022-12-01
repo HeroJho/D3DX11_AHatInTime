@@ -95,6 +95,39 @@ void CUI_Item_Inven::Tick(_float fTimeDelta)
 			m_UiInfo.fY = m_vOnPos.y;
 	}
 
+	if (m_bIsOn)
+	{
+		m_fTimeAcc += fTimeDelta;
+
+		if (10.f < m_fTimeAcc)
+		{
+			m_bIsOn = false;
+			m_fTimeAcc = 0.f;
+		}
+	}
+	else
+	{
+		m_fTimeAcc = 0.f;
+	}
+
+	if (!m_bIsOn)
+	{
+		m_UiInfo.fY -= 600.f * fTimeDelta;
+
+		if (m_UiInfo.fY < m_vOffPos.y)
+			m_UiInfo.fY = m_vOffPos.y;
+	}
+	else
+	{
+		m_UiInfo.fY += 600.f * fTimeDelta;
+
+		if (m_UiInfo.fY > m_vOnPos.y)
+			m_UiInfo.fY = m_vOnPos.y;
+	}
+
+
+
+
 	RELEASE_INSTANCE(CGameInstance);
 
 

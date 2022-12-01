@@ -27,7 +27,7 @@ public:
 public:
 	void Set_Score(_uint iNum);
 
-	void OnOff(_bool bOnOff) { m_bIsOn = bOnOff; }
+	void OnOff(_bool bOnOff) { m_bIsOn = bOnOff; m_fTimeAcc = 0.f; }
 
 
 protected:

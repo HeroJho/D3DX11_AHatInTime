@@ -244,7 +244,7 @@ void CVault_State::Sprint_Tick(_float fTimeDelta)
 	{
 		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 
-		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 1);
+		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_DiamondW"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 1);
 
 		m_fSprintItemTimeAcc = 0.f;
 		++m_iSprintCount;

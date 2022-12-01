@@ -55,9 +55,9 @@ HRESULT CPlayer::Initialize(void * pArg)
 	}
 
 
-	m_eState = STATE_NONE;
-	// m_TickStates.push_back(STATE_NONE);
-	m_TickStates.push_back(STATE_APPEAR);
+	// m_eState = STATE_NONE;
+	m_bRenderSkip = true;
+	m_TickStates.push_back(STATE_NONE);
 
 	m_fWalkSpeed = 1.f;
 	m_fRunSpeed = 2.5f;
@@ -80,6 +80,11 @@ HRESULT CPlayer::Initialize(void * pArg)
 
 	_uint iNavi = CToolManager::Get_Instance()->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	m_pNavigationCom->Set_NaviIndex(iNavi);
+
+
+	m_CreatureDesc.iMaxHP = 5;
+	m_CreatureDesc.iHP = m_CreatureDesc.iMaxHP;
+	CUIManager::Get_Instance()->Set_Hp(m_CreatureDesc.iHP);
 
 
 	return S_OK;
@@ -340,6 +345,9 @@ void CPlayer::Set_Anim()
 	case STATE_TALK:
 		m_pModelCom->Set_AnimIndex(113);
 		break;
+	case STATE_DEAD:
+		m_pModelCom->Set_AnimIndex(77);
+		break;
 	}
 }
 
@@ -373,6 +381,12 @@ void CPlayer::Tick(_float fTimeDelta)
 
 	switch (m_eState)
 	{
+	case STATE_NONE:
+		None_Tick(fTimeDelta);
+		break;
+	case STATE_APPEAR:
+		Appear_Tick(fTimeDelta);
+		break;
 	case STATE_IDLE:
 		Idle_Tick(fTimeDelta);
 	case STATE_WALK:
@@ -451,9 +465,40 @@ void CPlayer::Tick(_float fTimeDelta)
 	case STATE_TALK:
 		Talk_Tick(fTimeDelta);
 		break;
+	case STATE_DEAD:
+		Dead_Tick(fTimeDelta);
+		break;
 	}
 }
 
+
+void CPlayer::None_Tick(_float fTimeDelta)
+{
+	m_fNoneTimeAcc += fTimeDelta;
+
+
+	if (4.f < m_fNoneTimeAcc && 9.f > m_fNoneTimeAcc)
+	{
+		CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+		Safe_AddRef(pGameInstance);
+
+
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_VSnatcher"), LEVEL_GAMEPLAY, TEXT("Layer_VSnatcher"))))
+			return;
+
+		Safe_Release(pGameInstance);
+
+		m_fNoneTimeAcc = 10.f;
+	}
+
+	if (15.f < m_fNoneTimeAcc)
+	{
+		m_TickStates.push_back(STATE_APPEAR);
+		m_bRenderSkip = false;
+		m_fNoneTimeAcc = 0.f;
+	}
+
+}
 
 void CPlayer::Idle_Tick(_float fTimeDelta)
 {
@@ -652,8 +697,22 @@ void CPlayer::Attacked_Tick(_float fTimeDelta)
 
 	if (1.f < m_fAttackedTimeAcc)
 	{
+		m_bAttackedBlnk = false;
+
 		m_TickStates.push_back(STATE_IDLE);
 		m_fAttackedTimeAcc = 0.f;
+		m_fAttackedBlnkTimeAcc = 0.f;
+	}
+
+	m_fAttackedBlnkTimeAcc += fTimeDelta;
+	if (0.1f < m_fAttackedBlnkTimeAcc)
+	{
+		if(m_bAttackedBlnk)
+			m_bAttackedBlnk = false;
+		else
+			m_bAttackedBlnk = true;
+
+		m_fAttackedBlnkTimeAcc = 0.f;
 	}
 
 }
@@ -727,6 +786,8 @@ void CPlayer::FoxMask_Tick(_float fTimeDelta)
 	if (!m_bFoxMask)
 		return;
 	
+
+
 
 	m_fFoxMaskTimeAcc += fTimeDelta;
 	if (10.f < m_fFoxMaskTimeAcc || "Mask_Fox" != m_pSockatCom->Get_SlotTag(SLOT_HAT))
@@ -898,6 +959,22 @@ void CPlayer::Stay_Tick(_float fTimeDelta)
 	}
 
 
+	// For. FoxMask;
+	if (m_bFoxMask)
+	{
+		if (1.f > m_bDarkRatio)
+			m_bDarkRatio += fTimeDelta;
+		else
+			m_bDarkRatio = 1.f;
+	}
+	else
+	{
+		if (0.f < m_bDarkRatio)
+			m_bDarkRatio -= fTimeDelta;
+		else
+			m_bDarkRatio = 0.f;
+	}
+
 
 }
 
@@ -905,6 +982,52 @@ void CPlayer::Talk_Tick(_float fTimeDelta)
 {
 
 	Talk_Input(fTimeDelta);
+}
+
+void CPlayer::Dead_Tick(_float fTimeDelta)
+{
+	m_fResponTimeAcc += fTimeDelta;
+
+	if (5.f < m_fResponTimeAcc)
+	{
+		CUIManager::Get_Instance()->OnOff_Loading(false);
+		m_fResponTimeAcc = 0.f;
+
+
+		// 가장 최근에 친 종으로 이동한다.
+		_uint iNaviIndex = 0;
+		_float3 vNaviPos; ZeroMemory(&vNaviPos, sizeof(_float3));
+		CGameManager::Get_Instance()->Get_NaviPoint(&iNaviIndex, &vNaviPos);
+
+		m_pNavigationCom->Set_NaviIndex(iNaviIndex);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(XMLoadFloat3(&vNaviPos), 1.f));
+
+		m_pTransformCom->ResetGravity();
+		m_TickStates.push_back(STATE_IDLE);
+
+
+		m_CreatureDesc.iHP = m_CreatureDesc.iMaxHP - 1;
+		CUIManager::Get_Instance()->Set_Hp(m_CreatureDesc.iHP);
+	}
+}
+
+void CPlayer::Appear_Tick(_float fTimeDelta)
+{
+	m_fNoneTimeAcc += fTimeDelta;
+
+
+	if (3.5f < m_fNoneTimeAcc && 9.f > m_fNoneTimeAcc)
+	{
+		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		vPos.y += 0.5f;
+		CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.4f, 0.4f, 0.4f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 3.f, false, 0.f, 0.f, 1.5f,
+			10, 1.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+
+
+		m_fNoneTimeAcc = 10.f;
+	}
+
+
 }
 
 
@@ -919,12 +1042,21 @@ void CPlayer::State_Input(_float fTimeDelta)
 		CToolManager::Get_Instance()->Resul_Level(LEVEL_BOSS);
 		RELEASE_INSTANCE(CGameInstance);
 		return;
+	
 	}
 	if (pGameInstance->Key_Down(DIK_N))
 	{
 		//_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 		//CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_pNavigationCom->Get_CurCellIndex(), 15);
 
+		
+	}
+	if (pGameInstance->Key_Down(DIK_M))
+	{
+		if (m_bChit)
+			m_bChit = false;
+		else
+			m_bChit = true;
 	}
 
 
@@ -1997,8 +2129,11 @@ void CPlayer::LateTick(_float fTimeDelta)
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOWDEPTH, this);
 
 
-			if(!m_bDark)
+			if (!m_bDark)
+			{
 				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+				// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
+			}
 			else
 				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 			
@@ -2078,6 +2213,10 @@ void CPlayer::Calcul_State(_float fTimeDelta)
 		m_pTransformCom->Set_CurSpeed(0.f);
 	}
 	else if (STATE_APPEAR == m_eState)
+	{
+		m_pTransformCom->Set_CurSpeed(0.f);
+	}
+	else if (STATE_DEAD == m_eState)
 	{
 		m_pTransformCom->Set_CurSpeed(0.f);
 	}
@@ -2176,6 +2315,11 @@ HRESULT CPlayer::Render()
 	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Set_RawValue("g_fDarkRatio", &m_bDarkRatio, sizeof(float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Set_RawValue("g_bAttackedBlnk", &m_bAttackedBlnk, sizeof(_bool))))
+		return E_FAIL;
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
@@ -2258,7 +2402,8 @@ HRESULT CPlayer::Render_ShadowDepth()
 HRESULT CPlayer::Choose_Pass(_int iIndex)
 {
 
-	//CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	{
+			//CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	//if (FAILED(m_pShaderCom->Set_RawValue("g_WorldMatrixInverse", &m_pTransformCom->Get_WorldMatrixInverse(), sizeof(_float4x4))))
 	//	return E_FAIL;
@@ -2282,6 +2427,8 @@ HRESULT CPlayer::Choose_Pass(_int iIndex)
 
 	//if (FAILED(m_pModelCom->Render(m_pShaderCom, iIndex, 9)))
 	//	return E_FAIL;
+	}
+
 
 
 
@@ -2307,9 +2454,6 @@ HRESULT CPlayer::Choose_Pass(_int iIndex)
 
 
 			iPassIndex = 1;
-
-			if (FAILED(m_pModelCom->Render(m_pShaderCom, iIndex, iPassIndex)))
-				return E_FAIL;
 		}
 		break;
 		default:
@@ -2696,6 +2840,27 @@ void CPlayer::Attacked()
 {
 	m_TickStates.push_back(STATE_ATTACKED);
 	m_bAttacked = true;
+
+	if(!m_bChit)
+		--m_CreatureDesc.iHP;
+
+	CUIManager::Get_Instance()->OnOff_HP(true);
+
+	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	vPos.y += 0.5f;
+	CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.4f, 0.4f, 0.4f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 3.f, false, 0.f, 0.f, 1.5f,
+		5, 1.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+
+	if (1 > m_CreatureDesc.iHP)
+	{
+		// 죽음
+		m_CreatureDesc.iHP = 0;
+		CUIManager::Get_Instance()->OnOff_Loading(true);
+		m_TickStates.push_back(STATE_DEAD);
+	}
+
+	CUIManager::Get_Instance()->Set_Hp(m_CreatureDesc.iHP);
+
 }
 
 void CPlayer::Find_NearstMonster()

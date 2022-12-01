@@ -52,7 +52,7 @@ public: /* For.Object_Manager */
 	HRESULT Add_Prototype(const _tchar* pPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_GameObjectToLayer(const _tchar* pPrototypeTag, _uint iLevelIndex, const _tchar* pLayerTag, void* pArg = nullptr);
 	HRESULT Add_GameObjectToLayer(const _tchar * pPrototypeTag, _uint iLevelIndex, const _tchar * pLayerTag, CGameObject** pObj, void * pArg);
-
+	list<CGameObject*>* Get_LayerObjs(_uint iLevelIndex, const _tchar * pLayerTag);
 
 public: /*For.Component_Manager*/
 	HRESULT Add_Prototype(_uint iLevelIndex, const _tchar* pPrototypeTag, class CComponent* pPrototype);
@@ -110,6 +110,8 @@ public:
 	void Get_WinToWorldPos(_float fX, _float fY, _float3* Out_vPos, _float3* Out_vDir);
 
 public: /* For. Target_Manager */
+	HRESULT Bind_SRV(const _tchar* pTargetTag, class CShader* pShader, const char* pConstantName);
+
 	void Set_WipsData(_float* pWispRatios, _float4* pWispPoss, _int pWispNum);
 	void Set_Dark(_bool bDark);
 	_bool Get_Dark();

@@ -43,6 +43,12 @@ HRESULT CUI_Health::Initialize(void * pArg)
 	 m_UiInfo.fY = m_vOffPos.y;
 
 
+	 m_fOriSizeX = m_UiInfo.fSizeX;
+	 m_fOriSizeY = m_UiInfo.fSizeY;
+	 m_fIdleMaxSizeX = m_UiInfo.fSizeX + 40.f;
+	 m_fIdleMaxSizeY = m_UiInfo.fSizeY + 40.f;
+	 m_fIdleSpeed = 1.f;
+
 	return S_OK;
 }
 
@@ -55,7 +61,7 @@ void CUI_Health::Tick(_float fTimeDelta)
 	{
 		m_fTimeAcc += fTimeDelta;
 
-		if (10.f < m_fTimeAcc)
+		if (10.f < m_fTimeAcc && !(3 > m_iHp))
 		{
 			m_bIsOn = false;
 			m_fTimeAcc = 0.f;
@@ -68,14 +74,14 @@ void CUI_Health::Tick(_float fTimeDelta)
 
 	if (!m_bIsOn)
 	{
-		m_UiInfo.fY -= 300.f * fTimeDelta;
+		m_UiInfo.fY -= 600.f * fTimeDelta;
 
 		if (m_UiInfo.fY < m_vOffPos.y)
 			m_UiInfo.fY = m_vOffPos.y;
 	}
 	else
 	{
-		m_UiInfo.fY += 300.f * fTimeDelta;
+		m_UiInfo.fY += 600.f * fTimeDelta;
 
 		if (m_UiInfo.fY > m_vOnPos.y)
 			m_UiInfo.fY = m_vOnPos.y;
@@ -83,6 +89,25 @@ void CUI_Health::Tick(_float fTimeDelta)
 
 	RELEASE_INSTANCE(CGameInstance);
 
+
+	if (2 == m_iHp)
+	{
+		m_fIdleSpeed = 1.f;
+		DangerTick(fTimeDelta);
+	}
+	else if (1 == m_iHp)
+	{
+		m_fIdleSpeed = 2.f;
+		DangerTick(fTimeDelta);
+	}
+	else
+	{
+		m_UiInfo.fSizeX = m_fOriSizeX;
+		m_UiInfo.fSizeY = m_fOriSizeY;
+	}
+
+
+	m_fRaito = m_UiInfo.fSizeX / m_fIdleMaxSizeX;
 
 	__super::Tick(fTimeDelta);
 }
@@ -109,16 +134,56 @@ HRESULT CUI_Health::Render()
 	m_pShaderCom->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
 	m_pShaderCom->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
 
-	if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture", 3)))
+	if (FAILED(m_pTextureCom->Set_SRV(m_pShaderCom, "g_DiffuseTexture", m_iHp)))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+
+	_uint iPassIndex = 0;
+	if (3 > m_iHp)
+	{
+		m_pShaderCom->Set_RawValue("g_fRatio", &m_fRaito, sizeof(_float));
+		iPassIndex = 8;
+	}
+
+
+	if (FAILED(m_pShaderCom->Begin(iPassIndex)))
 		return E_FAIL;
 
 	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_Health::DangerTick(_float fTimeDelta)
+{
+
+
+	if (m_fIdleMaxSizeX < m_UiInfo.fSizeX)
+	{
+		m_bIdleChange = true;
+		m_UiInfo.fSizeX = m_fIdleMaxSizeX;
+		m_UiInfo.fSizeY = m_fIdleMaxSizeY;
+	}
+	if (m_fOriSizeX > m_UiInfo.fSizeX)
+	{
+		m_bIdleChange = false;
+		m_UiInfo.fSizeX = m_fOriSizeX;
+		m_UiInfo.fSizeY = m_fOriSizeY;
+	}
+
+
+	if (m_bIdleChange)
+	{
+		m_UiInfo.fSizeX -= m_fIdleSpeed;
+		m_UiInfo.fSizeY -= m_fIdleSpeed;
+	}
+	else
+	{
+		m_UiInfo.fSizeX += m_fIdleSpeed;
+		m_UiInfo.fSizeY += m_fIdleSpeed;
+	}
+
 }
 
 HRESULT CUI_Health::Ready_Components()

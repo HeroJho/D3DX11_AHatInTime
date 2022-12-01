@@ -180,6 +180,7 @@
     <ClInclude Include="..\public\CutSceneManager.h" />
     <ClInclude Include="..\public\DataManager.h" />
     <ClInclude Include="..\public\Diamond.h" />
+    <ClInclude Include="..\public\DiamondW.h" />
     <ClInclude Include="..\public\ExPlo.h" />
     <ClInclude Include="..\public\EyeAttackGround.h" />
     <ClInclude Include="..\public\FinLaser.h" />
@@ -245,6 +246,8 @@
     <ClInclude Include="..\Public\UI_ItemButton.h" />
     <ClInclude Include="..\Public\UI_Item_Inven.h" />
     <ClInclude Include="..\public\UI_Item_Inven_Slot.h" />
+    <ClInclude Include="..\public\UI_Loading.h" />
+    <ClInclude Include="..\public\UI_LoadingStart.h" />
     <ClInclude Include="..\public\UI_Number.h" />
     <ClInclude Include="..\public\UI_Shop.h" />
     <ClInclude Include="..\public\UI_ShopMenu.h" />
@@ -282,6 +285,7 @@
     <ClCompile Include="..\private\CutSceneManager.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />
     <ClCompile Include="..\private\Diamond.cpp" />
+    <ClCompile Include="..\private\DiamondW.cpp" />
     <ClCompile Include="..\private\ExPlo.cpp" />
     <ClCompile Include="..\private\EyeAttackGround.cpp" />
     <ClCompile Include="..\private\FinLaser.cpp" />
@@ -347,6 +351,8 @@
     <ClCompile Include="..\Private\UI_ItemButton.cpp" />
     <ClCompile Include="..\Private\UI_Item_Inven.cpp" />
     <ClCompile Include="..\private\UI_Item_Inven_Slot.cpp" />
+    <ClCompile Include="..\private\UI_Loading.cpp" />
+    <ClCompile Include="..\private\UI_LoadingStart.cpp" />
     <ClCompile Include="..\private\UI_Number.cpp" />
     <ClCompile Include="..\private\UI_Shop.cpp" />
     <ClCompile Include="..\private\UI_ShopMenu.cpp" />

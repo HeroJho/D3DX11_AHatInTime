@@ -274,8 +274,11 @@
     <Filter Include="02.GameObjects\Map\Fire">
       <UniqueIdentifier>{8d723773-05b5-4987-b910-1a835e161abe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03.UI\SceneChange">
+    <Filter Include="03.UI\Loading">
       <UniqueIdentifier>{ff5a9bec-80e8-4acc-9bcd-3b9f35572abb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.UI\Loading\Start">
+      <UniqueIdentifier>{2aaf430f-4f8c-427c-9724-94b84a5a40f2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -588,6 +591,15 @@
     <ClInclude Include="..\public\Fire.h">
       <Filter>02.GameObjects\Map\Fire</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UI_Loading.h">
+      <Filter>03.UI\Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UI_LoadingStart.h">
+      <Filter>03.UI\Loading\Start</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\DiamondW.h">
+      <Filter>02.GameObjects\Item\Diamond</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -883,6 +895,15 @@
     </ClCompile>
     <ClCompile Include="..\private\Fire.cpp">
       <Filter>02.GameObjects\Map\Fire</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_Loading.cpp">
+      <Filter>03.UI\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\UI_LoadingStart.cpp">
+      <Filter>03.UI\Loading\Start</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\DiamondW.cpp">
+      <Filter>02.GameObjects\Item\Diamond</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

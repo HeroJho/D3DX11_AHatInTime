@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 
 #include "ToolManager.h"
+#include "UIManager.h"
 
 #include "Level_Logo.h"
 #include "Level_GamePlay.h"
@@ -28,6 +29,8 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevel)
 	m_pLoader = CLoader::Create(m_pDevice, m_pContext, eNextLevel);
 	if (nullptr == m_pLoader)
 		return E_FAIL;
+
+	CUIManager::Get_Instance()->OnOff_Loading(true);
 
 	return S_OK;
 }

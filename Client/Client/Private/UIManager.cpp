@@ -15,6 +15,7 @@
 #include "UI_SmallSpeechBubble.h"
 #include "UI_Health.h"
 #include "WhiteBoard.h"
+#include "UI_Loading.h"
 
 
 
@@ -222,6 +223,33 @@ HRESULT CUIManager::Make_WhiteBoard()
 	return S_OK;
 }
 
+HRESULT CUIManager::Make_Loading()
+{
+	if (nullptr != m_pLoading)
+		Safe_Release(m_pLoading);
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CUI::UIINFODESC UiInfoDesc;
+	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+	UiInfoDesc.fSizeX = g_iWinSizeX;
+	UiInfoDesc.fSizeY = g_iWinSizeY;
+	UiInfoDesc.fX = g_iWinSizeX * 0.5f;
+	UiInfoDesc.fY = g_iWinSizeY * 0.5f;
+	UiInfoDesc.pDesc = nullptr;
+
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_UI_Loading"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+		return E_FAIL;
+
+	m_pLoading = (CUI_Loading*)pObj;
+	Safe_AddRef(m_pLoading);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
 
 
 void CUIManager::OnOff_DiamondScore(_bool bBool)
@@ -237,6 +265,11 @@ void CUIManager::OnOff_Inven(_bool bBool)
 void CUIManager::OnOff_HP(_bool bBool)
 {
 	m_pHp->OnOff(bBool);
+}
+
+void CUIManager::OnOff_Loading(_bool bBool)
+{
+	m_pLoading->Set_Start(bBool);
 }
 
 
@@ -286,6 +319,22 @@ void CUIManager::Close_Shop()
 	if (nullptr == m_pShop)
 		return;
 	m_pShop->Close();
+}
+
+_uint CUIManager::Get_Hp()
+{
+	if (nullptr == m_pHp)
+		return 10;
+
+	return m_pHp->Get_Hp();
+}
+
+void CUIManager::Set_Hp(_uint iHp)
+{
+	if (nullptr == m_pHp)
+		return;
+
+	m_pHp->Set_Hp(iHp);
 }
 
 
@@ -376,6 +425,7 @@ void CUIManager::Make_WitchChargEffect()
 void CUIManager::Free()
 {
 
+	Safe_Release(m_pLoading);
 	Safe_Release(m_pHp);
 	Safe_Release(m_pSpeechBubble);
 	Safe_Release(m_pSmallSpeechBubble);

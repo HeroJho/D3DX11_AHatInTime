@@ -47,7 +47,7 @@ HRESULT CLevel_Ending::Initialize()
 		return E_FAIL;
 
 
-
+	CUIManager::Get_Instance()->OnOff_Loading(false);
 
 	return S_OK;
 }
