@@ -87,7 +87,7 @@ HRESULT CPlayer::Initialize(void * pArg)
 	m_CreatureDesc.iHP = m_CreatureDesc.iMaxHP;
 	CUIManager::Get_Instance()->Set_Hp(m_CreatureDesc.iHP);
 
-
+	
 	return S_OK;
 }
 
@@ -477,7 +477,7 @@ void CPlayer::None_Tick(_float fTimeDelta)
 {
 	m_fNoneTimeAcc += fTimeDelta;
 
-
+	CUIManager::Get_Instance()->OnOff_HP(false);
 	if (4.f < m_fNoneTimeAcc && 9.f > m_fNoneTimeAcc)
 	{
 		CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
@@ -1016,7 +1016,7 @@ void CPlayer::Appear_Tick(_float fTimeDelta)
 {
 	m_fNoneTimeAcc += fTimeDelta;
 
-
+	
 	if (3.5f < m_fNoneTimeAcc && 9.f > m_fNoneTimeAcc)
 	{
 		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
@@ -1392,8 +1392,12 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 
 	if (pGameInstance->Key_Down(DIK_SPACE))
 	{
-		m_TickStates.push_back(STATE_DOUBLEJUMP);
-		m_pTransformCom->DoubleJump(m_fJumpPower);
+		if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+		{
+			m_TickStates.push_back(STATE_DOUBLEJUMP);
+			m_pTransformCom->DoubleJump(m_fJumpPower);
+		}
+
 	}
 	else if (pGameInstance->Key_Down(DIK_LCONTROL))
 	{
@@ -1775,6 +1779,7 @@ void CPlayer::IdleGetItem_Input(_float fTimeDelta)
 		m_TickStates.push_back(STATE_ENDGETITEM);
 		m_pSockatCom->Remove_Sockat(SLOT_HAND);
 		//CCamManager::Get_Instance()->End_CutScene();
+		CUIManager::Get_Instance()->OnOff_Inven(true);
 	}
 
 
@@ -2120,10 +2125,11 @@ void CPlayer::LateTick(_float fTimeDelta)
 	if (!m_bRenderSkip)
 	{
 		m_pSockatCom->Tick(fTimeDelta, m_pTransformCom);
-		if(m_bDark)
-			m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom, CRenderer::RENDER_NONLIGHT);
-		else
-			m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom);
+		//if(m_bDark)
+		//	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom, CRenderer::RENDER_NONLIGHT);
+		//else
+		//	m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom, CRenderer::RENDER_NONLIGHT);
+		m_pSockatCom->LateTick(fTimeDelta, m_pRendererCom, CRenderer::RENDER_NONLIGHT);
 
 		if (STATE_NONE != m_eState)
 		{
@@ -2235,7 +2241,13 @@ void CPlayer::Check_EndAnim()
 	switch (m_eState)
 	{
 	case STATE_APPEAR:
+	{
 		m_TickStates.push_back(STATE_IDLE);
+		CUIManager::Get_Instance()->OnOff_HP(true);
+		CUIManager::Get_Instance()->OnOff_DiamondScore(true);
+		CUIManager::Get_Instance()->OnOff_Inven(true);
+	}
+		
 		break;
 	case STATE_ATTACK_1:
 		m_TickStates.push_back(STATE_READYATTACK);
@@ -2657,18 +2669,34 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 
 	if (!lstrcmp(cItemName, TEXT("Ori_Hat")))
 	{
-		lstrcpy(PartsDesc.m_szModelName, TEXT("Ori_Hat"));
-		PartsDesc.vPos = _float3(0.f, 0.f, -0.63f);
-		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
-		PartsDesc.vRot = _float3(-90.f, 0, 0);
-		PartsDesc.pOwner = this;
+		if (SLOT_HAND == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Ori_Hat"));
+			PartsDesc.vPos = _float3(-0.33f, -0.2f, -0.4f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
+			PartsDesc.pOwner = this;
+			PartsDesc.bBlur = true;
+		}
+		else if (SLOT_HAT == eSlot)
+		{
+			lstrcpy(PartsDesc.m_szModelName, TEXT("Ori_Hat"));
+			PartsDesc.vPos = _float3(0.f, 0.f, -0.63f);
+			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
+			PartsDesc.vRot = _float3(-90.f, 0, 0);
+			PartsDesc.pOwner = this;
 
 
-		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.0f, 0.7f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.8f, 0.8f, 0.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 1.5f, false, 0.f, 0.f, 0.75f,
-			7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
-		CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
-			5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.0f, 0.7f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.8f, 0.8f, 0.8f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 1.5f, false, 0.f, 0.f, 0.75f,
+				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
+				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+		}
+
+
+
+
 
 	}
 	else if (!lstrcmp(cItemName, TEXT("Sprint_Hat")))
@@ -2680,6 +2708,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
+			PartsDesc.bBlur = true;
 		}
 		else if(SLOT_HAT == eSlot)
 		{
@@ -2706,6 +2735,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
+			PartsDesc.bBlur = true;
 		}
 		else if(SLOT_HAT == eSlot)
 		{
@@ -2731,6 +2761,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
+			PartsDesc.bBlur = true;
 		}
 		else if (SLOT_HAT == eSlot)
 		{
@@ -2756,6 +2787,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
+			PartsDesc.bBlur = true;
 		}
 		else if (SLOT_HAT == eSlot)
 		{
@@ -2792,6 +2824,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vScale = _float3(0.5f, 0.5f, 0.5f);
 		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
 		PartsDesc.pOwner = this;
+		PartsDesc.bBlur = true;
 	}
 	else if (!lstrcmp(cItemName, TEXT("yarn_ui_hover")))
 	{
@@ -2800,6 +2833,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vScale = _float3(0.5f, 0.5f, 0.5f);
 		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
 		PartsDesc.pOwner = this;
+		PartsDesc.bBlur = true;
 	}
 	else if (!lstrcmp(cItemName, TEXT("yarn_ui_ice")))
 	{
@@ -2808,6 +2842,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vScale = _float3(0.5f, 0.5f, 0.5f);
 		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
 		PartsDesc.pOwner = this;
+		PartsDesc.bBlur = true;
 	}
 	else if (!lstrcmp(cItemName, TEXT("yarn_ui_sprint")))
 	{
@@ -2816,6 +2851,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vScale = _float3(0.5f, 0.5f, 0.5f);
 		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
 		PartsDesc.pOwner = this;
+		PartsDesc.bBlur = true;
 	}
 	else if (!lstrcmp(cItemName, TEXT("science_owlbrew_remade")))
 	{
@@ -2824,6 +2860,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vScale = _float3(1.f, 1.f, 1.f);
 		PartsDesc.vRot = _float3(180.f, 0.f, 0.f);
 		PartsDesc.pOwner = this;
+		PartsDesc.bBlur = true;
 
 		CUIManager::Get_Instance()->Make_WitchChargEffect();
 	}

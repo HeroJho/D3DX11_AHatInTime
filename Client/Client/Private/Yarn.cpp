@@ -51,6 +51,8 @@ HRESULT CYarn::Initialize(void * pArg)
 		Init_Pigic_Bounding(m_Desc.fJumpPow, m_Desc.fDirPow);
 	}
 
+	m_fMinY = XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	m_fMaxY = m_fMinY + 0.3f;
 
 	return S_OK;
 }
@@ -61,8 +63,10 @@ void CYarn::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-
-	Tick_Pigic_Bounding(fTimeDelta);
+	if (nullptr != m_pNavigationCom)
+		Tick_Pigic_Bounding(fTimeDelta);
+	else
+		Tick_Hover(fTimeDelta);
 
 }
 
@@ -166,6 +170,27 @@ void CYarn::Use_Item()
 
 
 
+}
+
+void CYarn::Tick_Hover(_float fTimeDelta)
+{
+	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float fY = XMVectorGetY(vPos);
+
+	if (m_fMaxY < fY)
+		m_bChangeHover = true;
+	if (m_fMinY > fY)
+		m_bChangeHover = false;
+
+	if (m_bChangeHover)
+		fY -= fTimeDelta * 0.1f;
+	else
+		fY += fTimeDelta * 0.1f;
+
+	vPos = XMVectorSetY(vPos, fY);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+
+	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.5f, fTimeDelta);
 }
 
 void CYarn::Init_Pigic_Bounding(_float OriJumpPow, _float OriDirPow)

@@ -44,6 +44,7 @@ public:
 private:
 	TCHAR					m_cModelTag[MAX_PATH];
 	_float3					m_vAxis;
+	_bool					m_bBlur = false;
 
 	class CWitchChargEffect* m_pWitchChargEffect = nullptr;
 

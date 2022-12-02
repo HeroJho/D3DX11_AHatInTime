@@ -63,7 +63,7 @@ void CItem::LateTick(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 	if (true == isDraw)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 	}
 	
 }
@@ -102,7 +102,7 @@ HRESULT CItem::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 0)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 7)))
 			return E_FAIL;
 	}
 

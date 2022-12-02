@@ -91,7 +91,7 @@ public:
 	_bool Get_Musroom() { return m_bInMushroom; }
 
 private:
-	_uint m_iMonsterVaultCount = 1; // 7
+	_uint m_iMonsterVaultCount = 5; // 5
 	_bool m_bModVault = false;
 	_bool m_bJumpMapvalut = false;
 	_bool m_bJumpMapvalut2 = false;

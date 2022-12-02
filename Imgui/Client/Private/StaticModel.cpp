@@ -249,14 +249,16 @@ void CStaticModel::LateTick(_float fTimeDelta)
 	
 	if (CMapManager::Get_Instance()->Get_ColMode())
 	{
+		_matrix mScale = m_pTransformCom->Get_WorldMatrix();
 		if (!lstrcmp(m_cModelTag, TEXT("Fiona")))
 		{
-			_matrix mScale = m_pTransformCom->Get_WorldMatrix();
 			mScale.r[0] = XMVector3Normalize(mScale.r[0]);
 			mScale.r[1] = XMVector3Normalize(mScale.r[1]);
 			mScale.r[2] = XMVector3Normalize(mScale.r[2]);
 			Tick_Col(mScale);
 		}
+		else
+			Tick_Col(mScale);
 	}
 
 

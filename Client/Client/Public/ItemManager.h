@@ -84,7 +84,7 @@ private:
 	list<HATINFODESC>	m_pHats;
 	list<ITEMINFODESC>	m_pItems;
 
-
+	_uint m_iMakeValue = 2;
 
 private:
 	ID3D11Device* m_pDevice			= nullptr;

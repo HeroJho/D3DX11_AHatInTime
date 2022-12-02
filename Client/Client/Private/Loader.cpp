@@ -965,9 +965,10 @@ HRESULT CLoader::Loading_UI()
 		return E_FAIL;
 	/* For.Prototype_Component_Texture_Icon_IceYarn */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Icon_IceYarn"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/yarn_ui_ice.dds"), 1))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Inven/yarn_ui_hover.dds"), 1))))
 		return E_FAIL;
 
+	
 	/* For.Prototype_Component_Texture_Number */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Number"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Number/number%d.dds"), 10))))

@@ -33,6 +33,7 @@ public:
 
 public:
 	virtual void Use_Item() override;
+	void Tick_Hover(_float fTimeDelta);
 
 public:
 	void Init_Pigic_Bounding(_float OriJumpPow, _float OriDirPow);
@@ -49,6 +50,9 @@ private:
 	_float m_fJumpPower = 0.f;
 	_float m_fDirPower = 0.f;
 
+	_float m_fMaxY = 0.f;
+	_float m_fMinY = 0.f;
+	_bool m_bChangeHover = false;
 
 protected:
 	HRESULT Ready_Components();

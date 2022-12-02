@@ -75,6 +75,16 @@ void CFlask::Tick(_float fTimeDelta)
 		_vector vRightDir =  XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMVector3Normalize(vDir));
 		m_pTransformCom->Go_Dir(vDir, m_Desc.fDirPow, fTimeDelta, m_pNavigationCom);
 		m_pTransformCom->Turn(vRightDir, 10.f, fTimeDelta);
+
+
+		m_fParticleTimeAcc += fTimeDelta;
+		// if (0.1f < m_fParticleTimeAcc)
+		{
+			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_star_shuriken"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.1f, 0.1f, 0.1f), _float3(0.05f, 0.05f, 0.05f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.f, 0.f, false, 0.f, 0.f, 0.5f,
+				1, 0.3f, 0.05f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), CParticle::TYPE_TEXTURE);
+			m_fParticleTimeAcc = 0.f;
+		}
 	}
 
 }

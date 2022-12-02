@@ -46,6 +46,8 @@ HRESULT CParts::Initialize(void * pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 
 
+	m_bBlur = Desc->bBlur;
+
 
 	return S_OK;
 }
@@ -63,11 +65,6 @@ void CParts::LateTick(_float fTimeDelta)
 		return;
 
 	// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
-
-
-
-
-
 }
 
 HRESULT CParts::Render()
@@ -92,7 +89,7 @@ HRESULT CParts::Render()
 	RELEASE_INSTANCE(CGameInstance);
 
 
-	_bool bBlur = false;
+	_bool bBlur = m_bBlur;
 	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
 		return E_FAIL;
 

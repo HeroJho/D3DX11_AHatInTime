@@ -154,7 +154,7 @@ void CUI_Item_Inven_Slot::Match_TextureWithModelName()
 	}
 	else if (!lstrcmp(m_pIconTag, TEXT("Prototype_Component_Texture_Icon_IceYarn")))
 	{
-		lstrcpy(m_pItemModelName, TEXT("yarn_ui_ice"));
+		lstrcpy(m_pItemModelName, TEXT("yarn_ui_hover"));
 		lstrcpy(m_pHatModelName, TEXT("Ori_Hat"));
 	}
 	else if (!lstrcmp(m_pIconTag, TEXT("Prototype_Component_Texture_Foxmask")))

@@ -58,6 +58,8 @@ private:
 
 	class CWitchChargEffect* m_pWitchChargEffect = nullptr;
 
+	_float m_fParticleTimeAcc = 0.f;
+
 protected:
 	HRESULT Ready_Components();
 

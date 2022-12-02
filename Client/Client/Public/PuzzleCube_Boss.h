@@ -59,6 +59,7 @@ private:
 
 	_bool					m_bOn = false;
 	_bool					m_bPreOn = false;
+	_bool					m_Pushed = false;
 
 private:
 	CShader*				m_pShaderCom = nullptr;

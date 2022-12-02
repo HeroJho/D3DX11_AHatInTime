@@ -161,7 +161,6 @@ void CPuzzleCube_Boss::LateTick(_float fTimeDelta)
 		m_bPreOn = m_bOn;
 		m_bOn = true;
 	}
-
 	else
 	{
 		m_bPreOn = m_bOn;
@@ -169,12 +168,19 @@ void CPuzzleCube_Boss::LateTick(_float fTimeDelta)
 	}
 
 
-	if (m_bOn && !m_bPreOn)
+	if (m_bOn && !m_bPreOn && !m_Pushed)
 	{
 		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 		vPos.y += 0.3f;
 		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 4.f, false, 0.f, 0.f, 2.f,
-			20, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+			5, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+	}
+	else if (m_Pushed)
+	{
+		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		vPos.y += 0.3f;
+		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 0.f, false, 0.f, 0.f, 2.f,
+			1, 0.3f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 	}
 
 
@@ -195,6 +201,10 @@ void CPuzzleCube_Boss::LateTick(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 
 	Compute_CamZ(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+
+
+
+	m_Pushed = false;
 }
 
 HRESULT CPuzzleCube_Boss::Render()
@@ -311,6 +321,7 @@ void CPuzzleCube_Boss::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 			m_pTransformCom->PushMeX(m_pTransformCom->Get_State(CTransform::STATE_POSITION), Desc.MyDesc.vSize.x,
 				pPlayerTran->Get_State(CTransform::STATE_POSITION), Desc.OtherDesc.vSize.x, m_pNavigationCom);
 
+			m_Pushed = true;
 		}
 	}
 

@@ -110,14 +110,14 @@ HRESULT CItemManager::Make_Hat(TCHAR * pHatModelName, TCHAR* pItemModelName)
 {
 	for (auto& pItem : m_pItems)
 	{
-		if (!lstrcmp(pItem.szModelName, pItemModelName) && 0 < pItem.iCount)
+		if (!lstrcmp(pItem.szModelName, pItemModelName) && m_iMakeValue <= pItem.iCount)
 		{
 			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 			CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 			RELEASE_INSTANCE(CGameInstance);
 
 			pPlayer->Get_Hat(pHatModelName);
-			pItem.iCount -= 1;
+			pItem.iCount -= m_iMakeValue;
 
 			CUIManager::Get_Instance()->Update_ItemInvenSlot();
 
