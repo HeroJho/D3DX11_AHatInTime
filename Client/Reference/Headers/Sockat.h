@@ -19,6 +19,7 @@ public:
 		_float3				vRot;
 		_float3				vScale;
 		class CGameObject*	pOwner = nullptr;
+
 		_bool				bBlur = false;
 
 	}PARTSDESC;

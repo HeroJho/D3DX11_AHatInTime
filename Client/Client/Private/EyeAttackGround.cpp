@@ -51,6 +51,14 @@ HRESULT CEyeAttackGround::Initialize(void * pArg)
 
 	m_vOriScale = _float3(2.f, 1.f, 2.f);
 
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Pickup_49.wav", SOUND_SNATEFFECT, g_fEffectSound + 0.2f);
+	RELEASE_INSTANCE(CGameInstance);
+
+
+	
+
 	return S_OK;
 }
 

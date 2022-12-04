@@ -18,6 +18,7 @@
 #include "SubSpider.h"
 #include "StatuePosed_Boss.h"
 
+#include "CheckPoint.h"
 #include "Parts.h"
 #include "Umbrella.h"
 #include "Yarn.h"
@@ -169,6 +170,10 @@ HRESULT CLoader::Loading_ForLogoLevel()
 	/* For.Prototype_GameObject_UI_Edit_Button */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Edit_Button"),
 		CUI_Edit_Button::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_UI_Edit_Button */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_CheckPoint"),
+		CCheckPoint::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 
@@ -980,6 +985,11 @@ HRESULT CLoader::Loading_UI()
 	/* For.Prototype_Component_Texture_X */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_X"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/locked_screen_x.dds"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Checkpoint */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Checkpoint"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/UI/Checkpoint.dds"), 1))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_ShopWindow */

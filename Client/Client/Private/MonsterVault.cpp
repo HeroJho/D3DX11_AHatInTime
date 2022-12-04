@@ -62,25 +62,7 @@ HRESULT CMonsterVault::Initialize(void * pArg)
 
 	// 몬스터 생성
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	CGameObject::CREATUREINFODESC ObjDesc;
-	ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
-	ObjDesc.iAT = 1;
-	ObjDesc.iMaxHP = 3;
-	ObjDesc.iHP = 3;
-
-	m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-
-	for (_uint i = 0; i < 5; ++i)
-	{
-		XMStoreFloat3(&ObjDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-		ObjDesc.iNaviIndex = m_iNaviIndex;
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Vault_Mad_Crow"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
-			return E_FAIL;
-	}
-
-	RELEASE_INSTANCE(CGameInstance);
 
 
 	return S_OK;
@@ -91,7 +73,7 @@ void CMonsterVault::Tick(_float fTimeDelta)
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 	__super::Tick(fTimeDelta);
 
-	if (30 > m_iSprintCount && m_Spr)
+	if (15 > m_iSprintCount && m_Spr)
 		Sprint_Tick(fTimeDelta);
 
 	switch (m_eState)
@@ -185,8 +167,15 @@ void CMonsterVault::Set_State(VAULT_STATE eState)
 	{
 		switch (m_eState)
 		{
-			//case Client::CMad_Crow::MONSTER_ATTACKED:
-			//	break;
+		case STATE_OPEN:
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Metal_groan1.wav", SOUND_EFFECT, g_fEffectSound + 0.2f);
+			RELEASE_INSTANCE(CGameInstance);
+		}
+		break;
+		default:
+			break;
 		}
 	}
 
@@ -216,6 +205,31 @@ void CMonsterVault::Set_Anim()
 void CMonsterVault::Idle_Tick(_float fTimeDelta)
 {
 
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (pGameInstance->Key_Down(DIK_M))
+	{
+		CGameObject::CREATUREINFODESC ObjDesc;
+		ZeroMemory(&ObjDesc, sizeof(CGameObject::CREATUREINFODESC));
+		ObjDesc.iAT = 1;
+		ObjDesc.iMaxHP = 3;
+		ObjDesc.iHP = 3;
+
+		m_iNaviIndex = CToolManager::Get_Instance()->Find_NaviIndex(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		for (_uint i = 0; i < 5; ++i)
+		{
+			XMStoreFloat3(&ObjDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+			ObjDesc.iNaviIndex = m_iNaviIndex;
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Vault_Mad_Crow"), LEVEL_GAMEPLAY, TEXT("Layer_Monster"), &ObjDesc)))
+				return;
+		}
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+
+
 	if (Check_OpenIf())
 	{
 		Set_State(STATE_OPEN);
@@ -238,10 +252,18 @@ void CMonsterVault::Open_Tick(_float fTimeDelta)
 			30, 0.f, 0.5f, 0.f, 0.f, 0.f, 1.f, 0.f, 1.f, 1.f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_TEXTURE);
 
 
-		CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_iNaviIndex, 1);
+
+		vPos.y += 2.f;
+		CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_sprint"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f));
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"DOTPLAT_DWN.wav", SOUND_EFFECT, g_fEffectSound + 0.2f);
+		pGameInstance->PlaySoundW(L"Pickup_51.wav", SOUND_PEFFECT, g_fEffectSound + 0.4f);
+		RELEASE_INSTANCE(CGameInstance);
 
 
 		m_fSprintItemTimeAcc = 0.f;
+		CGameManager::Get_Instance()->Get_Instance()->IncVir();
 	}
 
 }
@@ -274,6 +296,10 @@ void CMonsterVault::Sprint_Tick(_float fTimeDelta)
 
 		m_fSprintItemTimeAcc = 0.f;
 		++m_iSprintCount;
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Bloop.mp3", SOUND_ITEM, g_fEffectSound + 1.f);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 }
 

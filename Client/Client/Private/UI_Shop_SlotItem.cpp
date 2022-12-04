@@ -64,7 +64,13 @@ HRESULT CUI_Shop_SlotItem::Initialize(void * pArg)
 
 void CUI_Shop_SlotItem::Select_Slot()
 {
+	if (STATE_SELETED == m_eState)
+		return;
+
 	m_eState = STATE_SELETED;
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Hover Over Item.mp3", SOUND_UI, g_fEffectSound + 0.2f);
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 void CUI_Shop_SlotItem::UnSelect_Slot()
@@ -101,6 +107,8 @@ void CUI_Shop_SlotItem::Tick(_float fTimeDelta)
 
 void CUI_Shop_SlotItem::Selected_Tick(_float fTimeDelta)
 {
+
+
 	if (!m_bIdleStart)
 	{
 		if (m_fHoverSizeX > m_UiInfo.fSizeX)

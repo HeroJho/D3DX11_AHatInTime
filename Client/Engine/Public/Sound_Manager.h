@@ -26,8 +26,8 @@ public:
 	HRESULT Initialize();
 
 public:
-	void PlaySound(TCHAR* pSoundKey, const _uint& eID, const float& fVolume);
-	void PlayBGM(TCHAR * pSoundKey, const float& fVolume);
+	void PlaySound(TCHAR* pSoundKey, const _uint& eID, const float& fVolume, _bool bCheck = false);
+	void PlayBGM(TCHAR * pSoundKey, const float& fVolume, _bool bCheck = false);
 	void StopSound(const _uint& eID);
 	void StopAll();
 

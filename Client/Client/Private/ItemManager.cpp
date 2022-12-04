@@ -88,8 +88,8 @@ HRESULT CItemManager::Make_PopSprintItem(const TCHAR * szObjName, const TCHAR * 
 		_float fDegree = CToolManager::Get_Instance()->Get_RendomNum(0.f, 360.f);
 		_float3 vDir;
 		XMStoreFloat3(&vDir, XMVector3TransformNormal(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMMatrixRotationY(XMConvertToRadians(fDegree))));	
-		_float fJumpPow = CToolManager::Get_Instance()->Get_RendomNum(3.f, 8.f);
-		_float fDirPow = CToolManager::Get_Instance()->Get_RendomNum(4.f, 6.f);
+		_float fJumpPow = CToolManager::Get_Instance()->Get_RendomNum(3.f, 6.f);
+		_float fDirPow = CToolManager::Get_Instance()->Get_RendomNum(2.f, 3.f);
 
 		SPRINTDESC Desc;
 		Desc.bIsPigic = true;

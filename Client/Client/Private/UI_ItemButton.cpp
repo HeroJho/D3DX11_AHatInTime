@@ -74,6 +74,14 @@ void CUI_ItemButton::Tick(_float fTimeDelta)
 
 	if (UI_HOVER == m_eState)
 	{
+		if (!m_bHoverSound)
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Hat Wheel Hover Over.mp3", SOUND_UI, g_fUISound +0.5f);
+			RELEASE_INSTANCE(CGameInstance);
+			m_bHoverSound = true;
+		}
+
 		if (m_fHoverSize > m_UiInfo.fSizeX)
 		{
 			m_UiInfo.fSizeX += 2.f;
@@ -87,6 +95,8 @@ void CUI_ItemButton::Tick(_float fTimeDelta)
 	}
 	else
 	{
+		m_bHoverSound = false;
+
 		if (m_fHoverSize < m_UiInfo.fSizeX)
 		{
 			m_UiInfo.fSizeX -= 2.f;
@@ -232,7 +242,7 @@ HRESULT CUI_ItemButton::Ready_Components()
 
 void CUI_ItemButton::Handle_Hover()
 {
-	int a = 0;
+
 }
 
 void CUI_ItemButton::Handle_Down()
@@ -247,6 +257,10 @@ void CUI_ItemButton::Handle_Press()
 
 void CUI_ItemButton::Handle_Click()
 {
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Hat Wheel Selectr.mp3", SOUND_UI, g_fUISound + 0.5f);
+	RELEASE_INSTANCE(CGameInstance);
+
 	CItemManager::Get_Instance()->Change_Hat(m_pIconTag);
 }
 

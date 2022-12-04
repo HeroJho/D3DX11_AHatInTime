@@ -31,6 +31,10 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevel)
 		return E_FAIL;
 
 	CUIManager::Get_Instance()->OnOff_Loading(true);
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->StopSound(SOUND_BGM);
+	pGameInstance->PlaySoundW(L"Loading.ogg", SOUND_BGM, g_fEffectSound);
+	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
 }

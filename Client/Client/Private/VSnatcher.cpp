@@ -22,6 +22,7 @@
 #include "Toilet_Scream.h"
 #include "Splash_wave.h"
 #include "FinLaser.h"
+#include "GameManager.h"
 
 
 CVSnatcher::CVSnatcher(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -136,6 +137,7 @@ void CVSnatcher::Set_State(STATE eState)
 		case STATE_CURSESTART:
 			m_fCurseTimeAcc = 0.f;
 			m_iCurseCount = m_iCurseMaxCount;
+			CUIManager::Get_Instance()->On_Text(TEXT("작은 머리를 터트려 줄게. 하!"), 0.6f, 1.f, true, true);
 			break;
 		case STATE_CURSE:
 			break;
@@ -145,6 +147,7 @@ void CVSnatcher::Set_State(STATE eState)
 		case STATE_MAGICSTART:
 			break;
 		case STATE_MAGIC:
+			CUIManager::Get_Instance()->On_Text(TEXT("나한테 아주 딱이군!"), 0.6f, 1.f, true, true);
 			m_fMagicTimeAcc = 0.f;
 			Create_Magic(20);
 			break;
@@ -157,6 +160,7 @@ void CVSnatcher::Set_State(STATE eState)
 			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
 			break;
 		case STATE_SWIPSTART:
+			CUIManager::Get_Instance()->On_Text(TEXT("어떻게 할래? 하! 하!"), 0.6f, 1.f, true, true);
 			Create_Statue();
 			Create_CubeBox();
 			break;
@@ -168,7 +172,7 @@ void CVSnatcher::Set_State(STATE eState)
 		case STATE_SNAPHAT:
 			Choose_SnapHat();
 			m_fSnapHatTimeAcc = 0.f;
-			CUIManager::Get_Instance()->On_Text(TEXT("어떤 모자가 좋을까아~~"), 0.6f, 1.f, true, true);
+			CUIManager::Get_Instance()->On_Text(TEXT("어떤 모자가 좋을까아아!!!"), 0.6f, 1.f, true, true);
 			break;
 		case STATE_SIT:
 			Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
@@ -179,14 +183,12 @@ void CVSnatcher::Set_State(STATE eState)
 			m_fAttackedTimeAcc = 0.f;
 			m_fCanAttackedTimeAcc = 0.f;
 			CUIManager::Get_Instance()->On_Text(TEXT("*허억!* 잠깐...!"), 0.6f, 1.f, true, true);
+			CGameManager::Get_Instance()->Sound_SnatHurt();
 			break;
 		case STATE_DEAD:
 			m_fDeadTimeAcc = 0.f;
 			m_iFinLaserCount = 0;
 			break;
-
-
-
 		case STATE_CUT_0:
 			m_pModelCom->Set_AnimIndex(0);
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-67.41f, 10.f, 111.f, 1.f));
@@ -199,6 +201,7 @@ void CVSnatcher::Set_State(STATE eState)
 			vLookPos = Get_PaceLook(4.5f);
 
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(vCamPos, vLookPos, false);
+			CGameManager::Get_Instance()->Sound_BGM(2);
 		}
 			break;
 		case STATE_CUT_2:
@@ -216,6 +219,7 @@ void CVSnatcher::Set_State(STATE eState)
 			m_fCutTimeAcc_1 = 0.f;
 			m_iTalkCount = 0;
 			m_iCutIndex = 0;
+			m_bSound = false;
 
 			m_pModelCom->Set_AnimIndex(18);
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-24.41f, -0.3f, 46.115f, 1.f));
@@ -226,6 +230,7 @@ void CVSnatcher::Set_State(STATE eState)
 			m_fCutTimeAcc_1 = 0.f;
 			m_iTalkCount = 0;
 			m_iCutIndex = 0;
+			m_bSound = false;
 
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-64.93f, 0.076f, 21.48f, 1.f));
 
@@ -235,6 +240,7 @@ void CVSnatcher::Set_State(STATE eState)
 			m_fCutTimeAcc_1 = 0.f;
 			m_iTalkCount = 0;
 			m_iCutIndex = 0;
+			m_bSound = false;
 
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-60.36f, -10.07f, -71.66f, 1.f));
 			m_pTransformCom->Set_Scale(XMVectorSet(5.f, 5.f, 5.f, 1.f));
@@ -245,6 +251,7 @@ void CVSnatcher::Set_State(STATE eState)
 			m_fCutTimeAcc_1 = 0.f;
 			m_iTalkCount = 0;
 			m_iCutIndex = 0;
+			m_bSound = false;
 
 			Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
 			Equip_Sockat("Snatcher_Book", SLOT_HAND);
@@ -257,6 +264,7 @@ void CVSnatcher::Set_State(STATE eState)
 			m_fCutTimeAcc_1 = 0.f;
 			m_iTalkCount = 0;
 			m_iCutIndex = 0;
+			m_bSound = false;
 
 
 			// Equip_Sockat("Snatcher_Chair", SLOT_SPIN);
@@ -379,6 +387,9 @@ void CVSnatcher::Tick(_float fTimeDelta)
 {
 	_float fOriTime = fTimeDelta;
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_MONSTER);
+
+
+
 
 
 	switch (m_eState)
@@ -648,6 +659,7 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 					40, 20.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 4.f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 				CCamManager::Get_Instance()->Get_Cam()->Start_Shake(0.2f, 10.f, 0.07f);
 
+				pGameInstance->PlaySoundW(L"bombcake_explode.ogg", SOUND_BOSS1, g_fEffectSound + 0.2f);
 
 				list<CGameObject*>* pCubes = pGameInstance->Get_LayerObjs(LEVEL_BOSS, TEXT("Layer_Cube"));
 				if (pCubes)
@@ -655,7 +667,17 @@ void CVSnatcher::Tick_HoIt(_float fTimeDelta)
 					for (auto& pCube : *pCubes)
 						((CPuzzleCube_Boss*)pCube)->Attacked();
 				}
+				list<CGameObject*>* pStatu = pGameInstance->Get_LayerObjs(LEVEL_BOSS, TEXT("Layer_Statue"));
+				if (pStatu)
+				{
+					for (auto& pCube : *pStatu)
+					{
+						CTransform* pTran = (CTransform*)pCube->Get_ComponentPtr(TEXT("Com_Transform"));
+						pTran->Jump(5.f);
+					}
+				}
 
+				
 
 
 				RELEASE_INSTANCE(CGameInstance);
@@ -759,6 +781,10 @@ void CVSnatcher::Tick_SnapHat(_float fTimeDelta)
 
 		m_fSnapHatTimeAcc = 10.f;
 
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Dive_Start.ogg", SOUND_SNATEFFECT, g_fEffectSound);
+		pGameInstance->PlaySoundW(L"Snatcher_Hah.ogg", SOUND_SNAT, g_fSnatSound);
+		RELEASE_INSTANCE(CGameInstance);
 		// CUIManager::Get_Instance()->On_Text(TEXT("유후~"), 0.6f, 1.f, true, true);
 	}
 	else if (11.5f < m_fSnapHatTimeAcc && 19.f > m_fSnapHatTimeAcc)
@@ -852,6 +878,7 @@ void CVSnatcher::Tick_Cut_1(_float fTimeDelta)
 
 	if (0 == m_iCutIndex)
 	{
+		
 
 		if (1.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
 		{
@@ -861,21 +888,38 @@ void CVSnatcher::Tick_Cut_1(_float fTimeDelta)
 		else if (11.5f < m_fCutTimeAcc_1)
 		{
 			if (pGameInstance->Key_Down(DIK_E))
+			{
 				++m_iTalkCount;
+				m_bSound = false;
+			}
+
 
 			switch (m_iTalkCount)
 			{
 			case 0:
+			{
 				CUIManager::Get_Instance()->On_Text(TEXT("까아아아아아아아아~~~ 꿍!"), 1.f, 2.f, true);
+				if (!m_bSound)
+				{
+					pGameInstance->PlaySoundW(L"Snatcher_FOOOOOOOOL.ogg", SOUND_SNAT, g_fSnatSound);
+					m_bSound = true;
+				}
+			}
 				break;
 			case 1:
 				CUIManager::Get_Instance()->Set_Text(TEXT(". . . . . ."), 0.8f, 0.5f, true);
 				break;
 			case 2:
 			{
+				CGameManager::Get_Instance()->Sound_BGM(3);
 				CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
 				m_pModelCom->Set_AnimIndex(26);
 				CUIManager::Get_Instance()->Set_Text(TEXT("뭐야"), 0.8f, 0.5f, true);
+				if (!m_bSound)
+				{
+					pGameInstance->PlaySoundW(L"Snatcher_Hmmmm.ogg", SOUND_SNAT, g_fSnatSound);
+					m_bSound = true;
+				}
 			}
 				break;
 			case 3:
@@ -896,12 +940,17 @@ void CVSnatcher::Tick_Cut_1(_float fTimeDelta)
 	else if (1 == m_iCutIndex)
 	{
 		if (pGameInstance->Key_Down(DIK_E))
+		{
+			m_bSound = false;
 			++m_iTalkCount;
+		}
+
 
 		if (3.f < m_fCutTimeAcc_1 && 9.f > m_fCutTimeAcc_1)
 		{
 			Equip_Sockat("TimeObject_Parts", SLOT_HAND);
 			m_fCutTimeAcc_1 = 10.f;
+			pGameInstance->PlaySoundW(L"Dive_Start.ogg", SOUND_SNATEFFECT, g_fEffectSound);
 		}
 
 
@@ -926,6 +975,11 @@ void CVSnatcher::Tick_Cut_1(_float fTimeDelta)
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(8.f, 10.f, 65.f), pSlotGame->Get_TotalPos(), false);
 			m_pModelCom->Set_AnimIndex(5);
 			CUIManager::Get_Instance()->Set_Text(TEXT("하 하 하 하 하 하 하 하 하 하 하 하 하 하 하 하 하!"), 0.8f, 2.f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_AHHHHAHAHAHHHHAAA_Subcon.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}	
 		}
 			break;
 		case 8:
@@ -945,7 +999,12 @@ void CVSnatcher::Tick_Cut_1(_float fTimeDelta)
 		case 12:
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(10.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
 			m_pModelCom->Set_AnimIndex(23);
-			CUIManager::Get_Instance()->Set_Text(TEXT("그럼 놀아보자고!!!!"), 1.f, 0.8f, true);
+			CUIManager::Get_Instance()->Set_Text(TEXT("하 하 하 하 하 !!! 그럼 놀아보자고!!!!"), 1.f, 0.8f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_HahahaAlrightLetsGo.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
 			break;
 		default:
 			break;
@@ -966,8 +1025,10 @@ void CVSnatcher::Tick_Cut_2(_float fTimeDelta)
 	m_fCutTimeAcc_1 += fTimeDelta;
 	if (0.5f  < m_fCutTimeAcc_1 &&  9.f > m_fCutTimeAcc_1)
 	{
+
 		m_pModelCom->Set_AnimIndex(14);
 		m_fCutTimeAcc_1 = 10.f;
+
 	}
 }
 
@@ -977,21 +1038,39 @@ void CVSnatcher::Tick_Cut_3(_float fTimeDelta)
 	m_pTransformCom->LookAt_ForLandObject(pTran->Get_State(CTransform::STATE_POSITION));
 
 	if (0 == m_iCutIndex)
+	{
 		m_iCutIndex = -1;
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Snatcher_Heeeee.ogg", SOUND_SNAT, g_fSnatSound);
+		RELEASE_INSTANCE(CGameInstance);
+	}
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	if (1 == m_iCutIndex)
 	{
 		if (pGameInstance->Key_Down(DIK_E))
+		{
+			m_bSound = false;
 			++m_iTalkCount;
+		}
+
 
 		switch (m_iTalkCount)
 		{
 		case 0:
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
 			m_pModelCom->Set_AnimIndex(26);
-			CUIManager::Get_Instance()->On_Text(TEXT("너는 이 이상하게 생긴게 뭔지 아니?"), 0.8f, 0.5f, true);
+			CUIManager::Get_Instance()->On_Text(TEXT("이봐 꼬마, 너는 이 이상하게 생긴게 뭔지 아니?"), 0.8f, 0.5f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_Ahem.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
+			CGameManager::Get_Instance()->Sound_BGM(3);
+
+			
 			break;
 		case 1:
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(3.f, -10.f, 30.f), _float3(-28.0f, 1.4f, 44.84f), false);
@@ -1020,12 +1099,23 @@ void CVSnatcher::Tick_Cut_3(_float fTimeDelta)
 			break;
 		case 8:
 			CUIManager::Get_Instance()->Set_Text(TEXT("걱정마. 죽으면 너도 눈알로 만들어 줄게."), 0.8f, 1.f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_OfCourseIfYouDie.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
 			break;
 		case 9:
 			m_pModelCom->Set_AnimIndex(9);
 			CUIManager::Get_Instance()->Off_Text();
 			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
+			CGameManager::Get_Instance()->Sound_BGM(0, true);
 			++m_iTalkCount;
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_AHHHHAHAHA_Hub.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
 			break;
 		default:
 			break;
@@ -1051,14 +1141,24 @@ void CVSnatcher::Tick_Cut_4(_float fTimeDelta)
 	if (1 == m_iCutIndex)
 	{
 		if (pGameInstance->Key_Down(DIK_E))
+		{
+			m_bSound = false;
 			++m_iTalkCount;
+		}
 
 		switch (m_iTalkCount)
 		{
 		case 0:
+			CGameManager::Get_Instance()->Sound_BGM(3);
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(10.f, 10.f, 30.f), Get_PaceLook(4.5f), false);
 			m_pModelCom->Set_AnimIndex(0);
 			CUIManager::Get_Instance()->On_Text(TEXT("아아아아주우우우우우우~! 좋아!"), 1.f, 2.f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_AHHAHAHAHAYESBURN.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
+			
 			break;
 		case 1:
 		{
@@ -1087,6 +1187,11 @@ void CVSnatcher::Tick_Cut_4(_float fTimeDelta)
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(30.f, 10.f, 65.f), Get_PaceLook(5.5f), false);
 			m_pModelCom->Set_AnimIndex(23);
 			CUIManager::Get_Instance()->Set_Text(TEXT("쇼 타아아아아아아임~~!!!!!"), 1.5f, 2.f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_AHHHHAHAHAHHHHAAA_Subcon.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
 		}
 			break;
 		default:
@@ -1096,8 +1201,17 @@ void CVSnatcher::Tick_Cut_4(_float fTimeDelta)
 	else if (2 == m_iCutIndex)
 	{
 		m_fCutTimeAcc_1 += fTimeDelta;
-		if(30.f < m_fCutTimeAcc_1)
+		if (100.f < m_fCutTimeAcc_1) // 30.f
+		{
 			m_pModelCom->Set_AnimIndex(9);
+
+			//if (!m_bSound)
+			//{
+			//	pGameInstance->PlaySoundW(L"Snatcher_AlrightBackToWork.ogg", SOUND_SNAT, g_fSnatSound);
+			//	m_bSound = true;
+			//}
+		}
+			
 	}
 
 
@@ -1124,7 +1238,12 @@ void CVSnatcher::Tick_Cut_5(_float fTimeDelta)
 	if (2 == m_iCutIndex)
 	{
 		if (pGameInstance->Key_Down(DIK_E))
+		{
+			m_bSound = false;
 			++m_iTalkCount;
+		}
+
+
 
 		switch (m_iTalkCount)
 		{
@@ -1132,6 +1251,14 @@ void CVSnatcher::Tick_Cut_5(_float fTimeDelta)
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(_float3(-68.36f, 1.5f, -60.72f), Get_PaceLook(15.f), false);
 			m_pModelCom->Set_AnimIndex(24);
 			CUIManager::Get_Instance()->On_Text(TEXT(". . . . . "), 1.f, 2.f, true);
+
+			if (!m_bSound)
+			{
+				pGameInstance->StopSound(SOUND_BGM);
+				pGameInstance->PlaySoundW(L"Snatcher_Hmmmm.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
+
 			break;
 		case 1:
 		{
@@ -1158,6 +1285,8 @@ void CVSnatcher::Tick_Cut_5(_float fTimeDelta)
 				m_pPlayer->Set_RenderSkip(true);
 				Equip_Sockat("HatKid_statue", SLOT_HAND);
 				m_fCutTimeAcc_1 = 10.f;
+
+				pGameInstance->PlaySoundW(L"Dive_Start.ogg", SOUND_SNATEFFECT, g_fEffectSound);
 			}
 		}
 	}
@@ -1173,6 +1302,13 @@ void CVSnatcher::Tick_Cut_5(_float fTimeDelta)
 			m_fCutTimeAcc_1 = 20.f;
 		}
 		m_pTransformCom->Go_Dir(XMVectorSet(0.f, -1.f, 0.f, 0.f), 50.f, fTimeDelta);
+
+		if (!m_bSound)
+		{
+			pGameInstance->PlaySoundW(L"Stage Enter Woosh 2.mp3", SOUND_SNAT, g_fSnatSound + 1.f);
+			m_bSound = true;
+		}
+
 	}
 
 
@@ -1182,6 +1318,9 @@ void CVSnatcher::Tick_Cut_5(_float fTimeDelta)
 
 void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 {
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
 	if (0 == m_iCutIndex)
 	{
 		CTransform* pTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
@@ -1195,20 +1334,21 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 
 		if (12.f > fDis)
 		{
+			pGameInstance->PlaySoundW(L"Light.mp3", SOUND_SNAT, g_fSnatSound);
 			m_iCutIndex = 2;
 			m_bDark = false;
 		}
 	}
 
 
-
-
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
 	if (2 == m_iCutIndex)
 	{
 		if (pGameInstance->Key_Down(DIK_E))
+		{
+			m_bSound = false;
 			++m_iTalkCount;
+		}
+
 
 		switch (m_iTalkCount)
 		{
@@ -1223,6 +1363,11 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
 			CUIManager::Get_Instance()->Set_Text(TEXT("참 고된 하루지...?"), 0.8f, 0.5f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_Hmmmm.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
 		}
 		break;
 		case 2:
@@ -1261,6 +1406,11 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 			m_pModelCom->Set_AnimIndex(11);
 			CUIManager::Get_Instance()->Set_Text(TEXT("가지고 있는 모자 다 내놔!!!!!!!!"), 1.2f, 1.4f, true);
 			m_bDark = true;
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_FOOOOOOOOL.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
 		}
 		break;
 		case 6:
@@ -1305,6 +1455,10 @@ void CVSnatcher::Tick_Cut_6(_float fTimeDelta)
 				RELEASE_INSTANCE(CGameInstance);
 
 				m_fCutTimeAcc_1 = 10.f;
+
+				CGameManager::Get_Instance()->Sound_BGM(5);
+				pGameInstance->PlaySoundW(L"Snatcher_AHHHHAHAHAHHHHAAA_Subcon.ogg", SOUND_SNAT, g_fSnatSound);
+				
 			}
 		}
 	}
@@ -1323,27 +1477,34 @@ void CVSnatcher::Tick_Cut_7(_float fTimeDelta)
 	if (0 == m_iCutIndex)
 	{
 		if (pGameInstance->Key_Down(DIK_E))
+		{
+			m_bSound = false;
 			++m_iTalkCount;
+		}
 
 		switch (m_iTalkCount)
 		{
 		case 0:
 		{
-
 			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
 			_float3 vPos = pSlotGame->Get_TotalPos();
 			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
 		}
-			break;
+		break;
 		case 1:
 		{
-
 			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
 			_float3 vPos = pSlotGame->Get_TotalPos();
 			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
-			// CUIManager::Get_Instance()->On_Text(TEXT("....."), 0.8f, 0.5f, true);
+			CUIManager::Get_Instance()->Set_Text(TEXT("하!"), 0.8f, 0.5f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Light.mp3", SOUND_GETITEM, g_fSnatSound);
+				pGameInstance->PlaySoundW(L"Snatcher_Ha.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
 		}
 		break;
 		case 2:
@@ -1352,7 +1513,12 @@ void CVSnatcher::Tick_Cut_7(_float fTimeDelta)
 			_float3 vPos = pSlotGame->Get_TotalPos();
 			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
-			CUIManager::Get_Instance()->Set_Text(TEXT("......"), 0.8f, 0.5f, true);
+			CUIManager::Get_Instance()->Set_Text(TEXT("생각보다 괜찮은 마무리였어."), 0.8f, 0.5f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_Haaaa.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
 		}
 		break;
 		case 3:
@@ -1361,7 +1527,7 @@ void CVSnatcher::Tick_Cut_7(_float fTimeDelta)
 			_float3 vPos = pSlotGame->Get_TotalPos();
 			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
-			CUIManager::Get_Instance()->Set_Text(TEXT("생각보다 근사한 마무리였어."), 0.8f, 0.5f, true);
+			CUIManager::Get_Instance()->Set_Text(TEXT("그렇지 않니 꼬마야?"), 0.8f, 0.5f, true);
 		}
 		break;
 		case 4:
@@ -1370,17 +1536,31 @@ void CVSnatcher::Tick_Cut_7(_float fTimeDelta)
 			_float3 vPos = pSlotGame->Get_TotalPos();
 			vPos.y -= 1.f;
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
-			CUIManager::Get_Instance()->Set_Text(TEXT("그렇지 않니 꼬마야?"), 0.8f, 0.5f, true);
+			CUIManager::Get_Instance()->Set_Text(TEXT("아참!"), 0.8f, 0.5f, true);
 		}
 		break;
 		case 5:
+		{
+			CParts* pSlotGame = (CParts*)m_pSockatCom->Get_SlotPos(SLOT_HEAD);
+			_float3 vPos = pSlotGame->Get_TotalPos();
+			vPos.y -= 1.f;
+			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(Get_PacePos(6.f, 10.f, 70.f), vPos, false);
+			CUIManager::Get_Instance()->Set_Text(TEXT("넌 이제 말을 못 하구나! 하! 하! 하! 하!"), 0.8f, 0.5f, true);
+			if (!m_bSound)
+			{
+				pGameInstance->PlaySoundW(L"Snatcher_AHHHHAHAHAHHHHAAA_Subcon.ogg", SOUND_SNAT, g_fSnatSound);
+				m_bSound = true;
+			}
+		}
+		break;
+		case 6:
 		{
 			CCamManager::Get_Instance()->Get_Cam()->Set_CamFreeValue(_float3(-62.8f, 2.f, -113.f), _float3(-62.6f, 1.29f, -116.f), false);
 			m_pModelCom->Set_AnimIndex(26);
 			CUIManager::Get_Instance()->Set_Text(TEXT(". . . . . ."), 1.2f, 1.f, true);
 		}
 		break;
-		case 6:
+		case 7:
 		{
 			// 엔딩 로고 끝
 		}
@@ -1531,7 +1711,7 @@ void CVSnatcher::End_Anim()
 		break;
 	case STATE_ATTACK:
 		Set_State(STATE_IDLE);
-
+		break;
 	case STATE_CUT_1:
 	{
 		if (21 == m_pModelCom->Get_CurAnimIndex() && 1 == m_iCutIndex && 4 == m_iTalkCount)
@@ -1542,6 +1722,7 @@ void CVSnatcher::End_Anim()
 			CUIManager::Get_Instance()->Off_Text();
 			CCamManager::Get_Instance()->Get_Cam()->Set_State(CCamera_Free::CAM_GAME);
 			m_iCutIndex = 2;
+			CGameManager::Get_Instance()->Sound_BGM(0, true);
 		}
 		else if (9 == m_pModelCom->Get_CurAnimIndex() && 2 == m_iCutIndex)
 		{
@@ -1568,6 +1749,7 @@ void CVSnatcher::End_Anim()
 		{
 			m_iCutIndex = 2;
 			CCutSceneManager::Get_Instance()->StartCutScene(CCutSceneManager::CUT_CAM4);
+			CGameManager::Get_Instance()->Sound_BGM(4);
 			CUIManager::Get_Instance()->Off_Text();
 			m_pModelCom->Set_AnimIndex(11);
 		}
@@ -1665,7 +1847,7 @@ void CVSnatcher::Create_Statue()
 		StatueDesc.vRotation = _float3(0.f, fX, 0.f);
 		StatueDesc.pTarget = pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 
-		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StatuePosed_Boss"), LEVEL_BOSS, TEXT("Layer_Monster"), &StatueDesc);
+		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_StatuePosed_Boss"), LEVEL_BOSS, TEXT("Layer_Statue"), &StatueDesc);
 
 
 	}
@@ -1850,6 +2032,13 @@ void CVSnatcher::Attacked()
 		Set_State(STATE_DEAD);
 		CCamManager::Get_Instance()->Get_Cam()->Start_Shake(100.f, 2.f, 0.03f);
 		CUIManager::Get_Instance()->Off_Text(true);
+
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->StopSound(SOUND_BGM);
+		pGameInstance->PlaySoundW(L"Mafia_Boss_DeathRiff.ogg", SOUND_BGM1, g_fBGMSound);
+		RELEASE_INSTANCE(CGameInstance);
+
 	}
 	else
 	{
@@ -1859,7 +2048,7 @@ void CVSnatcher::Attacked()
 		Drop_Hat();
 		m_pSockatCom->Remove_Sockat(SLOT_HEAD);
 
-		CUIManager::Get_Instance()->Set_Text(TEXT("*크헉!!!*"), 1.2f, 2.f, true, true);
+		CUIManager::Get_Instance()->Set_Text(TEXT("*크헉!!!*"), 1.f, 2.f, true, true);
 	}
 }
 

@@ -126,6 +126,11 @@ void CVault_Mad_Crow::Set_Anim()
 void CVault_Mad_Crow::Attacked(_int iAT)
 {
 	--m_CreatureDesc.iHP;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Player_Hurt.ogg", SOUND_EFFECT, g_fEffectSound);
+	RELEASE_INSTANCE(CGameInstance);
+
 	if (0 >= m_CreatureDesc.iHP)
 	{
 		Set_State(MONSTER_DIE);
@@ -291,7 +296,11 @@ void CVault_Mad_Crow::Tick_Die(_float fTimeDelta)
 		CFlaskLight::FLASKLIGHTDESC LightDesc;
 		XMStoreFloat3(&LightDesc.vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_FlaskLight"), eLevel, TEXT("Layer_Light"), &LightDesc);
+
+		pGameInstance->PlaySoundW(L"bombcake_explode.ogg", SOUND_PEFFECT, g_fEffectSound + 0.2f);
+
 		RELEASE_INSTANCE(CGameInstance);
+
 
 		Set_Dead(true);
 	}
@@ -337,7 +346,7 @@ void CVault_Mad_Crow::LateTick(_float fTimeDelta)
 
 	if (true == isDraw && !CGameManager::Get_Instance()->Get_CurIndex())
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHABLEND, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this);
 	}
 }
 
@@ -360,18 +369,25 @@ HRESULT CVault_Mad_Crow::Render()
 
 
 	_bool bBlur = false;
-	if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
-		return E_FAIL;
-
+	_bool bOtherColor = true;
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
+		if (1 == i)
+			bBlur = true;
+
+
+		if (FAILED(m_pShaderCom->Set_RawValue("g_bBlur", &bBlur, sizeof(_bool))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Set_RawValue("g_CrowOtherColor", &bOtherColor, sizeof(_bool))))
+			return E_FAIL;
+
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 11)))
 			return E_FAIL;
 	}
 

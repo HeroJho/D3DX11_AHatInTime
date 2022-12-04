@@ -94,6 +94,12 @@ void CUI_Shop_Slot::UnSelect_Slot()
 
 void CUI_Shop_Slot::Start_BuyTick()
 {
+	if (STATE_BUY == m_eState)
+		return;
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Hover Select Item.mp3", SOUND_UI, g_fEffectSound + 0.2f);
+	RELEASE_INSTANCE(CGameInstance);
+
 	m_eState = STATE_BUY;
 }
 

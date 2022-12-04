@@ -341,7 +341,7 @@ void CMushRoom::LateTick(_float fTimeDelta)
 	RELEASE_INSTANCE(CGameInstance);
 
 
-	CGameManager::Get_Instance()->Set_Musroom(false);
+	CGameManager::Get_Instance()->Set_Musroom(true);
 
 	//Set_State(STATE_UP_START);
 	//Set_State(STATE_DOWN_START);

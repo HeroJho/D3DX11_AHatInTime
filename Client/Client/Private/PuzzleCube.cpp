@@ -147,20 +147,17 @@ void CPuzzleCube::LateTick(_float fTimeDelta)
 	}
 
 
-	//if (m_bOn && !m_bPreOn && !m_Pushed)
-	//{
-	//	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-	//	vPos.y += 0.3f;
-	//	CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 4.f, false, 0.f, 0.f, 2.f,
-	//		5, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
-	//}
-	//else if (m_Pushed)
-	//{
-	//	_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-	//	vPos.y += 0.3f;
-	//	CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 0.f, false, 0.f, 0.f, 2.f,
-	//		1, 0.3f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
-	//}
+	if (m_bOn && !m_bPreOn && !m_Pushed)
+	{
+		if (m_bFirstSound)
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"bombcake_hit.ogg", SOUND_EFFECT, g_fEffectSound + 0.3f, true);
+			RELEASE_INSTANCE(CGameInstance);
+		}
+		m_bFirstSound = true;
+	}
+
 	
 
 

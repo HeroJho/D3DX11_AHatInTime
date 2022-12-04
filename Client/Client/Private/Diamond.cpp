@@ -81,7 +81,7 @@ void CDiamond::Tick(_float fTimeDelta)
 	m_fLifeTimeAcc += fTimeDelta;
 	if (10000.f < m_fLifeTimeAcc)
 		Set_Dead(true);
-	if (3.f < m_fLifeTimeAcc)
+	if (2.f < m_fLifeTimeAcc)
 		m_bTimeGet = true;
 }
 

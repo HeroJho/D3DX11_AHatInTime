@@ -62,6 +62,7 @@ private:
 
 	_float m_fAlpa = 0.f;
 
+	_bool m_bSound = false;
 
 public:
 	static CBellMountEye* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

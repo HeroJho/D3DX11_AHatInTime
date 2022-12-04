@@ -158,7 +158,11 @@ void CFlask::LateTick(_float fTimeDelta)
 		pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wind_Spiral"), eLevel, TEXT("Layer_Light"), &WindDesc);
 
 		
-		
+
+		pGameInstance->PlaySoundW(L"bombcake_explode.ogg", SOUND_PEFFECT, g_fEffectSound + 0.2f);
+
+
+
 		RELEASE_INSTANCE(CGameInstance);
 
 		

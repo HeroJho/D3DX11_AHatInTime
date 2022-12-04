@@ -121,11 +121,12 @@ public: /* For. Target_Manager */
 
 
 public: // For. Sound_Manager
-	void PlaySound(TCHAR * pSoundKey, const _uint& eID, const float& fVolume);
-	void PlayBGM(TCHAR * pSoundKey, const float& fVolume);
+	void PlaySound(TCHAR * pSoundKey, const _uint& eID, const float& fVolume, _bool bCheck = false);
+	void PlayBGM(TCHAR * pSoundKey, const float& fVolume, _bool bCheck = false);
 	void StopSound(const _uint& eID);
 	void StopAll();
-	
+	void SetChannelVolume(const _uint& eID, const float& fVolume);
+
 
 
 private:

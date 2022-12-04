@@ -85,7 +85,7 @@ private: /* For.Deferred Lighting */
 private:
 	class CTexture* m_pNoiseTexture = nullptr;
 	_float m_fDeltaTime = 0.f;
-
+	
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent* Clone(void* pArg) override;

@@ -53,6 +53,10 @@ void CSubconEye::Attacked(_int iAT)
 {
 	m_pTransformCom->ReSet_AttackedAnim();
 	m_eState = STATE_ATTACKED;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Player_Hurt.ogg", SOUND_EFFECT, g_fEffectSound);
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 void CSubconEye::Dead_Tick(_float fTimeDelta)

@@ -117,6 +117,8 @@ void CBadgeS_Base::Idle_Tick(_float fTimeDelta)
 
 		if (pGameInstance->Key_Down(DIK_E))
 		{
+			pGameInstance->PlaySoundW(L"BadgeSeller_ComeToMeYoungOne.ogg", SOUND_SNAT, g_fSnatSound);
+
 			Set_State(STATE_OPEN);
 			((CPlayer*)m_pPlayer)->Set_Talk();
 		}
@@ -178,6 +180,10 @@ void CBadgeS_Base::Attacked(_int iAT)
 {
 	Set_State(STATE_ATTACKED);
 	m_pTransformCom->ReSet_AttackedAnim();
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Player_Hurt.ogg", SOUND_EFFECT, g_fEffectSound);
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 

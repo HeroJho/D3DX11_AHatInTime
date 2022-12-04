@@ -55,6 +55,10 @@ HRESULT CSplash_wave::Initialize(void * pArg)
 
 void CSplash_wave::Tick(_float fTimeDelta)
 {
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	pGameInstance->PlaySoundW(L"Oil_loop1.wav", SOUND_PEFFECT_SPRT, g_fEffectSound - 0.2f, true);
+
 
 	m_fDeltaTime += fTimeDelta;
 
@@ -66,7 +70,7 @@ void CSplash_wave::Tick(_float fTimeDelta)
 	if (40.f < vScale.x)
 		Set_Dead(true);
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
 	CPlayer* pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -80,16 +84,12 @@ void CSplash_wave::Tick(_float fTimeDelta)
 
 	if (vScale.x - 0.1f < fDis && vScale.x + 0.2f > fDis)
 	{
-
-		if (pPlayer->Get_IsPlayerOn())
+		if (CPlayer::STATE_JUMPATTACK != pPlayer->Get_State() &&
+			false == pPlayer->Get_Attacked() &&
+			pPlayer->Get_IsPlayerOn())
 		{
-
 			pPlayer->Attacked();
-
 		}
-
-
-	
 	}
 
 

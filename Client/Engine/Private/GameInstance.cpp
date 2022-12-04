@@ -524,19 +524,19 @@ _float3 CGameInstance::Get_PlayerPos()
 
 
 
-void CGameInstance::PlaySound(TCHAR * pSoundKey, const _uint & eID, const float & fVolume)
+void CGameInstance::PlaySound(TCHAR * pSoundKey, const _uint & eID, const float & fVolume, _bool bCheck)
 {
 	if (nullptr == m_pSound_Manager)
 		return;
 
-	m_pSound_Manager->PlaySound(pSoundKey, eID, fVolume);
+	m_pSound_Manager->PlaySound(pSoundKey, eID, fVolume, bCheck);
 }
-void CGameInstance::PlayBGM(TCHAR * pSoundKey, const float & fVolume)
+void CGameInstance::PlayBGM(TCHAR * pSoundKey, const float & fVolume, _bool bCheck)
 {
 	if (nullptr == m_pSound_Manager)
 		return;
 
-	m_pSound_Manager->PlayBGM(pSoundKey, fVolume);
+	m_pSound_Manager->PlayBGM(pSoundKey, fVolume, bCheck);
 }
 void CGameInstance::StopSound(const _uint & eID)
 {
@@ -552,6 +552,15 @@ void CGameInstance::StopAll()
 
 	m_pSound_Manager->StopAll();
 }
+
+void CGameInstance::SetChannelVolume(const _uint & eID, const float & fVolume)
+{
+	if (nullptr == m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->SetChannelVolume(eID , fVolume);
+}
+
 
 
 

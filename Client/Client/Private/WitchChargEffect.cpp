@@ -44,8 +44,10 @@ HRESULT CWitchChargEffect::Initialize(void * pArg)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
-	RELEASE_INSTANCE(CGameInstance);
 
+
+	pGameInstance->PlaySoundW(L"Pickup7.wav", SOUND_PEFFECT, g_fEffectSound);
+	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
 }
@@ -82,6 +84,10 @@ void CWitchChargEffect::Tick(_float fTimeDelta)
 		CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vXPos, _float3(0.f, 0.15f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
 			5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
 		Set_Dead(true);
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Pickup_51.wav", SOUND_PEFFECT, g_fEffectSound);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 
 }

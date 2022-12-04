@@ -155,6 +155,9 @@ void CMagic::LateTick(_float fTimeDelta)
 			RELEASE_INSTANCE(CGameInstance);
 
 
+			pGameInstance->PlaySoundW(L"bombcake_explode.ogg", SOUND_SNATEFFECT, g_fEffectSound + 0.2f);
+
+
 			Set_Dead(true);
 		}
 	}

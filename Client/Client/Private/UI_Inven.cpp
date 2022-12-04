@@ -58,6 +58,14 @@ void CUI_Inven::Tick(_float fTimeDelta)
 
 	if (pGameInstance->Key_Pressing(DIK_TAB))
 	{
+		if (!m_bSound)
+		{
+			pGameInstance->PlaySoundW(L"Hat Wheel Start.mp3", SOUND_UI, g_fUISound + 0.5f);
+			m_bSound = true;
+		}
+			
+		
+
 		m_bSwitch = true;
 
 		m_UiInfo.fX = g_iWinSizeX * 0.5f;
@@ -71,9 +79,8 @@ void CUI_Inven::Tick(_float fTimeDelta)
 		{
 			CToolManager::Get_Instance()->Set_All(1.f);
 			m_bSwitch = false;
+			m_bSound = false;
 		}
-
-
 
 		End();
 	}

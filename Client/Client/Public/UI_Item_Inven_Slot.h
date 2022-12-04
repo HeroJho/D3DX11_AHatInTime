@@ -61,7 +61,7 @@ private:
 
 	_float m_fOriSize = 0.f;
 	_float m_fHoverSize = 0.f;
-
+	_bool m_bSound = false;
 
 public:
 	static CUI_Item_Inven_Slot* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

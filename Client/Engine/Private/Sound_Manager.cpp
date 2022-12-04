@@ -25,13 +25,14 @@ HRESULT CSound_Manager::Initialize()
 
 	LoadSoundFile("../../Client/Bin/Resources/Sounds/BGM/");
 	LoadSoundFile("../../Client/Bin/Resources/Sounds/Player/");
-	LoadSoundFile("../../Client/Bin/Resources/Sounds/Theo/");
-	LoadSoundFile("../../Client/Bin/Resources/Sounds/Golem/");
-	LoadSoundFile("../../Client/Bin/Resources/Sounds/Dragon/");
+	LoadSoundFile("../../Client/Bin/Resources/Sounds/Effect/");
+	LoadSoundFile("../../Client/Bin/Resources/Sounds/UI/");
+	LoadSoundFile("../../Client/Bin/Resources/Sounds/Snature/");
+	
 	return S_OK;
 }
 
-void CSound_Manager::PlaySound(TCHAR * pSoundKey, const _uint& eID, const float& fVolume)
+void CSound_Manager::PlaySound(TCHAR * pSoundKey, const _uint& eID, const float& fVolume, _bool bCheck)
 {
 	std::map<TCHAR*, FMOD::Sound*>::iterator iter;
 
@@ -46,9 +47,14 @@ void CSound_Manager::PlaySound(TCHAR * pSoundKey, const _uint& eID, const float&
 		return;
 
 	FMOD_BOOL bPlay = FALSE; 
-	
+
+	_bool bIsPlay = false;
+	m_pChannelArr[eID]->isPlaying(&bIsPlay);
+	if (bCheck && bIsPlay)
+		return;
+
 	m_pSystem->playSound(iter->second, 0, false, &m_pChannelArr[eID]);
-	
+
 	//if (FMOD_Channel_IsPlaying(m_pChannelArr[eID], &bPlay))
 	//{
 	//	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[eID]);
@@ -61,9 +67,17 @@ void CSound_Manager::PlaySound(TCHAR * pSoundKey, const _uint& eID, const float&
 	//FMOD_System_Update(m_pSystem);
 }
 
-void CSound_Manager::PlayBGM(TCHAR * pSoundKey, const float& fVolume)
+void CSound_Manager::PlayBGM(TCHAR * pSoundKey, const float& fVolume, _bool bCheck)
 {
 	std::map<TCHAR*, FMOD::Sound*>::iterator iter;
+
+
+
+	_bool bIsPlay = false;
+	m_pChannelArr[0]->isPlaying(&bIsPlay);
+	if (bCheck && bIsPlay)
+		return;
+
 
 	// iter = find_if(m_mapSound.begin(), m_mapSound.end(), CTag_Finder(pSoundKey));
 	iter = std::find_if(m_mapSound.begin(), m_mapSound.end(), [&](auto& iter)->bool

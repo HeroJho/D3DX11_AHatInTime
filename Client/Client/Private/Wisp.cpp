@@ -60,6 +60,11 @@ HRESULT CWisp::Initialize(void * pArg)
 void CWisp::Start()
 {
 	m_eState = STATE_RING_UP;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Dweller Mask On.mp3", SOUND_PEFFECT, g_fEffectSound + 0.5f);
+	RELEASE_INSTANCE(CGameInstance);
+	m_bSound = false;
 }
 
 
@@ -115,6 +120,16 @@ void CWisp::Tick(_float fTimeDelta)
 			_float3 vPos;
 			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 			CGameManager::Get_Instance()->Set_Wisp(false, m_fRatio, vPos, 0);
+
+			if (0.8f > m_fRatio && !m_bSound)
+			{
+				m_bSound = true;
+
+				CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+				pGameInstance->PlaySoundW(L"Dweller Mask Off.mp3", SOUND_PEFFECT, g_fEffectSound + 0.5f);
+				RELEASE_INSTANCE(CGameInstance);
+			}
+
 		}
 
 	}

@@ -9,6 +9,7 @@
 #include "Camera_Free.h"
 #include "ToolManager.h"
 #include "Wind_Spiral.h"
+#include "PuzzleCube_Boss.h"
 
 CExPlo::CExPlo(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CGameObject(pDevice, pContext)
@@ -72,7 +73,7 @@ HRESULT CExPlo::Initialize(void * pArg)
 	WindDesc.fAngle = 90.f;
 	pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Wind_Spiral"), eLevel, TEXT("Layer_Light"), &WindDesc);
 
-
+	pGameInstance->PlaySoundW(L"bombcake_explode.ogg", SOUND_MEFFECT, g_fEffectSound + 0.2f);
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -162,9 +163,17 @@ void CExPlo::OnCollision(CCollider::OTHERTOMECOLDESC Desc)
 			CPlayer* pPlayer = (CPlayer*)Desc.pOther;
 			pPlayer->Attacked();
 		}
+		else if ("Tag_PuzzleCube_Boss" == Desc.pOther->Get_Tag())
+		{
+			CPuzzleCube_Boss* pPuzzleCube = (CPuzzleCube_Boss*)Desc.pOther;
+			pPuzzleCube->Attacked();
+		}
+
 
 		m_bTickAttack = true;
 	}
+
+
 }
 
 

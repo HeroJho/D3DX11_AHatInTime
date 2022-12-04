@@ -132,6 +132,7 @@ private:
 	_float m_fLookT = 0.f;
 	_float3 m_vLookTempPos;
 
+	_uint m_iCurCutIndex = 0;
 
 private:
 	vector<CDataManager::DATA_CAMS*> m_Datas;

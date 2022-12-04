@@ -102,6 +102,7 @@ void CStaticModel_Instance::LateTick(_float fTimeDelta)
 		}
 	}
 
+
 }
 
 HRESULT CStaticModel_Instance::Render()
@@ -213,8 +214,16 @@ HRESULT CStaticModel_Instance::Render()
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
+
+		 
+
+
+
 		// (!lstrcmp(m_cModelTag, TEXT("tree_will_Instance")) && 2 == i
-		if ((!lstrcmp(m_cModelTag, TEXT("Lamppost_Instance")) && 1 == i) || (!lstrcmp(m_cModelTag, TEXT("ClockTower_Instance")) && 1 == i ))
+		if ((!lstrcmp(m_cModelTag, TEXT("Lamppost_Instance")) && 1 == i) || (!lstrcmp(m_cModelTag, TEXT("ClockTower_Instance")) && 1 == i )
+			|| !lstrcmp(TEXT("sub_thorn_wall_bloom_Instance"), m_cModelTag) 
+			|| !lstrcmp(TEXT("forest_plant_Instance"), m_cModelTag) 
+			|| !lstrcmp(TEXT("harbour_fern_Instance"), m_cModelTag))
 		{
 			if (1 != iPassIndex)
 				iPassIndex = 4;

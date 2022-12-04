@@ -65,6 +65,8 @@ private:
 
 	_uint m_iIndex = 0;
 
+	_bool m_bSound = false;
+
 public:
 	static CBellMount* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

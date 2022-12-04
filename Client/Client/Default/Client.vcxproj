@@ -175,6 +175,7 @@
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\public\CamManager.h" />
     <ClInclude Include="..\public\CaulDron.h" />
+    <ClInclude Include="..\public\CheckPoint.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\public\ColorCube.h" />
     <ClInclude Include="..\public\CutSceneManager.h" />
@@ -281,6 +282,7 @@
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\private\CamManager.cpp" />
     <ClCompile Include="..\private\CaulDron.cpp" />
+    <ClCompile Include="..\private\CheckPoint.cpp" />
     <ClCompile Include="..\private\ColorCube.cpp" />
     <ClCompile Include="..\private\CutSceneManager.cpp" />
     <ClCompile Include="..\private\DataManager.cpp" />

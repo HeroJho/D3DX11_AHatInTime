@@ -69,7 +69,7 @@ void CVault_2::Tick(_float fTimeDelta)
 	fTimeDelta *= CToolManager::Get_Instance()->Get_TimeRatio(CToolManager::TIME_EM);
 	__super::Tick(fTimeDelta);
 
-	if(30 > m_iSprintCount && m_Spr)
+	if(15 > m_iSprintCount && m_Spr)
 		Sprint_Tick(fTimeDelta);
 
 	switch (m_eState)
@@ -164,8 +164,13 @@ void CVault_2::Set_State(VAULT_STATE eState)
 	{
 		switch (m_eState)
 		{
-			//case Client::CMad_Crow::MONSTER_ATTACKED:
-			//	break;
+		case STATE_OPEN:
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Metal_groan1.wav", SOUND_EFFECT, g_fEffectSound + 0.2f);
+			RELEASE_INSTANCE(CGameInstance);
+		}
+			break;
 		default:
 			break;
 		}
@@ -217,7 +222,19 @@ void CVault_2::Open_Tick(_float fTimeDelta)
 		CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(1.5f, 1.5f, 1.5f), _float3(0.5f, 0.5f, 0.5f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 3.f, 30.f, false, 3.f, 0.1f, 5.f,
 			30, 0.f, 0.5f, 0.f, 0.f, 0.f, 1.f, 0.f, 1.f, 1.f, _float3(-90.f, 0.f, -90.f), _float3(90.f, 0.f, 90.f), CParticle::TYPE_TEXTURE);
 
+		vPos.y += 2.f;
+		CItemManager::Get_Instance()->Make_Item(TEXT("Prototype_GameObject_Yarn"), TEXT("yarn_ui_brew"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f));
+
 		m_fSprintItemTimeAcc = 0.f;
+
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"DOTPLAT_DWN.wav", SOUND_EFFECT, g_fEffectSound + 0.2f);
+		pGameInstance->PlaySoundW(L"Pickup_51.wav", SOUND_PEFFECT, g_fEffectSound + 0.4f);
+		RELEASE_INSTANCE(CGameInstance);
+
+		CGameManager::Get_Instance()->Get_Instance()->Set_JumpVault();
+		CGameManager::Get_Instance()->Get_Instance()->IncVir();
 	}
 }
 
@@ -249,6 +266,10 @@ void CVault_2::Sprint_Tick(_float fTimeDelta)
 
 		m_fSprintItemTimeAcc = 0.f;
 		++m_iSprintCount;
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Bloop.mp3", SOUND_ITEM, g_fEffectSound + 1.f);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 
 }

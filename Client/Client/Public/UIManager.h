@@ -28,6 +28,7 @@ public:
 	HRESULT Make_Hp();
 	HRESULT Make_WhiteBoard();
 	HRESULT Make_Loading();
+	HRESULT Make_CheckPoint();
 
 
 	void OnOff_DiamondScore(_bool bBool);
@@ -48,6 +49,14 @@ public:
 public:
 	void Open_Shop();
 	void Close_Shop();
+
+
+	// For. CheckPoint
+public:
+	void Open_CheckPoint();
+	void Close_CheckPoint();
+
+
 
 	// For. Hp
 public:
@@ -78,6 +87,8 @@ public:
 
 
 
+
+
 private:
 	class CUI_Inven*		m_pInven = nullptr;
 	class CUI_Item_Inven*	m_pItem_Inven = nullptr;
@@ -90,6 +101,8 @@ private:
 	class CUI_SmallSpeechBubble*	m_pSmallSpeechBubble = nullptr;
 
 	class CUI_Loading*				m_pLoading = nullptr;
+
+	class CCheckPoint*				m_pCheckPoint = nullptr;
 
 public:
 	virtual void Free() override;

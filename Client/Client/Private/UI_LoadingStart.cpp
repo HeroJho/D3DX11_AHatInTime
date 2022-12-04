@@ -5,7 +5,6 @@
 #include "ToolManager.h"
 
 
-
 CUI_LoadingStart::CUI_LoadingStart(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CUI(pDevice, pContext)
 {
@@ -41,6 +40,31 @@ HRESULT CUI_LoadingStart::Initialize(void * pArg)
 
 void CUI_LoadingStart::Set_Start(_bool bStart)
 {
+
+	LEVEL eLEVEL = CToolManager::Get_Instance()->Get_CulLevel();
+
+	if (LEVEL_BOSS == eLEVEL && LEVEL_ENDING == eLEVEL)
+	{
+		m_bStart = bStart;
+		m_bOnOff = true;
+		return;
+	}
+
+	if (bStart)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		pGameInstance->PlaySoundW(L"Stage Enter Woosh 1.mp3", SOUND_BGM1, g_fEffectSound + 1.f);
+		RELEASE_INSTANCE(CGameInstance);
+	}
+	else
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->StopSound(SOUND_BGM);
+		pGameInstance->PlaySoundW(L"Stage Enter Woosh 2.mp3", SOUND_BGM1, g_fEffectSound + 1.f);
+		RELEASE_INSTANCE(CGameInstance);
+	}
+
 	m_bStart = bStart;
 
 	m_bOnOff = true;

@@ -56,6 +56,15 @@ void CUI_Item_Inven_Slot::Tick(_float fTimeDelta)
 
 	if (UI_HOVER == m_eState)
 	{
+		if (!m_bSound)
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Hover Over Item.mp3", SOUND_UI, g_fEffectSound + 0.2f);
+			RELEASE_INSTANCE(CGameInstance);
+			m_bSound = true;
+		}
+
+
 		if (m_fHoverSize > m_UiInfo.fSizeX)
 		{
 			m_UiInfo.fSizeX += 1.f;
@@ -79,6 +88,8 @@ void CUI_Item_Inven_Slot::Tick(_float fTimeDelta)
 			m_UiInfo.fSizeX = m_fOriSize;
 			m_UiInfo.fSizeY = m_fOriSize;
 		}
+
+		m_bSound = false;
 	}
 
 	//UI_InputDebug(fTimeDelta);
@@ -191,6 +202,8 @@ HRESULT CUI_Item_Inven_Slot::Ready_Components()
 void CUI_Item_Inven_Slot::Handle_Hover()
 {
 	int a = 0;
+
+
 }
 
 void CUI_Item_Inven_Slot::Handle_Down()
@@ -205,8 +218,15 @@ void CUI_Item_Inven_Slot::Handle_Press()
 
 void CUI_Item_Inven_Slot::Handle_Click()
 {
-	if(0 < m_iCount)
+	if (1 < m_iCount)
+	{
 		CItemManager::Get_Instance()->Make_Hat(m_pHatModelName, m_pItemModelName);
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Hover Select Item.mp3", SOUND_UI, g_fEffectSound + 0.2f);
+		RELEASE_INSTANCE(CGameInstance);
+	}
+
 
 }
 

@@ -57,6 +57,7 @@ private:
 
 	_float m_fSpeed = 0.f;
 
+	_bool m_bSound = false;
 	
 private:
 	CShader*				m_pShaderCom = nullptr;

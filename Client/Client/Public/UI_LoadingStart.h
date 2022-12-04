@@ -47,6 +47,7 @@ private:
 	_float m_fAngle = 0.f;
 	_float m_fScale = 0.f;
 
+
 private:
 	CShader*				m_pShaderCom = nullptr;
 	CTexture*				m_pTextureCom = nullptr;

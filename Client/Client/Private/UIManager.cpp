@@ -16,7 +16,7 @@
 #include "UI_Health.h"
 #include "WhiteBoard.h"
 #include "UI_Loading.h"
-
+#include "CheckPoint.h"
 
 
 IMPLEMENT_SINGLETON(CUIManager)
@@ -250,6 +250,33 @@ HRESULT CUIManager::Make_Loading()
 	return S_OK;
 }
 
+HRESULT CUIManager::Make_CheckPoint()
+{
+	if (nullptr != m_pCheckPoint)
+		Safe_Release(m_pCheckPoint);
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CUI::UIINFODESC UiInfoDesc;
+	ZeroMemory(&UiInfoDesc, sizeof(CUI::UIINFODESC));
+	UiInfoDesc.fSizeX = 231.f;
+	UiInfoDesc.fSizeY = 136.f;
+	UiInfoDesc.fX = 1165.5f;
+	UiInfoDesc.fY = 378.f;
+	UiInfoDesc.pDesc = nullptr;
+
+	CGameObject* pObj = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_CheckPoint"), LEVEL_STATIC, TEXT("Layer_UI"), &pObj, &UiInfoDesc)))
+		return E_FAIL;
+
+	m_pCheckPoint = (CCheckPoint*)pObj;
+	Safe_AddRef(m_pCheckPoint);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
 
 
 void CUIManager::OnOff_DiamondScore(_bool bBool)
@@ -319,6 +346,20 @@ void CUIManager::Close_Shop()
 	if (nullptr == m_pShop)
 		return;
 	m_pShop->Close();
+}
+
+void CUIManager::Open_CheckPoint()
+{
+	if (nullptr == m_pCheckPoint)
+		return;
+	m_pCheckPoint->Set_OnOff(true);
+}
+
+void CUIManager::Close_CheckPoint()
+{
+	if (nullptr == m_pCheckPoint)
+		return;
+	m_pCheckPoint->Set_OnOff(false);
 }
 
 _uint CUIManager::Get_Hp()
@@ -426,6 +467,7 @@ void CUIManager::Free()
 {
 
 	Safe_Release(m_pLoading);
+	Safe_Release(m_pCheckPoint);
 	Safe_Release(m_pHp);
 	Safe_Release(m_pSpeechBubble);
 	Safe_Release(m_pSmallSpeechBubble);

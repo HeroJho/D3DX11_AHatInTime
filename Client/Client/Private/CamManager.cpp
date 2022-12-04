@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "ToolManager.h"
 #include "DataManager.h"
+#include "UIManager.h"
 
 #include "Camera_Free.h"
 
@@ -180,6 +181,7 @@ void CCamManager::Create_ChaseLookCube()
 void CCamManager::Play_CutScene(_uint iIndex, _bool bAutoEnd, CTransform* pTran)
 {
 	m_bAutoEnd = bAutoEnd;
+	m_iCurCutIndex = iIndex;
 
 	CDataManager::DATA_CAMS* Data = m_Datas[iIndex];
 
@@ -222,6 +224,7 @@ void CCamManager::Play_CutScene(_uint iIndex, _bool bAutoEnd, CTransform* pTran)
 		}
 
 	}
+
 
 
 	Set_Start(true);
@@ -299,6 +302,19 @@ void CCamManager::PlayMark(_float fTimeDelta)
 		{
 			m_bStart = false;
 			m_pCamTool->Set_State(CCamera_Free::CAM_GAME);
+
+
+			if (0 == m_iCurCutIndex)
+			{
+				CUIManager::Get_Instance()->OnOff_HP(true);
+				CUIManager::Get_Instance()->OnOff_DiamondScore(true);
+				CUIManager::Get_Instance()->OnOff_Inven(true);
+
+				CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+				pGameInstance->PlayBGM(L"NowBGM.mp3", g_fBGMSound);
+				RELEASE_INSTANCE(CGameInstance);
+			}
+
 			return;
 		}
 		else if (1 > m_TempMarkCubes.size() && !m_bAutoEnd)

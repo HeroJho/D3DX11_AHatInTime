@@ -73,6 +73,8 @@ private:
 
 	_float m_fRatio = 0.f;
 
+	_bool m_bHoverSound = false;
+
 public:
 	static CUI_ItemButton* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

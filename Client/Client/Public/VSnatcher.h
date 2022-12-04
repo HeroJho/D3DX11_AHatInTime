@@ -120,7 +120,7 @@ private:
 	_float m_fCurseTimeAcc = 0.f;
 	_float m_fCurseDelayTime = 0.8f;
 	_int	m_iCurseCount = 0;
-	_int	m_iCurseMaxCount = 10;
+	_int	m_iCurseMaxCount = 5;
 
 	// For. Magic
 	_float m_fMagicTimeAcc = 0.f;
@@ -145,7 +145,7 @@ private:
 	_int m_iSnapIndex = -1;
 	string   m_sSnapTag = "";
 	_uint m_iSnatCount = 0;
-
+	_bool m_bSound = false;
 
 	// For. Cut
 	_float m_fCutTimeAcc_1 = 0.f;
@@ -154,7 +154,6 @@ private:
 	_bool m_bCutBool = false;
 
 	_bool m_bDark = false;
-
 
 	// For. CanAttacked
 	_float m_fCanAttackedTimeAcc = 0.f;

@@ -103,6 +103,10 @@ void CPuzzleCube_Boss::Attacked()
 		5, 0.f, 0.5f, 0.0f, 0.f, 0.f, 0.5f, 0.f, 0.f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
 
 
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"crate_break.ogg", SOUND_EFFECT, g_fEffectSound);
+	RELEASE_INSTANCE(CGameInstance);
+
 	Set_Dead(true);
 }
 
@@ -174,6 +178,10 @@ void CPuzzleCube_Boss::LateTick(_float fTimeDelta)
 		vPos.y += 0.3f;
 		CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(2.f, 2.f, 2.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.1f, 4.f, false, 0.f, 0.f, 2.f,
 			5, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.1f, 0.f, 0.1f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
+	
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"bombcake_hit.ogg", SOUND_EFFECT, g_fEffectSound + 0.3f);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 	else if (m_Pushed)
 	{

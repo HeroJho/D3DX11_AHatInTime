@@ -83,6 +83,7 @@ public:
 
 
 	_bool Get_JumpVault2() { return m_bJumpMapvalut2; }
+	_bool Get_JumpVault() { return m_bJumpMapvalut; }
 
 	void Set_JumpVault() { m_bJumpMapvalut = true; }
 	void Set_JumpVault2() { m_bJumpMapvalut2 = true; }
@@ -90,15 +91,22 @@ public:
 	void Set_Musroom(_bool bMushroom) { m_bInMushroom = bMushroom; }
 	_bool Get_Musroom() { return m_bInMushroom; }
 
+	void Set_Brew(_bool bBool) { m_bBrew = bBool; }
+	_bool Get_Brew() { return m_bBrew; }
+
+	void IncVir() { ++m_iVirCount; }
+	_uint Get_Vir() { return m_iVirCount; }
+
 private:
 	_uint m_iMonsterVaultCount = 5; // 5
 	_bool m_bModVault = false;
 	_bool m_bJumpMapvalut = false;
 	_bool m_bJumpMapvalut2 = false;
+	_uint m_iVirCount = 0;
 
 	_bool m_bInMushroom = false;
 
-
+	_bool m_bBrew = false;
 
 	// For. SavePoint
 public:
@@ -109,6 +117,28 @@ private:
 	_uint m_iNaviIndex = 0;
 	_float3 m_vNaviPos;
 
+
+
+
+
+	// For. Sound
+public:
+	void Sound_PlayerJump();
+	void Sound_PlayerAttack();
+	void Sound_PlayerDrow();
+	void Sound_BGM(_uint iBGM, _bool bForceChange = false);
+	void Sound_SnatHurt();
+
+	void Sound_StopBGM(_bool bBool);
+
+private:
+	_uint m_iSoundJumpCount = 0;
+	_uint m_iRandSoundCount = 0;
+
+	_uint m_iCurBGM = 0;
+	_uint m_iPreBGM = 0;
+
+	_bool m_bStop = false;
 
 public:
 	virtual void Free() override;

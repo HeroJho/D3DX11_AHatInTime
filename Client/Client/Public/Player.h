@@ -244,6 +244,12 @@ private:
 	// For. Chit
 	_bool	m_bChit = false;
 
+
+	// For. Sound
+	_float m_fSprintSoundAcc = 0.f;
+	_bool	m_bFirstHitSound = false;
+	_bool	m_bFirstHitSound2 = false;
+
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Sockat();

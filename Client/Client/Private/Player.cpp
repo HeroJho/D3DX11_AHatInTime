@@ -55,10 +55,9 @@ HRESULT CPlayer::Initialize(void * pArg)
 	}
 
 
-	// m_eState = STATE_NONE;
 	m_bRenderSkip = true;
 	m_TickStates.push_back(STATE_NONE);
-	//m_TickStates.push_back(STATE_IDLE);
+//	m_TickStates.push_back(STATE_IDLE);
 
 	m_fWalkSpeed = 1.f;
 	m_fRunSpeed = 2.5f;
@@ -128,15 +127,43 @@ void CPlayer::Set_State()
 	{
 		m_fStayTimeAcc = 0.f;
 
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->StopSound(SOUND_PEFFECT_SPRT);
+		RELEASE_INSTANCE(CGameInstance);
+
 		switch (m_eState)
 		{
+		case STATE_APPEAR:
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Dive_Start.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
+		}
+			break;
+		case STATE_ATTACK_1:
+		case STATE_ATTACK_2:
+		case STATE_ATTACK_3:
+			CGameManager::Get_Instance()->Sound_PlayerAttack();
+			break;
 		case STATE_SLEP:
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"DoubleJump.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
 			m_fSlepSpeed = 2.f;
+		}
 			break;
 		case STATE_JUMP:
 		case STATE_RUNJUMP:
 		case STATE_SPRINTJUMP:
 		{
+			CGameManager::Get_Instance()->Sound_PlayerJump();
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Jump_First.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
+			
+
+
 			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.1f, 0.1f, 0.1f), _float3(0.1f, 0.1f, 0.1f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.2f, 2.f, false, 0.f, 0.f, 1.f,
 				10, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
@@ -147,6 +174,12 @@ void CPlayer::Set_State()
 			break;
 		case STATE_SLIDE:
 		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Dive_Start.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
+
+			CGameManager::Get_Instance()->Sound_PlayerJump();
+
 			if ("Sprint_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
 				m_pTransformCom->Set_CurSpeed(m_pTransformCom->Get_CurSpeed() + 6.f);
 			else
@@ -163,14 +196,33 @@ void CPlayer::Set_State()
 		}
 			break;
 		case STATE_SLIDELENDING:
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"DoubleJump.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
 			m_fSlepSpeed = m_pTransformCom->Get_CurSpeed();
+		}
+
 			break;
 		case STATE_HILLDOWN:
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"hatkid_trainrace_ohnoohno.ogg", SOUND_PLAYER, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
+
 			m_fHillDownTimeAcc = 0.f;
 			m_fHillUpTimeAcc = 0.f;
+		}
 			break;
 		case STATE_MAGEDROW:
 		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Menu_Bubecho2.wav", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
+			CGameManager::Get_Instance()->Sound_PlayerDrow();
+
+			CGameManager::Get_Instance()->Sound_PlayerJump();
+
 			CItemManager::Get_Instance()->Make_Flask(m_pTransformCom->Get_State(CTransform::STATE_POSITION), m_pTransformCom->Get_State(CTransform::STATE_LOOK), 7.f, 5.f, m_pNavigationCom->Get_CurCellIndex());
 		}
 			break;
@@ -180,6 +232,12 @@ void CPlayer::Set_State()
 			break;
 		case STATE_DOUBLEJUMP:
 		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"DoubleJump.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
+
+			CGameManager::Get_Instance()->Sound_PlayerJump();
+
 			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.1f, 0.1f, 0.1f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.2f, 2.f, false, 0.f, 0.f, 0.5f,
 				10, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
@@ -191,10 +249,23 @@ void CPlayer::Set_State()
 		case STATE_MAGEIDLEJUMPRENDING:
 		case STATE_MAGERUNJUMPRENDING:   
 		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Jump_land.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
+
 			_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.1f, 0.1f, 0.1f), _float3(0.1f, 0.1f, 0.1f), _float3(0.f, 0.f, 0.f), _float3(90.f, 0.f, 0.f), 0.2f, 2.f, false, 0.f, 0.f, 1.f,
 				10, 0.f, 0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 		}
+			break;
+		case STATE_DEAD:
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->StopSound(SOUND_BGM);
+			pGameInstance->PlaySoundW(L"Death_Yell.ogg", SOUND_PLAYER, g_fTalkSound);
+			RELEASE_INSTANCE(CGameInstance);
+		}
+
 			break;
 		default:
 			m_fSlepSpeed = 0.f;
@@ -796,6 +867,10 @@ void CPlayer::FoxMask_Tick(_float fTimeDelta)
 		m_bFoxMask = false;
 		m_fFoxMaskTimeAcc = 0.f;
 		CToolManager::Get_Instance()->Set_All(1.f);
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Dweller Mask Off.mp3", SOUND_PEFFECT, g_fEffectSound + 0.5f);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 	
 }
@@ -807,6 +882,9 @@ void CPlayer::Stay_Tick(_float fTimeDelta)
 	switch (m_eState)
 	{
 	case Client::CPlayer::STATE_IDLE:
+	{
+
+	}
 		break;
 	case Client::CPlayer::STATE_WALK:
 	{
@@ -818,6 +896,11 @@ void CPlayer::Stay_Tick(_float fTimeDelta)
 			_float3 vLook; XMStoreFloat3(&vLook, m_pTransformCom->Get_State(CTransform::STATE_LOOK));
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.1f, 0.1f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(0.9f, 0.9f, 0.9f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.05f, 0.f, false, 0.f, 0.f, 1.f,
 				1, 0.2f, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), CParticle::TYPE_MODLE);
+
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->StopSound(SOUND_PEFFECT_SPRT);
+			pGameInstance->PlaySoundW(L"Run.ogg", SOUND_PEFFECT_PUT, g_fEffectSound - 0.2f);
+			RELEASE_INSTANCE(CGameInstance);
 
 			m_fStayTimeAcc = 0.f;
 		}
@@ -835,6 +918,11 @@ void CPlayer::Stay_Tick(_float fTimeDelta)
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("SmokeParticle"), vPos, _float3(0.1f, 0.1f, 0.f), vLook, _float3(0.5f, 0.5f, 0.5f), _float3(0.9f, 0.9f, 0.9f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 90.f), 0.05f, 0.f, false, 0.f, 0.f, 1.f,
 				1, 0.2f, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), CParticle::TYPE_MODLE);
 
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->StopSound(SOUND_PEFFECT_SPRT);
+			pGameInstance->PlaySoundW(L"Run.ogg", SOUND_PEFFECT_PUT, g_fEffectSound - 0.2f);
+			RELEASE_INSTANCE(CGameInstance);
+
 			m_fStayTimeAcc = 0.f;
 		}
 
@@ -843,6 +931,7 @@ void CPlayer::Stay_Tick(_float fTimeDelta)
 	case Client::CPlayer::STATE_SPRINT:
 	{
 		m_fStayTimeAcc += fTimeDelta;
+		m_fSprintSoundAcc += fTimeDelta;
 
 		if (0.1f < m_fStayTimeAcc)
 		{
@@ -854,8 +943,20 @@ void CPlayer::Stay_Tick(_float fTimeDelta)
 				3, 0.2f, 0.1f, 0.1f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(0.f, 360.f, 0.f), CParticle::TYPE_MODLE);
 
 
+
+
 			m_fStayTimeAcc = 0.f;
 		}
+		if (0.2f < m_fSprintSoundAcc)
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Run.ogg", SOUND_PEFFECT_PUT, g_fEffectSound - 0.3f);
+			pGameInstance->PlaySoundW(L"Spin_Spinning_Loop.ogg", SOUND_PEFFECT_SPRT, g_fEffectSound, true);
+			RELEASE_INSTANCE(CGameInstance);
+
+			m_fSprintSoundAcc = 0.f;
+		}
+
 	}
 		break;
 	case Client::CPlayer::STATE_SLEP:
@@ -1009,6 +1110,11 @@ void CPlayer::Dead_Tick(_float fTimeDelta)
 
 		m_CreatureDesc.iHP = m_CreatureDesc.iMaxHP - 1;
 		CUIManager::Get_Instance()->Set_Hp(m_CreatureDesc.iHP);
+
+
+		CGameManager::Get_Instance()->Sound_BGM(0);
+
+
 	}
 }
 
@@ -1016,16 +1122,26 @@ void CPlayer::Appear_Tick(_float fTimeDelta)
 {
 	m_fNoneTimeAcc += fTimeDelta;
 
-	
-	if (3.5f < m_fNoneTimeAcc && 9.f > m_fNoneTimeAcc)
+	if (1.9f < m_fNoneTimeAcc && 9.f > m_fNoneTimeAcc)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Jump_land.ogg", SOUND_PEFFECT, g_fEffectSound);
+		RELEASE_INSTANCE(CGameInstance);
+		m_fNoneTimeAcc = 10.f;
+	}
+	if (12.1f < m_fNoneTimeAcc && 19.f > m_fNoneTimeAcc)
 	{
 		_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 		vPos.y += 0.5f;
 		CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.4f, 0.4f, 0.4f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 3.f, false, 0.f, 0.f, 1.5f,
 			10, 1.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
 
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Pickup_51.wav", SOUND_PEFFECT, g_fEffectSound);
+		pGameInstance->PlaySoundW(L"HatKid_OhHiThere.ogg", SOUND_PLAYER, g_fTalkSound);
+		RELEASE_INSTANCE(CGameInstance);
 
-		m_fNoneTimeAcc = 10.f;
+		m_fNoneTimeAcc = 20.f;
 	}
 
 
@@ -1047,13 +1163,6 @@ void CPlayer::State_Input(_float fTimeDelta)
 	}
 	if (pGameInstance->Key_Down(DIK_N))
 	{
-		//_float3 vPos; XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-		//CItemManager::Get_Instance()->Make_PopSprintItem(TEXT("Prototype_GameObject_Diamond"), TEXT("capsule"), LEVEL_GAMEPLAY, vPos, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), 1, m_pNavigationCom->Get_CurCellIndex(), 15);
-
-		
-	}
-	if (pGameInstance->Key_Down(DIK_M))
-	{
 		if (m_bChit)
 			m_bChit = false;
 		else
@@ -1070,6 +1179,10 @@ void CPlayer::State_Input(_float fTimeDelta)
 			m_bFoxMask = true;
 			m_fFoxMaskTimeAcc = 0.f;
 			CToolManager::Get_Instance()->Set_WithOutPlayer(0.15f);
+
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Dweller Mask On.mp3", SOUND_PEFFECT, g_fEffectSound + 0.5f);
+			RELEASE_INSTANCE(CGameInstance);
 		}
 
 		_float3 vDir; XMStoreFloat3(&vDir, m_pTransformCom->Get_State(CTransform::STATE_RIGHT));
@@ -1392,7 +1505,10 @@ void CPlayer::Jump_Input(_float fTimeDelta)
 
 	if (pGameInstance->Key_Down(DIK_SPACE))
 	{
-		if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
+		
+		if ("Ori_Hat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) ||
+			"Mask_Cat" == m_pSockatCom->Get_SlotTag(SLOT_HAT) ||
+			"Mask_Fox" == m_pSockatCom->Get_SlotTag(SLOT_HAT))
 		{
 			m_TickStates.push_back(STATE_DOUBLEJUMP);
 			m_pTransformCom->DoubleJump(m_fJumpPower);
@@ -1778,7 +1894,9 @@ void CPlayer::IdleGetItem_Input(_float fTimeDelta)
 	{
 		m_TickStates.push_back(STATE_ENDGETITEM);
 		m_pSockatCom->Remove_Sockat(SLOT_HAND);
+		CGameManager::Get_Instance()->Sound_StopBGM(false);
 		//CCamManager::Get_Instance()->End_CutScene();
+		pGameInstance->PlaySoundW(L"HatKid_Awesome.ogg", SOUND_PLAYER, g_fTalkSound);
 		CUIManager::Get_Instance()->OnOff_Inven(true);
 	}
 
@@ -2040,6 +2158,21 @@ void CPlayer::LateTick(_float fTimeDelta)
 	m_bIsInWisp = CGameManager::Get_Instance()->Check_IsInWisp(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	_bool bisIsWispX = CGameManager::Get_Instance()->Check_IsInWispX(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	if (!m_bIsInWisp)
+	{
+		CGameManager::Get_Instance()->Sound_BGM(0);
+	}
+	else
+	{
+		if(LEVEL_BOSS != CToolManager::Get_Instance()->Get_CulLevel())
+			CGameManager::Get_Instance()->Sound_BGM(1);
+		// pGameInstance->StopSound(7);
+	}
+	RELEASE_INSTANCE(CGameInstance);
+
+
 	// Áß·Â Àû¿ë
 	if((STATE_STARTGETITEM != m_eState && STATE_IDLEGETITEM != m_eState && STATE_ENDGETITEM != m_eState)
 		&& STATE_ATTACKED != m_eState && STATE_JUMPATTACK != m_eState)
@@ -2243,9 +2376,6 @@ void CPlayer::Check_EndAnim()
 	case STATE_APPEAR:
 	{
 		m_TickStates.push_back(STATE_IDLE);
-		CUIManager::Get_Instance()->OnOff_HP(true);
-		CUIManager::Get_Instance()->OnOff_DiamondScore(true);
-		CUIManager::Get_Instance()->OnOff_Inven(true);
 	}
 		
 		break;
@@ -2342,17 +2472,17 @@ HRESULT CPlayer::Render()
 	}
 
 
-	if (CToolManager::Get_Instance()->Get_Debug())
-	{
-		Render_Col();
-		
-		_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-		_float fX = XMVectorGetX(vPos);
-		_float fY = XMVectorGetY(vPos);
-		_float fZ = XMVectorGetZ(vPos);
-		wstring str = to_wstring(fX) + TEXT(" / ") + to_wstring(fY) + TEXT(" / ") + to_wstring(fZ);
-		CToolManager::Get_Instance()->Render_Fonts(TEXT("Font_Nexon"), str.data(), _float2(50.f, 50.f), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(1.f, 1.f), false);
-	}
+	//if (CToolManager::Get_Instance()->Get_Debug())
+	//{
+	//	Render_Col();
+	//	
+	//	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	//	_float fX = XMVectorGetX(vPos);
+	//	_float fY = XMVectorGetY(vPos);
+	//	_float fZ = XMVectorGetZ(vPos);
+	//	wstring str = to_wstring(fX) + TEXT(" / ") + to_wstring(fY) + TEXT(" / ") + to_wstring(fZ);
+	//	CToolManager::Get_Instance()->Render_Fonts(TEXT("Font_Nexon"), str.data(), _float2(50.f, 50.f), XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.f, _float2(0.f, 0.f), _float2(1.f, 1.f), false);
+	//}
 
 
 
@@ -2456,6 +2586,12 @@ HRESULT CPlayer::Choose_Pass(_int iIndex)
 
 	switch (m_pModelCom->Get_MaterialIndex(iIndex))
 	{
+		//case 2:	// ´« 
+		//{
+		//	return S_OK;
+		//}
+
+		break;
 		case 3:	// ´« 
 		{
 			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(iIndex), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
@@ -2513,6 +2649,9 @@ void CPlayer::Get_Hat(TCHAR * szModelName, _bool bAction)
 	}
 
 	CItemManager::Get_Instance()->Add_Hat(szModelName);
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Pon Pickup.mp3", SOUND_GETITEM, g_fEffectSound);
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 #pragma endregion
@@ -2677,6 +2816,12 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
 			PartsDesc.bBlur = true;
+
+
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"time_piece_get.ogg", SOUND_PEFFECT, g_fEffectSound);
+			CGameManager::Get_Instance()->Sound_StopBGM(true);
+			RELEASE_INSTANCE(CGameInstance);
 		}
 		else if (SLOT_HAT == eSlot)
 		{
@@ -2692,6 +2837,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
 				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+		
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"DoubleJump.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
+		
 		}
 
 
@@ -2709,6 +2859,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
 			PartsDesc.bBlur = true;
+
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"time_piece_get.ogg", SOUND_PEFFECT, g_fBGMSound);
+			CGameManager::Get_Instance()->Sound_StopBGM(true);
+			RELEASE_INSTANCE(CGameInstance);
 		}
 		else if(SLOT_HAT == eSlot)
 		{
@@ -2723,6 +2878,10 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
 				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+		
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"DoubleJump.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
 		}
 
 	}
@@ -2736,6 +2895,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
 			PartsDesc.bBlur = true;
+
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"time_piece_get.ogg", SOUND_PEFFECT, g_fBGMSound);
+			CGameManager::Get_Instance()->Sound_StopBGM(true);
+			RELEASE_INSTANCE(CGameInstance);
 		}
 		else if(SLOT_HAT == eSlot)
 		{
@@ -2750,6 +2914,10 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
 				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+		
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"DoubleJump.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
 		}
 	}
 	else if (!lstrcmp(cItemName, TEXT("Mask_Cat")))
@@ -2762,6 +2930,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
 			PartsDesc.bBlur = true;
+
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"time_piece_get.ogg", SOUND_PEFFECT, g_fBGMSound);
+			CGameManager::Get_Instance()->Sound_StopBGM(true);
+			RELEASE_INSTANCE(CGameInstance);
 		}
 		else if (SLOT_HAT == eSlot)
 		{
@@ -2776,6 +2949,10 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
 				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+		
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"DoubleJump.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
 		}
 	}
 	else if (!lstrcmp(cItemName, TEXT("Mask_Fox")))
@@ -2788,6 +2965,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 			PartsDesc.vRot = _float3(-180.f, 0.f, 0.f);
 			PartsDesc.pOwner = this;
 			PartsDesc.bBlur = true;
+
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"time_piece_get.ogg", SOUND_PEFFECT, g_fBGMSound);
+			CGameManager::Get_Instance()->Sound_StopBGM(true);
+			RELEASE_INSTANCE(CGameInstance);
 		}
 		else if (SLOT_HAT == eSlot)
 		{
@@ -2802,6 +2984,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 				7, 0.f, 0.1f, 0.2f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.1f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_MODLE);
 			CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.5f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), 0.1f, 3.f, true, 1.f, 1.f, 1.f,
 				5, 0.f, 0.2f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.1f, 1.f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+		
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"DoubleJump.ogg", SOUND_PEFFECT, g_fEffectSound);
+			RELEASE_INSTANCE(CGameInstance);
+		
 		}
 	}
 	else if (!lstrcmp(cItemName, TEXT("Umbrella")))
@@ -2825,6 +3012,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
 		PartsDesc.pOwner = this;
 		PartsDesc.bBlur = true;
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"time_piece_get.ogg", SOUND_PEFFECT, g_fBGMSound);
+		CGameManager::Get_Instance()->Sound_StopBGM(true);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 	else if (!lstrcmp(cItemName, TEXT("yarn_ui_hover")))
 	{
@@ -2834,6 +3026,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
 		PartsDesc.pOwner = this;
 		PartsDesc.bBlur = true;
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"time_piece_get.ogg", SOUND_PEFFECT, g_fBGMSound);
+		CGameManager::Get_Instance()->Sound_StopBGM(true);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 	else if (!lstrcmp(cItemName, TEXT("yarn_ui_ice")))
 	{
@@ -2843,6 +3040,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
 		PartsDesc.pOwner = this;
 		PartsDesc.bBlur = true;
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"time_piece_get.ogg", SOUND_PEFFECT, g_fBGMSound);
+		CGameManager::Get_Instance()->Sound_StopBGM(true);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 	else if (!lstrcmp(cItemName, TEXT("yarn_ui_sprint")))
 	{
@@ -2852,6 +3054,11 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 		PartsDesc.vRot = _float3(0.f, 0.f, -158.2f);
 		PartsDesc.pOwner = this;
 		PartsDesc.bBlur = true;
+
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"time_piece_get.ogg", SOUND_PEFFECT, g_fBGMSound);
+		CGameManager::Get_Instance()->Sound_StopBGM(true);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 	else if (!lstrcmp(cItemName, TEXT("science_owlbrew_remade")))
 	{
@@ -2876,6 +3083,7 @@ HRESULT CPlayer::Equip_Sockat(string sItemName, SLOT eSlot)
 
 void CPlayer::Attacked()
 {
+
 	m_TickStates.push_back(STATE_ATTACKED);
 	m_bAttacked = true;
 
@@ -2888,6 +3096,28 @@ void CPlayer::Attacked()
 	vPos.y += 0.5f;
 	CParticleManager::Get_Instance()->Create_Effect(TEXT("Prototype_Component_Texture_Star"), vPos, _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.3f, 0.3f, 0.3f), _float3(0.4f, 0.4f, 0.4f), _float3(0.f, 0.f, 0.f), _float3(-90.f, 0.f, 0.f), 0.1f, 3.f, false, 0.f, 0.f, 1.5f,
 		5, 1.f, 0.1f, 0.f, 0.f, 0.f, 0.2f, 0.f, 0.0f, 0.2f, _float3(0.f, 0.f, 0.f), _float3(360.f, 0.f, 360.f), CParticle::TYPE_TEXTURE);
+
+	
+	if (m_bFirstHitSound)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->PlaySoundW(L"Player_Hurt.ogg", SOUND_PEFFECT, g_fEffectSound);
+		_uint iRandNum = CToolManager::Get_Instance()->Get_RendomNum_Int(0, 1);
+		switch (iRandNum)
+		{
+		case 0:
+			pGameInstance->PlaySoundW(L"hurt_owA.ogg", SOUND_PLAYER, g_fTalkSound);
+			break;
+		case 1:
+			pGameInstance->PlaySoundW(L"hurt_owB.ogg", SOUND_PLAYER, g_fTalkSound);
+			break;
+		default:
+			break;
+		}
+		RELEASE_INSTANCE(CGameInstance);
+	}
+	m_bFirstHitSound = true;
+
 
 	if (1 > m_CreatureDesc.iHP)
 	{
@@ -3024,6 +3254,14 @@ void CPlayer::OnDipY()
 
 		m_pTransformCom->ResetGravity();
 
+		if (m_bFirstHitSound2)
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			pGameInstance->PlaySoundW(L"Endless_Pit_Yell.ogg", SOUND_PLAYER, g_fTalkSound);
+			RELEASE_INSTANCE(CGameInstance);
+		}
+		m_bFirstHitSound2 = true;
+		
 		Attacked();
 	}
 

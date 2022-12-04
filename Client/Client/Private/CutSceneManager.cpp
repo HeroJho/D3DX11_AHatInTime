@@ -4,7 +4,7 @@
 #include "GameInstance.h"
 #include "CamManager.h"
 #include "ToolManager.h"
-
+#include "GameManager.h"
 
 #include "SubconEye.h"
 #include "BellMountEye.h"
@@ -52,9 +52,11 @@ void CCutSceneManager::StartCutScene(CUT_STATE eState)
 	switch (m_eState)
 	{
 	case CUT_CAM3:
+	{
 		m_fCam3_SlowTimeAcc = 0.f;
 		CCamManager::Get_Instance()->Play_CutScene(3, true);
 		CToolManager::Get_Instance()->Set_All(0.05f);
+	}
 		break;
 	case CUT_EYE:
 		m_fDisAppearEyeTimeAcc = 0.f;

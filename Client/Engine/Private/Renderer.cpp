@@ -7,6 +7,7 @@
 #include "PipeLine.h"
 #include "Texture.h"
 #include "Timer_Manager.h"
+#include "Sound_Manager.h"
 
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
@@ -736,6 +737,11 @@ HRESULT CRenderer::Render_Blend()
 				fRendomNext = 1.f;
 			else
 			{
+
+				CSound_Manager::Get_Instance()->PlaySoundW(TEXT("Shake.mp3"), 7, fRatio * 0.5f, true);
+				CSound_Manager::Get_Instance()->SetChannelVolume(7, fRatio);
+
+
 				_float fShakeValue = 0.02f * fRatio;
 				fRendomNext = m_pTarget_Manager->Get_RendomNum(1.f - fShakeValue, 1.f + fShakeValue);
 			}
@@ -743,6 +749,9 @@ HRESULT CRenderer::Render_Blend()
 			if (FAILED(m_pShader->Set_RawValue("g_RendomNext", &fRendomNext, sizeof(_float))))
 				return E_FAIL;
 		}
+		else
+			CSound_Manager::Get_Instance()->StopSound(7);
+
 	}
 
 

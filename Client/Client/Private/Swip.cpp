@@ -64,6 +64,11 @@ HRESULT CSwip::Initialize(void * pArg)
 void CSwip::Start()
 {
 	m_eState = STATE_RING_UP;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Dweller Mask On.mp3", SOUND_BOSS1, g_fEffectSound + 0.5f);
+	RELEASE_INSTANCE(CGameInstance);
+	m_bSound = false;
 }
 
 
@@ -128,6 +133,15 @@ void CSwip::Tick(_float fTimeDelta)
 			_float3 vPos;
 			XMStoreFloat3(&vPos, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 			CGameManager::Get_Instance()->Set_Wisp(true, m_fRatio, vPos, 0);
+
+			if (0.8f > m_fRatio && !m_bSound)
+			{
+				m_bSound = true;
+
+				CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+				pGameInstance->PlaySoundW(L"Dweller Mask Off.mp3", SOUND_BOSS1, g_fEffectSound + 0.5f);
+				RELEASE_INSTANCE(CGameInstance);
+			}
 		}
 
 	}

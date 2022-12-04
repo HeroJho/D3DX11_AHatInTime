@@ -280,6 +280,9 @@
     <Filter Include="03.UI\Loading\Start">
       <UniqueIdentifier>{2aaf430f-4f8c-427c-9724-94b84a5a40f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.UI\CheckPoint">
+      <UniqueIdentifier>{3c3bf45f-1c31-43bf-8735-dcd6c4a97193}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -600,6 +603,9 @@
     <ClInclude Include="..\public\DiamondW.h">
       <Filter>02.GameObjects\Item\Diamond</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\CheckPoint.h">
+      <Filter>03.UI\CheckPoint</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -904,6 +910,9 @@
     </ClCompile>
     <ClCompile Include="..\private\DiamondW.cpp">
       <Filter>02.GameObjects\Item\Diamond</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\CheckPoint.cpp">
+      <Filter>03.UI\CheckPoint</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

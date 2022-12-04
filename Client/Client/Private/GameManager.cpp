@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 
 #include "UIManager.h"
+#include "ToolManager.h"
 
 
 
@@ -155,6 +156,10 @@ void CGameManager::Inc_Diamond(_uint iNum)
 
 	CUIManager::Get_Instance()->OnOff_DiamondScore(true);
 	CUIManager::Get_Instance()->Set_Score(m_iDiamond);
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->PlaySoundW(L"Pon Pickup.mp3", SOUND_GETITEM, g_fEffectSound);
+	RELEASE_INSTANCE(CGameInstance);
 }
 
 void CGameManager::Dec_Diamond(_uint iNum)
@@ -173,7 +178,7 @@ void CGameManager::Dec_Diamond(_uint iNum)
 
 _bool CGameManager::Check_Stage_1()
 {
-	if(m_bModVault && m_bJumpMapvalut && m_bJumpMapvalut2)
+	if(m_bModVault && m_bJumpMapvalut)
 		return true;
 
 	return false;
@@ -201,6 +206,7 @@ void CGameManager::Set_SavePoint(_uint iNaviIndex, _float3 vNaviPos)
 {
 	m_iNaviIndex = iNaviIndex;
 	m_vNaviPos = vNaviPos;
+	CUIManager::Get_Instance()->Open_CheckPoint();
 }
 
 void CGameManager::Get_NaviPoint(_uint* iNaviIndex, _float3* vNaviPos)
@@ -217,3 +223,197 @@ void CGameManager::Free()
 
 }
 
+
+
+
+
+void CGameManager::Sound_PlayerJump()
+{
+	if (m_iRandSoundCount < m_iSoundJumpCount)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		_int iInt = CToolManager::Get_Instance()->Get_RendomNum_Int(0, 2);
+
+		switch (iInt)
+		{
+		case 0:
+			pGameInstance->PlaySoundW(L"jump_hut01.ogg", SOUND_PLAYER, g_fTalkSound);
+			break;
+		case 1:
+			pGameInstance->PlaySoundW(L"jump_hut02.ogg", SOUND_PLAYER, g_fTalkSound);
+			break;
+		case 2:
+			pGameInstance->PlaySoundW(L"jump_ya01.ogg", SOUND_PLAYER, g_fTalkSound);
+			break;
+		default:
+			break;
+		}
+
+
+		RELEASE_INSTANCE(CGameInstance);
+
+		m_iSoundJumpCount = 0;
+
+		m_iRandSoundCount = CToolManager::Get_Instance()->Get_RendomNum_Int(1, 3);
+	}
+
+	++m_iSoundJumpCount;
+}
+
+
+//CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+//pGameInstance->PlaySoundW(L"jump_ya01.ogg", SOUND_PLAYER, g_fTalkSound);
+//RELEASE_INSTANCE(CGameInstance);
+
+void CGameManager::Sound_PlayerAttack()
+{
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_int iInt = CToolManager::Get_Instance()->Get_RendomNum_Int(0, 2);
+
+	switch (iInt)
+	{
+	case 0:
+		pGameInstance->PlaySoundW(L"attack_ho01.ogg", SOUND_PLAYER, g_fTalkSound);
+		break;
+	case 1:
+		pGameInstance->PlaySoundW(L"attack_ho02.ogg", SOUND_PLAYER, g_fTalkSound);
+		break;
+	case 2:
+		pGameInstance->PlaySoundW(L"attack_yeah02.ogg", SOUND_PLAYER, g_fTalkSound);
+		break;
+	default:
+		break;
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+}
+
+void CGameManager::Sound_PlayerDrow()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_int iInt = CToolManager::Get_Instance()->Get_RendomNum_Int(0, 2);
+
+	switch (iInt)
+	{
+	case 0:
+		pGameInstance->PlaySoundW(L"HatKid_Blammo.ogg", SOUND_PLAYER, g_fTalkSound);
+		break;
+	case 1:
+		pGameInstance->PlaySoundW(L"HatKid_Booyaah.ogg", SOUND_PLAYER, g_fTalkSound);
+		break;
+	case 2:
+		pGameInstance->PlaySoundW(L"HatKid_Bye-bye.ogg", SOUND_PLAYER, g_fTalkSound);
+		break;
+	default:
+		break;
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+
+}
+//CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+//pGameInstance->PlaySoundW(L"HatKid_Bye-bye.ogg", SOUND_PLAYER, g_fTalkSound);
+//RELEASE_INSTANCE(CGameInstance);
+
+void CGameManager::Sound_BGM(_uint iBGM, _bool bForceChange)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+
+	if(m_bStop)
+		pGameInstance->SetChannelVolume(SOUND_BGM, 0);
+	else
+		pGameInstance->SetChannelVolume(SOUND_BGM, g_fBGMSound);
+
+
+	if (m_iCurBGM != iBGM)
+	{
+		if ((2 == m_iCurBGM || 3 == m_iCurBGM || 4 == m_iCurBGM || 5 == m_iCurBGM) && 0 == iBGM && !bForceChange)
+		{
+			RELEASE_INSTANCE(CGameInstance);
+			return;
+		}
+
+
+		m_iCurBGM = iBGM;
+		pGameInstance->StopSound(SOUND_BGM);
+		switch (m_iCurBGM)
+		{
+		case 0:
+			pGameInstance->PlayBGM(L"NowBGM.mp3", g_fBGMSound);
+			break;
+		case 1:
+			pGameInstance->PlayBGM(L"OtherBGM.mp3", g_fBGMSound);
+			break;
+		case 2:
+			pGameInstance->PlayBGM(L"BossScreamBGM.mp3", g_fBGMSound);
+			break;
+		case 3:
+			pGameInstance->PlayBGM(L"BossIdleBGM.mp3", g_fBGMSound);
+			break;
+		case 4:
+		{
+			_float fD = g_fBGMSound - 0.2f;
+			pGameInstance->PlayBGM(L"2StagBGM.mp3", fD);
+		}
+			break;
+		case 5:
+			pGameInstance->PlayBGM(L"BossBGM.mp3", g_fBGMSound);
+			break;
+		default:
+			break;
+		}
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+}
+
+void CGameManager::Sound_SnatHurt()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_int iInt = CToolManager::Get_Instance()->Get_RendomNum_Int(0, 2);
+
+	switch (iInt)
+	{
+	case 0:
+		pGameInstance->PlaySoundW(L"Snatcher_IFeelSoWeak.ogg", SOUND_SNAT, g_fSnatSound);
+		break;
+	case 1:
+		pGameInstance->PlaySoundW(L"Snatcher_NOT.ogg", SOUND_SNAT, g_fSnatSound);
+		break;
+	case 2:
+		pGameInstance->PlaySoundW(L"Snatcher_Whoops.ogg", SOUND_SNAT, g_fSnatSound);
+		break;
+	default:
+		break;
+	}
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+}
+
+
+void CGameManager::Sound_StopBGM(_bool bBool)
+{
+	m_bStop = bBool;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (m_bStop)
+		pGameInstance->SetChannelVolume(SOUND_BGM, 0);
+	else
+		pGameInstance->SetChannelVolume(SOUND_BGM, g_fBGMSound);
+	RELEASE_INSTANCE(CGameInstance);
+
+}
