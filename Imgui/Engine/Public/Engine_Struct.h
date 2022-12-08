@@ -170,7 +170,6 @@ namespace Engine
 
 
 	// For. Data
-
 	typedef struct tagHeroHierarchyNode
 	{
 

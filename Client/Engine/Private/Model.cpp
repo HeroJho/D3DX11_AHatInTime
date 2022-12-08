@@ -615,11 +615,10 @@ CComponent * CModel::Clone(void * pArg)
 	{
 		if (FAILED(pInstance->Bin_Initialize(pArg)))
 		{
-			MSG_BOX(TEXT("Failed To Cloned : CModel"));
+			MSG_BOX(TEXT("Failed To Cloned : Bin_CModel"));
 			Safe_Release(pInstance);
 		}
 	}
-
 
 	return pInstance;
 }

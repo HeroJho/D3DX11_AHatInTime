@@ -100,8 +100,6 @@ private:
 	HRESULT Bin_Ready_HierarchyNodes();
 	HRESULT Bin_Ready_Animations();
 	HRESULT Safe_Release_Scene();
-public:
-	_bool	Get_IsBin() { return m_bIsBin; }
 
 
 
