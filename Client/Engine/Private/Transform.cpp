@@ -556,7 +556,9 @@ void CTransform::ResetGravity()
 	// m_fCulSpeed = 0.f;
 }
 
-void CTransform::PushMe(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation* pNavigation)
+
+
+void CTransform::Push(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation* pNavigation)
 {
 	_vector vDir = vMyPos - vOtherPos;
 	
@@ -585,7 +587,7 @@ void CTransform::PushMe(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _flo
 
 }
 
-void CTransform::PushMeX(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation * pNavigation)
+void CTransform::PushXZ(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation * pNavigation)
 {
 	_vector vDir = vMyPos - vOtherPos;
 
@@ -597,11 +599,59 @@ void CTransform::PushMeX(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _fl
 		return;
 
 	fDipDis *= 0.5f;
+
+	vDir = XMVector3Normalize(XMVectorSetY(vDir, 0.f));
+
+	_vector vPosition = Get_State(CTransform::STATE_POSITION);
+	vPosition += vDir * fDipDis;
+
+	_bool		isMove = false;
+	if (nullptr != pNavigation)
+		isMove = pNavigation->isMove(vPosition);
+
+	if (true == isMove)
+	{
+		Set_State(STATE_POSITION, vPosition);
+	}
+}
+
+void CTransform::PushMe(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation * pNavigation)
+{
+	_vector vDir = vMyPos - vOtherPos;
+
+	_float fDis = XMVectorGetX(XMVector3Length(vDir));
+	_float fRadDis = fMyRad + fOtherRad;
+
+	_float fDipDis = fRadDis - fDis;
+	if (0.f > fDipDis)
+		return;
+
 	vDir = XMVector3Normalize(vDir);
 
-	_float fDot = XMVectorGetX(XMVector3Dot(vDir, XMVectorSet(0.f, 1.f, 0.f, 0.f)));
-	if (0.5f < fDot || -0.5f > fDot)
+	_vector vPosition = Get_State(CTransform::STATE_POSITION);
+	vPosition += vDir * fDipDis;
+
+
+	_bool		isMove = false;
+	if (nullptr != pNavigation)
+		isMove = pNavigation->isMove(vPosition);
+
+	if (true == isMove)
+		Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::PushOther(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation * pNavigation)
+{
+	_vector vDir = vOtherPos - vMyPos;
+
+	_float fDis = XMVectorGetX(XMVector3Length(vDir));
+	_float fRadDis = fMyRad + fOtherRad;
+
+	_float fDipDis = fRadDis - fDis;
+	if (0.f > fDipDis)
 		return;
+
+	vDir = XMVector3Normalize(vDir);
 
 	_vector vPosition = Get_State(CTransform::STATE_POSITION);
 	vPosition += vDir * fDipDis;
@@ -616,6 +666,58 @@ void CTransform::PushMeX(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _fl
 		Set_State(STATE_POSITION, vPosition);
 	}
 }
+
+void CTransform::PushMeXZ(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation * pNavigation)
+{
+	_vector vDir = vMyPos - vOtherPos;
+
+	_float fDis = XMVectorGetX(XMVector3Length(vDir));
+	_float fRadDis = fMyRad + fOtherRad;
+
+	_float fDipDis = fRadDis - fDis;
+	if (0.f > fDipDis)
+		return;
+
+	vDir = XMVector3Normalize(XMVectorSetY(vDir, 0.f));
+
+	_vector vPosition = Get_State(CTransform::STATE_POSITION);
+	vPosition += vDir * fDipDis;
+
+	_bool		isMove = false;
+	if (nullptr != pNavigation)
+		isMove = pNavigation->isMove(vPosition);
+
+	if (true == isMove)
+		Set_State(STATE_POSITION, vPosition);
+}
+
+void CTransform::PushOtherXZ(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation * pNavigation)
+{
+	_vector vDir = vOtherPos - vMyPos;
+
+	_float fDis = XMVectorGetX(XMVector3Length(vDir));
+	_float fRadDis = fMyRad + fOtherRad;
+
+	_float fDipDis = fRadDis - fDis;
+	if (0.f > fDipDis)
+		return;
+
+	vDir = XMVector3Normalize(XMVectorSetY(vDir, 0.f));
+
+	_vector vPosition = Get_State(CTransform::STATE_POSITION);
+	vPosition += vDir * fDipDis;
+
+	_bool		isMove = false;
+	if (nullptr != pNavigation)
+		isMove = pNavigation->isMove(vPosition);
+
+	if (true == isMove)
+	{
+		XMStoreFloat3(&m_vPrePos, Get_State(STATE_POSITION));
+		Set_State(STATE_POSITION, vPosition);
+	}
+}
+
 
 void CTransform::ReSet_AttackedAnim()
 {

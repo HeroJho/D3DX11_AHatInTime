@@ -32,8 +32,7 @@ public:
 
 	string Get_Tag() { return m_sTag; }
 
-	CCollider* Get_Colliders(string sTag);
-	list<CCollider*>* Get_Colliders() { return &m_Colliders; }
+
 	class COBB* Get_StaticOBB();
 
 	CGameObject* Get_Owner() { return m_pOwner; }
@@ -51,15 +50,10 @@ public:
 	virtual HRESULT Render_ShadowDepth() { return S_OK; }
 
 
-	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) {};
-	
 
-	void Tick_Col(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr, _float fMagicNum = 0.f, _bool bIsinWisp = false);
-	void Render_Col();
 
 public:
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) { return S_OK; }
-	HRESULT AddCollider(CCollider::TYPE eType, CCollider::COLLIDERDESC Desc);
 
 
 protected:
@@ -70,8 +64,7 @@ protected: /* 객체에게 추가된 컴포넌트들을 키로 분류하여 보관한다. */
 	map<const _tchar*, class CComponent*>			m_Components;
 	typedef map<const _tchar*, class CComponent*>	COMPONENTS;
 
-	// 콜라이더 보관
-	list<CCollider*>		m_Colliders;
+
 
 
 protected:
@@ -93,6 +86,29 @@ protected:
 
 private:
 	class CComponent* Find_Component(const _tchar* pComponentTag);
+
+
+
+
+	// For. Collider
+public:
+	CCollider* Get_Colliders(string sTag);
+	list<CCollider*>* Get_Colliders() { return &m_Colliders; }
+
+	HRESULT AddCollider(CCollider::TYPE eType, CCollider::COLLIDERDESC Desc);
+	
+public:
+	virtual void OnCollision(CCollider::OTHERTOMECOLDESC Desc) {};
+
+protected:
+	void Tick_Col(_fmatrix TransformMatrix, class CNavigation* pNavi = nullptr, class CTransform* pTran = nullptr, _float fMagicNum = 0.f, _bool bIsinWisp = false);
+	void Render_Col();
+
+private:
+	list<CCollider*>		m_Colliders;
+
+
+
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

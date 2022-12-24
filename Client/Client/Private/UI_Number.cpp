@@ -83,7 +83,7 @@ HRESULT CUI_Number::Render()
 	_float4x4 mStoreMax;
 	
 	_float fX = m_TotalInfo.fX;
-
+	fX -= m_UiInfo.fSizeX * 0.5f * m_sNumber.size();
 	for (_uint i = 0; i < m_sNumber.size(); ++i)
 	{
 		_uint iIndex = m_sNumber[i] - 48;

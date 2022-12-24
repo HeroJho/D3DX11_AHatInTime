@@ -27,8 +27,8 @@ public:
 public:
 	const vector<class CGameObject*>* Get_CurCellColliders();
 	_bool Get_GroundCell(_float3* pPoss, class CTransform* pTran);
-	_uint Get_CurCellIndex() { return m_NavigationDesc.iCurrentIndex; }
 
+	_uint Get_CurCellIndex() { return m_NavigationDesc.iCurrentIndex; }
 	void Set_NaviIndex(_uint iIndex) { m_NavigationDesc.iCurrentIndex = iIndex; }
 
 public:

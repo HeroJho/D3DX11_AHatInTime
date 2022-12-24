@@ -189,6 +189,7 @@ HRESULT CDataManager::SaveSceneData(DATA_HEROSCENE * pScene, char* cModelName, D
 
 	return S_OK;
 }
+
 HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene, DATA_TYPE eTYPE)
 {
 	char cPullName[MAX_PATH];
@@ -322,8 +323,6 @@ HRESULT CDataManager::ReadSceneData(char * pFileName, DATA_HEROSCENE* ReadScene,
 	ifs.close();
 	return S_OK;
 }
-
-
 HRESULT CDataManager::Create_Try_BinModel(const _tchar * pModelName, LEVEL eLEVEL, DATA_TYPE eTYPE)
 {
 

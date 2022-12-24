@@ -2374,10 +2374,7 @@ void CPlayer::Check_EndAnim()
 	switch (m_eState)
 	{
 	case STATE_APPEAR:
-	{
 		m_TickStates.push_back(STATE_IDLE);
-	}
-		
 		break;
 	case STATE_ATTACK_1:
 		m_TickStates.push_back(STATE_READYATTACK);

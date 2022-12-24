@@ -27,16 +27,7 @@ CComponent * CGameObject::Get_ComponentPtr(const _tchar * pComponentTag)
 	return pComponent;	
 }
 
-CCollider * CGameObject::Get_Colliders(string sTag)
-{
-	for (auto& pCol : m_Colliders)
-	{
-		if (sTag == pCol->Get_Desc().sTag)
-			return pCol;
-	}
 
-	return nullptr;
-}
 
 COBB * CGameObject::Get_StaticOBB()
 {
@@ -80,47 +71,7 @@ HRESULT CGameObject::Render()
 	return S_OK;
 }
 
-void CGameObject::Tick_Col(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran, _float fMagicNum, _bool bIsinWisp)
-{
-	for (auto& pCollider : m_Colliders)
-		pCollider->Update(TransformMatrix, pNavi, pTran, fMagicNum, bIsinWisp);
-}
 
-void CGameObject::Render_Col()
-{
-	for (auto& pCollider : m_Colliders)
-		pCollider->Render();
-}
-
-HRESULT CGameObject::AddCollider(CCollider::TYPE eType, CCollider::COLLIDERDESC Desc)
-{
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
-	CCollider*			pCollider = nullptr;
-
-	switch (eType)
-	{
-	case CCollider::TYPE_AABB:
-		pCollider = (CCollider*)pGameInstance->Clone_Component(0, TEXT("Prototype_Component_Collider_AABB"), &Desc);
-		break;
-	case CCollider::TYPE_OBB:
-		pCollider = (CCollider*)pGameInstance->Clone_Component(0, TEXT("Prototype_Component_Collider_OBB"), &Desc);
-		break;
-	case CCollider::TYPE_SPHERE:
-		pCollider = (CCollider*)pGameInstance->Clone_Component(0, TEXT("Prototype_Component_Collider_Sphere"), &Desc);
-		break;
-	}
-
-	if (nullptr == pCollider)
-		return E_FAIL;
-
-	m_Colliders.push_back(pCollider);
-
-
-	RELEASE_INSTANCE(CGameInstance);
-
-	return S_OK;
-}
 
 HRESULT CGameObject::Add_Component(_uint iLevelIndex, const _tchar * pPrototypeTag, const _tchar * pComponentTag, CComponent** ppOut, void* pArg)
 {
@@ -180,4 +131,62 @@ void CGameObject::Free()
 	
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+}
+
+
+
+
+
+
+CCollider * CGameObject::Get_Colliders(string sTag)
+{
+	for (auto& pCol : m_Colliders)
+	{
+		if (sTag == pCol->Get_Desc().sTag)
+			return pCol;
+	}
+
+	return nullptr;
+}
+
+void CGameObject::Tick_Col(_fmatrix TransformMatrix, CNavigation* pNavi, CTransform* pTran, _float fMagicNum, _bool bIsinWisp)
+{
+	for (auto& pCollider : m_Colliders)
+		pCollider->Update(TransformMatrix, pNavi, pTran, fMagicNum, bIsinWisp);
+}
+
+void CGameObject::Render_Col()
+{
+	for (auto& pCollider : m_Colliders)
+		pCollider->Render();
+}
+
+HRESULT CGameObject::AddCollider(CCollider::TYPE eType, CCollider::COLLIDERDESC Desc)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CCollider*			pCollider = nullptr;
+
+	switch (eType)
+	{
+	case CCollider::TYPE_AABB:
+		pCollider = (CCollider*)pGameInstance->Clone_Component(0, TEXT("Prototype_Component_Collider_AABB"), &Desc);
+		break;
+	case CCollider::TYPE_OBB:
+		pCollider = (CCollider*)pGameInstance->Clone_Component(0, TEXT("Prototype_Component_Collider_OBB"), &Desc);
+		break;
+	case CCollider::TYPE_SPHERE:
+		pCollider = (CCollider*)pGameInstance->Clone_Component(0, TEXT("Prototype_Component_Collider_Sphere"), &Desc);
+		break;
+	}
+
+	if (nullptr == pCollider)
+		return E_FAIL;
+
+	m_Colliders.push_back(pCollider);
+
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
 }

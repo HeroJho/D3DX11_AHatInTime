@@ -80,7 +80,6 @@ void CMainApp::Tick(_float fTimeDelta)
 			CToolManager::Get_Instance()->Set_Debug(true);
 	}
 		
-
 	m_fTimeAcc += fTimeDelta;
 #endif // _DEBUG
 
