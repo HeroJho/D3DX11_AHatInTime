@@ -262,7 +262,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 }
 
 HRESULT CMainApp::Ready_Prototype_GameObject()
-{ 
+{  
 
 	return S_OK;
 }
