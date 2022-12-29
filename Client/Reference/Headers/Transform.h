@@ -104,8 +104,15 @@ public:
 	void DoubleJump(_float fPower);
 	void ResetGravity();
 
+	// 절반 민다. 양쪽 호출 시 서로 미는게 된다.
+	void Push(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
+	void PushXZ(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
+
+	// 한 쪽만 민다.
 	void PushMe(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
-	void PushMeX(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
+	void PushOther(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
+	void PushMeXZ(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
+	void PushOtherXZ(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
 
 
 	//====== Anim ======
