@@ -205,13 +205,7 @@ void CUI_SmallSpeechBubble::Set_Position()
 	m_UiInfo.fX = (XMVectorGetX(vPos) + 1.f) * g_iWinSizeX * 0.5f;
 	m_UiInfo.fY = (-1.f * XMVectorGetY(vPos) + 1.f) * g_iWinSizeY * 0.5f;
 
-	// -1 ~ 1  == 0 ~ 1280
-	// 1 ~ -1  == 720 ~ 0
-	// -1 ~ 1 = 0 ~ 720
-
 	RELEASE_INSTANCE(CGameInstance);
-
-
 }
 
 

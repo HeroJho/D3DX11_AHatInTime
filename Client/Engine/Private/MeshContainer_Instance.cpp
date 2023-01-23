@@ -46,9 +46,9 @@ HRESULT CMeshContainer_Instance::Initialize_Prototype(const aiMesh * pAIMesh, CM
 #pragma endregion
 
 #pragma region INDEXBUFFER
-	m_iNumPrimitives = pAIMesh->mNumFaces * iNumInstance;
+	m_iNumPrimitives = pAIMesh->mNumFaces * iNumInstance; // 
 	m_iIndexSizeofPrimitive = sizeof(FACEINDICES32);
-	m_iNumIndicesofPrimitive = 3;
+	m_iNumIndicesofPrimitive = 3; // Æú¸®°ï °¹¼ö
 	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
 	m_eTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
@@ -89,6 +89,7 @@ HRESULT CMeshContainer_Instance::Initialize_Prototype(const aiMesh * pAIMesh, CM
 #pragma endregion
 
 #pragma region INSTANCEBUFFER
+
 	m_iInstanceStride = sizeof(VTXINSTANCE);
 
 	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));

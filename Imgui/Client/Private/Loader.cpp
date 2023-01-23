@@ -158,7 +158,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CColorCube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-
 	/* For.Prototype_GameObject_CamSelectingCube */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_CamSelectingCube"),
 		CCamSelectingCube::Create(m_pDevice, m_pContext))))
