@@ -948,6 +948,7 @@ void CCamManager::GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2, CAMDATA vPos3
 
 
 
+
 void CCamManager::Free()
 {
 	Safe_Release(m_pSelectingCube);
