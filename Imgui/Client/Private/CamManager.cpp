@@ -945,7 +945,7 @@ void CCamManager::GetBesierRenderPos(CAMDATA vPos1, CAMDATA vPos2, CAMDATA vPos3
 
 
 
-
+ 
 
 
 
