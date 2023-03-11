@@ -28,8 +28,9 @@ HRESULT CLevel_PartsTool::Initialize()
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
 
-	//if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-	//	return E_FAIL;
+	// TEST
+	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
+		return E_FAIL;
 
 
 
@@ -133,6 +134,21 @@ HRESULT CLevel_PartsTool::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain_Anim"), LEVEL_PARTSTOOL, pLayerTag)))
 		return E_FAIL;
 
+
+
+	Safe_Release(pGameInstance);
+
+	return S_OK;
+}
+
+HRESULT CLevel_PartsTool::Ready_Layer_Monster(const _tchar * pLayerTag)
+{
+	CGameInstance*		pGameInstance = CGameInstance::Get_Instance();
+	Safe_AddRef(pGameInstance);
+
+
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(TEXT("Prototype_GameObject_Terrain_Anim"), LEVEL_PARTSTOOL, pLayerTag)))
+	//	return E_FAIL;
 
 
 	Safe_Release(pGameInstance);
