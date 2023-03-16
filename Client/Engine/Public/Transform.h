@@ -113,6 +113,7 @@ public:
 	void PushOther(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
 	void PushMeXZ(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
 	void PushOtherXZ(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
+	void PushMeX(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, class CNavigation* pNavigation = nullptr);
 
 
 	//====== Anim ======

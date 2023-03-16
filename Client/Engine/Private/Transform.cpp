@@ -718,6 +718,33 @@ void CTransform::PushOtherXZ(_fvector vMyPos, _float fMyRad, _fvector vOtherPos,
 	}
 }
 
+void CTransform::PushMeX(_fvector vMyPos, _float fMyRad, _fvector vOtherPos, _float fOtherRad, CNavigation * pNavigation)
+{
+		_vector vDir = vOtherPos - vMyPos;
+
+	_float fDis = XMVectorGetX(XMVector3Length(vDir));
+	_float fRadDis = fMyRad + fOtherRad;
+
+	_float fDipDis = fRadDis - fDis;
+	if (0.f > fDipDis)
+		return;
+
+	vDir = XMVector3Normalize(XMVectorSetY(vDir, 0.f));
+
+	_vector vPosition = Get_State(CTransform::STATE_POSITION);
+	vPosition += vDir * fDipDis;
+
+	_bool		isMove = false;
+	if (nullptr != pNavigation)
+		isMove = pNavigation->isMove(vPosition);
+
+	if (true == isMove)
+	{
+		XMStoreFloat3(&m_vPrePos, Get_State(STATE_POSITION));
+		Set_State(STATE_POSITION, vPosition);
+	}
+}
+
 
 void CTransform::ReSet_AttackedAnim()
 {
