@@ -16,7 +16,7 @@ HRESULT CLevel_PartsTool::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Lights()))
+	if (FAILED(Ready_Lights())) 
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
