@@ -67,7 +67,7 @@ HRESULT CLevel_Ending::Render()
 		return E_FAIL;
 
 
-	SetWindowText(g_hWnd, TEXT("게임플레이레벨임"));
+	SetWindowText(g_hWnd, TEXT("게임플레이레벨임")); 
 
 	return S_OK;
 }

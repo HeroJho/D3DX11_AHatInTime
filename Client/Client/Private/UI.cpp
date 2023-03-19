@@ -243,7 +243,7 @@ void CUI::UI_InputDebug(_float fTimeDelta)
 	}
 	else if (pGameInstance->Key_Pressing(DIK_DOWN))
 	{
-		m_UiInfo.fY += 50.f  * fTimeDelta;
+		m_UiInfo.fY += 50.f  * fTimeDelta; 
 	}
 	else if (pGameInstance->Key_Pressing(DIK_LEFT))
 	{
