@@ -30,7 +30,7 @@ HRESULT CLevel_PartsTool::Initialize()
 
 	// TEST
 	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Monster"))))
-		return E_FAIL;
+		return E_FAIL; 
 
 
 

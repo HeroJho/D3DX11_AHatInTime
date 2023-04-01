@@ -46,7 +46,7 @@ HRESULT CUI_Shop::Initialize(void * pArg)
 	lstrcpy(SlotDesc.sItemTag, TEXT("Mask_Cat"));
 	Make_ChildUI(60.f, -20.f, 100.f, 35.f, TEXT("Prototype_UI_Shop_Slot"), &SlotDesc);
 
-	// Make_ChildUI(-1.66f, 74.22f, 372.44f, 87.f, TEXT("Prototype_UI_ShopMenu"));
+	Make_ChildUI(-1.66f, 74.22f, 372.44f, 87.f, TEXT("Prototype_UI_ShopMenu"));
 
 	m_iSelectedIndex = 0;
 
