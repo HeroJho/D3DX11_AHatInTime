@@ -88,6 +88,7 @@ HRESULT CLevel_PartsTool::Ready_Layer_Camera(const _tchar * pLayerTag)
 	CameraDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
 	CameraDesc.fNear = 0.2f;
 	CameraDesc.fFar = 300.0f;
+	// CameraDesc.fFar = 400.0f;
 
 	CameraDesc.TransformDesc.fSpeedPerSec = 5.f;
 	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);

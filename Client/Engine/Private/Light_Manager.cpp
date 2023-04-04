@@ -21,6 +21,7 @@ const LIGHTDESC * CLight_Manager::Get_LightDesc(_uint iIndex)
 _float4x4 CLight_Manager::Get_ShadowLightViewMatrix()
 {
 	_float4x4 mMatirx;
+	XMStoreFloat4x4(&mMatirx, XMMatrixIdentity());
 	if(3 == CLevel_Manager::Get_Instance()->Get_CulLevel())
 		XMStoreFloat4x4(&mMatirx, XMMatrixTranspose(XMLoadFloat4x4(&m_mShadowLightViewMatrix)));
 	else if(4 == CLevel_Manager::Get_Instance()->Get_CulLevel())

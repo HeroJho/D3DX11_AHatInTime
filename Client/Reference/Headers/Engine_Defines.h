@@ -35,7 +35,7 @@ using namespace DirectX;
 #include <list>
 #include <map>
 #include <algorithm>
-#include <typeinfo.h>
+// #include <typeinfo.h>
 
 
 #include <process.h>
