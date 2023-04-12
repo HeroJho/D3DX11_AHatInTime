@@ -55,41 +55,37 @@ void CCamera_Free::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	if (nullptr == m_pPlayer)
-	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
-		m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
-		Safe_AddRef(m_pPlayer);
-
-
-		CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
-		// XmStoreFloat3(m_vPreLookPos
-
-		RELEASE_INSTANCE(CGameInstance);
-	}
-
-
-
-	Tick_Shacke(fTimeDelta);
-
+	Find_Player(fTimeDelta);
+	Tick_Shake(fTimeDelta);
 
 	switch (m_eState)
 	{
 	case CAM_GAME:
+		Game_Mode_Input(fTimeDelta);
+		Look_Player();
+		OriCamPos(fTimeDelta);
+		SmoothLook(fTimeDelta);
+		break;
 	case CAM_FOCUS:
+		OriCamPos(fTimeDelta);
+		Look_NearMonster();
+		Game_Mode_Input(fTimeDelta);
+		SmoothLook(fTimeDelta);
+		break;
 	case CAM_BOSS:
+		Boss_Mode_Input(fTimeDelta);
+		Look_Target();
+		FocuseTarget(fTimeDelta);
+		SmoothLook(fTimeDelta);
+		break;
 	case CAM_FREE:
-		Game_Mode(fTimeDelta);
+		SmoothPos(fTimeDelta);
+		SmoothLook(fTimeDelta);
 		break;
 	case CAM_CUTSCENE:
 		CutScene_Mode(fTimeDelta);
 		break;
 	}
-
-
-
-
 }
 
 void CCamera_Free::LateTick(_float fTimeDelta)
@@ -120,6 +116,8 @@ void CCamera_Free::LookAt(_fvector vTargetPos)
 
 void CCamera_Free::Look_Player()
 {
+	m_fDis = m_fOriDis;
+
 	CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
 	// 플레이어 발바닥 보다 살짝 위로 본다/
 	Set_Target(XMVectorSetY(pPlayerTran->Get_State(CTransform::STATE_POSITION), XMVectorGetY(pPlayerTran->Get_State(CTransform::STATE_POSITION)) + 0.8f));
@@ -233,6 +231,7 @@ void CCamera_Free::Game_Mode(_float fTimeDelta)
 		SmoothPos(fTimeDelta);
 		break;
 	}
+	 
 
 
 	SmoothLook(fTimeDelta);
@@ -333,24 +332,19 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 {
 	_vector vDestPos = XMLoadFloat3(&m_vDestLookPos);
 	_vector vPrePos = XMLoadFloat3(&m_vPreLookPos);
-
+	// [이전 지점 -> 바라볼 지점 방향] 벡터를 구한다.
 	_vector vDir = vDestPos - vPrePos;
 	_vector vNorDir = XMVector3Normalize(vDir);
 	_float fDis = XMVectorGetX(XMVector3Length(vDir));
-
+	// 둘의 거리가 멀다면 속도를 높인다.
 	vPrePos += vNorDir * fDis * 5.f * fDeltaTime;
-	if (m_bShake)
-		vPrePos += XMLoadFloat3(&m_vShakePosAcc);
-
-
+	if (m_bShake) vPrePos += XMLoadFloat3(&m_vShakePosAcc);
 
 	_float fX = XMVectorGetX(vPrePos) + XMVectorGetX(vNorDir) * fDis * 3.f * fDeltaTime;
 	_float fY = XMVectorGetY(vPrePos) + XMVectorGetY(vNorDir) * fDis * 20.f * fDeltaTime;
 
 	vPrePos = XMVectorSetX(vPrePos, fX);
 	vPrePos = XMVectorSetY(vPrePos, fY);
-
-	
 
 	if (0.01f < fDis || m_bShake)
 	{
@@ -362,8 +356,6 @@ void CCamera_Free::SmoothLook(_float fDeltaTime)
 		XMStoreFloat3(&m_vPreLookPos, vDestPos);
 		m_pTransformCom->LookAt(XMVectorSetW(vDestPos, 1.f));
 	}
-	
-
 }
 
 void CCamera_Free::SmoothPos(_float fDeltaTime)
@@ -472,6 +464,20 @@ void CCamera_Free::CutScene_Mode(_float fTimeDelta)
 
 }
 
+void CCamera_Free::Find_Player(_float fTimeDelta)
+{
+	if (nullptr == m_pPlayer)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		m_pPlayer = (CPlayer*)pGameInstance->Get_GameObjectPtr(LEVEL_STATIC, TEXT("Layer_Player"), 0);
+		Safe_AddRef(m_pPlayer);
+		CTransform* pPlayerTran = (CTransform*)m_pPlayer->Get_ComponentPtr(TEXT("Com_Transform"));
+
+		RELEASE_INSTANCE(CGameInstance);
+	}
+}
+
 
 
 
@@ -496,7 +502,7 @@ void CCamera_Free::End_Shake()
 	ZeroMemory(&m_vShakePosAcc, sizeof(_float3));
 }
 
-void CCamera_Free::Tick_Shacke(_float fTimeDelta)
+void CCamera_Free::Tick_Shake(_float fTimeDelta)
 {
 	if (!m_bShake)
 		return;
@@ -508,7 +514,6 @@ void CCamera_Free::Tick_Shacke(_float fTimeDelta)
 		ZeroMemory(&m_vShakePosAcc, sizeof(_float3));
 		return;
 	}
-
 
 	m_fShakeTurnTimeAcc += fTimeDelta;
 	if (m_fShakeTurnTime < m_fShakeTurnTimeAcc)

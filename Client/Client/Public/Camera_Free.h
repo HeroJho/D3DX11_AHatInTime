@@ -40,6 +40,7 @@ public:
 private:
 	void CutScene_Mode(_float fTimeDelta);
 
+	void Find_Player(_float fTimeDelta);
 
 
 	// For. GameMode
@@ -95,7 +96,7 @@ public:
 	void Start_Shake(_float fShakeTime, _float fShakePower, _float fShakeTurnTime);
 	void End_Shake();
 
-	void Tick_Shacke(_float fTimeDelta);
+	void Tick_Shake(_float fTimeDelta);
 
 
 private:

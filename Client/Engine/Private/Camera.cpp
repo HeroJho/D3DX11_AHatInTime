@@ -35,9 +35,15 @@ HRESULT CCamera::Initialize(void * pArg)
 void CCamera::Tick(_float fTimeDelta)
 {
 	CPipeLine*			pPipeLine = GET_INSTANCE(CPipeLine);
-
-	pPipeLine->Set_Transform(CPipeLine::D3DTS_VIEW, m_pTransformCom->Get_WorldMatrixInverse());
-	pPipeLine->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(m_CameraDesc.fFovy, m_CameraDesc.fAspect, m_CameraDesc.fNear, m_CameraDesc.fFar));
+	// 뷰 행렬 갱신
+	pPipeLine->Set_Transform(CPipeLine::D3DTS_VIEW, 
+		m_pTransformCom->Get_WorldMatrixInverse());
+	// 원근 투영 행렬 갱신
+	pPipeLine->Set_Transform(CPipeLine::D3DTS_PROJ, 
+		XMMatrixPerspectiveFovLH(m_CameraDesc.fFovy, 
+			m_CameraDesc.fAspect, 
+			m_CameraDesc.fNear, 
+			m_CameraDesc.fFar));
 
 	RELEASE_INSTANCE(CPipeLine);
 }
